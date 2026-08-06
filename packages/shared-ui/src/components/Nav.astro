@@ -1,0 +1,101 @@
+---
+interface NavLink {
+  label: string;
+  href: string;
+}
+interface Props {
+  siteName: string;
+  links: NavLink[];
+  phone?: string;
+}
+const { siteName, links, phone } = Astro.props;
+---
+
+<header
+  id="site-header"
+  class="sticky top-0 z-40 bg-[var(--color-bg)]/70 backdrop-blur-lg border-b border-[var(--color-border)] transition-shadow duration-300"
+>
+  <input type="checkbox" id="nav-toggle" class="peer hidden" />
+
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+    <a href="#hero" class="font-[var(--font-heading)] text-lg font-semibold text-[var(--color-text)]">
+      {siteName}
+    </a>
+
+    <nav class="hidden md:flex items-center gap-6">
+      {links.map((link) => (
+        <a href={link.href} class="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors">
+          {link.label}
+        </a>
+      ))}
+      {phone && (
+        <a
+          href={`tel:${phone.replace(/[^+\d]/g, "")}`}
+          class="rounded-[var(--radius-md)] bg-[var(--color-primary)] text-[var(--color-primary-contrast)] px-4 py-2 text-sm font-medium shadow-[var(--shadow-card)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[var(--shadow-elevated)]"
+        >
+          {phone}
+        </a>
+      )}
+    </nav>
+
+    <label for="nav-toggle" class="md:hidden cursor-pointer text-[var(--color-text)]" aria-label="Меню">
+      <svg
+        id="menu-icon"
+        width="26"
+        height="26"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        class="transition-transform duration-200 ease-out"
+      >
+        <path d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </label>
+  </div>
+
+  <!--
+    Floating overlay panel, not part of normal document flow: only `opacity`/`transform` animate,
+    both handled by the compositor (GPU) with no layout recalculation each frame. An earlier version
+    animated grid-template-rows/max-height, which forces a full reflow on every frame and reads as
+    janky on mobile — this version can't drop frames that way.
+  -->
+  <div
+    id="mobile-nav-wrapper"
+    class="md:hidden absolute inset-x-0 top-full z-40 origin-top opacity-0 -translate-y-2 pointer-events-none transition-[opacity,transform] duration-200 ease-out will-change-transform"
+  >
+    <nav class="flex flex-col gap-1 border-t border-[var(--color-border)] px-4 py-3 bg-[var(--color-bg)] shadow-[var(--shadow-elevated)]">
+      {links.map((link) => (
+        <a href={link.href} class="py-2 text-sm text-[var(--color-text-muted)]">
+          {link.label}
+        </a>
+      ))}
+      {phone && (
+        <a href={`tel:${phone.replace(/[^+\d]/g, "")}`} class="py-2 text-sm font-medium text-[var(--color-primary)]">
+          {phone}
+        </a>
+      )}
+    </nav>
+  </div>
+</header>
+
+<style>
+  #nav-toggle:checked ~ #mobile-nav-wrapper {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  #nav-toggle:checked ~ div #menu-icon {
+    transform: rotate(90deg);
+  }
+  #site-header.is-scrolled {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  }
+</style>
+
+<script>
+  const header = document.getElementById("site-header");
+  const onScroll = () => header?.classList.toggle("is-scrolled", window.scrollY > 8);
+  onScroll();
+  window.addEventListener("scroll", onScroll, { passive: true });
+</script>

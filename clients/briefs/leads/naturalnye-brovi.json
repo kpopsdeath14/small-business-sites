@@ -1,0 +1,18 @@
+{
+  "business_type": "beauty-salon",
+  "name": "Натуральные брови",
+  "description_raw": "Студия оформления бровей. Подробное описание уточняется у клиента.",
+  "address": "",
+  "phone": "",
+  "working_hours": {},
+  "social_links": {},
+  "photos": [
+    "https://picsum.photos/seed/natbrovi1/1200/900",
+    "https://picsum.photos/seed/natbrovi2/1200/900"
+  ],
+  "menu_or_services": [
+    { "name": "Коррекция бровей", "category": "Брови" },
+    { "name": "Окрашивание бровей", "category": "Брови" },
+    { "name": "Ламинирование бровей", "category": "Брови" }
+  ]
+}

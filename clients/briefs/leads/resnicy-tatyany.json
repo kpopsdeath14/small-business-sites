@@ -1,0 +1,20 @@
+{
+  "business_type": "beauty-salon",
+  "name": "Ресницы от Татьяны Поликарповой",
+  "description_raw": "Студия наращивания ресниц. Подробное описание уточняется у клиента.",
+  "address": "",
+  "phone": "",
+  "working_hours": {},
+  "social_links": {},
+  "photos": [
+    "https://picsum.photos/seed/resnicytp1/1200/900",
+    "https://picsum.photos/seed/resnicytp2/1200/900"
+  ],
+  "menu_or_services": [
+    { "name": "Классическое наращивание ресниц", "category": "Ресницы" },
+    { "name": "Объёмное наращивание ресниц", "category": "Ресницы" }
+  ],
+  "team": [
+    { "name": "Татьяна Поликарпова", "role": "Мастер по ресницам" }
+  ]
+}

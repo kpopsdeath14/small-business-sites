@@ -1,0 +1,37 @@
+---
+import SocialLinks from "./SocialLinks.astro";
+
+interface Props {
+  siteName: string;
+  address?: string;
+  phone?: string;
+  hoursSummary?: string;
+  socialLinks?: Record<string, string>;
+}
+const { siteName, address, phone, hoursSummary, socialLinks } = Astro.props;
+const year = new Date().getFullYear();
+---
+
+<footer class="bg-[var(--color-surface)] border-t border-[var(--color-border)] py-12">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 grid gap-8 sm:grid-cols-3">
+    <div>
+      <p class="font-[var(--font-heading)] text-lg font-semibold text-[var(--color-text)]">{siteName}</p>
+      {address && <p class="mt-2 text-sm text-[var(--color-text-muted)]">{address}</p>}
+    </div>
+
+    <div class="text-sm text-[var(--color-text-muted)] space-y-1">
+      {phone && <p>{phone}</p>}
+      {hoursSummary && <p>{hoursSummary}</p>}
+    </div>
+
+    {socialLinks && Object.keys(socialLinks).length > 0 && (
+      <div>
+        <SocialLinks links={socialLinks} />
+      </div>
+    )}
+  </div>
+
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 mt-8 pt-6 border-t border-[var(--color-border)] text-xs text-[var(--color-text-muted)]">
+    &copy; {year} {siteName}
+  </div>
+</footer>

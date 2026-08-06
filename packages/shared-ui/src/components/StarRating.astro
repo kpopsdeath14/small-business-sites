@@ -1,0 +1,23 @@
+---
+interface Props {
+  rating: number;
+  class?: string;
+}
+const { rating, class: className = "" } = Astro.props;
+const rounded = Math.round(Math.min(5, Math.max(0, rating)));
+---
+
+<div class:list={["flex items-center gap-0.5", className]} aria-label={`Оценка ${rating} из 5`}>
+  {Array.from({ length: 5 }).map((_, i) => (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 20 20"
+      fill={i < rounded ? "var(--color-accent)" : "none"}
+      stroke="var(--color-accent)"
+      stroke-width="1.2"
+    >
+      <path d="M10 1.5l2.6 5.4 5.9.8-4.3 4.2 1 5.9-5.2-2.8-5.2 2.8 1-5.9-4.3-4.2 5.9-.8z" />
+    </svg>
+  ))}
+</div>

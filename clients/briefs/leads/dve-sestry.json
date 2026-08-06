@@ -1,0 +1,17 @@
+{
+  "business_type": "beauty-salon",
+  "name": "Две сестры",
+  "description_raw": "Салон красоты. Подробное описание уточняется у клиента.",
+  "address": "",
+  "phone": "",
+  "working_hours": {},
+  "social_links": {},
+  "photos": [
+    "https://picsum.photos/seed/dvesestry1/1200/900",
+    "https://picsum.photos/seed/dvesestry2/1200/900"
+  ],
+  "menu_or_services": [
+    { "name": "Стрижка", "category": "Волосы" },
+    { "name": "Маникюр", "category": "Ногти" }
+  ]
+}

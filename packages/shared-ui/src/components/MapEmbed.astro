@@ -1,0 +1,25 @@
+---
+interface Props {
+  address?: string;
+  lat?: number;
+  lng?: number;
+  class?: string;
+}
+const { address, lat, lng, class: className = "" } = Astro.props;
+
+const query = lat != null && lng != null ? `${lat},${lng}` : address ?? "";
+const src = `https://www.google.com/maps?q=${encodeURIComponent(query)}&output=embed`;
+---
+
+{query && (
+  <iframe
+    class:list={[
+      "w-full h-full min-h-[320px] rounded-[var(--radius-lg)] border border-[var(--color-border)] shadow-[var(--shadow-card)]",
+      className,
+    ]}
+    src={src}
+    loading="lazy"
+    referrerpolicy="no-referrer-when-downgrade"
+    title="Карта"
+  />
+)}

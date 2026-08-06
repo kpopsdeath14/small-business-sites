@@ -1,0 +1,98 @@
+import type { DesignTokens } from "@sitegen/shared-ui/types.ts";
+
+const SANS = "-apple-system, 'Segoe UI', system-ui, sans-serif";
+const SERIF = "Georgia, 'Times New Roman', serif";
+const ROUNDED = "'Century Gothic', -apple-system, system-ui, sans-serif";
+
+export const tokenSets: DesignTokens[] = [
+  {
+    // Rose Gold Elegance
+    "--color-bg": "#FDF6F4",
+    "--color-surface": "#F8E8E3",
+    "--color-text": "#3A2420",
+    "--color-text-muted": "#8A6B63",
+    "--color-primary": "#C77B65",
+    "--color-primary-contrast": "#FFFFFF",
+    "--color-accent": "#D9A679",
+    "--color-border": "#F0DAD2",
+    "--font-heading": SERIF,
+    "--font-body": SANS,
+    "--radius-sm": "10px",
+    "--radius-md": "18px",
+    "--radius-lg": "28px",
+    "--shadow-card": "0 6px 18px rgba(199,123,101,0.14)",
+    "--shadow-elevated": "0 14px 34px rgba(199,123,101,0.2)",
+  },
+  {
+    // Modern Minimal Beauty
+    "--color-bg": "#FAFAF9",
+    "--color-surface": "#F0EEEC",
+    "--color-text": "#181614",
+    "--color-text-muted": "#6B6560",
+    "--color-primary": "#181614",
+    "--color-primary-contrast": "#FFFFFF",
+    "--color-accent": "#B08D5B",
+    "--color-border": "#E5E2DE",
+    "--font-heading": SANS,
+    "--font-body": SANS,
+    "--radius-sm": "2px",
+    "--radius-md": "4px",
+    "--radius-lg": "8px",
+    "--shadow-card": "0 2px 10px rgba(0,0,0,0.06)",
+    "--shadow-elevated": "0 12px 28px rgba(0,0,0,0.1)",
+  },
+  {
+    // Lavender Spa
+    "--color-bg": "#F8F6FC",
+    "--color-surface": "#ECE6F7",
+    "--color-text": "#2C2438",
+    "--color-text-muted": "#726A85",
+    "--color-primary": "#8B6FB3",
+    "--color-primary-contrast": "#FFFFFF",
+    "--color-accent": "#B79FD6",
+    "--color-border": "#E2D9F1",
+    "--font-heading": SERIF,
+    "--font-body": SANS,
+    "--radius-sm": "10px",
+    "--radius-md": "18px",
+    "--radius-lg": "30px",
+    "--shadow-card": "0 6px 18px rgba(139,111,179,0.14)",
+    "--shadow-elevated": "0 14px 34px rgba(139,111,179,0.2)",
+  },
+  {
+    // Nude Glam
+    "--color-bg": "#1B1714",
+    "--color-surface": "#26201C",
+    "--color-text": "#F2E9E2",
+    "--color-text-muted": "#B3A399",
+    "--color-primary": "#E0A87A",
+    "--color-primary-contrast": "#1B1714",
+    "--color-accent": "#E0A87A",
+    "--color-border": "#382F29",
+    "--font-heading": SERIF,
+    "--font-body": SANS,
+    "--radius-sm": "4px",
+    "--radius-md": "8px",
+    "--radius-lg": "14px",
+    "--shadow-card": "0 4px 18px rgba(0,0,0,0.4)",
+    "--shadow-elevated": "0 14px 34px rgba(0,0,0,0.5)",
+  },
+  {
+    // Mint Fresh Beauty
+    "--color-bg": "#FFFFFF",
+    "--color-surface": "#E9F7F2",
+    "--color-text": "#132621",
+    "--color-text-muted": "#5C7A72",
+    "--color-primary": "#2FA189",
+    "--color-primary-contrast": "#FFFFFF",
+    "--color-accent": "#7FD4BC",
+    "--color-border": "#DCF0E9",
+    "--font-heading": ROUNDED,
+    "--font-body": SANS,
+    "--radius-sm": "10px",
+    "--radius-md": "18px",
+    "--radius-lg": "26px",
+    "--shadow-card": "0 4px 14px rgba(19,38,33,0.08)",
+    "--shadow-elevated": "0 12px 30px rgba(19,38,33,0.14)",
+  },
+];

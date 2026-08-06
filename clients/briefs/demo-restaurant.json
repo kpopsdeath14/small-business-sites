@@ -1,0 +1,55 @@
+{
+  "business_type": "restaurant",
+  "name": "Траттория Розмарин",
+  "description_raw": "Семейная итальянская траттория в двух шагах от парка. Готовим пасту и пиццу на дровах по рецептам бабушки Джулии, каждый день печём свежий хлеб. Уютный зал на 30 мест и веранда летом.",
+  "address": "г. Москва, ул. Садовая, д. 14",
+  "phone": "+7 495 123-45-67",
+  "working_hours": {
+    "пн-пт": "11:00–23:00",
+    "сб-вс": "12:00–00:00"
+  },
+  "social_links": {
+    "instagram": "https://instagram.com/rosmarino.trattoria",
+    "telegram": "https://t.me/rosmarino_trattoria"
+  },
+  "photos": [
+    "https://picsum.photos/seed/rosmarino1/1200/900",
+    "https://picsum.photos/seed/rosmarino2/1200/900",
+    "https://picsum.photos/seed/rosmarino3/1200/900",
+    "https://picsum.photos/seed/rosmarino4/1200/900"
+  ],
+  "menu_or_services": [
+    { "name": "Паста Карбонара", "description": "Гуанчиале, яйцо, пекорино романо", "price": "590 ₽", "category": "Паста" },
+    { "name": "Паста Болоньезе", "description": "Соус из говядины томлёный 4 часа", "price": "560 ₽", "category": "Паста" },
+    { "name": "Пицца Маргарита", "description": "Томаты, моцарелла, базилик", "price": "480 ₽", "category": "Пицца" },
+    { "name": "Пицца Дьябло", "description": "Салями пикантная, чили, моцарелла", "price": "620 ₽", "category": "Пицца" },
+    { "name": "Тирамису", "description": "Классический рецепт бабушки Джулии", "price": "350 ₽", "category": "Десерты" }
+  ],
+  "reviews": [
+    { "author": "Анна", "rating": 5, "text": "Лучшая паста карбонара в городе, атмосфера очень домашняя." },
+    { "author": "Дмитрий", "rating": 4, "text": "Вкусно и уютно, но иногда долго ждать столик в выходные." },
+    { "author": "Мария", "rating": 5, "text": "Пицца из дровяной печи просто огонь, обязательно вернёмся." }
+  ],
+  "reviews_url": "https://www.google.com/maps/search/?api=1&query=Траттория+Розмарин+Москва+Садовая+14",
+  "map_coords": { "lat": 55.751244, "lng": 37.618423 },
+  "highlights": [
+    {
+      "name": "Паста Карбонара",
+      "description": "Гуанчиале, яйцо, пекорино романо — по рецепту бабушки Джулии, готовится каждый раз на заказ.",
+      "price": "590 ₽",
+      "photo": "https://picsum.photos/seed/rosmarino-hl1/1000/750"
+    },
+    {
+      "name": "Пицца из дровяной печи",
+      "description": "Тесто на закваске 48 часов, выпекается на дровах при 400°C ровно 90 секунд.",
+      "price": "620 ₽",
+      "photo": "https://picsum.photos/seed/rosmarino-hl2/1000/750"
+    }
+  ],
+  "stats": [
+    { "value": "12 лет", "label": "на рынке" },
+    { "value": "24", "label": "блюда в меню" },
+    { "value": "4.8", "label": "рейтинг гостей" },
+    { "value": "30", "label": "мест в зале" }
+  ]
+}

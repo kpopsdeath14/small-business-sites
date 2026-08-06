@@ -1,0 +1,17 @@
+{
+  "business_type": "beauty-salon",
+  "name": "Beauty Bar",
+  "description_raw": "Салон красоты. Подробное описание уточняется у клиента.",
+  "address": "",
+  "phone": "",
+  "working_hours": {},
+  "social_links": {},
+  "photos": [
+    "https://picsum.photos/seed/beautybar1/1200/900",
+    "https://picsum.photos/seed/beautybar2/1200/900"
+  ],
+  "menu_or_services": [
+    { "name": "Маникюр", "category": "Ногти" },
+    { "name": "Стрижка", "category": "Волосы" }
+  ]
+}

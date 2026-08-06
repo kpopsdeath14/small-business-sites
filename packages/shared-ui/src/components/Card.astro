@@ -1,0 +1,23 @@
+---
+interface Props {
+  class?: string;
+  hover?: boolean;
+  padding?: "md" | "lg";
+}
+const { class: className = "", hover = true, padding = "lg" } = Astro.props;
+const paddingClass = padding === "lg" ? "p-6" : "p-4";
+---
+
+<div
+  class:list={[
+    "rounded-[var(--radius-lg)] border border-[var(--color-border)]",
+    "bg-[var(--color-surface)]/70 backdrop-blur-md",
+    "shadow-[var(--shadow-card)]",
+    paddingClass,
+    hover &&
+      "transition-all duration-300 ease-out hover:-translate-y-1 hover:border-[var(--color-primary)]/40 hover:shadow-[var(--shadow-elevated)] hover:bg-[var(--color-surface)]/90",
+    className,
+  ]}
+>
+  <slot />
+</div>

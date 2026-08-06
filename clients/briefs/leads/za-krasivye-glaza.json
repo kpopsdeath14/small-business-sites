@@ -1,0 +1,17 @@
+{
+  "business_type": "beauty-salon",
+  "name": "За красивые глаза",
+  "description_raw": "Студия оформления глаз — брови и ресницы. Подробное описание уточняется у клиента.",
+  "address": "",
+  "phone": "",
+  "working_hours": {},
+  "social_links": {},
+  "photos": [
+    "https://picsum.photos/seed/zakrasivyeglaza1/1200/900",
+    "https://picsum.photos/seed/zakrasivyeglaza2/1200/900"
+  ],
+  "menu_or_services": [
+    { "name": "Наращивание ресниц", "category": "Ресницы" },
+    { "name": "Оформление и окрашивание бровей", "category": "Брови" }
+  ]
+}

@@ -1,0 +1,24 @@
+---
+// Embeds an existing booking system (YClients, Dikidi, etc.) instead of the built-in fake form —
+// no point showing a form that doesn't actually save anywhere when the client already has a real one.
+// YClients pages are specifically built to be iframed; the fallback link below covers systems that
+// aren't, or cases where the embed is blocked (X-Frame-Options) on the visitor's browser.
+interface Props {
+  url: string;
+}
+const { url } = Astro.props;
+---
+
+<div class="rounded-[var(--radius-lg)] overflow-hidden border border-[var(--color-border)] bg-[var(--color-surface)]/70 backdrop-blur-md shadow-[var(--shadow-card)]">
+  <iframe src={url} class="w-full h-[560px] border-0 block" loading="lazy" title="Онлайн-запись" />
+  <div class="p-3 text-center border-t border-[var(--color-border)]">
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-sm font-medium text-[var(--color-primary)] underline decoration-dotted"
+    >
+      Открыть форму записи в новой вкладке →
+    </a>
+  </div>
+</div>

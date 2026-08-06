@@ -1,0 +1,46 @@
+---
+import Container from "@sitegen/shared-ui/components/Container.astro";
+import Section from "@sitegen/shared-ui/components/Section.astro";
+import Card from "@sitegen/shared-ui/components/Card.astro";
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+
+interface Props {
+  data: SiteData;
+}
+const { data } = Astro.props;
+
+function groupByCategory(items: SiteData["items"]) {
+  const map = new Map<string, SiteData["items"]>();
+  for (const item of items) {
+    const cat = item.category || "Программы";
+    if (!map.has(cat)) map.set(cat, []);
+    map.get(cat)!.push(item);
+  }
+  return Array.from(map.entries());
+}
+const groups = groupByCategory(data.items);
+---
+
+<Section id="programs">
+  <Container narrow>
+    <h2 class="font-[var(--font-heading)] text-3xl font-bold text-[var(--color-text)] text-center mb-10">Программы обучения</h2>
+    <Card hover={false} class="space-y-10">
+      {groups.map(([category, items]) => (
+        <div>
+          <h3 class="text-sm uppercase tracking-wide text-[var(--color-primary)] font-semibold mb-4">{category}</h3>
+          <ul class="space-y-3">
+            {items.map((item) => (
+              <li class="flex justify-between gap-4 border-b border-[var(--color-border)] pb-3">
+                <div>
+                  <p class="font-medium text-[var(--color-text)]">{item.name}</p>
+                  {item.description && <p class="text-sm text-[var(--color-text-muted)]">{item.description}</p>}
+                </div>
+                {item.price && <span class="whitespace-nowrap font-medium text-[var(--color-text)]">{item.price}</span>}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </Card>
+  </Container>
+</Section>

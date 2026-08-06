@@ -1,0 +1,59 @@
+{
+  "business_type": "bakery",
+  "name": "Пекарня Колосок",
+  "description_raw": "Крафтовая пекарня с собственным цехом. Печём хлеб на закваске каждое утро, варим кофе на зёрнах местной обжарки. Уютное место, чтобы позавтракать или взять выпечку с собой.",
+  "address": "г. Новосибирск, ул. Красный проспект, д. 30",
+  "phone": "+7 383 210-45-67",
+  "working_hours": {
+    "пн-вс": "7:00–20:00"
+  },
+  "social_links": {
+    "instagram": "https://instagram.com/kolosok.bakery",
+    "vk": "https://vk.com/kolosok_bakery"
+  },
+  "photos": [
+    "https://picsum.photos/seed/kolosok1/1200/900",
+    "https://picsum.photos/seed/kolosok2/1200/900",
+    "https://picsum.photos/seed/kolosok3/1200/900",
+    "https://picsum.photos/seed/kolosok4/1200/900"
+  ],
+  "menu_or_services": [
+    { "name": "Хлеб на закваске", "description": "Выпекается каждое утро", "price": "220 ₽", "category": "Хлеб" },
+    { "name": "Круассан классический", "price": "180 ₽", "category": "Выпечка" },
+    { "name": "Булочка с корицей", "price": "150 ₽", "category": "Выпечка" },
+    { "name": "Капучино", "description": "На зёрнах местной обжарки", "price": "220 ₽", "category": "Напитки" },
+    { "name": "Фильтр-кофе", "price": "180 ₽", "category": "Напитки" }
+  ],
+  "reviews": [
+    { "author": "Наталья", "rating": 5, "text": "Самый вкусный хлеб в городе, беру каждые выходные." },
+    { "author": "Павел", "rating": 5, "text": "Отличный кофе и уютная атмосфера по утрам." }
+  ],
+  "reviews_url": "https://www.google.com/maps/search/?api=1&query=Пекарня+Колосок+Новосибирск",
+  "map_coords": { "lat": 55.030199, "lng": 82.920430 },
+  "highlights": [
+    {
+      "name": "Хлеб на закваске",
+      "description": "Наша визитная карточка — ферментируется 18 часов, хрустящая корочка, мягкий мякиш.",
+      "price": "220 ₽",
+      "photo": "https://picsum.photos/seed/kolosok-hl1/900/900"
+    },
+    {
+      "name": "Круассан классический",
+      "description": "96 слоёв масляного теста, выпекается три раза в день небольшими партиями.",
+      "price": "180 ₽",
+      "photo": "https://picsum.photos/seed/kolosok-hl2/900/900"
+    },
+    {
+      "name": "Булочка с корицей",
+      "description": "С карамелизированной корочкой и кремом на сливочном сыре.",
+      "price": "150 ₽",
+      "photo": "https://picsum.photos/seed/kolosok-hl3/900/900"
+    }
+  ],
+  "process_steps": [
+    { "title": "Закваска", "description": "Выращиваем закваску сами, ей уже больше трёх лет." },
+    { "title": "Замес и расстойка", "description": "Тесто отдыхает 18 часов при низкой температуре для вкуса и текстуры." },
+    { "title": "Выпечка", "description": "Печём партиями каждое утро, чтобы к открытию всё было свежим." },
+    { "title": "На прилавке", "description": "То, что не продалось за день, не остаётся до завтра — отдаём партнёрам." }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "business_type": "restaurant",
+  "name": "Кампания",
+  "description_raw": "Крафтовый бар. Локальное место, где гости — это друзья, где пиво — главный напиток, а атмосфера — смысл существования.",
+  "address": "г. Москва, ул. Южнобутовская, 44",
+  "phone": "+7 985 940-32-02",
+  "working_hours": {
+    "пн-чт": "15:00–00:00",
+    "пт": "15:00–01:00",
+    "сб": "12:00–01:00",
+    "вс": "12:00–00:00"
+  },
+  "social_links": {
+    "instagram": "https://instagram.com/kampania_craftbar",
+    "telegram": "https://t.me/kampaniabar",
+    "whatsapp": "https://wa.me/79859403202"
+  },
+  "photos": [
+    "https://picsum.photos/seed/kampania1/1200/900",
+    "https://picsum.photos/seed/kampania2/1200/900",
+    "https://picsum.photos/seed/kampania3/1200/900"
+  ],
+  "menu_or_services": [
+    { "name": "Крафтовое пиво", "category": "Напитки" },
+    { "name": "Закуски к пиву", "category": "Закуски" }
+  ]
+}

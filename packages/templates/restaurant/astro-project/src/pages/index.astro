@@ -1,0 +1,54 @@
+---
+import Base from "../layouts/Base.astro";
+import Nav from "@sitegen/shared-ui/components/Nav.astro";
+import HeroSection from "@sitegen/template-restaurant/sections/HeroSection.astro";
+import AboutSection from "@sitegen/template-restaurant/sections/AboutSection.astro";
+import MenuSection from "@sitegen/template-restaurant/sections/MenuSection.astro";
+import HighlightsSection from "@sitegen/template-restaurant/sections/HighlightsSection.astro";
+import StatsSection from "@sitegen/template-restaurant/sections/StatsSection.astro";
+import GallerySection from "@sitegen/template-restaurant/sections/GallerySection.astro";
+import ReviewsSection from "@sitegen/template-restaurant/sections/ReviewsSection.astro";
+import ContactSection from "@sitegen/template-restaurant/sections/ContactSection.astro";
+import FooterSection from "@sitegen/template-restaurant/sections/FooterSection.astro";
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+import siteDataJson from "../data/site.json";
+import siteConfigJson from "../data/site-config.json";
+
+const data = siteDataJson as unknown as SiteData;
+const siteConfig = siteConfigJson as { sections: { id: string; variant: number }[] };
+
+const sectionComponents: Record<string, any> = {
+  hero: HeroSection,
+  about: AboutSection,
+  menu: MenuSection,
+  highlights: HighlightsSection,
+  stats: StatsSection,
+  gallery: GallerySection,
+  reviews: ReviewsSection,
+  contact: ContactSection,
+  footer: FooterSection,
+};
+
+const NAV_LABELS: Record<string, string> = {
+  about: "О нас",
+  menu: "Меню",
+  highlights: "Хиты меню",
+  gallery: "Галерея",
+  reviews: "Отзывы",
+  contact: "Контакты",
+};
+
+const navLinks = siteConfig.sections
+  .filter((section) => section.id in NAV_LABELS)
+  .map((section) => ({ label: NAV_LABELS[section.id], href: `#${section.id}` }));
+---
+
+<Base title={data.meta.title} description={data.meta.description}>
+  <Nav siteName={data.name} links={navLinks} phone={data.phone} />
+  {
+    siteConfig.sections.map((section) => {
+      const Cmp = sectionComponents[section.id];
+      return Cmp ? <Cmp variant={section.variant} data={data} /> : null;
+    })
+  }
+</Base>

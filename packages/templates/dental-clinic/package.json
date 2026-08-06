@@ -1,0 +1,17 @@
+{
+  "name": "@sitegen/template-dental-clinic",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*"
+  },
+  "dependencies": {
+    "@sitegen/shared-ui": "*",
+    "@sitegen/variance-engine": "*"
+  },
+  "peerDependencies": {
+    "astro": "^4.0.0"
+  }
+}

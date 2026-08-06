@@ -1,0 +1,17 @@
+{
+  "business_type": "beauty-salon",
+  "name": "Lashes_annd_dyu",
+  "description_raw": "Студия наращивания ресниц. Подробное описание уточняется у клиента.",
+  "address": "",
+  "phone": "",
+  "working_hours": {},
+  "social_links": {},
+  "photos": [
+    "https://picsum.photos/seed/lashesannddyu1/1200/900",
+    "https://picsum.photos/seed/lashesannddyu2/1200/900"
+  ],
+  "menu_or_services": [
+    { "name": "Наращивание ресниц", "category": "Ресницы" },
+    { "name": "Оформление бровей", "category": "Брови" }
+  ]
+}

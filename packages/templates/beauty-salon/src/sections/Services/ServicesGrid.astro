@@ -1,0 +1,31 @@
+---
+import Container from "@sitegen/shared-ui/components/Container.astro";
+import Section from "@sitegen/shared-ui/components/Section.astro";
+import Card from "@sitegen/shared-ui/components/Card.astro";
+import Button from "@sitegen/shared-ui/components/Button.astro";
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+
+interface Props {
+  data: SiteData;
+}
+const { data } = Astro.props;
+---
+
+<Section id="services" surface="surface">
+  <Container>
+    <h2 class="font-[var(--font-heading)] text-3xl font-bold text-[var(--color-text)] text-center">Услуги</h2>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
+      {data.items.map((item) => (
+        <Card>
+          <p class="text-xs uppercase tracking-wide text-[var(--color-text-muted)]">{item.category}</p>
+          <p class="mt-1 font-[var(--font-heading)] text-lg font-semibold text-[var(--color-text)]">{item.name}</p>
+          {item.description && <p class="mt-2 text-sm text-[var(--color-text-muted)]">{item.description}</p>}
+          {item.price && <p class="mt-4 font-semibold text-[var(--color-primary)]">{item.price}</p>}
+        </Card>
+      ))}
+    </div>
+    <div class="text-center mt-10">
+      <Button href="#contact" size="lg">Записаться</Button>
+    </div>
+  </Container>
+</Section>

@@ -1,0 +1,20 @@
+---
+import FooterBase from "@sitegen/shared-ui/components/FooterBase.astro";
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+
+interface Props {
+  data: SiteData;
+}
+const { data } = Astro.props;
+const hoursSummary = Object.entries(data.workingHours ?? {})
+  .map(([days, hours]) => `${days}: ${hours}`)
+  .join(" · ");
+---
+
+<FooterBase
+  siteName={data.name}
+  address={data.address}
+  phone={data.phone}
+  hoursSummary={hoursSummary}
+  socialLinks={data.socialLinks}
+/>

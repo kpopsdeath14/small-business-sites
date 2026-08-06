@@ -1,0 +1,98 @@
+import type { DesignTokens } from "@sitegen/shared-ui/types.ts";
+
+const SANS = "-apple-system, 'Segoe UI', system-ui, sans-serif";
+const ROUNDED = "'Century Gothic', -apple-system, system-ui, sans-serif";
+const SERIF = "Georgia, 'Times New Roman', serif";
+
+export const tokenSets: DesignTokens[] = [
+  {
+    // Pastel Pink
+    "--color-bg": "#FFF8F8",
+    "--color-surface": "#FCE9EB",
+    "--color-text": "#341B1D",
+    "--color-text-muted": "#8A6A6C",
+    "--color-primary": "#E0637A",
+    "--color-primary-contrast": "#FFFFFF",
+    "--color-accent": "#F2A6B4",
+    "--color-border": "#F5D9DD",
+    "--font-heading": ROUNDED,
+    "--font-body": SANS,
+    "--radius-sm": "10px",
+    "--radius-md": "18px",
+    "--radius-lg": "28px",
+    "--shadow-card": "0 6px 18px rgba(224,99,122,0.14)",
+    "--shadow-elevated": "0 14px 34px rgba(224,99,122,0.2)",
+  },
+  {
+    // Rustic Bread
+    "--color-bg": "#FBF4E8",
+    "--color-surface": "#F1E2C8",
+    "--color-text": "#3A2A16",
+    "--color-text-muted": "#8A7554",
+    "--color-primary": "#A8672D",
+    "--color-primary-contrast": "#FFFFFF",
+    "--color-accent": "#C98A3F",
+    "--color-border": "#E7D6B0",
+    "--font-heading": SERIF,
+    "--font-body": SANS,
+    "--radius-sm": "6px",
+    "--radius-md": "12px",
+    "--radius-lg": "18px",
+    "--shadow-card": "0 4px 14px rgba(58,42,22,0.12)",
+    "--shadow-elevated": "0 12px 30px rgba(58,42,22,0.18)",
+  },
+  {
+    // Mint Bakery
+    "--color-bg": "#FFFFFF",
+    "--color-surface": "#EAF7F1",
+    "--color-text": "#122822",
+    "--color-text-muted": "#5B7A70",
+    "--color-primary": "#2FA187",
+    "--color-primary-contrast": "#FFFFFF",
+    "--color-accent": "#7ED6BE",
+    "--color-border": "#DCF0E7",
+    "--font-heading": ROUNDED,
+    "--font-body": SANS,
+    "--radius-sm": "8px",
+    "--radius-md": "16px",
+    "--radius-lg": "24px",
+    "--shadow-card": "0 4px 14px rgba(18,40,34,0.08)",
+    "--shadow-elevated": "0 12px 30px rgba(18,40,34,0.14)",
+  },
+  {
+    // Chocolate Espresso
+    "--color-bg": "#1E1512",
+    "--color-surface": "#2A1E19",
+    "--color-text": "#F2E7DE",
+    "--color-text-muted": "#B39C8E",
+    "--color-primary": "#C48A5A",
+    "--color-primary-contrast": "#1E1512",
+    "--color-accent": "#C48A5A",
+    "--color-border": "#3B2C24",
+    "--font-heading": SERIF,
+    "--font-body": SANS,
+    "--radius-sm": "6px",
+    "--radius-md": "12px",
+    "--radius-lg": "18px",
+    "--shadow-card": "0 4px 18px rgba(0,0,0,0.4)",
+    "--shadow-elevated": "0 14px 34px rgba(0,0,0,0.5)",
+  },
+  {
+    // Sunny Croissant
+    "--color-bg": "#FFFCF2",
+    "--color-surface": "#FFF1CC",
+    "--color-text": "#3A2E10",
+    "--color-text-muted": "#8A7A47",
+    "--color-primary": "#E3A62F",
+    "--color-primary-contrast": "#FFFFFF",
+    "--color-accent": "#E3A62F",
+    "--color-border": "#F1E2AE",
+    "--font-heading": ROUNDED,
+    "--font-body": SANS,
+    "--radius-sm": "10px",
+    "--radius-md": "18px",
+    "--radius-lg": "26px",
+    "--shadow-card": "0 6px 18px rgba(227,166,47,0.16)",
+    "--shadow-elevated": "0 14px 34px rgba(227,166,47,0.22)",
+  },
+];

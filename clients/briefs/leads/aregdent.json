@@ -1,0 +1,30 @@
+{
+  "business_type": "dental-clinic",
+  "name": "Арегдент",
+  "description_raw": "Безболезненная стоматология на современном немецком оборудовании. Приём детей и взрослых.",
+  "address": "ул. Адмирала Лазарева, 38, Москва (Южное Бутово)",
+  "phone": "+7 915 083-89-99",
+  "working_hours": {},
+  "social_links": {
+    "telegram": "https://t.me/aregdentt",
+    "whatsapp": "https://wa.me/79150838999"
+  },
+  "photos": [
+    "https://picsum.photos/seed/aregdent1/1200/900",
+    "https://picsum.photos/seed/aregdent2/1200/900"
+  ],
+  "menu_or_services": [
+    { "name": "Консультация врача", "category": "Диагностика" },
+    { "name": "Лечение кариеса", "category": "Лечение" },
+    { "name": "Хирургическое лечение", "category": "Хирургия" },
+    { "name": "Имплантация", "category": "Хирургия" },
+    { "name": "Протезирование", "category": "Ортопедия" }
+  ],
+  "team": [
+    {
+      "name": "Маргарян Зограб Самвелович",
+      "role": "Главный врач, стоматолог-хирург, имплантолог, ортопед. Стаж 21 год, более 10 000 операций.",
+      "photo": "https://picsum.photos/seed/aregdent-doc/600/600"
+    }
+  ]
+}

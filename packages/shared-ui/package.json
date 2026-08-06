@@ -1,0 +1,13 @@
+{
+  "name": "@sitegen/shared-ui",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    "./*": "./src/*"
+  },
+  "peerDependencies": {
+    "astro": "^4.0.0",
+    "preact": "^10.0.0"
+  }
+}

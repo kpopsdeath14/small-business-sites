@@ -1,0 +1,16 @@
+{
+  "name": "@sitegen/cli-new-site",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "dependencies": {
+    "@sitegen/content-gen": "*",
+    "@sitegen/variance-engine": "*",
+    "@sitegen/template-restaurant": "*",
+    "@sitegen/template-autoschool": "*",
+    "@sitegen/template-barbershop": "*",
+    "@sitegen/template-dental-clinic": "*",
+    "@sitegen/template-bakery": "*",
+    "@sitegen/template-beauty-salon": "*"
+  }
+}

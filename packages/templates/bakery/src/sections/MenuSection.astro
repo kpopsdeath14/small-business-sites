@@ -1,0 +1,15 @@
+---
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+import MenuList from "./Menu/MenuList.astro";
+import MenuGrid from "./Menu/MenuGrid.astro";
+
+interface Props {
+  variant: number;
+  data: SiteData;
+}
+const { variant, data } = Astro.props;
+const variants = [MenuList, MenuGrid];
+const Variant = variants[variant] ?? variants[0];
+---
+
+<Variant data={data} />

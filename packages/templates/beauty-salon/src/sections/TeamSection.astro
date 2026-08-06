@@ -1,0 +1,38 @@
+---
+import Container from "@sitegen/shared-ui/components/Container.astro";
+import Section from "@sitegen/shared-ui/components/Section.astro";
+import { initials } from "@sitegen/shared-ui/utils/initials.ts";
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+
+interface Props {
+  variant: number;
+  data: SiteData;
+}
+const { data } = Astro.props;
+---
+
+<Section id="team" surface="surface">
+  <Container>
+    <h2 class="font-[var(--font-heading)] text-3xl font-bold text-[var(--color-text)] text-center mb-12">Наши мастера</h2>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-10">
+      {data.team.map((member) => (
+        <div class="text-center">
+          {member.photo ? (
+            <img
+              src={member.photo}
+              alt={member.name}
+              class="mx-auto h-40 w-40 rounded-full object-cover shadow-[var(--shadow-elevated)] ring-4 ring-[var(--color-bg)]"
+            />
+          ) : (
+            <div class="mx-auto flex h-40 w-40 items-center justify-center rounded-full bg-[var(--color-primary)]/15 text-3xl font-bold text-[var(--color-primary)] shadow-[var(--shadow-elevated)] ring-4 ring-[var(--color-bg)]">
+              {initials(member.name)}
+            </div>
+          )}
+          <p class="mt-5 font-[var(--font-heading)] text-lg font-semibold text-[var(--color-text)]">{member.name}</p>
+          {member.role && <p class="text-sm text-[var(--color-primary)]">{member.role}</p>}
+          {member.bio && <p class="mt-2 text-sm text-[var(--color-text-muted)]">{member.bio}</p>}
+        </div>
+      ))}
+    </div>
+  </Container>
+</Section>

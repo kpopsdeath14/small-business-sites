@@ -1,0 +1,71 @@
+---
+interface Props {
+  id?: string;
+  class?: string;
+  surface?: "base" | "surface";
+  spacing?: "md" | "lg";
+}
+const { id, class: className = "", surface = "base", spacing = "lg" } = Astro.props;
+
+const surfaceClass = surface === "surface" ? "bg-[var(--color-surface)]" : "bg-[var(--color-bg)]";
+const spacingClass = spacing === "md" ? "py-12 sm:py-16" : "py-16 sm:py-24";
+---
+
+<section id={id} data-reveal class:list={["relative overflow-hidden", surfaceClass, spacingClass, className]}>
+  <div class="pointer-events-none absolute inset-0 -z-10 opacity-[0.15]" aria-hidden="true">
+    <div class="absolute -top-24 -left-16 h-72 w-72 rounded-full bg-[var(--color-primary)] blur-3xl"></div>
+    <div class="absolute -bottom-24 -right-16 h-72 w-72 rounded-full bg-[var(--color-accent)] blur-3xl"></div>
+  </div>
+  <slot />
+</section>
+
+<style>
+  /*
+    Content must be visible with zero JS (SEO crawlers, JS errors elsewhere on the page, slow
+    script loading). The hidden starting state only applies once JS has actually initialized and
+    opted in via the `reveal-ready` class on <html> — so a script failure fails open (visible),
+    never closed (permanently invisible).
+  */
+  .reveal-ready [data-reveal] {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal-ready [data-reveal].is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-ready [data-reveal] {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  if ("IntersectionObserver" in window) {
+    document.documentElement.classList.add("reveal-ready");
+
+    const revealObserver = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            revealObserver.unobserve(entry.target);
+          }
+        }
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -60px 0px" }
+    );
+    document.querySelectorAll("[data-reveal]").forEach((el) => revealObserver.observe(el));
+
+    // Safety net: if an element somehow never intersects (e.g. shorter than the viewport and
+    // already in view before the observer attaches on a very fast load), force it visible after
+    // a short grace period rather than leaving it hidden indefinitely.
+    setTimeout(() => {
+      document.querySelectorAll("[data-reveal]:not(.is-visible)").forEach((el) => el.classList.add("is-visible"));
+    }, 1500);
+  }
+</script>

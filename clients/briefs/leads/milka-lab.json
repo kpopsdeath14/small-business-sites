@@ -1,0 +1,30 @@
+{
+  "business_type": "beauty-salon",
+  "name": "Milka lab",
+  "description_raw": "Сеть салонов красоты в Москве с уютной дружеской атмосферой и профессиональной командой мастеров. Гостям предлагают кофе и чай. Два филиала: на улице Адмирала Руднева и на проспекте Куприна.",
+  "address": "ул. Адмирала Руднева, 2, Москва (второй филиал — просп. Куприна, 24 к1)",
+  "phone": "+7 925 545-52-00",
+  "working_hours": {
+    "пн-вс": "10:00–22:00"
+  },
+  "social_links": {
+    "vk": "https://vk.com/milkalab",
+    "whatsapp": "https://wa.me/79255455200"
+  },
+  "photos": [
+    "https://picsum.photos/seed/milkalab1/1200/900",
+    "https://picsum.photos/seed/milkalab2/1200/900",
+    "https://picsum.photos/seed/milkalab3/1200/900"
+  ],
+  "menu_or_services": [
+    { "name": "Стрижка женская + укладка", "price": "3000 ₽", "category": "Волосы" },
+    { "name": "Стрижка мужская", "price": "2200 ₽", "category": "Волосы" },
+    { "name": "Окрашивание", "price": "от 5600 ₽", "category": "Волосы" },
+    { "name": "Маникюр", "price": "от 3200 ₽", "category": "Ногти" },
+    { "name": "Педикюр", "price": "от 4200 ₽", "category": "Ногти" },
+    { "name": "Архитектура бровей", "price": "1600 ₽", "category": "Брови и ресницы" },
+    { "name": "Ламинирование ресниц", "price": "3500 ₽", "category": "Брови и ресницы" },
+    { "name": "Коктейльная укладка", "price": "от 2500 ₽", "category": "Волосы" }
+  ],
+  "booking_url": "https://n808544.yclients.com/"
+}

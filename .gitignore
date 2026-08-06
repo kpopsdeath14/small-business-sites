@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.astro/
+.env
+sites/*/
+!sites/.gitkeep
+*.log
+.DS_Store

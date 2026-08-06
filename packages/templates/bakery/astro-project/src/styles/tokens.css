@@ -1,0 +1,18 @@
+/* Default fallback token set (Pastel Pink). Overwritten per-client by the CLI scaffold step. */
+:root {
+  --color-bg: #fff8f8;
+  --color-surface: #fce9eb;
+  --color-text: #341b1d;
+  --color-text-muted: #8a6a6c;
+  --color-primary: #e0637a;
+  --color-primary-contrast: #ffffff;
+  --color-accent: #f2a6b4;
+  --color-border: #f5d9dd;
+  --font-heading: "Century Gothic", -apple-system, system-ui, sans-serif;
+  --font-body: -apple-system, "Segoe UI", system-ui, sans-serif;
+  --radius-sm: 10px;
+  --radius-md: 18px;
+  --radius-lg: 28px;
+  --shadow-card: 0 6px 18px rgba(224, 99, 122, 0.14);
+  --shadow-elevated: 0 14px 34px rgba(224, 99, 122, 0.2);
+}

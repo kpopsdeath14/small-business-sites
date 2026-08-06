@@ -1,0 +1,12 @@
+---
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+import FooterSimple from "./Footer/FooterSimple.astro";
+
+interface Props {
+  variant: number;
+  data: SiteData;
+}
+const { data } = Astro.props;
+---
+
+<FooterSimple data={data} />

@@ -1,0 +1,18 @@
+/* Default fallback token set (Rose Gold Elegance). Overwritten per-client by the CLI scaffold step. */
+:root {
+  --color-bg: #fdf6f4;
+  --color-surface: #f8e8e3;
+  --color-text: #3a2420;
+  --color-text-muted: #8a6b63;
+  --color-primary: #c77b65;
+  --color-primary-contrast: #ffffff;
+  --color-accent: #d9a679;
+  --color-border: #f0dad2;
+  --font-heading: Georgia, "Times New Roman", serif;
+  --font-body: -apple-system, "Segoe UI", system-ui, sans-serif;
+  --radius-sm: 10px;
+  --radius-md: 18px;
+  --radius-lg: 28px;
+  --shadow-card: 0 6px 18px rgba(199, 123, 101, 0.14);
+  --shadow-elevated: 0 14px 34px rgba(199, 123, 101, 0.2);
+}

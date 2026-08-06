@@ -1,0 +1,33 @@
+---
+import Container from "@sitegen/shared-ui/components/Container.astro";
+import Section from "@sitegen/shared-ui/components/Section.astro";
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+
+interface Props {
+  variant: number;
+  data: SiteData;
+}
+const { data } = Astro.props;
+---
+
+<Section id="process">
+  <Container narrow>
+    <h2 class="font-[var(--font-heading)] text-3xl font-bold text-[var(--color-text)] text-center mb-12">Как мы работаем</h2>
+    <div class="space-y-2">
+      {data.processSteps.map((step, i) => (
+        <div class="flex gap-5">
+          <div class="flex flex-col items-center">
+            <div class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-[var(--color-primary)] font-bold text-[var(--color-primary-contrast)] shadow-[var(--shadow-card)]">
+              {i + 1}
+            </div>
+            {i < data.processSteps.length - 1 && <div class="mt-2 w-0.5 flex-1 bg-[var(--color-primary)]/25" />}
+          </div>
+          <div class="pb-8">
+            <p class="font-[var(--font-heading)] text-lg font-semibold text-[var(--color-text)]">{step.title}</p>
+            {step.description && <p class="mt-1 text-[var(--color-text-muted)]">{step.description}</p>}
+          </div>
+        </div>
+      ))}
+    </div>
+  </Container>
+</Section>

@@ -1,0 +1,17 @@
+{
+  "business_type": "beauty-salon",
+  "name": "Студия эпиляции",
+  "description_raw": "Студия эпиляции. Подробное описание уточняется у клиента.",
+  "address": "",
+  "phone": "",
+  "working_hours": {},
+  "social_links": {},
+  "photos": [
+    "https://picsum.photos/seed/studepil1/1200/900",
+    "https://picsum.photos/seed/studepil2/1200/900"
+  ],
+  "menu_or_services": [
+    { "name": "Восковая эпиляция", "category": "Эпиляция" },
+    { "name": "Шугаринг", "category": "Эпиляция" }
+  ]
+}

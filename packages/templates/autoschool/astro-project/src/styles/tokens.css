@@ -1,0 +1,18 @@
+/* Default fallback token set (Road Blue). Overwritten per-client by the CLI scaffold step. */
+:root {
+  --color-bg: #f5f8fc;
+  --color-surface: #e8eff9;
+  --color-text: #101826;
+  --color-text-muted: #54607a;
+  --color-primary: #1e5aa8;
+  --color-primary-contrast: #ffffff;
+  --color-accent: #f2a900;
+  --color-border: #d7e1f0;
+  --font-heading: -apple-system, "Segoe UI", system-ui, sans-serif;
+  --font-body: -apple-system, "Segoe UI", system-ui, sans-serif;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 14px;
+  --shadow-card: 0 4px 14px rgba(16, 24, 38, 0.1);
+  --shadow-elevated: 0 12px 30px rgba(16, 24, 38, 0.16);
+}

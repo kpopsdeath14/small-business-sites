@@ -1,0 +1,47 @@
+---
+import Container from "@sitegen/shared-ui/components/Container.astro";
+import Section from "@sitegen/shared-ui/components/Section.astro";
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+
+interface Props {
+  variant: number;
+  data: SiteData;
+}
+const { data } = Astro.props;
+
+// Literal lookup so Tailwind's static scanner can see every possible class (dynamic template
+// strings like `md:grid-cols-${n}` are invisible to it and silently produce no CSS).
+const GRID_COLS: Record<number, string> = {
+  1: "md:grid-cols-1",
+  2: "md:grid-cols-2",
+  3: "md:grid-cols-3",
+  4: "md:grid-cols-4",
+  5: "md:grid-cols-5",
+  6: "md:grid-cols-6",
+};
+const gridColsClass = GRID_COLS[data.processSteps.length] ?? "md:grid-cols-4";
+---
+
+<Section id="process">
+  <Container>
+    <h2 class="font-[var(--font-heading)] text-3xl font-bold text-[var(--color-text)] text-center mb-16">Как проходит обучение</h2>
+    <div class="relative">
+      <div
+        class="hidden md:block absolute top-6 left-0 right-0 h-0 border-t-2 border-dashed border-[var(--color-primary)]/30"
+        aria-hidden="true"
+      >
+      </div>
+      <div class:list={["grid gap-10 md:gap-6", gridColsClass]}>
+        {data.processSteps.map((step, i) => (
+          <div class="relative text-center">
+            <div class="relative z-10 mx-auto h-12 w-12 rounded-full bg-[var(--color-primary)] text-[var(--color-primary-contrast)] flex items-center justify-center font-bold text-lg shadow-[var(--shadow-card)]">
+              {i + 1}
+            </div>
+            <p class="mt-4 font-semibold text-[var(--color-text)]">{step.title}</p>
+            {step.description && <p class="mt-1 text-sm text-[var(--color-text-muted)]">{step.description}</p>}
+          </div>
+        ))}
+      </div>
+    </div>
+  </Container>
+</Section>

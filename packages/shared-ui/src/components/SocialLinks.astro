@@ -1,0 +1,31 @@
+---
+interface Props {
+  links: Record<string, string>;
+  class?: string;
+}
+const { links, class: className = "" } = Astro.props;
+
+const labels: Record<string, string> = {
+  instagram: "Instagram",
+  vk: "VK",
+  telegram: "Telegram",
+  whatsapp: "WhatsApp",
+  facebook: "Facebook",
+  youtube: "YouTube",
+};
+---
+
+<div class:list={["flex flex-wrap gap-3", className]}>
+  {Object.entries(links)
+    .filter(([, url]) => Boolean(url))
+    .map(([key, url]) => (
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors underline decoration-dotted"
+      >
+        {labels[key.toLowerCase()] ?? key}
+      </a>
+    ))}
+</div>

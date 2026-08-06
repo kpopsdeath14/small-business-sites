@@ -1,0 +1,57 @@
+{
+  "business_type": "barbershop",
+  "name": "Барбершоп Атаман",
+  "description_raw": "Мужской барбершоп в самом центре города. Классические и современные стрижки, королевское бритьё опасной бритвой, уход за бородой. Крафтовый кофе и виски гостям в подарок.",
+  "address": "г. Екатеринбург, ул. Ленина, д. 22",
+  "phone": "+7 343 200-11-33",
+  "working_hours": {
+    "пн-вс": "10:00–22:00"
+  },
+  "social_links": {
+    "instagram": "https://instagram.com/ataman.barbershop"
+  },
+  "photos": [
+    "https://picsum.photos/seed/ataman1/1200/900",
+    "https://picsum.photos/seed/ataman2/1200/900",
+    "https://picsum.photos/seed/ataman3/1200/900",
+    "https://picsum.photos/seed/ataman4/1200/900",
+    "https://picsum.photos/seed/ataman5/1200/900"
+  ],
+  "menu_or_services": [
+    { "name": "Стрижка машинкой", "price": "800 ₽", "category": "Стрижки" },
+    { "name": "Стрижка ножницами", "price": "1400 ₽", "category": "Стрижки" },
+    { "name": "Королевское бритьё", "description": "Опасной бритвой с горячим полотенцем", "price": "1200 ₽", "category": "Бритьё" },
+    { "name": "Оформление бороды", "price": "700 ₽", "category": "Борода" },
+    { "name": "Стрижка + борода", "price": "1900 ₽", "category": "Комплекс" }
+  ],
+  "reviews": [
+    { "author": "Виктор", "rating": 5, "text": "Лучший барбершоп в городе, всегда стригусь только здесь." },
+    { "author": "Артём", "rating": 5, "text": "Отличная атмосфера и мастера своего дела." },
+    { "author": "Николай", "rating": 4, "text": "Хорошо, но иногда нужно записываться заранее." }
+  ],
+  "reviews_url": "https://www.google.com/maps/search/?api=1&query=Барбершоп+Атаман+Екатеринбург",
+  "map_coords": { "lat": 56.838011, "lng": 60.597465 },
+  "team": [
+    {
+      "name": "Максим Орлов",
+      "role": "Топ-барбер, стаж 11 лет",
+      "photo": "https://picsum.photos/seed/ataman-team1/700/900"
+    },
+    {
+      "name": "Артур Гринько",
+      "role": "Барбер, специалист по бритью",
+      "photo": "https://picsum.photos/seed/ataman-team2/700/900"
+    },
+    {
+      "name": "Роман Ким",
+      "role": "Барбер, оформление бороды",
+      "photo": "https://picsum.photos/seed/ataman-team3/700/900"
+    }
+  ],
+  "stats": [
+    { "value": "8 лет", "label": "на рынке" },
+    { "value": "6000+", "label": "довольных клиентов" },
+    { "value": "4.9", "label": "рейтинг" },
+    { "value": "5", "label": "мастеров в команде" }
+  ]
+}
