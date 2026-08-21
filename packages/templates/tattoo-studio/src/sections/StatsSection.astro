@@ -1,0 +1,23 @@
+---
+import Container from "@sitegen/shared-ui/components/Container.astro";
+import Section from "@sitegen/shared-ui/components/Section.astro";
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+
+interface Props {
+  data: SiteData;
+}
+const { data } = Astro.props;
+---
+
+<Section id="stats" spacing="md" class="border-b border-[var(--color-border)]">
+  <Container>
+    <div class="flex flex-wrap justify-center sm:justify-between gap-x-10 gap-y-6">
+      {data.stats.map((stat) => (
+        <div class="text-center sm:text-left">
+          <p class="font-[var(--font-heading)] text-4xl sm:text-5xl text-[var(--color-text)]">{stat.value}</p>
+          <p class="mt-1 text-[11px] uppercase tracking-[0.3em] text-[var(--color-text-muted)]">{stat.label}</p>
+        </div>
+      ))}
+    </div>
+  </Container>
+</Section>

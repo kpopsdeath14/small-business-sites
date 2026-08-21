@@ -1,0 +1,64 @@
+---
+import SocialLinks from "@sitegen/shared-ui/components/SocialLinks.astro";
+
+/**
+ * L'ATELIER footer — the page's closing anchor. Always the same charcoal room
+ * (independent of palette) with an oversized serif wordmark, so every site in the
+ * portfolio ends on the same deep, expensive note.
+ */
+interface Props {
+  siteName: string;
+  address?: string;
+  phone?: string;
+  hoursSummary?: string;
+  socialLinks?: Record<string, string>;
+}
+const { siteName, address, phone, hoursSummary, socialLinks } = Astro.props;
+const year = new Date().getFullYear();
+---
+
+<footer class="salon-noir relative overflow-hidden">
+  <div class="mx-auto max-w-7xl px-5 sm:px-8 pt-20 pb-10">
+    <div class="grid gap-12 md:grid-cols-[1.4fr_1fr_1fr] md:gap-8">
+      <!-- Wordmark block -->
+      <div>
+        <p class="font-[var(--font-heading)] text-3xl sm:text-4xl font-semibold text-[#F4EEE2] leading-tight">{siteName}</p>
+        <div class="mt-5 h-px w-14 bg-[#C8A96E]"></div>
+        {address && <p class="mt-5 text-sm leading-relaxed text-[#A79C89] max-w-xs">{address}</p>}
+      </div>
+
+      <!-- Contacts -->
+      <div>
+        <p class="eyebrow !text-[#C8A96E]">Контакты</p>
+        <div class="mt-5 space-y-3 text-sm text-[#A79C89]">
+          {
+            phone && (
+              <a href={`tel:${phone.replace(/[^+\d]/g, "")}`} class="block text-base font-semibold text-[#F4EEE2] hover:text-[#C8A96E] transition-colors">
+                {phone}
+              </a>
+            )
+          }
+          {hoursSummary && <p>{hoursSummary}</p>}
+        </div>
+      </div>
+
+      <!-- Socials -->
+      {
+        socialLinks && Object.keys(socialLinks).length > 0 && (
+          <div>
+            <p class="eyebrow !text-[#C8A96E]">Мы в соцсетях</p>
+            <SocialLinks links={socialLinks} class="mt-5 [&_a]:text-[#A79C89] [&_a:hover]:text-[#C8A96E] [&_a]:no-underline" />
+          </div>
+        )
+      }
+    </div>
+
+    <hr class="hairline mt-16 !bg-white/10" />
+
+    <div class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs tracking-wide text-[#A79C89]/70">
+      <p>&copy; {year} {siteName}</p>
+      <p class="uppercase tracking-[0.25em] text-[10px]">Салон красоты</p>
+    </div>
+  </div>
+</footer>
+

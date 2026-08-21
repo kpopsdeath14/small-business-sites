@@ -6,3 +6,13 @@ sites/*/
 !sites/.gitkeep
 *.log
 .DS_Store
+
+# Local Netlify folder
+.netlify
+
+# The demo salon site is deployed to GitHub Pages by CI (see .github/workflows),
+# so its SOURCE is tracked despite the blanket sites/*/ ignore above.
+!sites/studio-milka/
+sites/studio-milka/node_modules/
+sites/studio-milka/dist/
+sites/studio-milka/.astro/

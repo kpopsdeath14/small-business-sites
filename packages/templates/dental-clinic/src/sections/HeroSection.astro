@@ -1,16 +1,40 @@
 ---
+import Container from "@sitegen/shared-ui/components/Container.astro";
+import Button from "@sitegen/shared-ui/components/Button.astro";
+import SkeletonImg from "@sitegen/shared-ui/components/SkeletonImg.astro";
 import type { SiteData } from "@sitegen/shared-ui/types.ts";
-import HeroFull from "./Hero/HeroFull.astro";
-import HeroSplit from "./Hero/HeroSplit.astro";
-import HeroMinimal from "./Hero/HeroMinimal.astro";
 
 interface Props {
-  variant: number;
   data: SiteData;
 }
-const { variant, data } = Astro.props;
-const variants = [HeroFull, HeroSplit, HeroMinimal];
-const Variant = variants[variant] ?? variants[0];
+const { data } = Astro.props;
+const heroPhoto = data.heroPhoto ?? data.gallery[0]?.src;
 ---
 
-<Variant data={data} />
+<section id="hero" class="relative bg-[var(--color-bg)] overflow-hidden">
+  <div class="pointer-events-none absolute -top-32 -right-32 h-96 w-96 rounded-full bg-[var(--color-surface)]" aria-hidden="true"></div>
+  <Container class="relative grid lg:grid-cols-2 gap-12 items-center py-20 sm:py-28">
+    <div>
+      <p class="inline-block text-xs uppercase tracking-[0.3em] text-[var(--color-primary)] font-semibold bg-[var(--color-surface)] px-4 py-2 rounded-full mb-6">
+        Стоматологическая клиника
+      </p>
+      <h1 class="font-[var(--font-heading)] text-[clamp(2.4rem,5vw,4rem)] font-bold leading-[1.05] text-[var(--color-text)]">
+        {data.name}
+      </h1>
+      <p class="mt-6 text-lg text-[var(--color-text-muted)] leading-relaxed max-w-lg">
+        {data.hero.subheading}
+      </p>
+      <div class="mt-9 flex flex-wrap items-center gap-4">
+        <Button href="#contact" size="lg">{data.hero.ctaLabel}</Button>
+        {data.phone && (
+          <a href={`tel:${data.phone.replace(/[^+\d]/g, "")}`} class="text-[var(--color-primary)] font-semibold hover:underline">
+            {data.phone}
+          </a>
+        )}
+      </div>
+    </div>
+    <div class="relative">
+      {heroPhoto && <SkeletonImg src={heroPhoto} alt="" class="aspect-[4/5] w-full shadow-[var(--shadow-elevated)]" />}
+    </div>
+  </Container>
+</section>

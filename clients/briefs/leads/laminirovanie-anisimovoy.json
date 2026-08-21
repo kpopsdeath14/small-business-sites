@@ -9,35 +9,75 @@
     "telegram": "https://t.me/",
     "vk": "https://vk.com/"
   },
+  "hero_photo": "https://images.pexels.com/photos/8554941/pexels-photo-8554941.jpeg",
   "photos": [
-    "https://picsum.photos/seed/anisimova1/1200/900",
-    "https://picsum.photos/seed/anisimova2/1200/900",
-    "https://picsum.photos/seed/anisimova3/1200/900"
+    "https://avatars.mds.yandex.net/get-altay/18127078/2a0000019ef8fe39ef1c9f2c62c892a8c711/orig",
+    "https://avatars.mds.yandex.net/get-altay/19803395/2a0000019c667b53d228962dc84719672b0f/orig",
+    "https://avatars.mds.yandex.net/get-altay/18148618/2a0000019c6634186b45262f9ff324068641/orig",
+    "https://avatars.mds.yandex.net/get-altay/17712904/2a0000019c6625117f55fa90fe2edd412cb0/orig",
+    "https://avatars.mds.yandex.net/get-altay/19720204/2a0000019c62b531ce84e82dff83dc8ec489/orig",
+    "https://avatars.mds.yandex.net/get-altay/17788144/2a0000019c61f7ca0d3c7278b088835a9bed/orig",
+    "https://avatars.mds.yandex.net/get-altay/16457969/2a0000019c663416ae54385f7764daed623c/orig",
+    "https://avatars.mds.yandex.net/get-altay/18147375/2a0000019c62d1af4165718f857789b3ab48/orig",
+    "https://avatars.mds.yandex.net/get-altay/18151954/2a0000019c62c4dd9718ce335803842972d2/orig",
+    "https://avatars.mds.yandex.net/get-altay/17754824/2a0000019c67011d6b34ca770980680184c4/orig"
   ],
   "menu_or_services": [
-    { "name": "Коррекция бровей (воск/пинцет)", "price": "1800 ₽", "category": "Брови" },
-    { "name": "Коррекция и окрашивание бровей", "price": "2500 ₽", "category": "Брови" },
-    { "name": "Ламинирование бровей", "price": "3200 ₽", "category": "Брови" },
-    { "name": "Удаление волос из носа", "price": "600 ₽", "category": "Депиляция воском" },
-    { "name": "Удаление пуха над верхней губой", "price": "500 ₽", "category": "Депиляция воском" },
-    { "name": "Ламинирование верхних и нижних ресниц", "price": "4000 ₽", "category": "Ламинирование ресниц" },
-    { "name": "Ламинирование верхних ресниц", "price": "3000 ₽", "category": "Ламинирование ресниц" },
-    { "name": "Ламинирование бровей + ламинирование верхних ресниц", "price": "6000 ₽", "category": "Комплексы" },
-    { "name": "Ламинирование верхних ресниц + коррекция бровей", "price": "4600 ₽", "category": "Комплексы" },
-    { "name": "Ламинирование верхних ресниц + коррекция и окрашивание бровей", "price": "5200 ₽", "category": "Комплексы" }
+    {
+      "name": "Коррекция и окрашивание бровей",
+      "price": "2500 ₽",
+      "category": "Брови",
+      "photo": "https://avatars.mds.yandex.net/get-yandex-bookings/20306185/2a0000019ed473c3950d2dd323eedb1bb748/orig"
+    },
+    {
+      "name": "Ламинирование бровей",
+      "price": "3200 ₽",
+      "category": "Брови",
+      "photo": "https://avatars.mds.yandex.net/get-yandex-bookings/6201414/2a0000019c6d69208447544d409a9c0494a1/orig"
+    },
+    {
+      "name": "Ламинирование верхних и нижних ресниц",
+      "price": "4000 ₽",
+      "category": "Ламинирование ресниц",
+      "photo": "https://avatars.mds.yandex.net/get-altay/18147375/2a0000019c62d1af4165718f857789b3ab48/orig"
+    },
+    {
+      "name": "Ламинирование верхних ресниц",
+      "price": "3000 ₽",
+      "category": "Ламинирование ресниц",
+      "photo": "https://avatars.mds.yandex.net/get-altay/18151954/2a0000019c62c4dd9718ce335803842972d2/orig"
+    },
+    {
+      "name": "Ламинирование бровей + ламинирование верхних ресниц",
+      "price": "6000 ₽",
+      "category": "Комплексы",
+      "photo": "https://avatars.mds.yandex.net/get-altay/18127078/2a0000019ef8fe39ef1c9f2c62c892a8c711/orig"
+    },
+    {
+      "name": "Ламинирование верхних ресниц + коррекция бровей",
+      "price": "4600 ₽",
+      "category": "Комплексы",
+      "photo": "https://avatars.mds.yandex.net/get-altay/19720204/2a0000019c62b531ce84e82dff83dc8ec489/orig"
+    },
+    {
+      "name": "Ламинирование верхних ресниц + коррекция и окрашивание бровей",
+      "price": "5200 ₽",
+      "category": "Комплексы",
+      "photo": "https://avatars.mds.yandex.net/get-altay/17754824/2a0000019c67011d6b34ca770980680184c4/orig"
+    }
   ],
   "highlights": [
     {
-      "name": "Ламинирование ресниц",
-      "description": "Яркие ресницы за 60 минут, эффект держится до 2 месяцев.",
-      "price": "3000 ₽",
-      "photo": "https://picsum.photos/seed/anisimova-hl1/900/1125"
+      "name": "Ламинирование бровей",
+      "description": "Брови держат форму до 4 недель, без эффекта «нарисованных».",
+      "price": "3200 ₽",
+      "photo": "https://avatars.mds.yandex.net/get-yandex-bookings/6201414/2a0000019c6d69208447544d409a9c0494a1/orig"
     },
     {
-      "name": "Комплекс: ресницы + брови",
-      "description": "Ламинирование верхних ресниц и коррекция с окрашиванием бровей за один визит.",
-      "price": "5200 ₽",
-      "photo": "https://picsum.photos/seed/anisimova-hl2/900/1125"
+      "name": "Коррекция и окрашивание бровей",
+      "description": "Точная форма и стойкий цвет за одну процедуру.",
+      "price": "2500 ₽",
+      "photo": "https://avatars.mds.yandex.net/get-yandex-bookings/20306185/2a0000019ed473c3950d2dd323eedb1bb748/orig"
     }
   ],
   "team": [
@@ -45,13 +85,23 @@
       "name": "Наталия Ансимова",
       "role": "Мастер ламинирования ресниц и бровей",
       "bio": "Более 2 лет в бьюти-индустрии.",
-      "photo": "https://picsum.photos/seed/anisimova-team/600/600"
+      "photo": "/ansimova-lash-studio/photos/team-0.webp"
     }
   ],
   "stats": [
-    { "value": "5.0", "label": "рейтинг" },
-    { "value": "19", "label": "оценок" },
-    { "value": "2+", "label": "года в бьюти" }
+    {
+      "value": "4.9",
+      "label": "рейтинг"
+    },
+    {
+      "value": "25",
+      "label": "оценок"
+    },
+    {
+      "value": "2+",
+      "label": "года в бьюти"
+    }
   ],
+  "reviews_url": "https://yandex.com/maps/org/39796962127/reviews/",
   "booking_url": "https://dikidi.net/1947108?p=0.pi"
 }

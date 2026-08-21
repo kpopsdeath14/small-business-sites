@@ -1,40 +1,39 @@
 ---
 import Container from "@sitegen/shared-ui/components/Container.astro";
-import Section from "@sitegen/shared-ui/components/Section.astro";
+import SkeletonImg from "@sitegen/shared-ui/components/SkeletonImg.astro";
+import BrassRule from "../components/BrassRule.astro";
 import { initials } from "@sitegen/shared-ui/utils/initials.ts";
 import type { SiteData } from "@sitegen/shared-ui/types.ts";
 
 interface Props {
-  variant: number;
   data: SiteData;
 }
 const { data } = Astro.props;
 ---
 
-<Section id="team">
+<section id="team" data-reveal class="relative bg-[var(--color-bg)] py-16 sm:py-24">
   <Container>
-    <h2 class="font-[var(--font-heading)] text-3xl font-bold text-[var(--color-text)] text-center mb-10">Наши мастера</h2>
-    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="text-center mb-12">
+      <BrassRule class="mx-auto mb-5 max-w-[100px]" />
+      <h2 class="font-[var(--font-heading)] uppercase text-[clamp(2rem,5vw,3.5rem)] leading-none text-[var(--color-text)]">
+        Мастера
+      </h2>
+    </div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-10">
       {data.team.map((member) => (
-        <div class="group relative overflow-hidden rounded-[var(--radius-lg)] aspect-[3/4] shadow-[var(--shadow-card)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-elevated)]">
+        <div class="text-center">
           {member.photo ? (
-            <img
-              src={member.photo}
-              alt={member.name}
-              class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-            />
+            <SkeletonImg src={member.photo} alt={member.name} class="mx-auto h-40 w-40 rounded-full ring-2 ring-[var(--color-border)]" />
           ) : (
-            <div class="flex h-full w-full items-center justify-center bg-[var(--color-surface)] text-4xl font-bold text-[var(--color-primary)]">
+            <div class="mx-auto flex h-40 w-40 items-center justify-center rounded-full bg-[var(--color-surface)] text-3xl font-[var(--font-heading)] text-[var(--color-primary)] ring-2 ring-[var(--color-border)]">
               {initials(member.name)}
             </div>
           )}
-          <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-transparent"></div>
-          <div class="absolute inset-x-0 bottom-0 p-4">
-            <p class="font-[var(--font-heading)] text-lg font-bold text-white">{member.name}</p>
-            {member.role && <p class="text-sm text-white/80">{member.role}</p>}
-          </div>
+          <p class="mt-5 font-[var(--font-heading)] uppercase text-lg text-[var(--color-text)]">{member.name}</p>
+          {member.role && <p class="text-sm text-[var(--color-primary)]">{member.role}</p>}
+          {member.bio && <p class="mt-2 text-sm text-[var(--color-text-muted)]">{member.bio}</p>}
         </div>
       ))}
     </div>
   </Container>
-</Section>
+</section>

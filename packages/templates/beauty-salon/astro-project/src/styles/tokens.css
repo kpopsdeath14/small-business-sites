@@ -1,18 +1,18 @@
-/* Default fallback token set (Rose Gold Elegance). Overwritten per-client by the CLI scaffold step. */
+/* Default fallback token set (Ivory Atelier). Overwritten per-client by the CLI scaffold step. */
 :root {
-  --color-bg: #fdf6f4;
-  --color-surface: #f8e8e3;
-  --color-text: #3a2420;
-  --color-text-muted: #8a6b63;
-  --color-primary: #c77b65;
+  --color-bg: #faf8f3;
+  --color-surface: #f1ebe0;
+  --color-text: #211b14;
+  --color-text-muted: #847a6a;
+  --color-primary: #a8895c;
   --color-primary-contrast: #ffffff;
-  --color-accent: #d9a679;
-  --color-border: #f0dad2;
-  --font-heading: Georgia, "Times New Roman", serif;
-  --font-body: -apple-system, "Segoe UI", system-ui, sans-serif;
-  --radius-sm: 10px;
-  --radius-md: 18px;
-  --radius-lg: 28px;
-  --shadow-card: 0 6px 18px rgba(199, 123, 101, 0.14);
-  --shadow-elevated: 0 14px 34px rgba(199, 123, 101, 0.2);
+  --color-accent: #c7ae83;
+  --color-border: #e5dece;
+  --font-heading: "Playfair Display", Georgia, "Times New Roman", serif;
+  --font-body: "Manrope", -apple-system, "Segoe UI", system-ui, sans-serif;
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 10px;
+  --shadow-card: 0 1px 2px rgba(33, 27, 20, 0.04), 0 14px 40px rgba(33, 27, 20, 0.07);
+  --shadow-elevated: 0 30px 70px rgba(33, 27, 20, 0.16);
 }

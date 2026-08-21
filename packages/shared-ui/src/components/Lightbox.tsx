@@ -19,6 +19,20 @@ export default function Lightbox({
   imgClassName = "h-full w-full object-cover",
 }: Props) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [loaded, setLoaded] = useState<Set<number>>(new Set());
+  const markLoaded = useCallback((i: number) => {
+    setLoaded((prev) => (prev.has(i) ? prev : new Set(prev).add(i)));
+  }, []);
+  // This island only hydrates once it scrolls into view (client:visible), but the <img> starts
+  // loading from the very first paint — on a fast connection it can finish before hydration runs,
+  // so the load event fires with no listener attached yet and the shimmer never clears. Checking
+  // `.complete` the moment the DOM node mounts catches that case; onLoad still covers the rest.
+  const checkAlreadyLoaded = useCallback(
+    (i: number) => (el: HTMLImageElement | null) => {
+      if (el?.complete) markLoaded(i);
+    },
+    [markLoaded]
+  );
 
   const close = useCallback(() => setOpenIndex(null), []);
   const step = useCallback(
@@ -50,12 +64,14 @@ export default function Lightbox({
             type="button"
             key={photo.src}
             onClick={() => setOpenIndex(i)}
-            class={`${itemClassName} overflow-hidden rounded-[var(--radius-md)] ring-1 ring-white/10 transition-shadow duration-500 hover:ring-white/30 hover:shadow-[var(--shadow-elevated)] group block w-full`}
+            class={`${itemClassName} skel-wrap ${loaded.has(i) ? "is-loaded" : ""} rounded-[var(--radius-md)] ring-1 ring-white/10 transition-shadow duration-500 hover:ring-white/30 hover:shadow-[var(--shadow-elevated)] group block w-full`}
           >
             <img
+              ref={checkAlreadyLoaded(i)}
               src={photo.src}
               alt={photo.alt}
               loading="lazy"
+              onLoad={() => markLoaded(i)}
               class={`${imgClassName} transition-transform duration-500 ease-out group-hover:scale-110`}
             />
           </button>

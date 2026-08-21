@@ -1,22 +1,64 @@
 ---
 import Container from "@sitegen/shared-ui/components/Container.astro";
-import Button from "@sitegen/shared-ui/components/Button.astro";
+import SalonButton from "../../components/SalonButton.astro";
 import type { SiteData } from "@sitegen/shared-ui/types.ts";
 
 interface Props {
   data: SiteData;
 }
 const { data } = Astro.props;
+// Typographic hero: needs no photos at all, so it always renders — even for the
+// barest brief. The charcoal room + champagne hairlines carry the luxury.
+const ratingStat = data.stats.find((s) => /рейтинг|rating/i.test(s.label));
+const yearsStat = data.stats.find((s) => /год|лет|year/i.test(s.label));
 ---
 
-<section id="hero" class="bg-[var(--color-surface)]">
-  <Container narrow class="py-28 text-center">
-    <h1 class="font-[var(--font-heading)] text-5xl sm:text-7xl font-bold text-[var(--color-text)] tracking-tight">
+<section id="hero" class="salon-noir relative flex min-h-[100svh] items-center overflow-hidden">
+  <!-- Faint oversized monogram behind the type: depth without a photo. -->
+  <div
+    class="pointer-events-none absolute -right-10 top-1/2 -translate-y-1/2 select-none font-[var(--font-heading)] italic text-[26rem] leading-none text-white/[0.035]"
+    aria-hidden="true"
+  >
+    {data.name.charAt(0)}
+  </div>
+
+  <Container class="relative z-10 py-28">
+    <p class="hero-enter eyebrow !text-[#C8A96E] mb-7" style="--enter-delay:0.1s">Салон красоты</p>
+    <h1
+      class="hero-enter font-[var(--font-heading)] font-medium leading-[1.04] text-[#F4EEE2] text-[clamp(2.75rem,8vw,6.5rem)] max-w-4xl"
+      style="--enter-delay:0.25s"
+    >
       {data.hero.heading}
     </h1>
-    <p class="mt-6 text-xl text-[var(--color-text-muted)]">{data.hero.subheading}</p>
-    <div class="mt-10">
-      <Button href="#contact" size="lg">{data.hero.ctaLabel}</Button>
+    <div class="hero-enter mt-9 h-px w-20 bg-[#C8A96E]" style="--enter-delay:0.45s" aria-hidden="true"></div>
+    <p class="hero-enter mt-8 text-base sm:text-lg text-[#A79C89] leading-relaxed max-w-xl font-light" style="--enter-delay:0.55s">
+      {data.hero.subheading}
+    </p>
+    <div class="hero-enter mt-11 flex flex-col sm:flex-row gap-4" style="--enter-delay:0.7s">
+      <SalonButton href="#booking" size="lg">{data.hero.ctaLabel}</SalonButton>
+      <SalonButton href="#services" variant="ghost-light" size="lg">Услуги и цены</SalonButton>
     </div>
   </Container>
+
+  <!-- Bottom strip: quiet proof points pinned to the floor of the hero. -->
+  {
+    (ratingStat || yearsStat) && (
+      <div class="absolute inset-x-0 bottom-0 border-t border-white/10">
+        <Container class="py-5 flex flex-wrap items-center justify-center gap-x-12 gap-y-3">
+          {ratingStat && (
+            <p class="hero-enter flex items-center gap-2.5 text-xs tracking-[0.22em] uppercase text-white/70" style="--enter-delay:0.95s">
+              <span class="text-[#E3D2AF] text-base leading-none">★</span>
+              {ratingStat.value} · {ratingStat.label}
+            </p>
+          )}
+          {yearsStat && (
+            <p class="hero-enter text-xs tracking-[0.22em] uppercase text-white/70" style="--enter-delay:1.05s">
+              {yearsStat.value} · {yearsStat.label}
+            </p>
+          )}
+        </Container>
+      </div>
+    )
+  }
 </section>
+

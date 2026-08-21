@@ -6,8 +6,12 @@ export interface SiteData {
   meta: { title: string; description: string };
   hero: { heading: string; subheading: string; ctaLabel: string };
   about: { heading: string; body: string };
-  items: { name: string; description?: string; price?: string | number; category?: string }[];
+  items: { name: string; description?: string; price?: string | number; category?: string; photo?: string }[];
+  /** Shown under the services heading when `items` is a known-partial pull from the source. */
+  servicesNote?: string;
   gallery: { src: string; alt: string }[];
+  /** Optional wide/landscape photo for the hero banner, kept separate from the real-work `gallery`. */
+  heroPhoto?: string;
   reviews: { author: string; rating: number; text: string }[];
   /** Link to the business's Google/Yandex Maps review page, so visitors leave reviews there instead of on the static site. */
   reviewsUrl?: string;

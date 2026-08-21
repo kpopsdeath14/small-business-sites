@@ -3,11 +3,16 @@
   "tokenSetIndex": 0,
   "sections": [
     { "id": "hero", "variant": 0 },
-    { "id": "about", "variant": 0 },
+    { "id": "stats", "variant": 0 },
+    { "id": "about", "variant": 2 },
+    { "id": "highlights", "variant": 0 },
     { "id": "services", "variant": 0 },
+    { "id": "team", "variant": 0 },
     { "id": "gallery", "variant": 0 },
     { "id": "reviews", "variant": 0 },
-    { "id": "contact", "variant": 0 },
+    { "id": "ticker", "variant": 0 },
+    { "id": "contact", "variant": 1 },
+    { "id": "booking", "variant": 0 },
     { "id": "footer", "variant": 0 }
   ]
 }

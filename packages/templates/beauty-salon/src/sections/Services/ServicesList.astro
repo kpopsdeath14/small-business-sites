@@ -1,7 +1,7 @@
 ---
 import Container from "@sitegen/shared-ui/components/Container.astro";
-import Section from "@sitegen/shared-ui/components/Section.astro";
-import Card from "@sitegen/shared-ui/components/Card.astro";
+import SalonSection from "../../components/SalonSection.astro";
+import SalonButton from "../../components/SalonButton.astro";
 import type { SiteData } from "@sitegen/shared-ui/types.ts";
 
 interface Props {
@@ -9,36 +9,57 @@ interface Props {
 }
 const { data } = Astro.props;
 
-function groupByCategory(items: SiteData["items"]) {
-  const map = new Map<string, SiteData["items"]>();
-  for (const item of items) {
-    const cat = item.category || "Услуги";
-    if (!map.has(cat)) map.set(cat, []);
-    map.get(cat)!.push(item);
+// Group services by category, preserving first-appearance order — renders as a
+// fine-dining-style price menu with dotted leaders. The single most scannable,
+// most conversion-friendly layout for a salon's service list.
+const categories: { name: string; items: typeof data.items }[] = [];
+for (const item of data.items) {
+  const key = item.category?.trim() || "Услуги";
+  let group = categories.find((c) => c.name === key);
+  if (!group) {
+    group = { name: key, items: [] };
+    categories.push(group);
   }
-  return Array.from(map.entries());
+  group.items.push(item);
 }
-const groups = groupByCategory(data.items);
 ---
 
-<Section id="services">
-  <Container narrow>
-    <h2 class="font-[var(--font-heading)] text-3xl font-bold text-[var(--color-text)] text-center mb-10">Услуги и цены</h2>
-    <Card hover={false} class="space-y-10">
-      {groups.map(([category, items]) => (
-        <div>
-          <h3 class="text-sm uppercase tracking-wide text-[var(--color-primary)] font-semibold mb-4">{category}</h3>
-          <ul class="space-y-3">
-            {items.map((item) => (
-              <li class="flex items-baseline gap-2">
-                <span class="text-[var(--color-text)]">{item.name}</span>
-                <span class="flex-1 border-b border-dotted border-[var(--color-border)] translate-y-[-2px]"></span>
-                {item.price && <span class="font-medium text-[var(--color-text)] whitespace-nowrap">{item.price}</span>}
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
-    </Card>
+<SalonSection id="services">
+  <Container>
+    <div class="text-center mb-14" data-reveal>
+      <p class="eyebrow mb-5">Прайс</p>
+      <h2 class="font-[var(--font-heading)] text-3xl sm:text-4xl font-medium text-[var(--color-text)]">Услуги и цены</h2>
+      {data.servicesNote && <p class="mt-4 text-sm text-[var(--color-text-muted)]">{data.servicesNote}</p>}
+    </div>
+
+    <!-- Two-column menu on wide screens; single column keeps long names readable on mobile. -->
+    <div class="grid lg:grid-cols-2 gap-x-16 gap-y-12 max-w-5xl mx-auto" data-reveal-stagger="90">
+      {
+        categories.map((group) => (
+          <div data-reveal>
+            <h3 class="flex items-baseline gap-4 font-[var(--font-heading)] text-xl font-medium text-[var(--color-text)] pb-3 border-b border-[var(--color-border)]">
+              {group.name}
+            </h3>
+            <ul class="mt-2 divide-y divide-[var(--color-border)]/60">
+              {group.items.map((item) => (
+                <li class="menu-row py-3.5">
+                  <span class="text-[15px] text-[var(--color-text)]">{item.name}</span>
+                  <span class="menu-dots" aria-hidden="true"></span>
+                  {item.price && (
+                    <span class="shrink-0 font-[var(--font-heading)] text-lg font-medium text-[var(--color-primary)] tabular-nums whitespace-nowrap">
+                      {item.price}
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+
+    <div class="text-center mt-14" data-reveal>
+      <SalonButton href="#booking" size="lg">Записаться</SalonButton>
+    </div>
   </Container>
-</Section>
+</SalonSection>

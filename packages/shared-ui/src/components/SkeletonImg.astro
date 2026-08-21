@@ -1,0 +1,26 @@
+---
+/** Wraps <img> with a shimmering placeholder shown until the image finishes loading.
+ *  `class` sizes/positions the wrapper (it replaces whatever layout classes the <img>
+ *  itself used to carry — absolute inset-0, aspect-ratio, rounded corners, etc.);
+ *  the inner <img> always fills the wrapper via object-fit. `style` passes through to
+ *  the wrapper (e.g. custom properties driving entrance-animation delays). */
+interface Props {
+  src: string;
+  alt: string;
+  class?: string;
+  style?: string;
+  fit?: "cover" | "contain";
+  loading?: "lazy" | "eager";
+}
+const { src, alt, class: className = "", style, fit = "cover", loading = "lazy" } = Astro.props;
+---
+
+<div class:list={["skel-wrap", className]} style={style}>
+  <img
+    src={src}
+    alt={alt}
+    loading={loading}
+    class={`w-full h-full object-${fit}`}
+    onload="this.parentElement.classList.add('is-loaded')"
+  />
+</div>

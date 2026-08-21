@@ -1,0 +1,58 @@
+---
+import Container from "@sitegen/shared-ui/components/Container.astro";
+import SalonSection from "../../components/SalonSection.astro";
+import SalonButton from "../../components/SalonButton.astro";
+import SkeletonImg from "@sitegen/shared-ui/components/SkeletonImg.astro";
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+
+interface Props {
+  data: SiteData;
+}
+const { data } = Astro.props;
+// Two-photo collage: a tall portrait anchored by a smaller offset shot.
+const photoMain = data.gallery[1]?.src ?? data.gallery[0]?.src;
+const photoSecondary = data.gallery[2]?.src;
+---
+
+<SalonSection id="about" surface="surface">
+  <Container>
+    <div class="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+      <!-- Collage: main portrait with the smaller shot overlapping its corner.
+           The lux-frame outline sits behind, matting the composition. -->
+      <div class="relative mx-auto w-full max-w-md lg:max-w-none" data-reveal>
+        <div class="lux-frame absolute -top-5 -left-5 w-full h-full hidden sm:block" aria-hidden="true"></div>
+        {photoMain && (
+          <SkeletonImg
+            src={photoMain}
+            alt=""
+            class="relative z-10 aspect-[4/5] w-[82%] shadow-[var(--shadow-elevated)]"
+          />
+        )}
+        {
+          photoSecondary && (
+            <SkeletonImg
+              src={photoSecondary}
+              alt=""
+              class="absolute z-20 bottom-[-8%] right-0 w-[46%] aspect-square border-4 border-[var(--color-surface)] shadow-[var(--shadow-elevated)]"
+            />
+          )
+        }
+      </div>
+
+      <!-- Copy -->
+      <div data-reveal>
+        <p class="eyebrow mb-6">О нас</p>
+        <h2 class="font-[var(--font-heading)] text-3xl sm:text-4xl lg:text-[2.75rem] font-medium leading-[1.12] text-[var(--color-text)] max-w-lg">
+          {data.about.heading}
+        </h2>
+        <div class="mt-7 h-px w-14 bg-[var(--color-primary)]" aria-hidden="true"></div>
+        <p class="mt-7 text-[var(--color-text-muted)] leading-[1.9] max-w-lg font-light">
+          {data.about.body}
+        </p>
+        <div class="mt-10">
+          <SalonButton href="#booking">Записаться на визит</SalonButton>
+        </div>
+      </div>
+    </div>
+  </Container>
+</SalonSection>

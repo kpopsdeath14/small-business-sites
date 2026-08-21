@@ -9,6 +9,10 @@ export interface SectionManifestEntry {
   probability?: number;
   /** Sections pinned to the start/end keep their relative order; "middle" sections get shuffled. */
   position?: "start" | "middle" | "end";
+  /** Fixes this section's place among the "middle" sections instead of shuffling it. Only takes effect
+   *  when every middle section in the manifest defines one — a partial mix would be ambiguous, so in
+   *  that case the whole middle group falls back to the normal shuffle. */
+  order?: number;
 }
 
 export interface BusinessManifest {

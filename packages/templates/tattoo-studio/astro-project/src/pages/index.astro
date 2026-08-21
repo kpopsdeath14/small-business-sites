@@ -1,0 +1,51 @@
+---
+import Base from "../layouts/Base.astro";
+import Nav from "@sitegen/shared-ui/components/Nav.astro";
+import HeroSection from "@sitegen/template-tattoo-studio/sections/HeroSection.astro";
+import StatsSection from "@sitegen/template-tattoo-studio/sections/StatsSection.astro";
+import GallerySection from "@sitegen/template-tattoo-studio/sections/GallerySection.astro";
+import AboutSection from "@sitegen/template-tattoo-studio/sections/AboutSection.astro";
+import HighlightsSection from "@sitegen/template-tattoo-studio/sections/HighlightsSection.astro";
+import ServicesSection from "@sitegen/template-tattoo-studio/sections/ServicesSection.astro";
+import ContactSection from "@sitegen/template-tattoo-studio/sections/ContactSection.astro";
+import FooterSection from "@sitegen/template-tattoo-studio/sections/FooterSection.astro";
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+import siteDataJson from "../data/site.json";
+import siteConfigJson from "../data/site-config.json";
+
+const data = siteDataJson as unknown as SiteData;
+const siteConfig = siteConfigJson as { sections: { id: string; variant: number }[] };
+
+const sectionComponents: Record<string, any> = {
+  hero: HeroSection,
+  stats: StatsSection,
+  gallery: GallerySection,
+  about: AboutSection,
+  highlights: HighlightsSection,
+  services: ServicesSection,
+  contact: ContactSection,
+  footer: FooterSection,
+};
+
+const NAV_LABELS: Record<string, string> = {
+  gallery: "Работы",
+  about: "О нас",
+  highlights: "Стили",
+  services: "Цены",
+  contact: "Контакты",
+};
+
+const navLinks = siteConfig.sections
+  .filter((section) => section.id in NAV_LABELS)
+  .map((section) => ({ label: NAV_LABELS[section.id], href: `#${section.id}`, primary: section.id === "contact" }));
+---
+
+<Base title={data.meta.title} description={data.meta.description}>
+  <Nav siteName={data.name} links={navLinks} phone={data.phone} />
+  {
+    siteConfig.sections.map((section) => {
+      const Cmp = sectionComponents[section.id];
+      return Cmp ? <Cmp variant={section.variant} data={data} /> : null;
+    })
+  }
+</Base>

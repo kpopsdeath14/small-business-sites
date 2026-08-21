@@ -1,0 +1,94 @@
+{
+  "business_type": "beauty-salon",
+  "name": "AboutFace",
+  "description_raw": "Салон бровей и ресниц / салон красоты. Москва, Южнобутовская улица, 91. Работает ежедневно, 10:00–21:00.",
+  "address": "Москва, Южнобутовская улица, 91",
+  "phone": "+7 (915) 385-29-25",
+  "working_hours": {
+    "ежедневно": "10:00–21:00"
+  },
+  "social_links": {
+    "telegram": "https://t.me/+79153852925?profile",
+    "whatsapp": "https://wa.me/79153852925?text=%D0%9E%D0%B1%D1%80%D0%B0%D1%89%D0%B5%D0%BD%D0%B8%D0%B5+%D0%B8%D0%B7+%D0%AF%D0%BD%D0%B4%D0%B5%D0%BA%D1%81+%D0%9A%D0%B0%D1%80%D1%82%0A%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!+%D0%9C%D0%B5%D0%BD%D1%8F+%D0%B7%D0%B0%D0%B8%D0%BD%D1%82%D0%B5%D1%80%D0%B5%D1%81%D0%BE%D0%B2%D0%B0%D0%BB%D0%BE+%D0%B2%D0%B0%D1%88%D0%B5+%D0%BF%D1%80%D0%B5%D0%B4%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D0%B5"
+  },
+  "hero_photo": "https://avatars.mds.yandex.net/get-altay/4971637/2a0000017e59f6cb0240f338830620b33855/orig",
+  "photos": [
+    "https://avatars.mds.yandex.net/get-altay/5585693/2a0000017e59f7e93165fa605ec9fdc32f39/orig",
+    "https://avatars.mds.yandex.net/get-altay/5517598/2a0000017e59f6e97a173fba74dc0f51b250/orig",
+    "https://avatars.mds.yandex.net/get-altay/5498343/2a0000017e59f72acf325a222af6397488ed/orig",
+    "https://avatars.mds.yandex.net/get-altay/4971637/2a0000017e59f6cb0240f338830620b33855/orig",
+    "https://avatars.mds.yandex.net/get-altay/5459048/2a0000017e59f6abb49b8d2a1bc8ce907924/orig",
+    "https://avatars.mds.yandex.net/get-altay/5448678/2a0000017e59f74895aa0ef56eee6231eb19/orig",
+    "https://avatars.mds.yandex.net/get-altay/4971637/2a0000017e59f71023ae5da7e3c43fbcb908/orig",
+    "https://avatars.mds.yandex.net/get-altay/5307539/2a0000018107cacf2a9252bf6d61aa73735c/orig"
+  ],
+  "menu_or_services": [
+    {
+      "name": "Классика",
+      "price": "2900 ₽",
+      "category": "Реснички"
+    },
+    {
+      "name": "Наращивание ресниц 2D",
+      "price": "3300 ₽",
+      "category": "Реснички"
+    },
+    {
+      "name": "Наращивание ресниц 3D",
+      "price": "4000 ₽",
+      "category": "Реснички"
+    },
+    {
+      "name": "Ламинирование ресниц",
+      "price": "2700 ₽",
+      "category": "Реснички"
+    },
+    {
+      "name": "Снятие наращенных ресниц",
+      "price": "300 ₽",
+      "category": "Реснички"
+    },
+    {
+      "name": "BROW SET (архитектура бровей)",
+      "price": "1300–1600 ₽",
+      "category": "Бровки"
+    },
+    {
+      "name": "Коррекция бровей",
+      "price": "500 ₽",
+      "category": "Бровки"
+    },
+    {
+      "name": "Долговременная укладка бровей",
+      "price": "2200 ₽",
+      "category": "Бровки"
+    },
+    {
+      "name": "Ботокс для бровей",
+      "price": "800 ₽",
+      "category": "Бровки"
+    },
+    {
+      "name": "Комплекс «Ресницы 2D + брови»",
+      "price": "4600–4900 ₽",
+      "category": "Комплексы"
+    },
+    {
+      "name": "Дневной макияж",
+      "price": "3500 ₽",
+      "category": "Макияж"
+    }
+  ],
+  "stats": [
+    {
+      "value": "5.0",
+      "label": "рейтинг"
+    },
+    {
+      "value": "120",
+      "label": "оценок"
+    }
+  ],
+  "booking_url": "https://n275860.yclients.com/",
+  "reviews_url": "https://yandex.com/maps/org/x/140362170450/reviews/"
+}

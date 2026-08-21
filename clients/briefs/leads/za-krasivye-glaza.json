@@ -1,17 +1,76 @@
 {
   "business_type": "beauty-salon",
   "name": "За красивые глаза",
-  "description_raw": "Студия оформления глаз — брови и ресницы. Подробное описание уточняется у клиента.",
-  "address": "",
-  "phone": "",
-  "working_hours": {},
-  "social_links": {},
+  "description_raw": "Салон бровей и ресниц. Москва, улица Адмирала Руднева, 4. Работает ежедневно, 11:00–21:30.",
+  "address": "Москва, улица Адмирала Руднева, 4",
+  "phone": "+7 (925) 914-33-74",
+  "working_hours": {
+    "ежедневно": "11:00–21:30"
+  },
+  "social_links": {
+    "telegram": "https://t.me/kristi_hoffman",
+    "whatsapp": "https://wa.me/+79259143374?text=%D0%9E%D0%B1%D1%80%D0%B0%D1%89%D0%B5%D0%BD%D0%B8%D0%B5+%D0%B8%D0%B7+%D0%AF%D0%BD%D0%B4%D0%B5%D0%BA%D1%81+%D0%9A%D0%B0%D1%80%D1%82%0A%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!+%D0%9C%D0%B5%D0%BD%D1%8F+%D0%B7%D0%B0%D0%B8%D0%BD%D1%82%D0%B5%D1%80%D0%B5%D1%81%D0%BE%D0%B2%D0%B0%D0%BB%D0%BE+%D0%B2%D0%B0%D1%88%D0%B5+%D0%BF%D1%80%D0%B5%D0%B4%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D0%B5"
+  },
+  "hero_photo": "https://avatars.mds.yandex.net/get-altay/18128678/2a0000019c673df0acfafccd81da390a2766/orig",
   "photos": [
-    "https://picsum.photos/seed/zakrasivyeglaza1/1200/900",
-    "https://picsum.photos/seed/zakrasivyeglaza2/1200/900"
+    "https://avatars.mds.yandex.net/get-altay/18005133/2a0000019c50db7f93373bb03f46575587e8/orig",
+    "https://avatars.mds.yandex.net/get-altay/17735792/2a0000019c4de602a3cc686efe0bf25553f8/orig",
+    "https://avatars.mds.yandex.net/get-altay/13791177/2a0000019c4de4717202887a4a5fab3f158d/orig",
+    "https://avatars.mds.yandex.net/get-altay/18806283/2a0000019c4de6c5b55dbf4a8208121f750a/orig",
+    "https://avatars.mds.yandex.net/get-altay/18173477/2a0000019c4de470ee3ed078d6377297996e/orig"
   ],
   "menu_or_services": [
-    { "name": "Наращивание ресниц", "category": "Ресницы" },
-    { "name": "Оформление и окрашивание бровей", "category": "Брови" }
-  ]
+    {
+      "name": "Комплекс ламинирования бровей и ресниц",
+      "price": "5500 ₽",
+      "category": "Услуги"
+    },
+    {
+      "name": "Комплекс окрашивания бровей и ламинирование ресниц",
+      "price": "4500 ₽",
+      "category": "Услуги"
+    },
+    {
+      "name": "Окрашивание и коррекция бровей",
+      "price": "2000 ₽",
+      "category": "Услуги"
+    },
+    {
+      "name": "Комплекс ламинирования бровей",
+      "price": "3000 ₽",
+      "category": "Услуги"
+    },
+    {
+      "name": "Осветление бровей",
+      "price": "2400 ₽",
+      "category": "Услуги"
+    },
+    {
+      "name": "Коррекция бровей",
+      "price": "1100 ₽",
+      "category": "Услуги"
+    },
+    {
+      "name": "Сложная коррекция бровей с прореживанием волосков",
+      "price": "1400 ₽",
+      "category": "Услуги"
+    },
+    {
+      "name": "Ламинирование ресниц",
+      "price": "3000 ₽",
+      "category": "Услуги"
+    }
+  ],
+  "stats": [
+    {
+      "value": "5.0",
+      "label": "рейтинг"
+    },
+    {
+      "value": "35",
+      "label": "оценок"
+    }
+  ],
+  "booking_url": "https://dikidi.net/2020258?p=0.pi",
+  "reviews_url": "https://yandex.com/maps/org/x/64347178946/reviews/"
 }

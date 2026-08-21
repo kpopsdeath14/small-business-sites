@@ -1,6 +1,8 @@
 ---
 import Container from "@sitegen/shared-ui/components/Container.astro";
-import Section from "@sitegen/shared-ui/components/Section.astro";
+import SalonSection from "../components/SalonSection.astro";
+import SalonButton from "../components/SalonButton.astro";
+import SkeletonImg from "@sitegen/shared-ui/components/SkeletonImg.astro";
 import type { SiteData } from "@sitegen/shared-ui/types.ts";
 
 interface Props {
@@ -10,24 +12,53 @@ interface Props {
 const { data } = Astro.props;
 ---
 
-<Section id="highlights">
+<SalonSection id="highlights">
   <Container>
-    <h2 class="font-[var(--font-heading)] text-3xl font-bold text-[var(--color-text)] text-center mb-12">Топ-процедуры</h2>
-    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-      {data.highlights.map((item) => (
-        <div class="text-center">
-          <div class="relative aspect-[4/5] overflow-hidden rounded-[var(--radius-lg)] shadow-[var(--shadow-card)]">
-            {item.photo ? (
-              <img src={item.photo} alt={item.name} class="h-full w-full object-cover" />
-            ) : (
-              <div class="h-full w-full bg-[var(--color-surface)]" />
-            )}
-          </div>
-          <p class="mt-4 font-[var(--font-heading)] text-lg font-semibold text-[var(--color-text)]">{item.name}</p>
-          {item.description && <p class="mt-1 text-sm text-[var(--color-text-muted)]">{item.description}</p>}
-          {item.price && <p class="mt-2 font-semibold text-[var(--color-primary)]">{item.price}</p>}
-        </div>
-      ))}
+    <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 mb-14" data-reveal>
+      <div>
+        <p class="eyebrow mb-5">Фирменное</p>
+        <h2 class="font-[var(--font-heading)] text-3xl sm:text-4xl font-medium text-[var(--color-text)] max-w-md leading-tight">
+          Топ-процедуры сезона
+        </h2>
+      </div>
+      <SalonButton href="#booking" variant="outline" class="self-start sm:self-auto">Записаться</SalonButton>
+    </div>
+
+    <!-- Editorial numbering (01/02/03) + tall crops: reads like a magazine feature, not a product grid. -->
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-14" data-reveal-stagger="120">
+      {
+        data.highlights.map((item, i) => (
+          <article class="group" data-reveal>
+            <div class="relative aspect-[4/5] overflow-hidden bg-[var(--color-surface)]">
+              {item.photo ? (
+                <SkeletonImg
+                  src={item.photo}
+                  alt={item.name}
+                  class="h-full w-full transition-transform duration-700 ease-out group-hover:scale-105"
+                />
+              ) : (
+                <div class="h-full w-full" aria-hidden="true"></div>
+              )}
+              {/* Oversized ghost numeral over the photo corner. */}
+              <span
+                class="absolute top-4 left-5 font-[var(--font-heading)] italic text-5xl text-white/85 [text-shadow:0_1px_18px_rgba(0,0,0,0.35)] select-none"
+                aria-hidden="true"
+              >
+                {String(i + 1).padStart(2, "0")}
+              </span>
+            </div>
+            <div class="mt-6 flex items-baseline justify-between gap-4">
+              <h3 class="font-[var(--font-heading)] text-xl font-medium text-[var(--color-text)] leading-snug">{item.name}</h3>
+              {item.price && (
+                <span class="shrink-0 font-[var(--font-heading)] text-lg font-medium text-[var(--color-primary)] tabular-nums whitespace-nowrap">
+                  {item.price}
+                </span>
+              )}
+            </div>
+            {item.description && <p class="mt-2.5 text-sm leading-relaxed text-[var(--color-text-muted)]">{item.description}</p>}
+          </article>
+        ))
+      }
     </div>
   </Container>
-</Section>
+</SalonSection>

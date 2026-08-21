@@ -1,16 +1,39 @@
 ---
+import SkeletonImg from "@sitegen/shared-ui/components/SkeletonImg.astro";
+import Button from "@sitegen/shared-ui/components/Button.astro";
 import type { SiteData } from "@sitegen/shared-ui/types.ts";
-import HeroFull from "./Hero/HeroFull.astro";
-import HeroSplit from "./Hero/HeroSplit.astro";
-import HeroMinimal from "./Hero/HeroMinimal.astro";
 
 interface Props {
-  variant: number;
   data: SiteData;
 }
-const { variant, data } = Astro.props;
-const variants = [HeroFull, HeroSplit, HeroMinimal];
-const Variant = variants[variant] ?? variants[0];
+const { data } = Astro.props;
+const heroPhoto = data.heroPhoto ?? data.gallery[0]?.src;
 ---
 
-<Variant data={data} />
+<section id="hero" class="relative h-[92vh] min-h-[560px] w-full overflow-hidden bg-[var(--color-bg)]">
+  {heroPhoto && <SkeletonImg src={heroPhoto} alt="" class="absolute inset-0 h-full w-full" loading="eager" />}
+  <div
+    class="absolute inset-0"
+    style="background: linear-gradient(to top, var(--color-bg) 0%, color-mix(in srgb, var(--color-bg) 60%, transparent) 45%, color-mix(in srgb, var(--color-bg) 10%, transparent) 100%);"
+  ></div>
+
+  <div class="relative z-10 flex h-full items-end">
+    <div class="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 pb-20">
+      <div class="inline-block bg-[var(--color-primary)] text-[var(--color-primary-contrast)] text-xs uppercase tracking-[0.25em] font-bold px-4 py-2 mb-6">
+        Автошкола
+      </div>
+      <h1 class="font-[var(--font-heading)] uppercase leading-[0.95] text-[var(--color-text)] text-[clamp(2.6rem,7vw,5.5rem)]">
+        {data.name}
+      </h1>
+      <p class="mt-6 max-w-xl text-base sm:text-lg text-[var(--color-text-muted)] leading-relaxed">
+        {data.hero.subheading}
+      </p>
+      <div class="mt-9 flex flex-wrap items-center gap-4">
+        <Button href="#contact" size="lg" class="uppercase tracking-wide font-bold">Записаться на курс</Button>
+        <a href="#programs" class="text-sm uppercase tracking-widest text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors border-b border-current pb-1">
+          Программы обучения
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

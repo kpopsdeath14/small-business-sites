@@ -1,6 +1,6 @@
 ---
-import Container from "@sitegen/shared-ui/components/Container.astro";
-import Section from "@sitegen/shared-ui/components/Section.astro";
+import SalonButton from "../../components/SalonButton.astro";
+import SkeletonImg from "@sitegen/shared-ui/components/SkeletonImg.astro";
 import type { SiteData } from "@sitegen/shared-ui/types.ts";
 
 interface Props {
@@ -10,16 +10,32 @@ const { data } = Astro.props;
 const photo = data.gallery[1]?.src ?? data.gallery[0]?.src;
 ---
 
-<Section id="about">
-  <Container class="grid md:grid-cols-2 gap-10 items-center">
-    {photo ? (
-      <img src={photo} alt="" class="rounded-[var(--radius-lg)] shadow-[var(--shadow-card)] object-cover aspect-[4/3] w-full" />
-    ) : (
-      <div class="aspect-[4/3] rounded-[var(--radius-lg)] bg-[var(--color-surface)]" />
-    )}
-    <div>
-      <h2 class="font-[var(--font-heading)] text-3xl font-bold text-[var(--color-text)]">{data.about.heading}</h2>
-      <p class="mt-4 text-[var(--color-text-muted)] leading-relaxed">{data.about.body}</p>
+<section id="about" class="relative bg-[var(--color-surface)] overflow-hidden">
+  <div class="grid lg:grid-cols-2 items-stretch">
+    <!-- Full-bleed photo half -->
+    <div class="relative min-h-[340px] sm:min-h-[420px] lg:min-h-0 order-1">
+      {
+        photo && (
+          <SkeletonImg src={photo} alt="" class="absolute inset-0 w-full h-full" />
+        )
+      }
     </div>
-  </Container>
-</Section>
+
+    <!-- Copy half -->
+    <div class="order-2 px-6 sm:px-12 lg:px-16 xl:px-24 py-20 sm:py-28 flex flex-col justify-center">
+      <div class="max-w-lg" data-reveal>
+        <p class="eyebrow mb-6">О нас</p>
+        <h2 class="font-[var(--font-heading)] text-3xl sm:text-4xl font-medium leading-[1.12] text-[var(--color-text)]">
+          {data.about.heading}
+        </h2>
+        <div class="mt-7 h-px w-14 bg-[var(--color-primary)]" aria-hidden="true"></div>
+        <p class="mt-7 text-[var(--color-text-muted)] leading-[1.9] font-light">
+          {data.about.body}
+        </p>
+        <div class="mt-10">
+          <SalonButton href="#booking">Записаться на визит</SalonButton>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

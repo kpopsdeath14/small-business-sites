@@ -1,16 +1,69 @@
 {
   "business_type": "beauty-salon",
   "name": "Allure Lashes",
-  "description_raw": "Студия наращивания ресниц. Подробное описание уточняется у клиента.",
-  "address": "",
-  "phone": "",
-  "working_hours": {},
-  "social_links": {},
+  "description_raw": "Салон бровей и ресниц. Москва, улица Адмирала Руднева, 4. Работает ежедневно, 09:00–22:00.",
+  "address": "Москва, улица Адмирала Руднева, 4",
+  "phone": "+7 (977) 893-01-31",
+  "working_hours": {
+    "ежедневно": "09:00–22:00"
+  },
+  "social_links": {
+    "telegram": "https://t.me/+79778930131?profile",
+    "whatsapp": "https://wa.me/79778930131?text=%D0%9E%D0%B1%D1%80%D0%B0%D1%89%D0%B5%D0%BD%D0%B8%D0%B5+%D0%B8%D0%B7+%D0%AF%D0%BD%D0%B4%D0%B5%D0%BA%D1%81+%D0%9A%D0%B0%D1%80%D1%82%0A%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!+%D0%9C%D0%B5%D0%BD%D1%8F+%D0%B7%D0%B0%D0%B8%D0%BD%D1%82%D0%B5%D1%80%D0%B5%D1%81%D0%BE%D0%B2%D0%B0%D0%BB%D0%BE+%D0%B2%D0%B0%D1%88%D0%B5+%D0%BF%D1%80%D0%B5%D0%B4%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D0%B5"
+  },
+  "hero_photo": "https://images.pexels.com/photos/5177990/pexels-photo-5177990.jpeg",
   "photos": [
-    "https://picsum.photos/seed/allurelashes1/1200/900",
-    "https://picsum.photos/seed/allurelashes2/1200/900"
+    "https://avatars.mds.yandex.net/get-altay/15112342/2a00000194697408b61b8f5befd995de423a/orig",
+    "https://avatars.mds.yandex.net/get-altay/14392184/2a000001946974086b58c59488765bd3fcd7/orig",
+    "https://avatars.mds.yandex.net/get-altay/14540206/2a00000194697408dd28a5123b58800f3cf6/orig",
+    "https://avatars.mds.yandex.net/get-altay/13294935/2a00000194697408e2ffcf826a0680d2c3c1/orig",
+    "https://avatars.mds.yandex.net/get-altay/14392184/2a000001946974096f02bd47322b0855876c/orig",
+    "https://avatars.mds.yandex.net/get-altay/14064514/2a000001946974d790be0d11cab03aab5029/orig",
+    "https://avatars.mds.yandex.net/get-altay/14007310/2a000001963ac5c41b3fa55ad27bb7617a9a/orig",
+    "https://avatars.mds.yandex.net/get-altay/14094067/2a000001963ac5c3664945b9df9cc479c135/orig"
   ],
   "menu_or_services": [
-    { "name": "Наращивание ресниц", "category": "Ресницы" }
-  ]
+    {
+      "name": "Классика (1D)",
+      "price": "3800–4300 ₽",
+      "category": "Наращивание ресниц"
+    },
+    {
+      "name": "Полуторный объём (1,5D)",
+      "price": "4100–4600 ₽",
+      "category": "Наращивание ресниц"
+    },
+    {
+      "name": "Двойной объём (2D)",
+      "price": "4300–4800 ₽",
+      "category": "Наращивание ресниц"
+    },
+    {
+      "name": "Двойной объём с загущением (2,5D)",
+      "price": "4600–5100 ₽",
+      "category": "Наращивание ресниц"
+    },
+    {
+      "name": "Тройной объём (3D)",
+      "price": "4800–5300 ₽",
+      "category": "Наращивание ресниц"
+    },
+    {
+      "name": "Ламинирование ресниц + ботокс",
+      "price": "3000 ₽",
+      "category": "Уход за ресницами"
+    }
+  ],
+  "stats": [
+    {
+      "value": "5.0",
+      "label": "рейтинг"
+    },
+    {
+      "value": "61",
+      "label": "оценок"
+    }
+  ],
+  "booking_url": "https://dikidi.ru/1470790",
+  "reviews_url": "https://yandex.com/maps/org/x/151129920081/reviews/"
 }

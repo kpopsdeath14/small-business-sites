@@ -1,0 +1,38 @@
+{
+  "business_type": "barbershop",
+  "name": "IRONSIDE BARBERSHOP",
+  "description_raw": "Классический барбершоп в самом сердце города. Мужские стрижки, королевское бритьё и уход за бородой — без спешки, под виски и джаз.",
+  "address": "Москва, Дубининская улица, 15",
+  "phone": "+7 (999) 341-27-08",
+  "working_hours": { "ежедневно": "10:00–22:00" },
+  "social_links": {
+    "telegram": "https://t.me/ironsidebarber",
+    "instagram": "https://instagram.com/ironsidebarber"
+  },
+  "hero_photo": "https://images.pexels.com/photos/9146943/pexels-photo-9146943.jpeg",
+  "photos": [
+    "https://images.pexels.com/photos/9992819/pexels-photo-9992819.jpeg",
+    "https://images.pexels.com/photos/3037244/pexels-photo-3037244.jpeg",
+    "https://images.pexels.com/photos/37533244/pexels-photo-37533244.jpeg",
+    "https://images.pexels.com/photos/7447152/pexels-photo-7447152.jpeg",
+    "https://images.pexels.com/photos/15659494/pexels-photo-15659494.jpeg",
+    "https://images.pexels.com/photos/7750144/pexels-photo-7750144.jpeg"
+  ],
+  "menu_or_services": [
+    { "name": "Мужская стрижка", "price": "1800 ₽", "category": "Стрижки" },
+    { "name": "Стрижка машинкой", "price": "1200 ₽", "category": "Стрижки" },
+    { "name": "Детская стрижка", "price": "1200 ₽", "category": "Стрижки" },
+    { "name": "Оформление бороды", "price": "1000 ₽", "category": "Борода" },
+    { "name": "Королевское бритьё", "price": "1800 ₽", "category": "Борода" },
+    { "name": "Стрижка + борода", "price": "2500 ₽", "category": "Комплекс" }
+  ],
+  "stats": [
+    { "value": "7", "label": "лет работы" },
+    { "value": "12000+", "label": "клиентов" },
+    { "value": "4.9", "label": "рейтинг" }
+  ],
+  "team": [
+    { "name": "Игорь Волков", "role": "Старший барбер" },
+    { "name": "Артём Савельев", "role": "Барбер, специалист по бороде" }
+  ]
+}

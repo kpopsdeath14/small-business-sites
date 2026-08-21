@@ -1,17 +1,24 @@
 import type { Brief, GeneratedContent } from "@sitegen/content-gen";
 import type { SiteData } from "@sitegen/shared-ui/types.ts";
 
-export function buildSiteData(brief: Brief, content: GeneratedContent, localPhotoPaths: string[]): SiteData {
+export function buildSiteData(
+  brief: Brief,
+  content: GeneratedContent,
+  localPhotoPaths: string[],
+  heroPhoto?: string
+): SiteData {
   return {
     name: brief.name,
     meta: content.meta,
     hero: content.hero,
     about: content.about,
     items: content.items,
+    servicesNote: brief.services_note,
     gallery: content.gallery.map((photo, i) => ({
       ...photo,
       src: localPhotoPaths[i] ?? photo.src,
     })),
+    heroPhoto,
     reviews: content.reviews,
     reviewsUrl: brief.reviews_url,
     address: brief.address,

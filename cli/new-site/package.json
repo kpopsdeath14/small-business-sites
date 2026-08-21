@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "dependencies": {
+    "sharp": "^0.33.5",
     "@sitegen/content-gen": "*",
     "@sitegen/variance-engine": "*",
     "@sitegen/template-restaurant": "*",
@@ -11,6 +12,7 @@
     "@sitegen/template-barbershop": "*",
     "@sitegen/template-dental-clinic": "*",
     "@sitegen/template-bakery": "*",
-    "@sitegen/template-beauty-salon": "*"
+    "@sitegen/template-beauty-salon": "*",
+    "@sitegen/template-tattoo-studio": "*"
   }
 }

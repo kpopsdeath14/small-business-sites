@@ -1,35 +1,75 @@
 ---
 import Container from "@sitegen/shared-ui/components/Container.astro";
-import Section from "@sitegen/shared-ui/components/Section.astro";
+import SalonSection from "../../components/SalonSection.astro";
+import SalonButton from "../../components/SalonButton.astro";
 import StarRating from "@sitegen/shared-ui/components/StarRating.astro";
-import Button from "@sitegen/shared-ui/components/Button.astro";
-import Card from "@sitegen/shared-ui/components/Card.astro";
 import type { SiteData } from "@sitegen/shared-ui/types.ts";
 
 interface Props {
   data: SiteData;
 }
 const { data } = Astro.props;
+
+function findStat(stats: SiteData["stats"], pattern: RegExp): string | undefined {
+  return stats.find((s) => pattern.test(s.label))?.value;
+}
+const ratingRaw = findStat(data.stats, /рейтинг|rating/i);
+const countRaw = findStat(data.stats, /оцен|отзыв|review/i);
+const ratingValue = ratingRaw ? parseFloat(ratingRaw) : NaN;
+const hasRealRating = data.reviews.length === 0 && !Number.isNaN(ratingValue) && ratingValue > 0;
 ---
 
-<Section id="reviews">
+<SalonSection id="reviews">
   <Container>
-    <h2 class="font-[var(--font-heading)] text-3xl font-bold text-[var(--color-text)] text-center mb-10">Отзывы</h2>
-    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      {data.reviews.map((review) => (
-        <Card>
-          <StarRating rating={review.rating} class="mb-3" />
-          <p class="text-[var(--color-text)] leading-relaxed">{review.text}</p>
-          <p class="mt-4 text-sm font-medium text-[var(--color-text-muted)]">{review.author}</p>
-        </Card>
-      ))}
+    <div class="text-center mb-14" data-reveal>
+      <p class="eyebrow mb-5">Отзывы</p>
+      <h2 class="font-[var(--font-heading)] text-3xl sm:text-4xl font-medium text-[var(--color-text)]">Что говорят клиенты</h2>
     </div>
-    {data.reviewsUrl && (
-      <div class="text-center mt-10">
-        <Button href={data.reviewsUrl} variant="outline" target="_blank" rel="noopener noreferrer">
-          Оставить отзыв
-        </Button>
-      </div>
-    )}
+
+    {
+      data.reviews.length > 0 ? (
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-10" data-reveal-stagger="110">
+          {data.reviews.map((review) => (
+            <figure
+              class="relative border border-[var(--color-border)] bg-[var(--color-bg)] p-8 pt-12 transition-all duration-500 ease-out hover:-translate-y-1.5 hover:shadow-[var(--shadow-elevated)]"
+              data-reveal
+            >
+              {/* Small serif quote mark pinned to the card's top edge. */}
+              <span
+                class="absolute -top-5 left-7 flex h-10 w-10 items-center justify-center bg-[var(--color-primary)] font-[var(--font-heading)] italic text-2xl leading-none text-[var(--color-primary-contrast)]"
+                aria-hidden="true"
+              >
+                &ldquo;
+              </span>
+              <StarRating rating={review.rating} class="mb-4" />
+              <blockquote class="text-[15px] leading-relaxed text-[var(--color-text)]">{review.text}</blockquote>
+              <figcaption class="mt-5 text-[11px] uppercase tracking-[0.28em] text-[var(--color-text-muted)]">{review.author}</figcaption>
+            </figure>
+          ))}
+        </div>
+      ) : hasRealRating ? (
+        <div class="text-center max-w-sm mx-auto border border-[var(--color-border)] px-10 py-14" data-reveal>
+          <StarRating rating={ratingValue} size={26} animated class="justify-center mb-6" />
+          <p class="font-[var(--font-heading)] text-6xl font-medium text-[var(--color-text)] tabular-nums">{ratingValue.toFixed(1)}</p>
+          <p class="mt-4 text-sm text-[var(--color-text-muted)] leading-relaxed">
+            {countRaw ? `На основе ${countRaw} оценок на Яндекс Картах` : "Реальный рейтинг на Яндекс Картах"}
+          </p>
+        </div>
+      ) : (
+        <p class="text-center text-[var(--color-text-muted)] max-w-lg mx-auto font-light" data-reveal>
+          Реальные отзывы клиентов читайте на Яндекс Картах.
+        </p>
+      )
+    }
+
+    {
+      data.reviewsUrl && (
+        <div class="text-center mt-12" data-reveal>
+          <SalonButton href={data.reviewsUrl} variant="outline" target="_blank" rel="noopener noreferrer">
+            {data.reviews.length > 0 ? "Оставить отзыв" : "Смотреть отзывы"}
+          </SalonButton>
+        </div>
+      )
+    }
   </Container>
-</Section>
+</SalonSection>

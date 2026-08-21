@@ -1,12 +1,18 @@
 ---
+import FooterBase from "@sitegen/shared-ui/components/FooterBase.astro";
 import type { SiteData } from "@sitegen/shared-ui/types.ts";
-import FooterSimple from "./Footer/FooterSimple.astro";
 
 interface Props {
-  variant: number;
   data: SiteData;
 }
 const { data } = Astro.props;
+const hoursSummary = data.workingHours ? Object.values(data.workingHours)[0] : undefined;
 ---
 
-<FooterSimple data={data} />
+<FooterBase
+  siteName={data.name}
+  address={data.address}
+  phone={data.phone}
+  hoursSummary={hoursSummary}
+  socialLinks={data.socialLinks}
+/>

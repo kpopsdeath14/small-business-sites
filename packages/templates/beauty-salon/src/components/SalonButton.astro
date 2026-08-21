@@ -1,0 +1,48 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+/**
+ * L'ATELIER button — the shared Button.astro reads as friendly/consumer; a luxury
+ * salon needs sharper geometry and letterspaced uppercase labels. Kept local to this
+ * template so other business templates keep their existing look.
+ */
+interface Props extends HTMLAttributes<"a"> {
+  href?: string;
+  variant?: "primary" | "outline" | "ghost-light";
+  size?: "md" | "lg";
+  class?: string;
+}
+const { href, variant = "primary", size = "md", class: className = "", ...rest } = Astro.props;
+const Tag = href ? "a" : "button";
+
+const sizeClass = size === "lg" ? "px-9 py-4 text-[13px]" : "px-6 py-3 text-[11px]";
+const variantClass =
+  variant === "primary"
+    ? "bg-[var(--color-primary)] text-[var(--color-primary-contrast)] hover:bg-[var(--color-text)]"
+    : variant === "ghost-light"
+      ? // For use on photos / dark sections: hairline white outline that fills on hover.
+        "border border-white/60 text-white backdrop-blur-[2px] hover:bg-white hover:text-black"
+      : "border border-[var(--color-border)] text-[var(--color-text)] bg-transparent hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]";
+---
+
+<Tag
+  href={href}
+  {...rest}
+  class:list={[
+    "inline-flex items-center justify-center gap-2",
+    "font-body font-semibold uppercase tracking-[0.22em]",
+    "transition-all duration-300 ease-out",
+    "hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98]",
+    sizeClass,
+    variantClass,
+    className,
+  ]}
+>
+  <slot />
+</Tag>
+
+<style>
+  .font-body {
+    font-family: var(--font-body);
+  }
+</style>

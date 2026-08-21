@@ -1,34 +1,76 @@
 ---
 import Container from "@sitegen/shared-ui/components/Container.astro";
-import Section from "@sitegen/shared-ui/components/Section.astro";
+import SalonSection from "../../components/SalonSection.astro";
+import SalonButton from "../../components/SalonButton.astro";
 import StarRating from "@sitegen/shared-ui/components/StarRating.astro";
-import Button from "@sitegen/shared-ui/components/Button.astro";
 import type { SiteData } from "@sitegen/shared-ui/types.ts";
 
 interface Props {
   data: SiteData;
 }
 const { data } = Astro.props;
+
+function findStat(stats: SiteData["stats"], pattern: RegExp): string | undefined {
+  return stats.find((s) => pattern.test(s.label))?.value;
+}
+const ratingRaw = findStat(data.stats, /рейтинг|rating/i);
+const countRaw = findStat(data.stats, /оцен|отзыв|review/i);
+const ratingValue = ratingRaw ? parseFloat(ratingRaw) : NaN;
+const hasRealRating = data.reviews.length === 0 && !Number.isNaN(ratingValue) && ratingValue > 0;
 ---
 
-<Section id="reviews" surface="surface">
+<SalonSection id="reviews" surface="surface">
   <Container narrow>
-    <h2 class="font-[var(--font-heading)] text-3xl font-bold text-[var(--color-text)] text-center mb-10">Отзывы</h2>
-    <div class="space-y-8">
-      {data.reviews.map((review) => (
-        <blockquote class="text-center">
-          <StarRating rating={review.rating} class="justify-center mb-3" />
-          <p class="font-[var(--font-heading)] text-xl text-[var(--color-text)] leading-relaxed">&laquo;{review.text}&raquo;</p>
-          <footer class="mt-3 text-sm text-[var(--color-text-muted)]">— {review.author}</footer>
-        </blockquote>
-      ))}
+    <div class="text-center mb-12" data-reveal>
+      <p class="eyebrow mb-5">Отзывы</p>
+      <h2 class="font-[var(--font-heading)] text-3xl sm:text-4xl font-medium text-[var(--color-text)]">Что говорят клиенты</h2>
     </div>
-    {data.reviewsUrl && (
-      <div class="text-center mt-10">
-        <Button href={data.reviewsUrl} variant="outline" target="_blank" rel="noopener noreferrer">
-          Оставить отзыв
-        </Button>
-      </div>
-    )}
+
+    {
+      data.reviews.length > 0 ? (
+        <div data-reveal-stagger="140">
+          {data.reviews.map((review) => (
+            <blockquote class="relative text-center py-10 border-b border-[var(--color-border)] last:border-0" data-reveal>
+              {/* Oversized ghost quotation mark behind each quote. */}
+              <span
+                class="pointer-events-none absolute left-1/2 -translate-x-1/2 -top-2 select-none font-[var(--font-heading)] text-[7rem] leading-none text-[var(--color-primary)]/15"
+                aria-hidden="true"
+              >
+                &ldquo;
+              </span>
+              <StarRating rating={review.rating} class="relative justify-center mb-5" />
+              <p class="relative font-[var(--font-heading)] italic text-xl sm:text-2xl leading-relaxed text-[var(--color-text)] max-w-xl mx-auto">
+                {review.text}
+              </p>
+              <footer class="relative mt-5 text-[11px] uppercase tracking-[0.28em] text-[var(--color-text-muted)]">
+                {review.author}
+              </footer>
+            </blockquote>
+          ))}
+        </div>
+      ) : hasRealRating ? (
+        <div class="text-center max-w-sm mx-auto border border-[var(--color-border)] bg-[var(--color-bg)] px-10 py-14" data-reveal>
+          <StarRating rating={ratingValue} size={26} animated class="justify-center mb-6" />
+          <p class="font-[var(--font-heading)] text-6xl font-medium text-[var(--color-text)] tabular-nums">{ratingValue.toFixed(1)}</p>
+          <p class="mt-4 text-sm text-[var(--color-text-muted)] leading-relaxed">
+            {countRaw ? `На основе ${countRaw} оценок на Яндекс Картах` : "Реальный рейтинг на Яндекс Картах"}
+          </p>
+        </div>
+      ) : (
+        <p class="text-center text-[var(--color-text-muted)] max-w-lg mx-auto font-light" data-reveal>
+          Реальные отзывы клиентов читайте на Яндекс Картах.
+        </p>
+      )
+    }
+
+    {
+      data.reviewsUrl && (
+        <div class="text-center mt-12" data-reveal>
+          <SalonButton href={data.reviewsUrl} variant="outline" target="_blank" rel="noopener noreferrer">
+            {data.reviews.length > 0 ? "Оставить отзыв" : "Смотреть отзывы"}
+          </SalonButton>
+        </div>
+      )
+    }
   </Container>
-</Section>
+</SalonSection>

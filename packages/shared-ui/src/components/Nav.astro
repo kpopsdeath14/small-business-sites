@@ -2,6 +2,8 @@
 interface NavLink {
   label: string;
   href: string;
+  /** Rendered as a filled button instead of a plain text link — for a single standout link like "Book now". */
+  primary?: boolean;
 }
 interface Props {
   siteName: string;
@@ -23,19 +25,35 @@ const { siteName, links, phone } = Astro.props;
     </a>
 
     <nav class="hidden md:flex items-center gap-6">
-      {links.map((link) => (
-        <a href={link.href} class="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors">
-          {link.label}
-        </a>
-      ))}
-      {phone && (
-        <a
-          href={`tel:${phone.replace(/[^+\d]/g, "")}`}
-          class="rounded-[var(--radius-md)] bg-[var(--color-primary)] text-[var(--color-primary-contrast)] px-4 py-2 text-sm font-medium shadow-[var(--shadow-card)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[var(--shadow-elevated)]"
-        >
-          {phone}
-        </a>
-      )}
+      {
+        links.map((link) =>
+          link.primary ? (
+            <a
+              href={link.href}
+              class="rounded-[var(--radius-md)] bg-[var(--color-primary)] text-[var(--color-primary-contrast)] px-4 py-2 text-sm font-medium shadow-[var(--shadow-card)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[var(--shadow-elevated)]"
+            >
+              {link.label}
+            </a>
+          ) : (
+            <a
+              href={link.href}
+              class="nav-link relative text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors"
+            >
+              {link.label}
+            </a>
+          )
+        )
+      }
+      {
+        phone && (
+          <a
+            href={`tel:${phone.replace(/[^+\d]/g, "")}`}
+            class="rounded-[var(--radius-md)] bg-[var(--color-primary)] text-[var(--color-primary-contrast)] px-4 py-2 text-sm font-medium shadow-[var(--shadow-card)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[var(--shadow-elevated)]"
+          >
+            {phone}
+          </a>
+        )
+      }
     </nav>
 
     <label for="nav-toggle" class="md:hidden cursor-pointer text-[var(--color-text)]" aria-label="Меню">
@@ -49,7 +67,7 @@ const { siteName, links, phone } = Astro.props;
         stroke-width="2"
         class="transition-transform duration-200 ease-out"
       >
-        <path d="M4 6h16M4 12h16M4 18h16" />
+        <path d="M4 6h16M4 12h16M4 18h16"></path>
       </svg>
     </label>
   </div>
@@ -65,16 +83,29 @@ const { siteName, links, phone } = Astro.props;
     class="md:hidden absolute inset-x-0 top-full z-40 origin-top opacity-0 -translate-y-2 pointer-events-none transition-[opacity,transform] duration-200 ease-out will-change-transform"
   >
     <nav class="flex flex-col gap-1 border-t border-[var(--color-border)] px-4 py-3 bg-[var(--color-bg)] shadow-[var(--shadow-elevated)]">
-      {links.map((link) => (
-        <a href={link.href} class="py-2 text-sm text-[var(--color-text-muted)]">
-          {link.label}
-        </a>
-      ))}
-      {phone && (
-        <a href={`tel:${phone.replace(/[^+\d]/g, "")}`} class="py-2 text-sm font-medium text-[var(--color-primary)]">
-          {phone}
-        </a>
-      )}
+      {
+        links.map((link) =>
+          link.primary ? (
+            <a
+              href={link.href}
+              class="mt-1 mb-1 rounded-[var(--radius-md)] bg-[var(--color-primary)] text-[var(--color-primary-contrast)] px-4 py-2 text-sm font-medium text-center"
+            >
+              {link.label}
+            </a>
+          ) : (
+            <a href={link.href} class="py-2 text-sm text-[var(--color-text-muted)]">
+              {link.label}
+            </a>
+          )
+        )
+      }
+      {
+        phone && (
+          <a href={`tel:${phone.replace(/[^+\d]/g, "")}`} class="py-2 text-sm font-medium text-[var(--color-primary)]">
+            {phone}
+          </a>
+        )
+      }
     </nav>
   </div>
 </header>
@@ -91,6 +122,27 @@ const { siteName, links, phone } = Astro.props;
   #site-header.is-scrolled {
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
   }
+
+  /* Scrollspy active state: a short accent underline grows in under the current section's link.
+     Global because the links live in this component but the .is-active class is toggled by the
+     script below against ids rendered by other components. */
+  :global(.nav-link)::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 100%;
+    bottom: -6px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--color-primary);
+    transition: right 0.3s ease;
+  }
+  :global(.nav-link.is-active) {
+    color: var(--color-text);
+  }
+  :global(.nav-link.is-active)::after {
+    right: 0;
+  }
 </style>
 
 <script>
@@ -98,4 +150,30 @@ const { siteName, links, phone } = Astro.props;
   const onScroll = () => header?.classList.toggle("is-scrolled", window.scrollY > 8);
   onScroll();
   window.addEventListener("scroll", onScroll, { passive: true });
+
+  // Scrollspy: highlight the nav link of the section currently crossing the middle band of the
+  // viewport, so the menu always answers "where am I?" while scrolling a long one-pager.
+  const navLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>(".nav-link[href^='#']"));
+  const linkById = new Map<string, HTMLAnchorElement>();
+  for (const link of navLinks) {
+    const id = link.getAttribute("href")!.slice(1);
+    if (id && document.getElementById(id)) linkById.set(id, link);
+  }
+
+  if (linkById.size > 0 && "IntersectionObserver" in window) {
+    const setActive = (id: string) => {
+      for (const [key, link] of linkById) link.classList.toggle("is-active", key === id);
+    };
+    const spy = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) setActive(entry.target.id);
+        }
+      },
+      // A thin horizontal band around the viewport's vertical midpoint: whichever section
+      // occupies it is "the current one". Cheap and stable — no scroll math per frame.
+      { rootMargin: "-45% 0px -50% 0px", threshold: 0 }
+    );
+    for (const id of linkById.keys()) spy.observe(document.getElementById(id)!);
+  }
 </script>

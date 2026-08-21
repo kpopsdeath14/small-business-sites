@@ -1,0 +1,14 @@
+{
+  "seed": "placeholder",
+  "tokenSetIndex": 0,
+  "sections": [
+    { "id": "hero", "variant": 0 },
+    { "id": "stats", "variant": 0 },
+    { "id": "gallery", "variant": 0 },
+    { "id": "about", "variant": 0 },
+    { "id": "highlights", "variant": 0 },
+    { "id": "services", "variant": 0 },
+    { "id": "contact", "variant": 0 },
+    { "id": "footer", "variant": 0 }
+  ]
+}

@@ -1,18 +1,17 @@
-/* Default fallback token set (Trattoria Warm). Overwritten per-client by the CLI scaffold step. */
 :root {
-  --color-bg: #fbf6ee;
-  --color-surface: #f3e9d8;
-  --color-text: #2b2118;
-  --color-text-muted: #6b5e4f;
-  --color-primary: #c1440e;
-  --color-primary-contrast: #ffffff;
-  --color-accent: #d99b2b;
-  --color-border: #e4d8c4;
-  --font-heading: Georgia, "Times New Roman", serif;
-  --font-body: -apple-system, "Segoe UI", system-ui, sans-serif;
-  --radius-sm: 6px;
-  --radius-md: 12px;
-  --radius-lg: 20px;
-  --shadow-card: 0 4px 16px rgba(43, 33, 24, 0.1);
-  --shadow-elevated: 0 12px 32px rgba(43, 33, 24, 0.16);
+  --color-bg: #FAF5EC;
+  --color-surface: #F0E5D3;
+  --color-text: #2A211A;
+  --color-text-muted: #77695A;
+  --color-primary: #B5502E;
+  --color-primary-contrast: #FAF5EC;
+  --color-accent: #5C6B3F;
+  --color-border: #E4D6BE;
+  --font-heading: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', system-ui, sans-serif;
+  --radius-sm: 4px;
+  --radius-md: 10px;
+  --radius-lg: 18px;
+  --shadow-card: 0 10px 30px rgba(42,33,26,0.1);
+  --shadow-elevated: 0 20px 50px rgba(42,33,26,0.16);
 }

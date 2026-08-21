@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const BusinessTypeSchema = z.enum(["restaurant", "autoschool", "barbershop", "dental-clinic", "bakery", "beauty-salon"]);
+export const BusinessTypeSchema = z.enum(["restaurant", "autoschool", "barbershop", "dental-clinic", "bakery", "beauty-salon", "tattoo-studio"]);
 export type BusinessType = z.infer<typeof BusinessTypeSchema>;
 
 export const MenuItemSchema = z.object({
@@ -8,6 +8,7 @@ export const MenuItemSchema = z.object({
   description: z.string().optional().default(""),
   price: z.union([z.string(), z.number()]).optional(),
   category: z.string().optional(),
+  photo: z.string().optional(),
 });
 
 export const ReviewSchema = z.object({
@@ -55,7 +56,13 @@ export const BriefSchema = z.object({
   working_hours: z.record(z.string(), z.string()).optional().default({}),
   social_links: z.record(z.string(), z.string()).optional().default({}),
   photos: z.array(z.string()).optional().default([]),
+  /** Separate from `photos` (the real gallery) — a wide/landscape stock photo for the hero banner when
+   *  none of the client's own photos are the right shape. Never mixed into the real-work gallery. */
+  hero_photo: z.string().optional(),
   menu_or_services: z.array(MenuItemSchema).optional().default([]),
+  /** Shown under the services heading when the list is known to be a partial pull (e.g. the source only
+   *  exposes a "popular" subset) — keeps the site honest instead of implying this is the full price list. */
+  services_note: z.string().optional(),
   reviews: z.array(ReviewSchema).optional().default([]),
   reviews_url: z.string().optional(),
   map_coords: z.object({ lat: z.number(), lng: z.number() }).optional(),
@@ -93,6 +100,7 @@ export const GeneratedContentSchema = z.object({
       description: z.string().optional().default(""),
       price: z.union([z.string(), z.number()]).optional(),
       category: z.string().optional(),
+      photo: z.string().optional(),
     })
   ),
   gallery: z.array(

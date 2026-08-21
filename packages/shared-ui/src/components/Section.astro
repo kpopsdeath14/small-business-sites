@@ -19,17 +19,29 @@ const spacingClass = spacing === "md" ? "py-12 sm:py-16" : "py-16 sm:py-24";
   <slot />
 </section>
 
-<style>
+<style is:global>
   /*
-    Content must be visible with zero JS (SEO crawlers, JS errors elsewhere on the page, slow
-    script loading). The hidden starting state only applies once JS has actually initialized and
-    opted in via the `reveal-ready` class on <html> — so a script failure fails open (visible),
-    never closed (permanently invisible).
+    Scroll-reveal system — GLOBAL on purpose.
+
+    History: these rules used to be scoped (Astro's default), which silently broke them
+    repo-wide. The compiled selector required `.reveal-ready[data-astro-cid-…]` on <html>,
+    but the class is added to <html> by JS and <html> never carries a component cid — so
+    the hidden state never applied and no reveal animation ever played, in any template.
+    Raw `<section data-reveal>` elements outside this component (most templates have them)
+    were never covered by the scoped rules either. `is:global` fixes both: any element with
+    `data-reveal` anywhere on the page now animates in when scrolled into view.
+
+    Content must also be visible with zero JS (SEO crawlers, JS errors elsewhere on the
+    page, slow script loading). The hidden starting state only applies once JS has actually
+    initialized and opted in via the `reveal-ready` class on <html> — so a script failure
+    fails open (visible), never closed (permanently invisible).
   */
   .reveal-ready [data-reveal] {
     opacity: 0;
     transform: translateY(28px);
     transition: opacity 0.7s ease, transform 0.7s ease;
+    /* Stagger containers (see script below) set --reveal-delay on their children. */
+    transition-delay: var(--reveal-delay, 0ms);
   }
   .reveal-ready [data-reveal].is-visible {
     opacity: 1;
@@ -47,6 +59,15 @@ const spacingClass = spacing === "md" ? "py-12 sm:py-16" : "py-16 sm:py-24";
 <script>
   if ("IntersectionObserver" in window) {
     document.documentElement.classList.add("reveal-ready");
+
+    // Stagger: inside a [data-reveal-stagger] container, direct [data-reveal] children get an
+    // incremental delay so grids cascade in (card 1, card 2, card 3…) instead of popping as
+    // one block. The step is customizable: data-reveal-stagger="120" → 120ms per item.
+    document.querySelectorAll<HTMLElement>("[data-reveal-stagger]").forEach((container) => {
+      const step = parseInt(container.dataset.revealStagger || "", 10) || 80;
+      const items = Array.from(container.querySelectorAll<HTMLElement>(":scope [data-reveal]"));
+      items.forEach((el, i) => el.style.setProperty("--reveal-delay", `${Math.min(i * step, 600)}ms`));
+    });
 
     const revealObserver = new IntersectionObserver(
       (entries) => {

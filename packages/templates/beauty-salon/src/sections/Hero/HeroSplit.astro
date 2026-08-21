@@ -1,36 +1,61 @@
 ---
-import Container from "@sitegen/shared-ui/components/Container.astro";
-import Button from "@sitegen/shared-ui/components/Button.astro";
+import SalonButton from "../../components/SalonButton.astro";
+import SkeletonImg from "@sitegen/shared-ui/components/SkeletonImg.astro";
 import type { SiteData } from "@sitegen/shared-ui/types.ts";
 
 interface Props {
   data: SiteData;
 }
 const { data } = Astro.props;
-const photos = data.gallery.slice(0, 2);
+// Portrait crops work best here: prefer the dedicated heroPhoto, else the first gallery shot.
+const heroPhoto = data.heroPhoto ?? data.gallery[0]?.src;
+const ratingStat = data.stats.find((s) => /рейтинг|rating/i.test(s.label));
 ---
 
-<section id="hero" class="bg-[var(--color-bg)]">
-  <Container class="grid md:grid-cols-2 gap-10 items-center py-20">
-    <div>
-      <h1 class="font-[var(--font-heading)] text-4xl sm:text-5xl font-bold text-[var(--color-text)]">{data.hero.heading}</h1>
-      <p class="mt-4 text-lg text-[var(--color-text-muted)]">{data.hero.subheading}</p>
-      <div class="mt-8">
-        <Button href="#contact" size="lg">{data.hero.ctaLabel}</Button>
+<section id="hero" class="relative min-h-[100svh] overflow-hidden bg-[var(--color-bg)]">
+  <div class="grid lg:grid-cols-2 min-h-[100svh]">
+    <!-- Text column: quiet ivory room, generous air, editorial hierarchy. -->
+    <div class="relative flex items-center px-6 sm:px-12 lg:px-16 xl:px-24 py-28 lg:py-24">
+      <div class="max-w-xl">
+        <p class="hero-enter eyebrow mb-7" style="--enter-delay:0.1s">Салон красоты</p>
+        <h1
+          class="hero-enter font-[var(--font-heading)] font-medium leading-[1.05] text-[var(--color-text)] text-[clamp(2.6rem,5.5vw,4.75rem)]"
+          style="--enter-delay:0.25s"
+        >
+          {data.hero.heading}
+        </h1>
+        <div class="hero-enter mt-9 h-px w-16 bg-[var(--color-primary)]" style="--enter-delay:0.45s" aria-hidden="true"></div>
+        <p class="hero-enter mt-8 text-base sm:text-lg text-[var(--color-text-muted)] leading-relaxed max-w-md font-light" style="--enter-delay:0.55s">
+          {data.hero.subheading}
+        </p>
+        <div class="hero-enter mt-11 flex flex-col sm:flex-row gap-4" style="--enter-delay:0.7s">
+          <SalonButton href="#booking" size="lg">{data.hero.ctaLabel}</SalonButton>
+          <SalonButton href="#services" variant="outline" size="lg">Услуги и цены</SalonButton>
+        </div>
+
+        {
+          ratingStat && (
+            <p class="hero-enter mt-12 flex items-center gap-2.5 text-xs tracking-[0.2em] uppercase text-[var(--color-text-muted)]" style="--enter-delay:0.85s">
+              <span class="text-[var(--color-accent)] text-base leading-none">★</span>
+              {ratingStat.value} · {ratingStat.label}
+            </p>
+          )
+        }
       </div>
     </div>
-    <div class="grid grid-cols-2 gap-4">
-      {photos.length > 0 ? (
-        photos.map((p) => (
-          <img
-            src={p.src}
-            alt={p.alt}
-            class="rounded-[var(--radius-lg)] shadow-[var(--shadow-card)] object-cover aspect-[3/4] w-full"
-          />
-        ))
-      ) : (
-        <div class="col-span-2 aspect-video rounded-[var(--radius-lg)] bg-[var(--color-surface)]" />
-      )}
+
+    <!-- Photo column: full-height portrait with the offset atelier frame. -->
+    <div class="relative min-h-[60vh] lg:min-h-0">
+      {
+        heroPhoto ? (
+          <SkeletonImg src={heroPhoto} alt="" class="absolute inset-0 w-full h-full ken-burns" loading="eager" />
+        ) : (
+          <div class="absolute inset-0 bg-[var(--color-surface)]" aria-hidden="true" />
+        )
+      }
+      <!-- Soft inner shadow keeps the photo from bleeding into the nav's transparent state. -->
+      <div class="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black/35 to-transparent" aria-hidden="true"></div>
+      <div class="lux-frame pointer-events-none absolute inset-6 sm:inset-10 z-10 hidden sm:block" aria-hidden="true"></div>
     </div>
-  </Container>
+  </div>
 </section>

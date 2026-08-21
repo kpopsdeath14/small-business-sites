@@ -4,19 +4,18 @@ import Section from "@sitegen/shared-ui/components/Section.astro";
 import type { SiteData } from "@sitegen/shared-ui/types.ts";
 
 interface Props {
-  variant: number;
   data: SiteData;
 }
 const { data } = Astro.props;
 ---
 
-<Section id="stats" surface="surface" spacing="md">
+<Section id="stats" spacing="md" class="border-b border-[var(--color-border)]">
   <Container>
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-8 text-center">
+    <div class="flex flex-wrap justify-center sm:justify-between gap-x-10 gap-y-6">
       {data.stats.map((stat) => (
-        <div>
-          <p class="font-[var(--font-heading)] text-4xl sm:text-5xl font-bold text-[var(--color-primary)]">{stat.value}</p>
-          <p class="mt-2 text-xs sm:text-sm uppercase tracking-wide text-[var(--color-text-muted)]">{stat.label}</p>
+        <div class="text-center sm:text-left">
+          <p class="font-[var(--font-heading)] text-4xl sm:text-5xl text-[var(--color-primary)]">{stat.value}</p>
+          <p class="mt-1 text-[11px] uppercase tracking-[0.3em] text-[var(--color-text-muted)]">{stat.label}</p>
         </div>
       ))}
     </div>

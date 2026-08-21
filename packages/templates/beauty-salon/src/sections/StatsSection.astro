@@ -1,6 +1,7 @@
 ---
 import Container from "@sitegen/shared-ui/components/Container.astro";
-import Section from "@sitegen/shared-ui/components/Section.astro";
+import SalonSection from "../components/SalonSection.astro";
+import StarRating from "@sitegen/shared-ui/components/StarRating.astro";
 import type { SiteData } from "@sitegen/shared-ui/types.ts";
 
 interface Props {
@@ -8,17 +9,97 @@ interface Props {
   data: SiteData;
 }
 const { data } = Astro.props;
+
+// A stat like { value: "4.9", label: "рейтинг" } gets a real star graphic instead of just the number.
+function isRatingStat(label: string): boolean {
+  return /рейтинг|rating/i.test(label);
+}
+
+// "12 лет" → { prefix: "", num: 12, suffix: " лет", decimals: 0 }.
+// Only purely numeric-leading values count up; anything else renders static (fail-open).
+interface ParsedStat {
+  prefix: string;
+  num: number;
+  suffix: string;
+  decimals: number;
+}
+function parseCountUp(value: string): ParsedStat | null {
+  const match = value.match(/^([^\d]*)(\d+(?:[.,]\d+)?)(.*)$/);
+  if (!match) return null;
+  const raw = match[2].replace(",", ".");
+  const num = parseFloat(raw);
+  if (Number.isNaN(num)) return null;
+  const decimals = (raw.split(".")[1] ?? "").length;
+  return { prefix: match[1], num, suffix: match[3], decimals };
+}
 ---
 
-<Section id="stats" spacing="md">
+<SalonSection id="stats" spacing="md">
   <Container>
-    <div class="flex flex-wrap justify-center divide-x divide-[var(--color-border)]">
-      {data.stats.map((stat) => (
-        <div class="px-8 py-4 text-center">
-          <p class="font-[var(--font-heading)] text-3xl sm:text-4xl font-bold text-[var(--color-primary)]">{stat.value}</p>
-          <p class="mt-1 text-xs uppercase tracking-widest text-[var(--color-text-muted)]">{stat.label}</p>
-        </div>
-      ))}
+    <div class="grid grid-cols-3 lg:flex lg:flex-wrap justify-center gap-y-8 lg:gap-x-0 lg:divide-x lg:divide-[var(--color-border)]">
+      {
+        data.stats.map((stat) => {
+          const ratingValue = isRatingStat(stat.label) ? parseFloat(stat.value) : NaN;
+          const countUp = parseCountUp(stat.value);
+          return (
+            <div class="px-2 sm:px-10 xl:px-14 text-center" data-reveal>
+              <p class="font-[var(--font-heading)] text-3xl sm:text-4xl md:text-[2.75rem] font-medium text-[var(--color-text)] tabular-nums leading-none">
+                {countUp ? (
+                  <>
+                    {countUp.prefix}
+                    <span
+                      data-countup-num={countUp.num}
+                      data-countup-decimals={countUp.decimals}
+                      data-countup-suffix={countUp.suffix}
+                    >
+                      {countUp.num.toFixed(countUp.decimals)}
+                    </span>
+                  </>
+                ) : (
+                  stat.value
+                )}
+              </p>
+              {!Number.isNaN(ratingValue) && <StarRating rating={ratingValue} class="justify-center mt-3" />}
+              <p class="mt-3 text-[10px] uppercase tracking-[0.28em] text-[var(--color-text-muted)]">{stat.label}</p>
+            </div>
+          );
+        })
+      }
     </div>
   </Container>
-</Section>
+</SalonSection>
+
+<script>
+  // Count-up: numbers roll from 0 to their value the first time they scroll into view.
+  // The server-rendered HTML already contains the final value — no JS or a reduced-motion
+  // preference simply means the number is shown statically (fail-open).
+  const counters = document.querySelectorAll<HTMLElement>("[data-countup-num]");
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (counters.length > 0 && "IntersectionObserver" in window && !reducedMotion) {
+    const DURATION = 1300;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          observer.unobserve(entry.target);
+
+          const el = entry.target as HTMLElement;
+          const target = parseFloat(el.dataset.countupNum!);
+          const decimals = parseInt(el.dataset.countupDecimals ?? "0", 10);
+          const suffix = el.dataset.countupSuffix ?? "";
+          const start = performance.now();
+          const tick = (now: number) => {
+            const progress = Math.min(1, (now - start) / DURATION);
+            const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+            el.textContent = (target * eased).toFixed(decimals) + suffix;
+            if (progress < 1) requestAnimationFrame(tick);
+          };
+          requestAnimationFrame(tick);
+        }
+      },
+      { threshold: 0.6 }
+    );
+    counters.forEach((el) => observer.observe(el));
+  }
+</script>

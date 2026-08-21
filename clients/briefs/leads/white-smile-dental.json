@@ -1,0 +1,47 @@
+{
+  "business_type": "dental-clinic",
+  "name": "WHITE SMILE",
+  "description_raw": "Современная стоматологическая клиника: лечение и эстетика без боли и очередей. Ведём приём каждый день, работаем на немецком и корейском оборудовании.",
+  "address": "Москва, Варшавское шоссе, 87",
+  "phone": "+7 (999) 402-15-63",
+  "working_hours": { "ежедневно": "09:00–21:00" },
+  "social_links": {
+    "telegram": "https://t.me/whitesmiledental",
+    "whatsapp": "https://wa.me/79994021563"
+  },
+  "hero_photo": "https://images.pexels.com/photos/3952124/pexels-photo-3952124.jpeg",
+  "photos": [
+    "https://images.pexels.com/photos/6812521/pexels-photo-6812521.jpeg",
+    "https://images.pexels.com/photos/4270379/pexels-photo-4270379.jpeg",
+    "https://images.pexels.com/photos/7800666/pexels-photo-7800666.jpeg",
+    "https://images.pexels.com/photos/4269948/pexels-photo-4269948.jpeg",
+    "https://images.pexels.com/photos/3952017/pexels-photo-3952017.jpeg",
+    "https://images.pexels.com/photos/4269936/pexels-photo-4269936.jpeg"
+  ],
+  "menu_or_services": [
+    { "name": "Консультация и осмотр", "price": "0 ₽", "category": "Диагностика" },
+    { "name": "Компьютерная томография", "price": "2500 ₽", "category": "Диагностика" },
+    { "name": "Лечение кариеса", "price": "от 6500 ₽", "category": "Лечение" },
+    { "name": "Установка пломбы", "price": "от 4500 ₽", "category": "Лечение" },
+    { "name": "Профессиональная чистка", "price": "5900 ₽", "category": "Гигиена" },
+    { "name": "Отбеливание Zoom", "price": "14900 ₽", "category": "Эстетика" },
+    { "name": "Имплантация под ключ", "price": "от 45000 ₽", "category": "Имплантация" }
+  ],
+  "stats": [
+    { "value": "12", "label": "лет работы" },
+    { "value": "9000+", "label": "пациентов" },
+    { "value": "4.9", "label": "рейтинг" },
+    { "value": "0%", "label": "рассрочка" }
+  ],
+  "team": [
+    { "name": "Елена Смирнова", "role": "Главный врач, терапевт" },
+    { "name": "Дмитрий Кравцов", "role": "Ортопед, имплантолог" },
+    { "name": "Анна Ким", "role": "Детский стоматолог" }
+  ],
+  "faq": [
+    { "question": "Больно ли лечить зубы?", "answer": "Нет — используем современную анестезию, вы не почувствуете дискомфорта на всех этапах лечения." },
+    { "question": "Есть ли рассрочка?", "answer": "Да, предлагаем рассрочку 0% на срок до 12 месяцев без переплат и справок." },
+    { "question": "Сколько служит пломба?", "answer": "В среднем 7–10 лет при правильном уходе и регулярных осмотрах раз в полгода." },
+    { "question": "Принимаете ли детей?", "answer": "Да, у нас отдельный детский стоматолог и кабинет, адаптированный для маленьких пациентов." }
+  ]
+}

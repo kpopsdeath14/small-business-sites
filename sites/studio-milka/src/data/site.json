@@ -1,0 +1,153 @@
+{
+  "name": "Studio Milka",
+  "meta": {
+    "title": "Studio Milka — салон красоты / студия красоты",
+    "description": "Салон красоты полного цикла в центре города. Стрижки и окрашивание, маникюр и педикюр, брови и ресницы, косметология лица. Работаем только с профессиональной косметикой, каждый мастер — сертифицированный специалист."
+  },
+  "hero": {
+    "heading": "Studio Milka",
+    "subheading": "Салон красоты полного цикла в центре города.",
+    "ctaLabel": "Связаться с нами"
+  },
+  "about": {
+    "heading": "О нас",
+    "body": "Салон красоты полного цикла в центре города. Стрижки и окрашивание, маникюр и педикюр, брови и ресницы, косметология лица. Работаем только с профессиональной косметикой, каждый мастер — сертифицированный специалист."
+  },
+  "items": [
+    {
+      "name": "Женская стрижка",
+      "description": "",
+      "price": "от 2500 ₽",
+      "category": "Волосы"
+    },
+    {
+      "name": "Окрашивание в один тон",
+      "description": "",
+      "price": "от 4500 ₽",
+      "category": "Волосы"
+    },
+    {
+      "name": "Маникюр с покрытием гель-лак",
+      "description": "",
+      "price": "2200 ₽",
+      "category": "Ногти"
+    },
+    {
+      "name": "Педикюр аппаратный",
+      "description": "",
+      "price": "2800 ₽",
+      "category": "Ногти"
+    },
+    {
+      "name": "Коррекция и окрашивание бровей",
+      "description": "",
+      "price": "1200 ₽",
+      "category": "Брови и ресницы"
+    },
+    {
+      "name": "Ламинирование ресниц",
+      "description": "",
+      "price": "2500 ₽",
+      "category": "Брови и ресницы"
+    },
+    {
+      "name": "Чистка лица комбинированная",
+      "description": "",
+      "price": "3500 ₽",
+      "category": "Косметология"
+    }
+  ],
+  "gallery": [
+    {
+      "src": "/small-business-sites/photos/0.webp",
+      "alt": "Studio Milka — фото 1"
+    },
+    {
+      "src": "/small-business-sites/photos/1.webp",
+      "alt": "Studio Milka — фото 2"
+    },
+    {
+      "src": "/small-business-sites/photos/2.webp",
+      "alt": "Studio Milka — фото 3"
+    },
+    {
+      "src": "/small-business-sites/photos/3.webp",
+      "alt": "Studio Milka — фото 4"
+    }
+  ],
+  "reviews": [
+    {
+      "author": "Марина",
+      "rating": 5,
+      "text": "Хожу к Милане уже 3 года, лучший колорист в городе."
+    },
+    {
+      "author": "Екатерина",
+      "rating": 5,
+      "text": "Маникюр держится дольше, чем в других салонах, очень аккуратно."
+    },
+    {
+      "author": "Виктория",
+      "rating": 4,
+      "text": "Всё понравилось, единственное — иногда нужно ждать своего мастера."
+    }
+  ],
+  "reviewsUrl": "https://www.google.com/maps/search/?api=1&query=Studio+Milka+Москва",
+  "address": "г. Москва, Кутузовский проспект, д. 12",
+  "phone": "+7 495 300-20-10",
+  "workingHours": {
+    "пн-сб": "9:00–21:00",
+    "вс": "10:00–19:00"
+  },
+  "socialLinks": {
+    "instagram": "https://instagram.com/studiomilka",
+    "whatsapp": "https://wa.me/74953002010"
+  },
+  "mapCoords": {
+    "lat": 55.739944,
+    "lng": 37.535732
+  },
+  "team": [
+    {
+      "name": "Милана Петрова",
+      "role": "Топ-стилист, колорист",
+      "bio": "12 лет опыта, специализация — сложное окрашивание и уход за волосами.",
+      "photo": "/small-business-sites/photos/team-0.webp"
+    },
+    {
+      "name": "Ольга Смирнова",
+      "role": "Мастер маникюра",
+      "bio": "Работает с покрытиями и дизайном ногтей любой сложности.",
+      "photo": "/small-business-sites/photos/team-1.webp"
+    },
+    {
+      "name": "Диана Ким",
+      "role": "Бровист, лешмейкер",
+      "bio": "Ламинирование и окрашивание бровей, наращивание ресниц.",
+      "photo": "/small-business-sites/photos/team-2.webp"
+    }
+  ],
+  "processSteps": [],
+  "faq": [],
+  "stats": [],
+  "highlights": [
+    {
+      "name": "Ламинирование бровей",
+      "description": "Держится до 6 недель, брови выглядят гуще и ухоженнее без ежедневной укладки.",
+      "price": "2500 ₽",
+      "photo": "/small-business-sites/photos/highlight-0.webp"
+    },
+    {
+      "name": "Окрашивание Balayage",
+      "description": "Мягкий переход цвета без чёткой границы отросших корней — сокращает частоту визитов.",
+      "price": "от 7000 ₽",
+      "photo": "/small-business-sites/photos/highlight-1.webp"
+    },
+    {
+      "name": "Комбинированный маникюр",
+      "description": "Аппаратная обработка + покрытие гель-лак держится до 3 недель без сколов.",
+      "price": "2200 ₽",
+      "photo": "/small-business-sites/photos/highlight-2.webp"
+    }
+  ]
+}

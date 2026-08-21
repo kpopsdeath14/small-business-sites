@@ -1,0 +1,56 @@
+---
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+
+interface Props {
+  variant: number;
+  data: SiteData;
+}
+const { data } = Astro.props;
+
+function findStat(stats: SiteData["stats"], pattern: RegExp): string | undefined {
+  return stats.find((s) => pattern.test(s.label))?.value;
+}
+const rating = findStat(data.stats, /рейтинг|rating/i);
+const years = findStat(data.stats, /год|лет|year/i);
+
+const items: string[] = [data.name.toUpperCase()];
+if (rating) items.push(`РЕЙТИНГ ${rating}`);
+if (years) items.push(`${years} В БЬЮТИ-ИНДУСТРИИ`);
+if (data.bookingUrl) items.push("ЗАПИСЬ ОНЛАЙН");
+if (items.length < 3) items.push("РЕАЛЬНЫЕ ОТЗЫВЫ КЛИЕНТОВ");
+---
+
+<!-- Charcoal strip with champagne type: the same noir anchor language as booking/footer. -->
+<div class="relative overflow-hidden bg-[#14110e] py-4 border-y border-white/5" aria-hidden="true">
+  <div class="ticker-track flex w-max whitespace-nowrap">
+    {[0, 1].map(() => (
+      <div class="flex shrink-0 items-center">
+        {items.map((item) => (
+          <span class="flex items-center text-[11px] font-semibold uppercase tracking-[0.3em] text-[#C8A96E]">
+            <span class="mx-6">{item}</span>
+            <span class="text-[#C8A96E]/50 text-[8px]">✦</span>
+          </span>
+        ))}
+      </div>
+    ))}
+  </div>
+</div>
+
+<style>
+  .ticker-track {
+    animation: ticker-scroll 30s linear infinite;
+  }
+  @keyframes ticker-scroll {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ticker-track {
+      animation: none;
+    }
+  }
+</style>

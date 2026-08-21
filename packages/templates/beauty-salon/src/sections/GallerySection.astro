@@ -2,13 +2,14 @@
 import type { SiteData } from "@sitegen/shared-ui/types.ts";
 import GalleryMasonry from "./Gallery/GalleryMasonry.astro";
 import GalleryGrid from "./Gallery/GalleryGrid.astro";
+import GalleryEdgeToEdge from "./Gallery/GalleryEdgeToEdge.astro";
 
 interface Props {
   variant: number;
   data: SiteData;
 }
 const { variant, data } = Astro.props;
-const variants = [GalleryMasonry, GalleryGrid];
+const variants = [GalleryMasonry, GalleryGrid, GalleryEdgeToEdge];
 const Variant = variants[variant] ?? variants[0];
 ---
 

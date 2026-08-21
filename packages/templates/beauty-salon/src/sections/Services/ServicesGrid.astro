@@ -1,8 +1,8 @@
 ---
 import Container from "@sitegen/shared-ui/components/Container.astro";
-import Section from "@sitegen/shared-ui/components/Section.astro";
-import Card from "@sitegen/shared-ui/components/Card.astro";
-import Button from "@sitegen/shared-ui/components/Button.astro";
+import SalonSection from "../../components/SalonSection.astro";
+import SalonButton from "../../components/SalonButton.astro";
+import SkeletonImg from "@sitegen/shared-ui/components/SkeletonImg.astro";
 import type { SiteData } from "@sitegen/shared-ui/types.ts";
 
 interface Props {
@@ -11,21 +11,51 @@ interface Props {
 const { data } = Astro.props;
 ---
 
-<Section id="services" surface="surface">
+<SalonSection id="services" surface="surface">
   <Container>
-    <h2 class="font-[var(--font-heading)] text-3xl font-bold text-[var(--color-text)] text-center">Услуги</h2>
-    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
-      {data.items.map((item) => (
-        <Card>
-          <p class="text-xs uppercase tracking-wide text-[var(--color-text-muted)]">{item.category}</p>
-          <p class="mt-1 font-[var(--font-heading)] text-lg font-semibold text-[var(--color-text)]">{item.name}</p>
-          {item.description && <p class="mt-2 text-sm text-[var(--color-text-muted)]">{item.description}</p>}
-          {item.price && <p class="mt-4 font-semibold text-[var(--color-primary)]">{item.price}</p>}
-        </Card>
-      ))}
+    <div class="text-center mb-14" data-reveal>
+      <p class="eyebrow mb-5">Прайс</p>
+      <h2 class="font-[var(--font-heading)] text-3xl sm:text-4xl font-medium text-[var(--color-text)]">Услуги и цены</h2>
+      {data.servicesNote && <p class="mt-4 text-sm text-[var(--color-text-muted)]">{data.servicesNote}</p>}
     </div>
-    <div class="text-center mt-10">
-      <Button href="#contact" size="lg">Записаться</Button>
+
+    <!-- Hairline-bordered editorial cards: no fills, no shadows at rest — the photo and
+         typography carry each card; hover adds the lift. -->
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12" data-reveal-stagger="90">
+      {
+        data.items.map((item) => (
+          <article class="group border border-[var(--color-border)] bg-[var(--color-bg)] transition-all duration-500 ease-out hover:-translate-y-1.5 hover:shadow-[var(--shadow-elevated)] flex flex-col" data-reveal>
+            {item.photo && (
+              <div class="aspect-[4/3] overflow-hidden">
+                <SkeletonImg
+                  src={item.photo}
+                  alt={item.name}
+                  class="h-full w-full transition-transform duration-700 ease-out group-hover:scale-105"
+                />
+              </div>
+            )}
+            <div class="flex flex-col grow p-7">
+              {item.category && (
+                <p class="text-[10px] uppercase tracking-[0.28em] text-[var(--color-primary)]">{item.category}</p>
+              )}
+              <h3 class="mt-2.5 font-[var(--font-heading)] text-xl font-medium leading-snug text-[var(--color-text)]">
+                {item.name}
+              </h3>
+              {item.description && <p class="mt-3 text-sm leading-relaxed text-[var(--color-text-muted)]">{item.description}</p>}
+              <div class="mt-auto pt-5 flex items-baseline justify-between border-t border-[var(--color-border)] mt-5">
+                <span class="text-[10px] uppercase tracking-[0.28em] text-[var(--color-text-muted)]">Стоимость</span>
+                {item.price && (
+                  <span class="font-[var(--font-heading)] text-lg font-medium text-[var(--color-text)] tabular-nums">{item.price}</span>
+                )}
+              </div>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+
+    <div class="text-center mt-14" data-reveal>
+      <SalonButton href="#booking" size="lg">Записаться</SalonButton>
     </div>
   </Container>
-</Section>
+</SalonSection>

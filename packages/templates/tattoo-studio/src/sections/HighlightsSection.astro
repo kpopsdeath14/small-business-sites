@@ -1,0 +1,32 @@
+---
+import Container from "@sitegen/shared-ui/components/Container.astro";
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+
+interface Props {
+  data: SiteData;
+}
+const { data } = Astro.props;
+
+const rotations = ["-rotate-2", "rotate-1", "-rotate-1", "rotate-2", "-rotate-2", "rotate-1"];
+---
+
+<section id="highlights" data-reveal class="relative bg-[var(--color-bg)] py-16 sm:py-20">
+  <Container>
+    <p class="text-xs tracking-[0.4em] uppercase text-[var(--color-text-muted)] mb-8 text-center">Стили</p>
+    <div class="flex flex-wrap justify-center gap-4 sm:gap-5">
+      {data.highlights.map((item, i) => (
+        <div
+          class:list={[
+            "group border border-[var(--color-border)] px-5 py-3 transition-all duration-300 hover:rotate-0 hover:border-[var(--color-primary)] hover:-translate-y-1",
+            rotations[i % rotations.length],
+          ]}
+        >
+          <p class="font-[var(--font-heading)] uppercase text-lg sm:text-xl text-[var(--color-text)] group-hover:text-[var(--color-primary)] transition-colors">
+            {item.name}
+          </p>
+          {item.description && <p class="text-xs text-[var(--color-text-muted)] mt-0.5">{item.description}</p>}
+        </div>
+      ))}
+    </div>
+  </Container>
+</section>

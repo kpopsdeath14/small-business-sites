@@ -1,41 +1,36 @@
 ---
 import Container from "@sitegen/shared-ui/components/Container.astro";
-import Section from "@sitegen/shared-ui/components/Section.astro";
-import Card from "@sitegen/shared-ui/components/Card.astro";
+import SkeletonImg from "@sitegen/shared-ui/components/SkeletonImg.astro";
 import { initials } from "@sitegen/shared-ui/utils/initials.ts";
 import type { SiteData } from "@sitegen/shared-ui/types.ts";
 
 interface Props {
-  variant: number;
   data: SiteData;
 }
 const { data } = Astro.props;
 ---
 
-<Section id="team" surface="surface">
+<section id="team" data-reveal class="relative bg-[var(--color-surface)] py-20 sm:py-28">
   <Container>
-    <h2 class="font-[var(--font-heading)] text-3xl font-bold text-[var(--color-text)] text-center mb-10">Наши врачи</h2>
-    <div class="grid sm:grid-cols-2 gap-6">
+    <div class="text-center mb-14">
+      <p class="text-xs uppercase tracking-[0.3em] text-[var(--color-primary)] font-semibold mb-3">Команда</p>
+      <h2 class="font-[var(--font-heading)] text-3xl sm:text-4xl font-bold text-[var(--color-text)]">Наши врачи</h2>
+    </div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
       {data.team.map((member) => (
-        <Card class="flex items-center gap-4">
+        <div class="rounded-[var(--radius-lg)] bg-[var(--color-bg)] p-6 text-center shadow-[var(--shadow-card)]">
           {member.photo ? (
-            <img
-              src={member.photo}
-              alt={member.name}
-              class="h-20 w-20 flex-shrink-0 rounded-[var(--radius-md)] object-cover"
-            />
+            <SkeletonImg src={member.photo} alt={member.name} class="mx-auto h-32 w-32 rounded-full" />
           ) : (
-            <div class="flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-[var(--color-primary)]/15 text-xl font-bold text-[var(--color-primary)]">
+            <div class="mx-auto flex h-32 w-32 items-center justify-center rounded-full bg-[var(--color-surface)] text-2xl font-bold text-[var(--color-primary)]">
               {initials(member.name)}
             </div>
           )}
-          <div>
-            <p class="font-semibold text-[var(--color-text)]">{member.name}</p>
-            {member.role && <p class="text-sm text-[var(--color-primary)]">{member.role}</p>}
-            {member.bio && <p class="mt-1 text-sm text-[var(--color-text-muted)]">{member.bio}</p>}
-          </div>
-        </Card>
+          <p class="mt-5 font-[var(--font-heading)] text-lg font-semibold text-[var(--color-text)]">{member.name}</p>
+          {member.role && <p class="text-sm text-[var(--color-primary)]">{member.role}</p>}
+          {member.bio && <p class="mt-2 text-sm text-[var(--color-text-muted)]">{member.bio}</p>}
+        </div>
       ))}
     </div>
   </Container>
-</Section>
+</section>

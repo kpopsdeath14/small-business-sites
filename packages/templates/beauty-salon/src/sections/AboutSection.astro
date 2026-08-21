@@ -2,13 +2,14 @@
 import type { SiteData } from "@sitegen/shared-ui/types.ts";
 import AboutPhotoLeft from "./About/AboutPhotoLeft.astro";
 import AboutCentered from "./About/AboutCentered.astro";
+import AboutEditorial from "./About/AboutEditorial.astro";
 
 interface Props {
   variant: number;
   data: SiteData;
 }
 const { variant, data } = Astro.props;
-const variants = [AboutPhotoLeft, AboutCentered];
+const variants = [AboutPhotoLeft, AboutCentered, AboutEditorial];
 const Variant = variants[variant] ?? variants[0];
 ---
 

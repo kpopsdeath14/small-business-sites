@@ -1,6 +1,7 @@
 ---
 import Container from "@sitegen/shared-ui/components/Container.astro";
-import Section from "@sitegen/shared-ui/components/Section.astro";
+import SalonSection from "../components/SalonSection.astro";
+import SkeletonImg from "@sitegen/shared-ui/components/SkeletonImg.astro";
 import { initials } from "@sitegen/shared-ui/utils/initials.ts";
 import type { SiteData } from "@sitegen/shared-ui/types.ts";
 
@@ -11,28 +12,43 @@ interface Props {
 const { data } = Astro.props;
 ---
 
-<Section id="team" surface="surface">
+<SalonSection id="team">
   <Container>
-    <h2 class="font-[var(--font-heading)] text-3xl font-bold text-[var(--color-text)] text-center mb-12">Наши мастера</h2>
-    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-10">
-      {data.team.map((member) => (
-        <div class="text-center">
-          {member.photo ? (
-            <img
-              src={member.photo}
-              alt={member.name}
-              class="mx-auto h-40 w-40 rounded-full object-cover shadow-[var(--shadow-elevated)] ring-4 ring-[var(--color-bg)]"
-            />
-          ) : (
-            <div class="mx-auto flex h-40 w-40 items-center justify-center rounded-full bg-[var(--color-primary)]/15 text-3xl font-bold text-[var(--color-primary)] shadow-[var(--shadow-elevated)] ring-4 ring-[var(--color-bg)]">
-              {initials(member.name)}
+    <div class="text-center mb-14" data-reveal>
+      <p class="eyebrow mb-5">Команда</p>
+      <h2 class="font-[var(--font-heading)] text-3xl sm:text-4xl font-medium text-[var(--color-text)]">Наши мастера</h2>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-14" data-reveal-stagger="110">
+      {
+        data.team.map((member) => (
+          <figure class="group text-center" data-reveal>
+            <div class="relative mx-auto aspect-[3/4] max-w-[320px] overflow-hidden bg-[var(--color-surface)]">
+              {member.photo ? (
+                <SkeletonImg
+                  src={member.photo}
+                  alt={member.name}
+                  class="h-full w-full transition-all duration-700 ease-out group-hover:scale-[1.04]"
+                />
+              ) : (
+                <div class="flex h-full w-full items-center justify-center font-[var(--font-heading)] text-5xl italic text-[var(--color-primary)]">
+                  {initials(member.name)}
+                </div>
+              )}
+              {/* Bottom veil lifts on hover to reveal the bio — quiet, editorial. */}
+              {member.bio && (
+                <figcaption class="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out bg-gradient-to-t from-black/85 via-black/55 to-transparent px-6 pt-12 pb-6 text-left">
+                  <p class="text-sm leading-relaxed text-white/90">{member.bio}</p>
+                </figcaption>
+              )}
             </div>
-          )}
-          <p class="mt-5 font-[var(--font-heading)] text-lg font-semibold text-[var(--color-text)]">{member.name}</p>
-          {member.role && <p class="text-sm text-[var(--color-primary)]">{member.role}</p>}
-          {member.bio && <p class="mt-2 text-sm text-[var(--color-text-muted)]">{member.bio}</p>}
-        </div>
-      ))}
+            <figcaption class="mt-6">
+              <p class="font-[var(--font-heading)] text-xl font-medium text-[var(--color-text)]">{member.name}</p>
+              {member.role && <p class="mt-1.5 text-[10px] uppercase tracking-[0.28em] text-[var(--color-primary)]">{member.role}</p>}
+            </figcaption>
+          </figure>
+        ))
+      }
     </div>
   </Container>
-</Section>
+</SalonSection>

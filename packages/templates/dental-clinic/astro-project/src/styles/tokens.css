@@ -1,18 +1,17 @@
-/* Default fallback token set (Clinical Blue). Overwritten per-client by the CLI scaffold step. */
 :root {
-  --color-bg: #f5fafc;
-  --color-surface: #e8f3f7;
-  --color-text: #132227;
-  --color-text-muted: #546a72;
-  --color-primary: #0f7a8c;
-  --color-primary-contrast: #ffffff;
-  --color-accent: #4fc1d6;
-  --color-border: #d6e8ed;
-  --font-heading: -apple-system, "Segoe UI", system-ui, sans-serif;
-  --font-body: -apple-system, "Segoe UI", system-ui, sans-serif;
-  --radius-sm: 8px;
-  --radius-md: 14px;
-  --radius-lg: 22px;
-  --shadow-card: 0 4px 14px rgba(19, 34, 39, 0.08);
-  --shadow-elevated: 0 12px 30px rgba(19, 34, 39, 0.14);
+  --color-bg: #FFFFFF;
+  --color-surface: #EFF7F4;
+  --color-text: #131C1A;
+  --color-text-muted: #5C6B67;
+  --color-primary: #1F8A70;
+  --color-primary-contrast: #FFFFFF;
+  --color-accent: #63C2A6;
+  --color-border: #DCEEE7;
+  --font-heading: 'Plus Jakarta Sans', -apple-system, 'Segoe UI', system-ui, sans-serif;
+  --font-body: 'Plus Jakarta Sans', -apple-system, 'Segoe UI', system-ui, sans-serif;
+  --radius-sm: 10px;
+  --radius-md: 18px;
+  --radius-lg: 28px;
+  --shadow-card: 0 10px 30px rgba(19,28,26,0.06);
+  --shadow-elevated: 0 20px 50px rgba(19,28,26,0.1);
 }

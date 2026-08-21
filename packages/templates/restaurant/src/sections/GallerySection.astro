@@ -1,15 +1,19 @@
 ---
+import Lightbox from "@sitegen/shared-ui/components/Lightbox.tsx";
 import type { SiteData } from "@sitegen/shared-ui/types.ts";
-import GalleryMasonry from "./Gallery/GalleryMasonry.astro";
-import GalleryGrid from "./Gallery/GalleryGrid.astro";
 
 interface Props {
-  variant: number;
   data: SiteData;
 }
-const { variant, data } = Astro.props;
-const variants = [GalleryMasonry, GalleryGrid];
-const Variant = variants[variant] ?? variants[0];
+const { data } = Astro.props;
 ---
 
-<Variant data={data} />
+<section id="gallery" data-reveal class="relative bg-[var(--color-bg)] py-4">
+  <Lightbox
+    client:visible
+    photos={data.gallery}
+    gridClassName="columns-2 sm:columns-4 gap-1 px-1"
+    itemClassName="mb-1 break-inside-avoid"
+    imgClassName="w-full h-auto"
+  />
+</section>

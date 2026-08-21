@@ -2,12 +2,11 @@
 import Base from "../layouts/Base.astro";
 import Nav from "@sitegen/shared-ui/components/Nav.astro";
 import HeroSection from "@sitegen/template-barbershop/sections/HeroSection.astro";
-import AboutSection from "@sitegen/template-barbershop/sections/AboutSection.astro";
-import ServicesSection from "@sitegen/template-barbershop/sections/ServicesSection.astro";
 import StatsSection from "@sitegen/template-barbershop/sections/StatsSection.astro";
-import TeamSection from "@sitegen/template-barbershop/sections/TeamSection.astro";
 import GallerySection from "@sitegen/template-barbershop/sections/GallerySection.astro";
-import ReviewsSection from "@sitegen/template-barbershop/sections/ReviewsSection.astro";
+import ServicesSection from "@sitegen/template-barbershop/sections/ServicesSection.astro";
+import TeamSection from "@sitegen/template-barbershop/sections/TeamSection.astro";
+import AboutSection from "@sitegen/template-barbershop/sections/AboutSection.astro";
 import ContactSection from "@sitegen/template-barbershop/sections/ContactSection.astro";
 import FooterSection from "@sitegen/template-barbershop/sections/FooterSection.astro";
 import type { SiteData } from "@sitegen/shared-ui/types.ts";
@@ -19,28 +18,26 @@ const siteConfig = siteConfigJson as { sections: { id: string; variant: number }
 
 const sectionComponents: Record<string, any> = {
   hero: HeroSection,
-  about: AboutSection,
-  services: ServicesSection,
   stats: StatsSection,
-  team: TeamSection,
   gallery: GallerySection,
-  reviews: ReviewsSection,
+  services: ServicesSection,
+  team: TeamSection,
+  about: AboutSection,
   contact: ContactSection,
   footer: FooterSection,
 };
 
 const NAV_LABELS: Record<string, string> = {
-  about: "О нас",
+  gallery: "Работы",
   services: "Услуги",
   team: "Мастера",
-  gallery: "Галерея",
-  reviews: "Отзывы",
+  about: "О нас",
   contact: "Контакты",
 };
 
 const navLinks = siteConfig.sections
   .filter((section) => section.id in NAV_LABELS)
-  .map((section) => ({ label: NAV_LABELS[section.id], href: `#${section.id}` }));
+  .map((section) => ({ label: NAV_LABELS[section.id], href: `#${section.id}`, primary: section.id === "contact" }));
 ---
 
 <Base title={data.meta.title} description={data.meta.description}>

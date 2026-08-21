@@ -16,7 +16,7 @@ export interface DesignSelection {
  */
 const DATA_AVAILABILITY: Record<string, (brief: Brief) => boolean> = {
   gallery: (b) => b.photos.length > 0,
-  reviews: (b) => b.reviews.length > 0,
+  reviews: (b) => b.reviews.length > 0 || !!b.reviews_url,
   team: (b) => b.team.length > 0,
   process: (b) => b.process_steps.length > 0,
   faq: (b) => b.faq.length > 0,

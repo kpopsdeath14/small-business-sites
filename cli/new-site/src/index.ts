@@ -5,7 +5,7 @@ import { selectDesign } from "./steps/selectDesign.js";
 import { generateContentStep } from "./steps/generateContent.js";
 import { readContentCache, writeContentCache } from "./steps/contentCache.js";
 import { hashBrief } from "./utils/hash.js";
-import { downloadImages } from "./steps/downloadImages.js";
+import { downloadImages, downloadPhotoFields, downloadSinglePhoto } from "./steps/downloadImages.js";
 import { buildSiteData } from "./steps/buildSiteData.js";
 import { scaffoldSite } from "./steps/scaffoldSite.js";
 import { writeSiteFiles } from "./steps/writeSiteFiles.js";
@@ -20,6 +20,7 @@ const { values } = parseArgs({
     "dry-run": { type: "boolean", default: false },
     "regenerate-content": { type: "boolean", default: false },
     seed: { type: "string" },
+    base: { type: "string", default: "/" },
   },
 });
 
@@ -68,9 +69,19 @@ async function main() {
   const { siteDir, isNewSite } = await scaffoldSite(brief.business_type, slug, repoRoot);
 
   step("Скачивание фото");
-  const localPhotoPaths = await downloadImages(brief.photos, siteDir);
+  const basePath = values.base!;
+  const localPhotoPaths = await downloadImages(brief.photos, siteDir, basePath);
+  const optimizedHighlights = await downloadPhotoFields(brief.highlights, siteDir, "highlight", basePath);
+  const optimizedTeam = await downloadPhotoFields(brief.team, siteDir, "team", basePath);
+  content.items = await downloadPhotoFields(content.items, siteDir, "item", basePath);
+  const heroPhoto = brief.hero_photo ? await downloadSinglePhoto(brief.hero_photo, siteDir, "hero", basePath) : undefined;
 
-  const siteData = buildSiteData(brief, content, localPhotoPaths);
+  const siteData = buildSiteData(
+    { ...brief, highlights: optimizedHighlights, team: optimizedTeam },
+    content,
+    localPhotoPaths,
+    heroPhoto
+  );
   await writeSiteFiles(siteDir, siteData, siteConfig, tokens);
   success(`Данные сайта записаны в sites/${slug}`);
 

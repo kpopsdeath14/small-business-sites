@@ -1,16 +1,98 @@
 {
   "business_type": "beauty-salon",
   "name": "Lashvelyuga",
-  "description_raw": "Студия наращивания ресниц. Подробное описание уточняется у клиента.",
-  "address": "",
-  "phone": "",
-  "working_hours": {},
-  "social_links": {},
+  "description_raw": "Салон бровей и ресниц / эпиляция, депиляция. Москва, улица Адмирала Руднева, 4. Работает ежедневно, 10:00–23:00.",
+  "address": "Москва, улица Адмирала Руднева, 4",
+  "phone": "+7 (919) 266-02-92",
+  "working_hours": {
+    "ежедневно": "10:00–23:00"
+  },
+  "social_links": {
+    "telegram": "https://t.me/yuliavelyuga"
+  },
+  "hero_photo": "https://images.pexels.com/photos/18809795/pexels-photo-18809795.jpeg",
   "photos": [
-    "https://picsum.photos/seed/lashvelyuga1/1200/900",
-    "https://picsum.photos/seed/lashvelyuga2/1200/900"
+    "https://avatars.mds.yandex.net/get-altay/18098886/2a0000019fa362eeab60263901efc748148c/orig",
+    "https://avatars.mds.yandex.net/get-altay/16497373/2a00000199aa93e9dc1efbf1d14a6dc0eb4c/orig",
+    "https://avatars.mds.yandex.net/get-altay/18396981/2a00000199d98dcc21cbd2e6cc6883954a7a/orig",
+    "https://avatars.mds.yandex.net/get-altay/19807214/2a0000019f7bb8cd5a434001cfb0c64e81c8/orig",
+    "https://avatars.mds.yandex.net/get-altay/19708557/2a0000019f7bb8cf1442d5390b8b67f859e8/orig",
+    "https://avatars.mds.yandex.net/get-altay/15251677/2a00000199d98d8f30f66d41a3405c170348/orig",
+    "https://avatars.mds.yandex.net/get-altay/19521209/2a0000019caf51c87fac2b649083140c104e/orig",
+    "https://avatars.mds.yandex.net/get-altay/15608211/2a00000199d98dc4ff4bfd6fe74e26695495/orig"
   ],
   "menu_or_services": [
-    { "name": "Наращивание ресниц", "category": "Ресницы" }
-  ]
+    {
+      "name": "Коррекция бровей",
+      "price": "600 ₽",
+      "category": "Брови"
+    },
+    {
+      "name": "Ламинирование бровей",
+      "price": "2400 ₽",
+      "category": "Брови"
+    },
+    {
+      "name": "Оформление бровей",
+      "price": "1400 ₽",
+      "category": "Брови"
+    },
+    {
+      "name": "Кавитация",
+      "price": "1500 ₽",
+      "category": "Аппаратная косметология"
+    },
+    {
+      "name": "Rf-лифтинг «не игольчатый»",
+      "price": "1200 ₽",
+      "category": "Аппаратная косметология"
+    },
+    {
+      "name": "Бедра",
+      "price": "1000 ₽",
+      "category": "Лазерная эпиляция"
+    },
+    {
+      "name": "Глубокое бикини",
+      "price": "1600 ₽",
+      "category": "Лазерная эпиляция"
+    },
+    {
+      "name": "Голени",
+      "price": "1200 ₽",
+      "category": "Лазерная эпиляция"
+    },
+    {
+      "name": "Ламинирование ресниц",
+      "price": "2500 ₽",
+      "category": "Ресницы"
+    },
+    {
+      "name": "Наращивание ресниц 1D",
+      "price": "2500 ₽",
+      "category": "Ресницы"
+    },
+    {
+      "name": "Наращивание ресниц 2D",
+      "price": "2800 ₽",
+      "category": "Ресницы"
+    },
+    {
+      "name": "Педикюр с покрытием",
+      "price": "2200 ₽",
+      "category": "Педикюр"
+    }
+  ],
+  "stats": [
+    {
+      "value": "5.0",
+      "label": "рейтинг"
+    },
+    {
+      "value": "48",
+      "label": "оценок"
+    }
+  ],
+  "booking_url": "https://dikidi.ru/2006349",
+  "reviews_url": "https://yandex.com/maps/org/x/47364619390/reviews/"
 }

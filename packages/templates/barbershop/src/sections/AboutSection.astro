@@ -1,15 +1,31 @@
 ---
+import Container from "@sitegen/shared-ui/components/Container.astro";
+import SkeletonImg from "@sitegen/shared-ui/components/SkeletonImg.astro";
+import BrassRule from "../components/BrassRule.astro";
 import type { SiteData } from "@sitegen/shared-ui/types.ts";
-import AboutPhotoLeft from "./About/AboutPhotoLeft.astro";
-import AboutCentered from "./About/AboutCentered.astro";
 
 interface Props {
-  variant: number;
   data: SiteData;
 }
-const { variant, data } = Astro.props;
-const variants = [AboutPhotoLeft, AboutCentered];
-const Variant = variants[variant] ?? variants[0];
+const { data } = Astro.props;
+const photo = data.gallery[1]?.src ?? data.gallery[0]?.src;
 ---
 
-<Variant data={data} />
+<section id="about" data-reveal class="relative bg-[var(--color-surface)] py-20 sm:py-28 overflow-hidden">
+  <Container>
+    <div class="grid lg:grid-cols-12 gap-10 lg:gap-16 items-center">
+      <div class="lg:col-span-5">
+        {photo && <SkeletonImg src={photo} alt={data.name} class="aspect-[4/5] w-full" />}
+      </div>
+      <div class="lg:col-span-7">
+        <BrassRule class="mb-6 max-w-[100px]" />
+        <p class="font-[var(--font-heading)] uppercase text-[clamp(1.8rem,4vw,3rem)] leading-[1.05] text-[var(--color-text)]">
+          {data.about.heading}
+        </p>
+        <p class="mt-6 text-base sm:text-lg text-[var(--color-text-muted)] leading-relaxed max-w-2xl">
+          {data.about.body}
+        </p>
+      </div>
+    </div>
+  </Container>
+</section>

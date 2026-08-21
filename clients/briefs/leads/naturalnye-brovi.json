@@ -1,18 +1,99 @@
 {
   "business_type": "beauty-salon",
   "name": "Натуральные брови",
-  "description_raw": "Студия оформления бровей. Подробное описание уточняется у клиента.",
-  "address": "",
-  "phone": "",
-  "working_hours": {},
-  "social_links": {},
+  "description_raw": "Салон бровей и ресниц. Москва, улица Адмирала Лазарева, 35. Работает ежедневно, 10:00–21:00.",
+  "address": "Москва, улица Адмирала Лазарева, 35",
+  "phone": "+7 (917) 552-11-33",
+  "working_hours": {
+    "ежедневно": "10:00–21:00"
+  },
+  "social_links": {
+    "telegram": "https://t.me/lina_serovaa",
+    "whatsapp": "https://wa.me/79175521133?text=%D0%9E%D0%B1%D1%80%D0%B0%D1%89%D0%B5%D0%BD%D0%B8%D0%B5+%D0%B8%D0%B7+%D0%AF%D0%BD%D0%B4%D0%B5%D0%BA%D1%81+%D0%9A%D0%B0%D1%80%D1%82%0A%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!+%D0%9C%D0%B5%D0%BD%D1%8F+%D0%B7%D0%B0%D0%B8%D0%BD%D1%82%D0%B5%D1%80%D0%B5%D1%81%D0%BE%D0%B2%D0%B0%D0%BB%D0%BE+%D0%B2%D0%B0%D1%88%D0%B5+%D0%BF%D1%80%D0%B5%D0%B4%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D0%B5"
+  },
+  "hero_photo": "https://avatars.mds.yandex.net/get-altay/13325287/2a0000018ea37be851e8b61c044766aeeebc/orig",
   "photos": [
-    "https://picsum.photos/seed/natbrovi1/1200/900",
-    "https://picsum.photos/seed/natbrovi2/1200/900"
+    "https://avatars.mds.yandex.net/get-altay/6514890/2a0000018a6664f13b4fcc0894a81749d8e5/orig",
+    "https://avatars.mds.yandex.net/get-altay/9776062/2a0000018a5c9d7774ec8119948ab8a30d3f/orig",
+    "https://avatars.mds.yandex.net/get-altay/13325287/2a0000018ea37be851e8b61c044766aeeebc/orig",
+    "https://avatars.mds.yandex.net/get-altay/10814540/2a0000018a5c53ffaa2c4c1129d64043c6dc/orig",
+    "https://avatars.mds.yandex.net/get-altay/18108291/2a0000019bec1f2f04a7b6af61b18196b574/orig",
+    "https://avatars.mds.yandex.net/get-altay/1868686/2a0000018a61684de82dbb1358d1f00e7c06/orig",
+    "https://avatars.mds.yandex.net/get-altay/15022759/2a000001958fe27561c4f3cd0acd10baa5d8/orig",
+    "https://avatars.mds.yandex.net/get-altay/10639454/2a0000018a615ee6ce4313903c3f1581d3ae/orig"
   ],
   "menu_or_services": [
-    { "name": "Коррекция бровей", "category": "Брови" },
-    { "name": "Окрашивание бровей", "category": "Брови" },
-    { "name": "Ламинирование бровей", "category": "Брови" }
-  ]
+    {
+      "name": "Архитектура бровей",
+      "price": "2600 ₽",
+      "category": "Брови"
+    },
+    {
+      "name": "Ламинирование бровей",
+      "price": "3200 ₽",
+      "category": "Брови"
+    },
+    {
+      "name": "Осветление бровей",
+      "price": "от 3200 ₽",
+      "category": "Брови"
+    },
+    {
+      "name": "Коррекция бровей",
+      "price": "1800 ₽",
+      "category": "Брови"
+    },
+    {
+      "name": "Окрашивание бровей без коррекции",
+      "price": "1500 ₽",
+      "category": "Брови"
+    },
+    {
+      "name": "ORGANIC BROW — реконструкция, восстановление бровей",
+      "price": "1200 ₽",
+      "category": "Брови"
+    },
+    {
+      "name": "TOTAL LOOK: архитектура бровей + ламинирование ресниц",
+      "price": "5300 ₽",
+      "category": "Система «Total Look»"
+    },
+    {
+      "name": "TOTAL LOOK: ламинирование бровей + ламинирование ресниц",
+      "price": "5900 ₽",
+      "category": "Система «Total Look»"
+    },
+    {
+      "name": "Ламинирование ресниц",
+      "price": "3200 ₽",
+      "category": "Ресницы"
+    },
+    {
+      "name": "Окрашивание ресниц",
+      "price": "700 ₽",
+      "category": "Ресницы"
+    },
+    {
+      "name": "Депиляция лица",
+      "price": "400 ₽",
+      "category": "Доп. услуги"
+    },
+    {
+      "name": "Экспресс-макияж Shiny Skin",
+      "price": "2500 ₽",
+      "category": "Доп. услуги"
+    }
+  ],
+  "stats": [
+    {
+      "value": "5.0",
+      "label": "рейтинг"
+    },
+    {
+      "value": "54",
+      "label": "оценок"
+    }
+  ],
+  "booking_url": "https://dikidi.net/585651",
+  "reviews_url": "https://yandex.com/maps/org/x/154158386793/reviews/"
 }

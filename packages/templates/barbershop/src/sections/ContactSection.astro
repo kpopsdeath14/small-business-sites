@@ -1,15 +1,60 @@
 ---
+import Container from "@sitegen/shared-ui/components/Container.astro";
+import Button from "@sitegen/shared-ui/components/Button.astro";
+import SocialLinks from "@sitegen/shared-ui/components/SocialLinks.astro";
+import MapEmbed from "@sitegen/shared-ui/components/MapEmbed.astro";
+import BrassRule from "../components/BrassRule.astro";
 import type { SiteData } from "@sitegen/shared-ui/types.ts";
-import ContactMapSide from "./Contact/ContactMapSide.astro";
-import ContactCentered from "./Contact/ContactCentered.astro";
 
 interface Props {
-  variant: number;
   data: SiteData;
 }
-const { variant, data } = Astro.props;
-const variants = [ContactMapSide, ContactCentered];
-const Variant = variants[variant] ?? variants[0];
+const { data } = Astro.props;
+const telegram = data.socialLinks?.telegram;
 ---
 
-<Variant data={data} />
+<section id="contact" data-reveal class="relative bg-[var(--color-bg)] py-20 sm:py-28">
+  <Container>
+    <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+      <div>
+        <BrassRule class="mb-6 max-w-[100px]" />
+        <h2 class="font-[var(--font-heading)] uppercase text-[clamp(2.2rem,6vw,4rem)] leading-[0.95] text-[var(--color-text)]">
+          Записаться<br />на стрижку
+        </h2>
+        <div class="mt-8 space-y-2 text-[var(--color-text)]">
+          {data.address && <p class="text-lg">{data.address}</p>}
+          {data.phone && (
+            <p>
+              <a href={`tel:${data.phone.replace(/[^+\d]/g, "")}`} class="text-[var(--color-primary)] font-[var(--font-heading)] text-2xl tracking-wide hover:underline">{data.phone}</a>
+            </p>
+          )}
+          {data.workingHours && Object.entries(data.workingHours).map(([days, hours]) => (
+            <p class="text-[var(--color-text-muted)] text-sm">{days}: {hours}</p>
+          ))}
+        </div>
+        <div class="mt-8 flex flex-wrap items-center gap-4">
+          {telegram && (
+            <Button href={telegram} size="lg" class="!rounded-none uppercase tracking-widest text-sm font-semibold">
+              Написать
+            </Button>
+          )}
+          {data.phone && (
+            <Button href={`tel:${data.phone.replace(/[^+\d]/g, "")}`} variant="outline" size="lg" class="!rounded-none uppercase tracking-widest text-sm font-semibold">
+              Позвонить
+            </Button>
+          )}
+        </div>
+        {data.socialLinks && Object.keys(data.socialLinks).length > 0 && (
+          <div class="mt-6">
+            <SocialLinks links={data.socialLinks} />
+          </div>
+        )}
+      </div>
+      <div>
+        {(data.mapCoords || data.address) && (
+          <MapEmbed address={data.address} lat={data.mapCoords?.lat} lng={data.mapCoords?.lng} class="aspect-[4/3]" />
+        )}
+      </div>
+    </div>
+  </Container>
+</section>

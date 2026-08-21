@@ -1,23 +1,77 @@
 ---
 import Container from "@sitegen/shared-ui/components/Container.astro";
-import Button from "@sitegen/shared-ui/components/Button.astro";
+import SalonButton from "../../components/SalonButton.astro";
+import SkeletonImg from "@sitegen/shared-ui/components/SkeletonImg.astro";
 import type { SiteData } from "@sitegen/shared-ui/types.ts";
 
 interface Props {
   data: SiteData;
 }
 const { data } = Astro.props;
+// A dedicated heroPhoto is curated to already be a wide/landscape shape, so it can just cover the banner.
+// Falling back to a real gallery photo, we don't know its aspect ratio (often portrait), so it gets the
+// safe blurred-backdrop treatment instead of a hard cover-crop that could cut off most of the subject.
+const heroPhoto = data.heroPhoto;
 const bgPhoto = data.gallery[0]?.src;
+const ratingStat = data.stats.find((s) => /рейтинг|rating/i.test(s.label));
 ---
 
-<section id="hero" class="relative flex items-center justify-center min-h-[80vh] text-center overflow-hidden">
-  {bgPhoto && <img src={bgPhoto} alt="" class="absolute inset-0 w-full h-full object-cover" />}
-  <div class="absolute inset-0 bg-black/50"></div>
-  <Container class="relative z-10 py-24">
-    <h1 class="font-[var(--font-heading)] text-4xl sm:text-6xl font-bold text-white">{data.hero.heading}</h1>
-    <p class="mt-4 text-lg text-white/90 max-w-xl mx-auto">{data.hero.subheading}</p>
-    <div class="mt-8">
-      <Button href="#contact" size="lg">{data.hero.ctaLabel}</Button>
+<section id="hero" class="relative flex items-center justify-center min-h-[100svh] text-center overflow-hidden">
+  {
+    heroPhoto ? (
+      <SkeletonImg src={heroPhoto} alt="" class="absolute inset-0 w-full h-full ken-burns" loading="eager" />
+    ) : (
+      bgPhoto && (
+        <>
+          {/* Blurred cover fills the banner; the sharp copy is never cropped, whatever its aspect ratio. */}
+          <img src={bgPhoto} alt="" aria-hidden="true" class="absolute inset-0 w-full h-full object-cover scale-110 blur-2xl brightness-75" />
+          <SkeletonImg src={bgPhoto} alt="" class="absolute inset-0 w-full h-full" fit="contain" loading="eager" />
+        </>
+      )
+    )
+  }
+  <!-- Deep vignette: darkest at the edges where the frame sits, lifting toward center
+       so the serif headline stays crisp against the photo. -->
+  <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.25)_0%,rgba(0,0,0,0.62)_100%)]"></div>
+
+  <!-- Inset hairline frame: the atelier matting that instantly reads "gallery, not landing page". -->
+  <div class="pointer-events-none absolute inset-3 sm:inset-5 lg:inset-7 border border-white/25 z-10" aria-hidden="true"></div>
+
+  {
+    ratingStat && (
+      <div class="hero-enter hidden sm:flex absolute top-10 right-10 lg:top-14 lg:right-16 z-20 items-center gap-2.5 text-white/85 text-xs tracking-[0.2em] uppercase" style="--enter-delay:1s">
+        <span class="text-[#E3D2AF] text-base leading-none">★</span>
+        {ratingStat.value} · {ratingStat.label}
+      </div>
+    )
+  }
+
+  <Container class="relative z-20 py-28">
+    <p class="hero-enter eyebrow !text-white/70 mb-6" style="--enter-delay:0.15s">Салон красоты</p>
+    <h1
+      class="hero-enter font-[var(--font-heading)] font-medium leading-[1.04] text-white text-[clamp(2.75rem,7.5vw,6rem)] max-w-4xl mx-auto [text-shadow:0_2px_40px_rgba(0,0,0,0.45)]"
+      style="--enter-delay:0.3s"
+    >
+      {data.hero.heading}
+    </h1>
+    <div class="hero-enter mx-auto mt-8 h-px w-16 bg-[#E3D2AF]" style="--enter-delay:0.5s" aria-hidden="true"></div>
+    <p class="hero-enter mt-8 text-base sm:text-lg text-white/85 max-w-xl mx-auto leading-relaxed font-light" style="--enter-delay:0.6s">
+      {data.hero.subheading}
+    </p>
+    <div class="hero-enter mt-11 flex flex-col sm:flex-row items-center justify-center gap-4" style="--enter-delay:0.75s">
+      <SalonButton href="#booking" size="lg">{data.hero.ctaLabel}</SalonButton>
+      <SalonButton href="#services" variant="ghost-light" size="lg">Услуги и цены</SalonButton>
     </div>
   </Container>
+
+  <!-- Scroll hint: quiet invitation to explore, floats gently; pure decoration. -->
+  <a
+    href="#stats"
+    aria-label="Листайте вниз"
+    class="drift-down absolute bottom-8 left-1/2 -translate-x-1/2 z-20 text-white/70 hover:text-white transition-colors"
+  >
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 4v16m0 0l-6-6m6 6l6-6"></path>
+    </svg>
+  </a>
 </section>

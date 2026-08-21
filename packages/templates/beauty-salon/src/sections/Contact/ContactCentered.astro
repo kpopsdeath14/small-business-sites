@@ -1,34 +1,60 @@
 ---
 import Container from "@sitegen/shared-ui/components/Container.astro";
-import Section from "@sitegen/shared-ui/components/Section.astro";
+import SalonSection from "../../components/SalonSection.astro";
 import MapEmbed from "@sitegen/shared-ui/components/MapEmbed.astro";
-import BookingForm from "@sitegen/shared-ui/components/BookingForm.tsx";
-import BookingWidget from "@sitegen/shared-ui/components/BookingWidget.astro";
-import Card from "@sitegen/shared-ui/components/Card.astro";
 import type { SiteData } from "@sitegen/shared-ui/types.ts";
 
 interface Props {
   data: SiteData;
 }
 const { data } = Astro.props;
+const hoursSummary = Object.entries(data.workingHours ?? {})
+  .map(([days, hours]) => `${days}: ${hours}`)
+  .join(" · ");
 ---
 
-<Section id="contact">
+<SalonSection id="contact">
   <Container narrow>
-    <h2 class="font-[var(--font-heading)] text-3xl font-bold text-[var(--color-text)] text-center mb-4">Контакты</h2>
-    <p class="text-center text-[var(--color-text-muted)] mb-10">
-      {data.address}
-      {data.phone && ` · ${data.phone}`}
-    </p>
-    <div class="max-w-md mx-auto mb-10">
-      {data.bookingUrl ? (
-        <BookingWidget url={data.bookingUrl} />
-      ) : (
-        <Card hover={false}>
-          <BookingForm client:visible submitLabel="Записаться" successMessage="Заявка отправлена, спасибо!" phone={data.phone} />
-        </Card>
-      )}
+    <div class="text-center" data-reveal>
+      <p class="eyebrow mb-5">Контакты</p>
+      <h2 class="font-[var(--font-heading)] text-3xl sm:text-4xl font-medium text-[var(--color-text)]">Как нас найти</h2>
+
+      <!-- Three quiet info blocks in a row. -->
+      <div class="mt-10 grid sm:grid-cols-3 gap-8">
+        {
+          data.address && (
+            <div>
+              <p class="text-[10px] uppercase tracking-[0.28em] text-[var(--color-text-muted)]">Адрес</p>
+              <p class="mt-2.5 text-sm leading-relaxed text-[var(--color-text)]">{data.address}</p>
+            </div>
+          )
+        }
+        {
+          data.phone && (
+            <div>
+              <p class="text-[10px] uppercase tracking-[0.28em] text-[var(--color-text-muted)]">Телефон</p>
+              <a
+                href={`tel:${data.phone.replace(/[^+\d]/g, "")}`}
+                class="mt-2.5 inline-block font-[var(--font-heading)] text-lg font-medium text-[var(--color-text)] hover:text-[var(--color-primary)] transition-colors"
+              >
+                {data.phone}
+              </a>
+            </div>
+          )
+        }
+        {
+          hoursSummary && (
+            <div>
+              <p class="text-[10px] uppercase tracking-[0.28em] text-[var(--color-text-muted)]">Часы работы</p>
+              <p class="mt-2.5 text-sm leading-relaxed text-[var(--color-text)]">{hoursSummary}</p>
+            </div>
+          )
+        }
+      </div>
     </div>
-    <MapEmbed address={data.address} lat={data.mapCoords?.lat} lng={data.mapCoords?.lng} class="aspect-[21/9]" />
+
+    <div class="mt-12" data-reveal>
+      <MapEmbed address={data.address} lat={data.mapCoords?.lat} lng={data.mapCoords?.lng} class="aspect-[21/9]" />
+    </div>
   </Container>
-</Section>
+</SalonSection>

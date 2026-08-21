@@ -1,0 +1,45 @@
+{
+  "business_type": "autoschool",
+  "name": "VIRAGE AUTOSHKOLA",
+  "description_raw": "Учим водить уверенно и без стресса. Личный инструктор, современные автомобили с двойным управлением, гибкий график и честная подготовка к экзамену в ГИБДД.",
+  "address": "Москва, Симферопольский бульвар, 22",
+  "phone": "+7 (999) 517-64-30",
+  "working_hours": { "ежедневно": "08:00–21:00" },
+  "social_links": {
+    "telegram": "https://t.me/virageauto",
+    "whatsapp": "https://wa.me/79995176430"
+  },
+  "hero_photo": "https://images.pexels.com/photos/9518021/pexels-photo-9518021.jpeg",
+  "photos": [
+    "https://images.pexels.com/photos/9518024/pexels-photo-9518024.jpeg",
+    "https://images.pexels.com/photos/9518016/pexels-photo-9518016.jpeg",
+    "https://images.pexels.com/photos/9518015/pexels-photo-9518015.jpeg",
+    "https://images.pexels.com/photos/9518017/pexels-photo-9518017.jpeg",
+    "https://images.pexels.com/photos/9518018/pexels-photo-9518018.jpeg",
+    "https://images.pexels.com/photos/8550826/pexels-photo-8550826.jpeg"
+  ],
+  "menu_or_services": [
+    { "name": "Категория B, механика", "price": "38000 ₽", "category": "Программы", "description": "56 часов теории и практики, экзамен внутри школы" },
+    { "name": "Категория B, автомат", "price": "36000 ₽", "category": "Программы", "description": "56 часов теории и практики, экзамен внутри школы" },
+    { "name": "Ускоренный курс", "price": "45000 ₽", "category": "Программы", "description": "Для тех, у кого уже есть база — за 3 недели" },
+    { "name": "Доп. занятие с инструктором", "price": "1800 ₽/час", "category": "Дополнительно" },
+    { "name": "Пересдача внутреннего экзамена", "price": "2000 ₽", "category": "Дополнительно" }
+  ],
+  "process_steps": [
+    { "title": "Теория", "description": "18 занятий в классе или онлайн, ПДД и основы устройства авто" },
+    { "title": "Практика", "description": "Не менее 56 часов вождения с личным инструктором" },
+    { "title": "Внутренний экзамен", "description": "Сдаём теорию и практику внутри автошколы" },
+    { "title": "Экзамен в ГИБДД", "description": "Сопровождаем на всех этапах до получения прав" }
+  ],
+  "stats": [
+    { "value": "94%", "label": "сдают с 1 раза" },
+    { "value": "11", "label": "лет работы" },
+    { "value": "3200+", "label": "выпускников" },
+    { "value": "4.8", "label": "рейтинг" }
+  ],
+  "team": [
+    { "name": "Сергей Волошин", "role": "Инструктор высшей категории" },
+    { "name": "Марина Гусева", "role": "Инструктор, стаж 9 лет" },
+    { "name": "Павел Ильин", "role": "Инструктор, категория B/C" }
+  ]
+}

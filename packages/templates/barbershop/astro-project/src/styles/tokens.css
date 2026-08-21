@@ -1,18 +1,17 @@
-/* Default fallback token set (Classic Barber). Overwritten per-client by the CLI scaffold step. */
 :root {
-  --color-bg: #141312;
-  --color-surface: #1f1d1b;
-  --color-text: #efeae3;
-  --color-text-muted: #a69c90;
-  --color-primary: #b3282d;
-  --color-primary-contrast: #ffffff;
-  --color-accent: #b3282d;
-  --color-border: #332f2b;
-  --font-heading: Georgia, "Times New Roman", serif;
-  --font-body: -apple-system, "Segoe UI", system-ui, sans-serif;
+  --color-bg: #121712;
+  --color-surface: #1B231C;
+  --color-text: #F2EEE3;
+  --color-text-muted: #A7A192;
+  --color-primary: #C6A24D;
+  --color-primary-contrast: #121712;
+  --color-accent: #C6A24D;
+  --color-border: #2A332B;
+  --font-heading: 'Oswald', 'Arial Narrow Bold', sans-serif;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', system-ui, sans-serif;
   --radius-sm: 2px;
-  --radius-md: 4px;
-  --radius-lg: 8px;
-  --shadow-card: 0 4px 18px rgba(0, 0, 0, 0.45);
-  --shadow-elevated: 0 14px 34px rgba(0, 0, 0, 0.55);
+  --radius-md: 3px;
+  --radius-lg: 4px;
+  --shadow-card: 0 8px 26px rgba(0,0,0,0.45);
+  --shadow-elevated: 0 18px 50px rgba(0,0,0,0.55);
 }

@@ -1,0 +1,39 @@
+---
+import Container from "@sitegen/shared-ui/components/Container.astro";
+import SkeletonImg from "@sitegen/shared-ui/components/SkeletonImg.astro";
+import InkMark from "../components/InkMark.astro";
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+
+interface Props {
+  data: SiteData;
+}
+const { data } = Astro.props;
+const photo = data.team[0]?.photo ?? data.gallery[1]?.src;
+---
+
+<section id="about" data-reveal class="relative bg-[var(--color-surface)] py-20 sm:py-28 overflow-hidden">
+  <Container>
+    <div class="grid lg:grid-cols-12 gap-10 lg:gap-16 items-center">
+      <div class="lg:col-span-5 relative">
+        {photo && (
+          <SkeletonImg src={photo} alt={data.team[0]?.name ?? data.name} class="aspect-[4/5] w-full" />
+        )}
+        <InkMark variant={2} class="absolute -bottom-6 -right-6 w-24 h-14 opacity-70 hidden sm:block" />
+      </div>
+      <div class="lg:col-span-7">
+        <InkMark variant={1} class="w-16 h-10 mb-6 opacity-80" />
+        <p class="font-[var(--font-heading)] uppercase text-[clamp(1.8rem,4vw,3rem)] leading-[1.05] text-[var(--color-text)]">
+          {data.about.heading}
+        </p>
+        <p class="mt-6 text-base sm:text-lg text-[var(--color-text-muted)] leading-relaxed max-w-2xl">
+          {data.about.body}
+        </p>
+        {data.team[0]?.name && (
+          <p class="mt-8 text-sm uppercase tracking-[0.3em] text-[var(--color-text)]">
+            — {data.team[0].name}{data.team[0].role ? `, ${data.team[0].role}` : ""}
+          </p>
+        )}
+      </div>
+    </div>
+  </Container>
+</section>

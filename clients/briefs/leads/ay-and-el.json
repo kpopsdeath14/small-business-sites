@@ -1,0 +1,63 @@
+{
+  "business_type": "beauty-salon",
+  "name": "Ай&Эль",
+  "description_raw": "Салон красоты. Москва, Южнобутовская улица, 111. Работает ежедневно, 10:00–18:00.",
+  "address": "Москва, Южнобутовская улица, 111",
+  "phone": "+7 (925) 851-00-84",
+  "working_hours": {
+    "ежедневно": "10:00–18:00"
+  },
+  "social_links": {
+    "telegram": "https://t.me/aielstudio",
+    "whatsapp": "https://wa.me/79258510084?text=%D0%9E%D0%B1%D1%80%D0%B0%D1%89%D0%B5%D0%BD%D0%B8%D0%B5+%D0%B8%D0%B7+%D0%AF%D0%BD%D0%B4%D0%B5%D0%BA%D1%81+%D0%9A%D0%B0%D1%80%D1%82%0A%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!+%D0%9C%D0%B5%D0%BD%D1%8F+%D0%B7%D0%B0%D0%B8%D0%BD%D1%82%D0%B5%D1%80%D0%B5%D1%81%D0%BE%D0%B2%D0%B0%D0%BB%D0%BE+%D0%B2%D0%B0%D1%88%D0%B5+%D0%BF%D1%80%D0%B5%D0%B4%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D0%B5"
+  },
+  "hero_photo": "https://images.pexels.com/photos/29588096/pexels-photo-29588096.jpeg",
+  "photos": [
+    "https://avatars.mds.yandex.net/get-altay/6236523/2a000001800700e82f64400c28c2bfe299fc/orig",
+    "https://avatars.mds.yandex.net/get-altay/5498343/2a0000018006fc8d802fb89c25cb6e2708a4/orig"
+  ],
+  "menu_or_services": [
+    {
+      "name": "Окрашивание в один тон",
+      "price": "4500 ₽",
+      "category": "Волосы"
+    },
+    {
+      "name": "Сложное окрашивание",
+      "price": "12000 ₽",
+      "category": "Волосы"
+    },
+    {
+      "name": "Коррекция бровей",
+      "price": "350 ₽",
+      "category": "Брови"
+    },
+    {
+      "name": "Окрашивание бровей",
+      "price": "350 ₽",
+      "category": "Брови"
+    },
+    {
+      "name": "Педикюр + шеллак",
+      "price": "2600 ₽",
+      "category": "Ногти"
+    },
+    {
+      "name": "Маникюр + шеллак",
+      "price": "2400 ₽",
+      "category": "Ногти"
+    }
+  ],
+  "stats": [
+    {
+      "value": "4.3",
+      "label": "рейтинг"
+    },
+    {
+      "value": "86",
+      "label": "оценок"
+    }
+  ],
+  "booking_url": "https://dikidi.net/750189",
+  "reviews_url": "https://yandex.com/maps/org/x/1403945494/reviews/"
+}

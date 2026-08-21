@@ -1,47 +1,68 @@
 ---
 import Container from "@sitegen/shared-ui/components/Container.astro";
-import Section from "@sitegen/shared-ui/components/Section.astro";
+import SalonSection from "../../components/SalonSection.astro";
 import MapEmbed from "@sitegen/shared-ui/components/MapEmbed.astro";
-import BookingForm from "@sitegen/shared-ui/components/BookingForm.tsx";
-import BookingWidget from "@sitegen/shared-ui/components/BookingWidget.astro";
-import Card from "@sitegen/shared-ui/components/Card.astro";
 import type { SiteData } from "@sitegen/shared-ui/types.ts";
 
 interface Props {
   data: SiteData;
 }
 const { data } = Astro.props;
-const hoursEntries = Object.entries(data.workingHours ?? {});
+const hoursSummary = Object.entries(data.workingHours ?? {})
+  .map(([days, hours]) => `${days}: ${hours}`)
+  .join(" · ");
 ---
 
-<Section id="contact" surface="surface">
+<SalonSection id="contact" surface="surface">
   <Container>
-    <h2 class="font-[var(--font-heading)] text-3xl font-bold text-[var(--color-text)] text-center mb-10">Контакты</h2>
-    <div class="grid md:grid-cols-2 gap-10">
-      <div>
-        <div class="space-y-2 mb-6 text-[var(--color-text-muted)]">
-          {data.address && <p>{data.address}</p>}
-          {data.phone && <p>{data.phone}</p>}
-          {hoursEntries.map(([days, hours]) => (
-            <p>
-              {days}: {hours}
-            </p>
-          ))}
-        </div>
-        <MapEmbed address={data.address} lat={data.mapCoords?.lat} lng={data.mapCoords?.lng} class="aspect-video" />
+    <div class="grid lg:grid-cols-[1fr_1.4fr] gap-12 lg:gap-16 items-stretch">
+      <!-- Info column -->
+      <div data-reveal>
+        <p class="eyebrow mb-5">Контакты</p>
+        <h2 class="font-[var(--font-heading)] text-3xl sm:text-4xl font-medium leading-tight text-[var(--color-text)]">
+          Как нас найти
+        </h2>
+        <div class="mt-7 h-px w-14 bg-[var(--color-primary)]" aria-hidden="true"></div>
+
+        <dl class="mt-9 space-y-7">
+          {
+            data.address && (
+              <div>
+                <dt class="text-[10px] uppercase tracking-[0.28em] text-[var(--color-text-muted)]">Адрес</dt>
+                <dd class="mt-2 text-base leading-relaxed text-[var(--color-text)]">{data.address}</dd>
+              </div>
+            )
+          }
+          {
+            data.phone && (
+              <div>
+                <dt class="text-[10px] uppercase tracking-[0.28em] text-[var(--color-text-muted)]">Телефон</dt>
+                <dd class="mt-2">
+                  <a
+                    href={`tel:${data.phone.replace(/[^+\d]/g, "")}`}
+                    class="font-[var(--font-heading)] text-2xl font-medium text-[var(--color-text)] hover:text-[var(--color-primary)] transition-colors"
+                  >
+                    {data.phone}
+                  </a>
+                </dd>
+              </div>
+            )
+          }
+          {
+            hoursSummary && (
+              <div>
+                <dt class="text-[10px] uppercase tracking-[0.28em] text-[var(--color-text-muted)]">Часы работы</dt>
+                <dd class="mt-2 text-base leading-relaxed text-[var(--color-text)]">{hoursSummary}</dd>
+              </div>
+            )
+          }
+        </dl>
       </div>
-      {data.bookingUrl ? (
-        <BookingWidget url={data.bookingUrl} />
-      ) : (
-        <Card hover={false}>
-          <BookingForm
-            client:visible
-            submitLabel="Отправить"
-            successMessage="Спасибо! Мы скоро свяжемся с вами."
-            phone={data.phone}
-          />
-        </Card>
-      )}
+
+      <!-- Map column -->
+      <div class="min-h-[320px]" data-reveal>
+        <MapEmbed address={data.address} lat={data.mapCoords?.lat} lng={data.mapCoords?.lng} class="h-full min-h-[320px] lg:min-h-[480px]" />
+      </div>
     </div>
   </Container>
-</Section>
+</SalonSection>

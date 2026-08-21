@@ -1,0 +1,53 @@
+---
+import Container from "@sitegen/shared-ui/components/Container.astro";
+import Button from "@sitegen/shared-ui/components/Button.astro";
+import SocialLinks from "@sitegen/shared-ui/components/SocialLinks.astro";
+import MapEmbed from "@sitegen/shared-ui/components/MapEmbed.astro";
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+
+interface Props {
+  data: SiteData;
+}
+const { data } = Astro.props;
+const telegram = data.socialLinks?.telegram;
+---
+
+<section id="contact" data-reveal class="relative bg-[var(--color-bg)] py-20 sm:py-28">
+  <Container>
+    <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+      <div>
+        <p class="text-xs tracking-[0.4em] uppercase text-[var(--color-text-muted)] mb-4">Записаться</p>
+        <h2 class="font-[var(--font-heading)] uppercase text-[clamp(2.2rem,6vw,4.5rem)] leading-[0.9] text-[var(--color-text)]">
+          Пишите<br />в Telegram
+        </h2>
+        {telegram && (
+          <Button href={telegram} size="lg" class="!rounded-none uppercase tracking-widest text-sm font-semibold mt-8">
+            Написать мастеру
+          </Button>
+        )}
+        {data.socialLinks && Object.keys(data.socialLinks).length > 0 && (
+          <div class="mt-8">
+            <SocialLinks links={data.socialLinks} />
+          </div>
+        )}
+      </div>
+
+      <div>
+        <div class="space-y-4 text-[var(--color-text)] mb-6">
+          {data.address && <p class="text-lg">{data.address}</p>}
+          {data.phone && (
+            <p class="text-[var(--color-text-muted)]">
+              <a href={`tel:${data.phone.replace(/[^+\d]/g, "")}`} class="hover:text-[var(--color-primary)] transition-colors">{data.phone}</a>
+            </p>
+          )}
+          {data.workingHours && Object.entries(data.workingHours).map(([days, hours]) => (
+            <p class="text-[var(--color-text-muted)] text-sm">{days}: {hours}</p>
+          ))}
+        </div>
+        {(data.mapCoords || data.address) && (
+          <MapEmbed address={data.address} lat={data.mapCoords?.lat} lng={data.mapCoords?.lng} class="aspect-[4/3]" />
+        )}
+      </div>
+    </div>
+  </Container>
+</section>

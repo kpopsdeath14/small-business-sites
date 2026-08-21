@@ -1,5 +1,5 @@
 ---
-import FooterBase from "@sitegen/shared-ui/components/FooterBase.astro";
+import SalonFooter from "../../components/SalonFooter.astro";
 import type { SiteData } from "@sitegen/shared-ui/types.ts";
 
 interface Props {
@@ -11,7 +11,7 @@ const hoursSummary = Object.entries(data.workingHours ?? {})
   .join(" · ");
 ---
 
-<FooterBase
+<SalonFooter
   siteName={data.name}
   address={data.address}
   phone={data.phone}

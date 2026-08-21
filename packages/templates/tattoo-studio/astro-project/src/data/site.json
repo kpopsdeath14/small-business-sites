@@ -1,0 +1,18 @@
+{
+  "name": "Название студии",
+  "meta": { "title": "Название студии", "description": "Описание скоро появится." },
+  "hero": { "heading": "Добро пожаловать", "subheading": "Скоро здесь будет уникальный текст.", "ctaLabel": "Связаться" },
+  "about": { "heading": "О нас", "body": "Расскажем о себе подробнее совсем скоро." },
+  "items": [],
+  "gallery": [],
+  "reviews": [],
+  "address": "",
+  "phone": "",
+  "workingHours": {},
+  "socialLinks": {},
+  "team": [],
+  "processSteps": [],
+  "faq": [],
+  "stats": [],
+  "highlights": []
+}

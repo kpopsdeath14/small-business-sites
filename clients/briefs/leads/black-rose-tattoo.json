@@ -1,0 +1,53 @@
+{
+  "business_type": "tattoo-studio",
+  "name": "BLACK ROSE TATTOO",
+  "description_raw": "Авторские тату на любой сюжет — от блэкворка до японского традишна. Один мастер, полное погружение в проект, запись только в Telegram.",
+  "address": "Москва, улица Правды, 24",
+  "phone": "+7 (999) 214-08-56",
+  "working_hours": { "ежедневно": "12:00–21:00, по предварительной записи" },
+  "social_links": {
+    "telegram": "https://t.me/blackrosetattoo",
+    "instagram": "https://instagram.com/blackrosetattoo"
+  },
+  "hero_photo": "https://images.pexels.com/photos/17504545/pexels-photo-17504545.jpeg",
+  "photos": [
+    "https://images.pexels.com/photos/35645871/pexels-photo-35645871.jpeg",
+    "https://images.pexels.com/photos/2126124/pexels-photo-2126124.jpeg",
+    "https://images.pexels.com/photos/35714996/pexels-photo-35714996.jpeg",
+    "https://images.pexels.com/photos/2192557/pexels-photo-2192557.jpeg",
+    "https://images.pexels.com/photos/4125528/pexels-photo-4125528.jpeg",
+    "https://images.pexels.com/photos/5191123/pexels-photo-5191123.jpeg",
+    "https://images.pexels.com/photos/2183131/pexels-photo-2183131.jpeg",
+    "https://images.pexels.com/photos/7005723/pexels-photo-7005723.jpeg",
+    "https://images.pexels.com/photos/35658333/pexels-photo-35658333.jpeg",
+    "https://images.pexels.com/photos/4125582/pexels-photo-4125582.jpeg",
+    "https://images.pexels.com/photos/20531533/pexels-photo-20531533.jpeg",
+    "https://images.pexels.com/photos/7005727/pexels-photo-7005727.jpeg"
+  ],
+  "menu_or_services": [
+    { "name": "Консультация и эскиз", "price": "бесплатно" },
+    { "name": "Маленькая тату (до 5 см)", "price": "от 4000 ₽" },
+    { "name": "Средняя тату (5–15 см)", "price": "от 9000 ₽" },
+    { "name": "Крупная работа, рукав, спина", "price": "от 6000 ₽/час" },
+    { "name": "Часовая ставка", "price": "5000 ₽/час" }
+  ],
+  "stats": [
+    { "value": "9", "label": "лет опыта" },
+    { "value": "500+", "label": "работ" },
+    { "value": "5.0", "label": "рейтинг" }
+  ],
+  "team": [
+    {
+      "name": "Демид Чёрный",
+      "role": "Тату-мастер, основатель",
+      "bio": "9 лет в индустрии. Специализация — блэкворк и японский традишн, работал в Москве и Берлине. Каждый проект — эскиз с нуля под клиента, без готовых шаблонов.",
+      "photo": "https://images.pexels.com/photos/7005658/pexels-photo-7005658.jpeg"
+    }
+  ],
+  "highlights": [
+    { "name": "Блэкворк", "description": "Плотный чёрный, графичные формы" },
+    { "name": "Японский традишн", "description": "Драконы, карпы, волны" },
+    { "name": "Дотворк", "description": "Точечная штриховка, тонкая линия" },
+    { "name": "Минимализм", "description": "Лёгкие символьные работы" }
+  ]
+}

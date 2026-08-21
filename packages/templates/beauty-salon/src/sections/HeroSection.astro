@@ -3,13 +3,14 @@ import type { SiteData } from "@sitegen/shared-ui/types.ts";
 import HeroFull from "./Hero/HeroFull.astro";
 import HeroSplit from "./Hero/HeroSplit.astro";
 import HeroMinimal from "./Hero/HeroMinimal.astro";
+import HeroEditorial from "./Hero/HeroEditorial.astro";
 
 interface Props {
   variant: number;
   data: SiteData;
 }
 const { variant, data } = Astro.props;
-const variants = [HeroFull, HeroSplit, HeroMinimal];
+const variants = [HeroFull, HeroSplit, HeroMinimal, HeroEditorial];
 const Variant = variants[variant] ?? variants[0];
 ---
 

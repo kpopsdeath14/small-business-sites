@@ -15,6 +15,7 @@ const BUSINESS_TYPE_LABELS: Record<Brief["business_type"], string> = {
   "dental-clinic": "стоматология / медклиника",
   bakery: "кофейня / пекарня",
   "beauty-salon": "салон красоты / студия красоты",
+  "tattoo-studio": "тату-студия / тату-мастер",
 };
 
 function loadPrompt(file: string, vars: Record<string, string>): string {
@@ -94,7 +95,7 @@ async function liveGenerate(brief: Brief, apiKey: string): Promise<GeneratedCont
     meta,
     hero,
     about,
-    items: itemsResult.items,
+    items: itemsResult.items.map((item, i) => ({ ...item, photo: brief.menu_or_services[i]?.photo })),
     gallery: brief.photos.map((src, i) => ({ src, alt: altsResult.alts[i] ?? brief.name })),
     reviews: reviewsResult.reviews.length > 0 ? reviewsResult.reviews : brief.reviews,
   };
@@ -107,29 +108,46 @@ function truncateAtWord(input: string, maxLength: number): string {
   return `${lastSpace > 0 ? truncated.slice(0, lastSpace) : truncated}…`;
 }
 
+/** Prefers cutting at the end of a full sentence (so short descriptions built from
+ *  "{category}. {address}. Работает {hours}." pass through untouched, and only genuinely
+ *  long ones get shortened) instead of chopping mid-sentence and tacking on an ellipsis.
+ *  Falls back to word-boundary truncation when no clean sentence break exists in range. */
+function truncateAtSentence(input: string, maxLength: number): string {
+  if (input.length <= maxLength) return input;
+  const window = input.slice(0, maxLength);
+  const sentenceEnd = /\.\s(?=[А-ЯЁA-Z])/g;
+  let lastCut = -1;
+  let match: RegExpExecArray | null;
+  while ((match = sentenceEnd.exec(window))) {
+    lastCut = match.index + 1;
+  }
+  if (lastCut >= 20) return input.slice(0, lastCut);
+  return truncateAtWord(input, maxLength);
+}
+
 function dryRunContent(brief: Brief): GeneratedContent {
-  const draftTag = "[ЧЕРНОВИК] ";
   const typeLabel = BUSINESS_TYPE_LABELS[brief.business_type];
 
   return {
     meta: {
       title: `${brief.name} — ${typeLabel}`,
-      description: draftTag + (brief.description_raw || `${brief.name}: подробности скоро.`),
+      description: brief.description_raw || `${brief.name}: подробности скоро.`,
     },
     hero: {
       heading: brief.name,
-      subheading: draftTag + (truncateAtWord(brief.description_raw, 140) || "Добро пожаловать!"),
+      subheading: truncateAtSentence(brief.description_raw, 115) || "Добро пожаловать!",
       ctaLabel: "Связаться с нами",
     },
     about: {
       heading: "О нас",
-      body: draftTag + (brief.description_raw || "Расскажем о себе подробнее совсем скоро."),
+      body: brief.description_raw || "Расскажем о себе подробнее совсем скоро.",
     },
     items: brief.menu_or_services.map((item) => ({
       name: item.name,
-      description: draftTag + (item.description || ""),
+      description: item.description || "",
       price: item.price,
       category: item.category,
+      photo: item.photo,
     })),
     gallery: brief.photos.map((src, i) => ({ src, alt: `${brief.name} — фото ${i + 1}` })),
     reviews: brief.reviews,

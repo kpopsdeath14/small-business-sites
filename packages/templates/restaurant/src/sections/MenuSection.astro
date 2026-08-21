@@ -1,16 +1,47 @@
 ---
+import Container from "@sitegen/shared-ui/components/Container.astro";
 import type { SiteData } from "@sitegen/shared-ui/types.ts";
-import MenuList from "./Menu/MenuList.astro";
-import MenuGrid from "./Menu/MenuGrid.astro";
-import MenuTabs from "./Menu/MenuTabs.astro";
 
 interface Props {
-  variant: number;
   data: SiteData;
 }
-const { variant, data } = Astro.props;
-const variants = [MenuList, MenuGrid, MenuTabs];
-const Variant = variants[variant] ?? variants[0];
+const { data } = Astro.props;
+
+function groupByCategory(items: SiteData["items"]) {
+  const map = new Map<string, SiteData["items"]>();
+  for (const item of items) {
+    const cat = item.category || "Меню";
+    if (!map.has(cat)) map.set(cat, []);
+    map.get(cat)!.push(item);
+  }
+  return Array.from(map.entries());
+}
+const groups = groupByCategory(data.items);
 ---
 
-<Variant data={data} />
+<section id="menu" data-reveal class="relative bg-[var(--color-surface)] py-20 sm:py-28">
+  <Container narrow>
+    <div class="text-center mb-14">
+      <p class="text-xs uppercase tracking-[0.35em] text-[var(--color-primary)] mb-3">Меню</p>
+      <h2 class="font-[var(--font-heading)] italic text-[clamp(2rem,5vw,3.5rem)] text-[var(--color-text)]">
+        Что мы готовим
+      </h2>
+    </div>
+    <div class="space-y-10">
+      {groups.map(([category, items]) => (
+        <div>
+          <p class="text-sm uppercase tracking-[0.25em] text-[var(--color-primary)] font-semibold mb-4 text-center">{category}</p>
+          <ul class="space-y-3">
+            {items.map((item) => (
+              <li class="flex items-baseline gap-3">
+                <span class="text-[var(--color-text)]">{item.name}</span>
+                <span class="flex-1 border-b border-dotted border-[var(--color-border)] translate-y-[-3px]"></span>
+                {item.price && <span class="font-[var(--font-heading)] text-[var(--color-text)] whitespace-nowrap">{item.price}</span>}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </Container>
+</section>

@@ -25,7 +25,13 @@ export function selectSiteConfig(manifest: BusinessManifest, seedInput: string |
     else middle.push(entry);
   }
 
-  shuffleInPlace(middle, rng);
+  const sectionById = new Map(manifest.sections.map((s) => [s.id, s]));
+  const allMiddleOrdered = middle.every((entry) => sectionById.get(entry.id)?.order !== undefined);
+  if (allMiddleOrdered) {
+    middle.sort((a, b) => (sectionById.get(a.id)!.order! - sectionById.get(b.id)!.order!));
+  } else {
+    shuffleInPlace(middle, rng);
+  }
 
   return {
     seed: String(seedInput),

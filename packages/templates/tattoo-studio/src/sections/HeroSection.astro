@@ -1,0 +1,55 @@
+---
+import SkeletonImg from "@sitegen/shared-ui/components/SkeletonImg.astro";
+import Button from "@sitegen/shared-ui/components/Button.astro";
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+
+interface Props {
+  data: SiteData;
+}
+const { data } = Astro.props;
+
+const heroPhoto = data.heroPhoto ?? data.gallery[0]?.src;
+const telegram = data.socialLinks?.telegram;
+---
+
+<section id="hero" class="relative h-[100svh] min-h-[560px] w-full overflow-hidden bg-[var(--color-bg)]">
+  {heroPhoto && (
+    <SkeletonImg src={heroPhoto} alt="" class="absolute inset-0 h-full w-full" loading="eager" />
+  )}
+  <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black/10"></div>
+  <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-transparent to-transparent"></div>
+
+  <!-- Rotated edge label — a quiet, static studio mark rather than a moving ticker. -->
+  <div class="hidden lg:flex absolute right-6 top-1/2 -translate-y-1/2 origin-center [writing-mode:vertical-rl] items-center gap-3 text-xs tracking-[0.35em] uppercase text-white/50">
+    <span class="h-8 w-px bg-white/30"></span>
+    {data.address ? data.address.split(",")[0] : "Tattoo studio"}
+  </div>
+
+  <div class="relative z-10 flex h-full items-end">
+    <div class="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 pb-20 sm:pb-24">
+      <p class="text-xs sm:text-sm tracking-[0.4em] uppercase text-white/60 mb-4">Тату-студия</p>
+      <h1 class="font-[var(--font-heading)] uppercase leading-[0.85] text-white text-[clamp(3rem,10vw,7.5rem)] tracking-tight">
+        {data.name}
+      </h1>
+      <p class="mt-6 max-w-xl text-base sm:text-lg text-white/80 leading-relaxed">
+        {data.hero.subheading}
+      </p>
+      <div class="mt-9 flex flex-wrap items-center gap-4">
+        {telegram && (
+          <Button href={telegram} size="lg" class="!rounded-none uppercase tracking-widest text-sm font-semibold">
+            Записаться в Telegram
+          </Button>
+        )}
+        <a href="#gallery" class="text-sm uppercase tracking-widest text-white/70 hover:text-white transition-colors border-b border-white/30 hover:border-white pb-1">
+          Смотреть работы
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-opacity="0.6" stroke-width="2">
+      <path d="M12 4v14M6 13l6 6 6-6" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+  </div>
+</section>
