@@ -75,24 +75,9 @@
     {
       "src": "/small-business-sites/art-look-salon/photos/5.webp",
       "alt": "Art Look — фото 6"
-    },
-    {
-      "src": "/small-business-sites/art-look-salon/photos/6.webp",
-      "alt": "Art Look — фото 7"
-    },
-    {
-      "src": "/small-business-sites/art-look-salon/photos/7.webp",
-      "alt": "Art Look — фото 8"
-    },
-    {
-      "src": "/small-business-sites/art-look-salon/photos/8.webp",
-      "alt": "Art Look — фото 9"
-    },
-    {
-      "src": "/small-business-sites/art-look-salon/photos/9.webp",
-      "alt": "Art Look — фото 10"
     }
   ],
+  "heroPhoto": "/small-business-sites/art-look-salon/photos/hero.webp",
   "reviews": [
     {
       "author": "Марина К.",
@@ -110,14 +95,15 @@
       "text": "Записалась впервые по рекомендации — не пожалела ни разу. Работа аккуратная, время пролетело незаметно, а результат держится до сих пор."
     }
   ],
+  "reviewsUrl": "https://yandex.ru/maps/org/x/131019774155/reviews/",
   "address": "Москва, Изюмская улица, 43к1",
   "phone": "+7 (916) 944-50-59",
   "workingHours": {
     "пн–вс": "10:00–21:00"
   },
   "socialLinks": {
-    "Telegram": "https://t.me/+79169445059?profile",
-    "WhatsApp": "https://wa.me/79169445059"
+    "telegram": "https://t.me/+79169445059?profile",
+    "whatsapp": "https://wa.me/79169445059"
   },
   "team": [],
   "processSteps": [],

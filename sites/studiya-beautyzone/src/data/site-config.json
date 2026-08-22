@@ -4,6 +4,10 @@
   "sections": [
     {
       "id": "hero",
+      "variant": 1
+    },
+    {
+      "id": "stats",
       "variant": 0
     },
     {

@@ -63,32 +63,9 @@
     {
       "src": "/small-business-sites/beautyzone-salon/photos/2.webp",
       "alt": "Студия BeautyZone — фото 3"
-    },
-    {
-      "src": "/small-business-sites/beautyzone-salon/photos/3.webp",
-      "alt": "Студия BeautyZone — фото 4"
-    },
-    {
-      "src": "/small-business-sites/beautyzone-salon/photos/4.webp",
-      "alt": "Студия BeautyZone — фото 5"
-    },
-    {
-      "src": "/small-business-sites/beautyzone-salon/photos/5.webp",
-      "alt": "Студия BeautyZone — фото 6"
-    },
-    {
-      "src": "/small-business-sites/beautyzone-salon/photos/6.webp",
-      "alt": "Студия BeautyZone — фото 7"
-    },
-    {
-      "src": "/small-business-sites/beautyzone-salon/photos/7.webp",
-      "alt": "Студия BeautyZone — фото 8"
-    },
-    {
-      "src": "/small-business-sites/beautyzone-salon/photos/8.webp",
-      "alt": "Студия BeautyZone — фото 9"
     }
   ],
+  "heroPhoto": "/small-business-sites/beautyzone-salon/photos/hero.webp",
   "reviews": [
     {
       "author": "Екатерина",
@@ -106,14 +83,15 @@
       "text": "Обслуживание на высоте: кофе, забота, идеальный результат. Теперь только сюда — записалась на следующий визит сразу после первого."
     }
   ],
+  "reviewsUrl": "https://yandex.ru/maps/org/x/124533056131/reviews/",
   "address": "Москва, улица Горчакова, 11",
   "phone": "+7 (985) 456-08-01",
   "workingHours": {
     "пн–вс": "10:00–21:00"
   },
   "socialLinks": {
-    "Telegram": "https://t.me/+79854560801?profile",
-    "WhatsApp": "https://wa.me/79854560801"
+    "telegram": "https://t.me/+79854560801?profile",
+    "whatsapp": "https://wa.me/79854560801"
   },
   "team": [],
   "processSteps": [],

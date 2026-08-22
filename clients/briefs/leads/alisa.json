@@ -9,20 +9,13 @@
     "пн–вс": "10:00–21:00"
   },
   "social_links": {
-    "Telegram": "https://t.me/+79257039787?profile",
-    "WhatsApp": "https://wa.me/79257039787"
+    "telegram": "https://t.me/+79257039787?profile",
+    "whatsapp": "https://wa.me/79257039787"
   },
   "photos": [
-    "https://avatars.mds.yandex.net/get-altay/2355061/2a00000175b6617c342cc5daa6e1f69470f9/L_height",
-    "https://avatars.mds.yandex.net/get-altay/18111423/2a0000019b0d2d7b9968e5081be6ba63b114/S",
-    "https://avatars.mds.yandex.net/get-altay/2355061/2a00000175b6617c342cc5daa6e1f69470f9/XXL_height",
-    "https://avatars.mds.yandex.net/get-altay/2355061/2a00000175b6617c342cc5daa6e1f69470f9/orig",
-    "https://avatars.mds.yandex.net/get-bunker/61205/621b7bba5b3011f1a1ceda395d30c8d6/orig",
     "https://avatars.mds.yandex.net/get-vh/6212107/2a0000019179b9addb9c632db0ae79bfe49e/orig",
     "https://avatars.mds.yandex.net/get-vh/5283769/2a0000019179bac2736b2d5cd99827400078/orig",
-    "https://avatars.mds.yandex.net/get-altay/19646909/2a0000019d10ff41f440b732141f8f306265/XXXL",
-    "https://avatars.mds.yandex.net/get-yapic/59871/0u-8/islands-68",
-    "https://avatars.mds.yandex.net/get-yapic/59871/0t-4/islands-68"
+    "https://avatars.mds.yandex.net/get-altay/19646909/2a0000019d10ff41f440b732141f8f306265/orig"
   ],
   "menu_or_services": [
     {
@@ -95,7 +88,7 @@
     "sections": [
       {
         "id": "hero",
-        "variant": 0
+        "variant": 1
       },
       {
         "id": "stats",
@@ -103,7 +96,7 @@
       },
       {
         "id": "about",
-        "variant": 1
+        "variant": 2
       },
       {
         "id": "services",
@@ -130,5 +123,7 @@
         "variant": 0
       }
     ]
-  }
+  },
+  "hero_photo": "https://avatars.mds.yandex.net/get-vh/6212107/2a0000019179b9addb9c632db0ae79bfe49e/orig",
+  "reviews_url": "https://yandex.ru/maps/org/x/120317884619/reviews/"
 }

@@ -9,19 +9,16 @@
     "пн–вс": "10:00–21:00"
   },
   "social_links": {
-    "WhatsApp": "https://wa.me/79299599499"
+    "whatsapp": "https://wa.me/79299599499"
   },
   "photos": [
-    "https://avatars.mds.yandex.net/get-altay/4612894/2a0000017c31191b40c830726d07c907ce7b/L_height",
-    "https://avatars.mds.yandex.net/get-altay/4489303/2a00000179290973a2b60d1001a4b7e7e81f/S",
-    "https://avatars.mds.yandex.net/get-altay/4612894/2a0000017c31191b40c830726d07c907ce7b/XXL_height",
-    "https://avatars.mds.yandex.net/get-altay/4612894/2a0000017c31191b40c830726d07c907ce7b/orig",
-    "https://avatars.mds.yandex.net/get-altay/18112381/2a0000019d1b6d6487370deeeeefe68e4856/S",
-    "https://avatars.mds.yandex.net/get-altay/18152412/2a0000019d1b6d5ee09eeef46ed1aa57c537/S",
-    "https://avatars.mds.yandex.net/get-altay/15383884/2a0000019a8bec6e450e2a86cae83aad8e88/S",
-    "https://avatars.mds.yandex.net/get-altay/16130837/2a0000019a8bec6d3e565d81587a5a2e3b6a/S",
-    "https://avatars.mds.yandex.net/get-altay/16888214/2a0000019a8bec6e3b160872cf39fb2a3e20/S",
-    "https://avatars.mds.yandex.net/get-altay/16965486/2a0000019a8bec6d58410007fdbcc6efd1cc/S"
+    "https://avatars.mds.yandex.net/get-altay/15383884/2a0000019a8bec6e450e2a86cae83aad8e88/orig",
+    "https://avatars.mds.yandex.net/get-altay/16130837/2a0000019a8bec6d3e565d81587a5a2e3b6a/orig",
+    "https://avatars.mds.yandex.net/get-altay/16888214/2a0000019a8bec6e3b160872cf39fb2a3e20/orig",
+    "https://avatars.mds.yandex.net/get-altay/16965486/2a0000019a8bec6d58410007fdbcc6efd1cc/orig",
+    "https://avatars.mds.yandex.net/get-altay/18112381/2a0000019d1b6d6487370deeeeefe68e4856/orig",
+    "https://avatars.mds.yandex.net/get-altay/18152412/2a0000019d1b6d5ee09eeef46ed1aa57c537/orig",
+    "https://avatars.mds.yandex.net/get-altay/4489303/2a00000179290973a2b60d1001a4b7e7e81f/orig"
   ],
   "menu_or_services": [
     {
@@ -94,7 +91,7 @@
     "sections": [
       {
         "id": "hero",
-        "variant": 2
+        "variant": 0
       },
       {
         "id": "stats",
@@ -102,7 +99,7 @@
       },
       {
         "id": "about",
-        "variant": 1
+        "variant": 2
       },
       {
         "id": "services",
@@ -129,5 +126,7 @@
         "variant": 0
       }
     ]
-  }
+  },
+  "hero_photo": "https://avatars.mds.yandex.net/get-altay/4489303/2a00000179290973a2b60d1001a4b7e7e81f/orig",
+  "reviews_url": "https://yandex.ru/maps/org/x/152282769690/reviews/"
 }

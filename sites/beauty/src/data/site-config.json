@@ -7,15 +7,15 @@
       "variant": 3
     },
     {
+      "id": "stats",
+      "variant": 0
+    },
+    {
       "id": "about",
       "variant": 0
     },
     {
       "id": "services",
-      "variant": 0
-    },
-    {
-      "id": "gallery",
       "variant": 0
     },
     {

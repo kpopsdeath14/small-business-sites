@@ -9,16 +9,13 @@
     "пн–вс": "10:00–21:00"
   },
   "social_links": {
-    "Telegram": "https://t.me/+79168177070?profile",
-    "WhatsApp": "https://wa.me/79168177070"
+    "telegram": "https://t.me/+79168177070?profile",
+    "whatsapp": "https://wa.me/79168177070"
   },
   "photos": [
-    "https://avatars.mds.yandex.net/get-altay/1018126/2a0000018561e47adb79bd00b91d5e6204fc/L_height",
-    "https://avatars.mds.yandex.net/get-altay/239474/2a000001854e13367e071f32f2c3d4a8e700/S",
-    "https://avatars.mds.yandex.net/get-altay/1018126/2a0000018561e47adb79bd00b91d5e6204fc/XXL_height",
-    "https://avatars.mds.yandex.net/get-altay/953593/2a0000018561e47a2f775dac2d1a65020a32/XXL_height",
     "https://avatars.mds.yandex.net/get-altay/1018126/2a0000018561e47adb79bd00b91d5e6204fc/orig",
-    "https://avatars.mds.yandex.net/get-altay/14837019/2a0000019654a57fe1bec77d9b616dc45a55/XXXL"
+    "https://avatars.mds.yandex.net/get-altay/953593/2a0000018561e47a2f775dac2d1a65020a32/orig",
+    "https://avatars.mds.yandex.net/get-altay/14837019/2a0000019654a57fe1bec77d9b616dc45a55/orig"
   ],
   "menu_or_services": [
     {
@@ -107,7 +104,11 @@
     "sections": [
       {
         "id": "hero",
-        "variant": 1
+        "variant": 3
+      },
+      {
+        "id": "stats",
+        "variant": 0
       },
       {
         "id": "about",
@@ -142,5 +143,7 @@
         "variant": 0
       }
     ]
-  }
+  },
+  "hero_photo": "https://avatars.mds.yandex.net/get-altay/1018126/2a0000018561e47adb79bd00b91d5e6204fc/orig",
+  "reviews_url": "https://yandex.ru/maps/org/x/32207312434/reviews/"
 }

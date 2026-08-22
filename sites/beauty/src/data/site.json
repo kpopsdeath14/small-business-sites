@@ -59,36 +59,9 @@
     {
       "src": "/small-business-sites/beauty-salon/photos/1.webp",
       "alt": "Beauty — фото 2"
-    },
-    {
-      "src": "/small-business-sites/beauty-salon/photos/2.webp",
-      "alt": "Beauty — фото 3"
-    },
-    {
-      "src": "/small-business-sites/beauty-salon/photos/3.webp",
-      "alt": "Beauty — фото 4"
-    },
-    {
-      "src": "/small-business-sites/beauty-salon/photos/4.webp",
-      "alt": "Beauty — фото 5"
-    },
-    {
-      "src": "/small-business-sites/beauty-salon/photos/5.webp",
-      "alt": "Beauty — фото 6"
-    },
-    {
-      "src": "/small-business-sites/beauty-salon/photos/6.webp",
-      "alt": "Beauty — фото 7"
-    },
-    {
-      "src": "/small-business-sites/beauty-salon/photos/7.webp",
-      "alt": "Beauty — фото 8"
-    },
-    {
-      "src": "/small-business-sites/beauty-salon/photos/8.webp",
-      "alt": "Beauty — фото 9"
     }
   ],
+  "heroPhoto": "/small-business-sites/beauty-salon/photos/hero.webp",
   "reviews": [
     {
       "author": "Марина К.",
@@ -106,14 +79,15 @@
       "text": "Записалась впервые по рекомендации — не пожалела ни разу. Работа аккуратная, время пролетело незаметно, а результат держится до сих пор."
     }
   ],
+  "reviewsUrl": "https://yandex.ru/maps/org/x/83472960521/reviews/",
   "address": "Москва, улица Адмирала Лазарева, 38",
   "phone": "+7 (966) 024-80-55",
   "workingHours": {
     "пн–вс": "10:00–21:00"
   },
   "socialLinks": {
-    "Telegram": "https://t.me/+79660248055?profile",
-    "WhatsApp": "https://wa.me/79660248055"
+    "telegram": "https://t.me/+79660248055?profile",
+    "whatsapp": "https://wa.me/79660248055"
   },
   "team": [],
   "processSteps": [],

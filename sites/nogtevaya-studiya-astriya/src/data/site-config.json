@@ -4,7 +4,11 @@
   "sections": [
     {
       "id": "hero",
-      "variant": 1
+      "variant": 0
+    },
+    {
+      "id": "stats",
+      "variant": 0
     },
     {
       "id": "about",

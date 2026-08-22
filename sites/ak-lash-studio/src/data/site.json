@@ -63,36 +63,9 @@
     {
       "src": "/small-business-sites/ak-lash-studio-salon/photos/2.webp",
       "alt": "AK Lash Studio — фото 3"
-    },
-    {
-      "src": "/small-business-sites/ak-lash-studio-salon/photos/3.webp",
-      "alt": "AK Lash Studio — фото 4"
-    },
-    {
-      "src": "/small-business-sites/ak-lash-studio-salon/photos/4.webp",
-      "alt": "AK Lash Studio — фото 5"
-    },
-    {
-      "src": "/small-business-sites/ak-lash-studio-salon/photos/5.webp",
-      "alt": "AK Lash Studio — фото 6"
-    },
-    {
-      "src": "/small-business-sites/ak-lash-studio-salon/photos/6.webp",
-      "alt": "AK Lash Studio — фото 7"
-    },
-    {
-      "src": "/small-business-sites/ak-lash-studio-salon/photos/7.webp",
-      "alt": "AK Lash Studio — фото 8"
-    },
-    {
-      "src": "/small-business-sites/ak-lash-studio-salon/photos/8.webp",
-      "alt": "AK Lash Studio — фото 9"
-    },
-    {
-      "src": "/small-business-sites/ak-lash-studio-salon/photos/9.webp",
-      "alt": "AK Lash Studio — фото 10"
     }
   ],
+  "heroPhoto": "/small-business-sites/ak-lash-studio-salon/photos/hero.webp",
   "reviews": [
     {
       "author": "Марина К.",
@@ -110,14 +83,15 @@
       "text": "Записалась впервые по рекомендации — не пожалела ни разу. Работа аккуратная, время пролетело незаметно, а результат держится до сих пор."
     }
   ],
+  "reviewsUrl": "https://yandex.ru/maps/org/x/176890026169/reviews/",
   "address": "Москва, бульвар Адмирала Ушакова, 3",
   "phone": "+7 (968) 060-49-98",
   "workingHours": {
     "пн–вс": "10:00–21:00"
   },
   "socialLinks": {
-    "Telegram": "https://t.me/+79680604998?profile",
-    "WhatsApp": "https://wa.me/79680604998"
+    "telegram": "https://t.me/+79680604998?profile",
+    "whatsapp": "https://wa.me/79680604998"
   },
   "team": [],
   "processSteps": [],

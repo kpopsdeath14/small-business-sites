@@ -63,36 +63,9 @@
     {
       "src": "/small-business-sites/alisa-salon/photos/2.webp",
       "alt": "Салон красоты Алиса — фото 3"
-    },
-    {
-      "src": "/small-business-sites/alisa-salon/photos/3.webp",
-      "alt": "Салон красоты Алиса — фото 4"
-    },
-    {
-      "src": "/small-business-sites/alisa-salon/photos/4.webp",
-      "alt": "Салон красоты Алиса — фото 5"
-    },
-    {
-      "src": "/small-business-sites/alisa-salon/photos/5.webp",
-      "alt": "Салон красоты Алиса — фото 6"
-    },
-    {
-      "src": "/small-business-sites/alisa-salon/photos/6.webp",
-      "alt": "Салон красоты Алиса — фото 7"
-    },
-    {
-      "src": "/small-business-sites/alisa-salon/photos/7.webp",
-      "alt": "Салон красоты Алиса — фото 8"
-    },
-    {
-      "src": "/small-business-sites/alisa-salon/photos/8.webp",
-      "alt": "Салон красоты Алиса — фото 9"
-    },
-    {
-      "src": "/small-business-sites/alisa-salon/photos/9.webp",
-      "alt": "Салон красоты Алиса — фото 10"
     }
   ],
+  "heroPhoto": "/small-business-sites/alisa-salon/photos/hero.webp",
   "reviews": [
     {
       "author": "Екатерина",
@@ -110,14 +83,15 @@
       "text": "Обслуживание на высоте: кофе, забота, идеальный результат. Теперь только сюда — записалась на следующий визит сразу после первого."
     }
   ],
+  "reviewsUrl": "https://yandex.ru/maps/org/x/120317884619/reviews/",
   "address": "Москва, улица Адмирала Лазарева, 19",
   "phone": "+7 (925) 703-97-87",
   "workingHours": {
     "пн–вс": "10:00–21:00"
   },
   "socialLinks": {
-    "Telegram": "https://t.me/+79257039787?profile",
-    "WhatsApp": "https://wa.me/79257039787"
+    "telegram": "https://t.me/+79257039787?profile",
+    "whatsapp": "https://wa.me/79257039787"
   },
   "team": [],
   "processSteps": [],

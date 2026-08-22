@@ -79,20 +79,9 @@
     {
       "src": "/small-business-sites/krasota-i-stil-salon/photos/6.webp",
       "alt": "Красота и Стиль — фото 7"
-    },
-    {
-      "src": "/small-business-sites/krasota-i-stil-salon/photos/7.webp",
-      "alt": "Красота и Стиль — фото 8"
-    },
-    {
-      "src": "/small-business-sites/krasota-i-stil-salon/photos/8.webp",
-      "alt": "Красота и Стиль — фото 9"
-    },
-    {
-      "src": "/small-business-sites/krasota-i-stil-salon/photos/9.webp",
-      "alt": "Красота и Стиль — фото 10"
     }
   ],
+  "heroPhoto": "/small-business-sites/krasota-i-stil-salon/photos/hero.webp",
   "reviews": [
     {
       "author": "Екатерина",
@@ -110,13 +99,14 @@
       "text": "Обслуживание на высоте: кофе, забота, идеальный результат. Теперь только сюда — записалась на следующий визит сразу после первого."
     }
   ],
+  "reviewsUrl": "https://yandex.ru/maps/org/x/152282769690/reviews/",
   "address": "Москва, улица Адмирала Лазарева, 62",
   "phone": "+7 (929) 959-94-99",
   "workingHours": {
     "пн–вс": "10:00–21:00"
   },
   "socialLinks": {
-    "WhatsApp": "https://wa.me/79299599499"
+    "whatsapp": "https://wa.me/79299599499"
   },
   "team": [],
   "processSteps": [],

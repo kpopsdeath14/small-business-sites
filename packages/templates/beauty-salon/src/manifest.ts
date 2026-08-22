@@ -6,7 +6,7 @@ import type { BusinessManifest } from "@sitegen/variance-engine";
 // of sections on the page is pinned.
 export const manifest: BusinessManifest = {
   businessType: "beauty-salon",
-  tokenSetCount: 6,
+  tokenSetCount: 10,
   sections: [
     { id: "hero", variants: 4, required: true, position: "start" },
     { id: "stats", variants: 1, required: true, order: 1 },

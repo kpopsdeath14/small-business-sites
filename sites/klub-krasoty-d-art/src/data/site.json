@@ -79,20 +79,9 @@
     {
       "src": "/small-business-sites/dart-salon/photos/6.webp",
       "alt": "Клуб красоты D'Арт — фото 7"
-    },
-    {
-      "src": "/small-business-sites/dart-salon/photos/7.webp",
-      "alt": "Клуб красоты D'Арт — фото 8"
-    },
-    {
-      "src": "/small-business-sites/dart-salon/photos/8.webp",
-      "alt": "Клуб красоты D'Арт — фото 9"
-    },
-    {
-      "src": "/small-business-sites/dart-salon/photos/9.webp",
-      "alt": "Клуб красоты D'Арт — фото 10"
     }
   ],
+  "heroPhoto": "/small-business-sites/dart-salon/photos/hero.webp",
   "reviews": [
     {
       "author": "Анна",
@@ -110,14 +99,15 @@
       "text": "Хожу на маникюр и педикюр всей семьёй. Всегда чисто, вовремя и с идеальным результатом. Рекомендую всем подругам."
     }
   ],
+  "reviewsUrl": "https://yandex.ru/maps/org/x/16668749028/reviews/",
   "address": "Москва, Чечёрский проезд, 92",
   "phone": "+7 (903) 505-22-42",
   "workingHours": {
     "пн–вс": "10:00–21:00"
   },
   "socialLinks": {
-    "Telegram": "https://t.me/+79035052242?profile",
-    "WhatsApp": "https://wa.me/79035052242"
+    "telegram": "https://t.me/+79035052242?profile",
+    "whatsapp": "https://wa.me/79035052242"
   },
   "team": [],
   "processSteps": [],

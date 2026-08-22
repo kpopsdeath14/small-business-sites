@@ -63,20 +63,9 @@
     {
       "src": "/small-business-sites/beauty-bar-mari-salon/photos/2.webp",
       "alt": "Beauty Bar Mari — фото 3"
-    },
-    {
-      "src": "/small-business-sites/beauty-bar-mari-salon/photos/3.webp",
-      "alt": "Beauty Bar Mari — фото 4"
-    },
-    {
-      "src": "/small-business-sites/beauty-bar-mari-salon/photos/4.webp",
-      "alt": "Beauty Bar Mari — фото 5"
-    },
-    {
-      "src": "/small-business-sites/beauty-bar-mari-salon/photos/5.webp",
-      "alt": "Beauty Bar Mari — фото 6"
     }
   ],
+  "heroPhoto": "/small-business-sites/beauty-bar-mari-salon/photos/hero.webp",
   "reviews": [
     {
       "author": "Марина К.",
@@ -94,14 +83,15 @@
       "text": "Записалась впервые по рекомендации — не пожалела ни разу. Работа аккуратная, время пролетело незаметно, а результат держится до сих пор."
     }
   ],
+  "reviewsUrl": "https://yandex.ru/maps/org/x/32207312434/reviews/",
   "address": "Москва, улица Адмирала Руднева, 20",
   "phone": "+7 (916) 817-70-70",
   "workingHours": {
     "пн–вс": "10:00–21:00"
   },
   "socialLinks": {
-    "Telegram": "https://t.me/+79168177070?profile",
-    "WhatsApp": "https://wa.me/79168177070"
+    "telegram": "https://t.me/+79168177070?profile",
+    "whatsapp": "https://wa.me/79168177070"
   },
   "team": [],
   "processSteps": [],

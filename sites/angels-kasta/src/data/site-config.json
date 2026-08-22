@@ -7,6 +7,10 @@
       "variant": 3
     },
     {
+      "id": "stats",
+      "variant": 0
+    },
+    {
       "id": "about",
       "variant": 2
     },
