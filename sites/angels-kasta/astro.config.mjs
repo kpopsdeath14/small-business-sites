@@ -5,6 +5,6 @@ import tailwind from "@astrojs/tailwind";
 export default defineConfig({
   // GitHub Pages project site — written by the CLI from --base; edit freely for custom domains.
   site: "https://kpopsdeath14.github.io",
-  base: "/angels-kasta-salon",
+  base: "/small-business-sites/angels-kasta-salon",
   integrations: [preact(), tailwind({ applyBaseStyles: false })],
 });
