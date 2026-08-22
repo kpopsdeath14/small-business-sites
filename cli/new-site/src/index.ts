@@ -8,7 +8,7 @@ import { hashBrief } from "./utils/hash.js";
 import { downloadImages, downloadPhotoFields, downloadSinglePhoto } from "./steps/downloadImages.js";
 import { buildSiteData } from "./steps/buildSiteData.js";
 import { scaffoldSite } from "./steps/scaffoldSite.js";
-import { writeSiteFiles } from "./steps/writeSiteFiles.js";
+import { writeSiteFiles, syncAstroBase } from "./steps/writeSiteFiles.js";
 import { linkWorkspace, buildSite } from "./steps/buildSite.js";
 import { slugify } from "./utils/slug.js";
 import { step, info, success } from "./utils/logger.js";
@@ -83,6 +83,7 @@ async function main() {
     heroPhoto
   );
   await writeSiteFiles(siteDir, siteData, siteConfig, tokens);
+  await syncAstroBase(siteDir, basePath);
   success(`Данные сайта записаны в sites/${slug}`);
 
   if (isNewSite) {

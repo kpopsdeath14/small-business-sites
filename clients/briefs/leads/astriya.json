@@ -1,0 +1,134 @@
+{
+  "business_type": "beauty-salon",
+  "name": "Ногтевая студия Астрия",
+  "seed": "astriya-terracotta",
+  "description_raw": "Ногтевая студия Астрия — более 400 отзывов и рейтинг 5.0. Комбинированный маникюр, дизайны и аппаратный педикюр.",
+  "address": "Москва, Южнобутовская улица, 42",
+  "phone": "+7 (930) 964-13-02",
+  "working_hours": {
+    "пн–вс": "10:00–21:00"
+  },
+  "social_links": {
+    "Telegram": "https://t.me/+79309641302?profile",
+    "WhatsApp": "https://wa.me/79309641302"
+  },
+  "photos": [
+    "https://avatars.mds.yandex.net/get-altay/2701879/2a000001852181df5220c7f62de5bd65cbb8/L_height",
+    "https://avatars.mds.yandex.net/get-altay/11375099/2a0000018de0bd79aebda13ef28a79e3ec15/S",
+    "https://avatars.mds.yandex.net/get-altay/2701879/2a000001852181df5220c7f62de5bd65cbb8/XXL_height",
+    "https://avatars.mds.yandex.net/get-altay/2701879/2a000001852181df5220c7f62de5bd65cbb8/orig",
+    "https://avatars.mds.yandex.net/get-bunker/61205/63861a0e5b3011f1ae0c3a56c272e839/orig",
+    "https://avatars.mds.yandex.net/get-vh/6472713/2a0000018b2371cf539fc8de651e6a098669/orig",
+    "https://avatars.mds.yandex.net/get-altay/14165812/2a00000193121878f844f8c38532d87ff140/XXXL",
+    "https://avatars.mds.yandex.net/get-altay/13289089/2a0000019311e18ff34803fb6fdd8634eea7/XXXL",
+    "https://avatars.mds.yandex.net/get-yapic/59871/0f-4/islands-68",
+    "https://avatars.mds.yandex.net/get-yapic/27232/inY5Ay5sUOXT42uHB8iqyTGjoM-1/islands-68"
+  ],
+  "menu_or_services": [
+    {
+      "name": "Комбинированный маникюр",
+      "price": "1800 ₽",
+      "category": "Маникюр",
+      "description": "Аппаратная и ручная обработка кутикулы, идеальная форма"
+    },
+    {
+      "name": "Покрытие гель-лаком",
+      "price": "1200 ₽",
+      "category": "Маникюр",
+      "description": "Стойкое покрытие до 4 недель, большая палитра оттенков"
+    },
+    {
+      "name": "Дизайн ногтей",
+      "price": "от 300 ₽/ноготь",
+      "category": "Маникюр",
+      "description": "Слайдеры, роспись, фольга, втирки — любой авторский дизайн"
+    },
+    {
+      "name": "Аппаратный педикюр",
+      "price": "2500 ₽",
+      "category": "Педикюр",
+      "description": "Безопасная обработка стоп, покрытие в подарок"
+    },
+    {
+      "name": "Укрепление ногтей",
+      "price": "от 600 ₽",
+      "category": "Маникюр",
+      "description": "Гель или полигель для тонких и ломких ногтей"
+    },
+    {
+      "name": "Наращивание ногтей",
+      "price": "от 3200 ₽",
+      "category": "Маникюр",
+      "description": "Гелевое наращивание любой длины и формы"
+    }
+  ],
+  "reviews": [
+    {
+      "author": "Анна",
+      "rating": 5,
+      "text": "Маникюр держится четыре недели без сколов — это лучшее покрытие, что я находила. Отдельное спасибо за аккуратность и внимание к деталям."
+    },
+    {
+      "author": "Светлана",
+      "rating": 5,
+      "text": "Уютная студия и мастера, которые реально слушают пожелания. Дизайн сделали точь-в-точь как на референсе, даже лучше."
+    },
+    {
+      "author": "Ирина",
+      "rating": 5,
+      "text": "Хожу на маникюр и педикюр всей семьёй. Всегда чисто, вовремя и с идеальным результатом. Рекомендую всем подругам."
+    }
+  ],
+  "stats": [
+    {
+      "value": "5",
+      "label": "рейтинг на Яндекс Картах"
+    },
+    {
+      "value": "404+",
+      "label": "отзывов клиентов"
+    }
+  ],
+  "highlights": [],
+  "design": {
+    "tokenSetIndex": 7,
+    "sections": [
+      {
+        "id": "hero",
+        "variant": 1
+      },
+      {
+        "id": "about",
+        "variant": 1
+      },
+      {
+        "id": "services",
+        "variant": 0
+      },
+      {
+        "id": "gallery",
+        "variant": 0
+      },
+      {
+        "id": "reviews",
+        "variant": 1
+      },
+      {
+        "id": "booking",
+        "variant": 0
+      },
+      {
+        "id": "contact",
+        "variant": 0
+      },
+      {
+        "id": "ticker",
+        "variant": 0
+      },
+      {
+        "id": "footer",
+        "variant": 0
+      }
+    ]
+  }
+}

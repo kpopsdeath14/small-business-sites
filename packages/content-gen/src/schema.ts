@@ -77,6 +77,15 @@ export const BriefSchema = z.object({
   highlights: z.array(HighlightItemSchema).optional().default([]),
   /** Link to an existing online booking widget (YClients, Dikidi, etc.). When present, it replaces the built-in contact form — no point offering a fake form next to a real booking system. */
   booking_url: z.string().optional(),
+  /** Explicit design curation: pin a palette (tokenSetIndex) and/or exact section variants.
+   *  When absent, the variance engine picks from the seed as usual. Used to guarantee that
+   *  sibling sites in a portfolio look genuinely different rather than seeded-similar. */
+  design: z
+    .object({
+      tokenSetIndex: z.number().int().min(0).optional(),
+      sections: z.array(z.object({ id: z.string(), variant: z.number().int().min(0) })).optional(),
+    })
+    .optional(),
 });
 export type Brief = z.infer<typeof BriefSchema>;
 

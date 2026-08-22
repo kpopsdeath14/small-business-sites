@@ -37,6 +37,19 @@ function withAvailableSections(manifest: BusinessManifest, brief: Brief): Busine
 export async function selectDesign(brief: Brief): Promise<DesignSelection> {
   const { manifest, tokenSets } = await loadTemplateModule(brief.business_type);
   const seed = brief.seed ?? brief.name;
+
+  // Explicit curation wins: a brief may pin the palette and/or exact section variants
+  // (see BriefSchema.design). Anything not pinned still falls through to the engine.
+  if (brief.design?.tokenSetIndex !== undefined || brief.design?.sections) {
+    const curated: SiteConfig = {
+      ...selectSiteConfig(withAvailableSections(manifest, brief), seed),
+      ...(brief.design.tokenSetIndex !== undefined ? { tokenSetIndex: brief.design.tokenSetIndex } : {}),
+      ...(brief.design.sections ? { sections: brief.design.sections } : {}),
+    };
+    const tokenIndex = Math.min(curated.tokenSetIndex, tokenSets.length - 1);
+    return { siteConfig: { ...curated, tokenSetIndex: tokenIndex }, tokens: tokenSets[tokenIndex] };
+  }
+
   const siteConfig = selectSiteConfig(withAvailableSections(manifest, brief), seed);
   const tokens = tokenSets[siteConfig.tokenSetIndex];
   return { siteConfig, tokens };

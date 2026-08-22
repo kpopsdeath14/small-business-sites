@@ -1,0 +1,154 @@
+{
+  "business_type": "beauty-salon",
+  "name": "AK Lash Studio",
+  "seed": "ak-lash-atelier",
+  "description_raw": "Студия качественного наращивания ресниц. Опытные мастера, двухчасовой отдых в креслах-реклайнерах, любимые сериалы и безупречный результат. Носка ресниц от 4 недель, гарантия на работу 7 дней.",
+  "address": "Москва, бульвар Адмирала Ушакова, 3",
+  "phone": "+7 (968) 060-49-98",
+  "working_hours": {
+    "пн–вс": "10:00–21:00"
+  },
+  "social_links": {
+    "Telegram": "https://t.me/+79680604998?profile",
+    "WhatsApp": "https://wa.me/79680604998"
+  },
+  "photos": [
+    "https://avatars.mds.yandex.net/get-altay/10700956/2a0000018b84a22091324e3c2c8f4164f7f8/L_height",
+    "https://avatars.mds.yandex.net/get-altay/10700956/2a0000018b84a22091324e3c2c8f4164f7f8/XXL_height",
+    "https://avatars.mds.yandex.net/get-altay/10700956/2a0000018b84a22091324e3c2c8f4164f7f8/orig",
+    "https://avatars.mds.yandex.net/get-bunker/61205/63861a0e5b3011f1ae0c3a56c272e839/orig",
+    "https://avatars.mds.yandex.net/get-vh/5105395/2a00000192d938d6c105090bfba95a36fa60/orig",
+    "https://avatars.mds.yandex.net/get-altay/18135344/2a0000019c70353feb9dd92543446ef12f26/XXXL",
+    "https://avatars.mds.yandex.net/get-altay/10700956/2a0000018b84a22091324e3c2c8f4164f7f8/L",
+    "https://avatars.mds.yandex.net/get-altay/10700956/2a0000018b84a22091324e3c2c8f4164f7f8/XL",
+    "https://avatars.mds.yandex.net/get-altay/10700956/2a0000018b84a22091324e3c2c8f4164f7f8/XXL",
+    "https://avatars.mds.yandex.net/get-altay/9728306/2a0000018acbb70f14ff494e9c5a51b60379/L"
+  ],
+  "menu_or_services": [
+    {
+      "name": "Классическое наращивание ресниц",
+      "price": "от 2500 ₽",
+      "category": "Ресницы",
+      "description": "Естественный объём, подчёркивающий форму глаза"
+    },
+    {
+      "name": "Объёмное наращивание 2D–5D",
+      "price": "от 3200 ₽",
+      "category": "Ресницы",
+      "description": "Выразительный объём с лёгким пушистым эффектом"
+    },
+    {
+      "name": "Голливудский объём",
+      "price": "от 4500 ₽",
+      "category": "Ресницы",
+      "description": "Максимальная густота и драматичный изгиб"
+    },
+    {
+      "name": "Ламинирование ресниц",
+      "price": "2200 ₽",
+      "category": "Ресницы",
+      "description": "Завивка, питание и глубокий чёрный цвет на 6–8 недель"
+    },
+    {
+      "name": "Коррекция и окрашивание бровей",
+      "price": "от 1200 ₽",
+      "category": "Брови",
+      "description": "Форма по архитектуре лица, стойкий краситель или хна"
+    },
+    {
+      "name": "Ламинирование бровей",
+      "price": "1800 ₽",
+      "category": "Брови",
+      "description": "Укладка волосков, блеск и ухоженный вид на месяц"
+    }
+  ],
+  "reviews": [
+    {
+      "author": "Марина К.",
+      "rating": 5,
+      "text": "Хожу уже больше года — ресницы держатся больше месяца и выглядят идеально. Мастера внимательные, всё стерильно, атмосфера уютная."
+    },
+    {
+      "author": "Ольга",
+      "rating": 5,
+      "text": "Лучший лешмейкер, к которому я попадала! Подобрали изгиб под мои глаза, все подруги спрашивают адрес. Обязательно вернусь на ламинирование."
+    },
+    {
+      "author": "Дарья",
+      "rating": 5,
+      "text": "Записалась впервые по рекомендации — не пожалела ни разу. Работа аккуратная, время пролетело незаметно, а результат держится до сих пор."
+    }
+  ],
+  "stats": [
+    {
+      "value": "5",
+      "label": "рейтинг на Яндекс Картах"
+    },
+    {
+      "value": "60+",
+      "label": "отзывов клиентов"
+    }
+  ],
+  "highlights": [
+    {
+      "name": "Объёмное наращивание",
+      "description": "Пушистый эффект от 2D до голливуда",
+      "price": "от 3200 ₽"
+    },
+    {
+      "name": "Ламинирование",
+      "description": "Свой объём — но лучше",
+      "price": "2200 ₽"
+    },
+    {
+      "name": "Брови",
+      "description": "Архитектура и окрашивание",
+      "price": "от 1200 ₽"
+    }
+  ],
+  "design": {
+    "tokenSetIndex": 2,
+    "sections": [
+      {
+        "id": "hero",
+        "variant": 1
+      },
+      {
+        "id": "about",
+        "variant": 0
+      },
+      {
+        "id": "highlights",
+        "variant": 0
+      },
+      {
+        "id": "services",
+        "variant": 0
+      },
+      {
+        "id": "gallery",
+        "variant": 0
+      },
+      {
+        "id": "reviews",
+        "variant": 0
+      },
+      {
+        "id": "booking",
+        "variant": 0
+      },
+      {
+        "id": "contact",
+        "variant": 0
+      },
+      {
+        "id": "ticker",
+        "variant": 0
+      },
+      {
+        "id": "footer",
+        "variant": 0
+      }
+    ]
+  }
+}

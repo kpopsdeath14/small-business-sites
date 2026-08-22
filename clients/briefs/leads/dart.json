@@ -1,0 +1,134 @@
+{
+  "business_type": "beauty-salon",
+  "name": "Клуб красоты D'Арт",
+  "seed": "dart-sapphire",
+  "description_raw": "Клуб красоты D'Арт — ногтевой сервис клубного уровня. 111 отзывов и рейтинг 5.0 на Яндекс Картах.",
+  "address": "Москва, Чечёрский проезд, 92",
+  "phone": "+7 (903) 505-22-42",
+  "working_hours": {
+    "пн–вс": "10:00–21:00"
+  },
+  "social_links": {
+    "Telegram": "https://t.me/+79035052242?profile",
+    "WhatsApp": "https://wa.me/79035052242"
+  },
+  "photos": [
+    "https://avatars.mds.yandex.net/get-altay/11385489/2a0000018c6ed1aead35234497f95793f4e0/L_height",
+    "https://avatars.mds.yandex.net/get-altay/15386900/2a000001973972357a0864080f9e5721948c/S",
+    "https://avatars.mds.yandex.net/get-altay/11385489/2a0000018c6ed1aead35234497f95793f4e0/XXL_height",
+    "https://avatars.mds.yandex.net/get-altay/11385489/2a0000018c6ed1aead35234497f95793f4e0/orig",
+    "https://avatars.mds.yandex.net/get-altay/17753003/2a0000019d1f02ed6a35bb8e9561f24c5c06/S",
+    "https://avatars.mds.yandex.net/get-altay/18708590/2a0000019d1f02d370a56d69f7d1a6f24b58/S",
+    "https://avatars.mds.yandex.net/get-altay/19534558/2a0000019d1f02dbc92604a70f5f09dc5376/S",
+    "https://avatars.mds.yandex.net/get-altay/19673716/2a0000019d1f02e3ba839e7edda6e8fe7a41/S",
+    "https://avatars.mds.yandex.net/get-altay/18141736/2a0000019ce27941c0ebe745efcf581a7489/S",
+    "https://avatars.mds.yandex.net/get-altay/18141736/2a0000019ce27947b5704f8c8cf2292de2a8/S"
+  ],
+  "menu_or_services": [
+    {
+      "name": "Комбинированный маникюр",
+      "price": "1800 ₽",
+      "category": "Маникюр",
+      "description": "Аппаратная и ручная обработка кутикулы, идеальная форма"
+    },
+    {
+      "name": "Покрытие гель-лаком",
+      "price": "1200 ₽",
+      "category": "Маникюр",
+      "description": "Стойкое покрытие до 4 недель, большая палитра оттенков"
+    },
+    {
+      "name": "Дизайн ногтей",
+      "price": "от 300 ₽/ноготь",
+      "category": "Маникюр",
+      "description": "Слайдеры, роспись, фольга, втирки — любой авторский дизайн"
+    },
+    {
+      "name": "Аппаратный педикюр",
+      "price": "2500 ₽",
+      "category": "Педикюр",
+      "description": "Безопасная обработка стоп, покрытие в подарок"
+    },
+    {
+      "name": "Укрепление ногтей",
+      "price": "от 600 ₽",
+      "category": "Маникюр",
+      "description": "Гель или полигель для тонких и ломких ногтей"
+    },
+    {
+      "name": "Наращивание ногтей",
+      "price": "от 3200 ₽",
+      "category": "Маникюр",
+      "description": "Гелевое наращивание любой длины и формы"
+    }
+  ],
+  "reviews": [
+    {
+      "author": "Анна",
+      "rating": 5,
+      "text": "Маникюр держится четыре недели без сколов — это лучшее покрытие, что я находила. Отдельное спасибо за аккуратность и внимание к деталям."
+    },
+    {
+      "author": "Светлана",
+      "rating": 5,
+      "text": "Уютная студия и мастера, которые реально слушают пожелания. Дизайн сделали точь-в-точь как на референсе, даже лучше."
+    },
+    {
+      "author": "Ирина",
+      "rating": 5,
+      "text": "Хожу на маникюр и педикюр всей семьёй. Всегда чисто, вовремя и с идеальным результатом. Рекомендую всем подругам."
+    }
+  ],
+  "stats": [
+    {
+      "value": "5",
+      "label": "рейтинг на Яндекс Картах"
+    },
+    {
+      "value": "111+",
+      "label": "отзывов клиентов"
+    }
+  ],
+  "highlights": [],
+  "design": {
+    "tokenSetIndex": 6,
+    "sections": [
+      {
+        "id": "hero",
+        "variant": 0
+      },
+      {
+        "id": "about",
+        "variant": 0
+      },
+      {
+        "id": "services",
+        "variant": 1
+      },
+      {
+        "id": "gallery",
+        "variant": 0
+      },
+      {
+        "id": "reviews",
+        "variant": 1
+      },
+      {
+        "id": "booking",
+        "variant": 0
+      },
+      {
+        "id": "contact",
+        "variant": 1
+      },
+      {
+        "id": "ticker",
+        "variant": 0
+      },
+      {
+        "id": "footer",
+        "variant": 0
+      }
+    ]
+  }
+}

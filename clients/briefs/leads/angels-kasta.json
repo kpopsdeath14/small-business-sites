@@ -1,0 +1,150 @@
+{
+  "business_type": "beauty-salon",
+  "name": "Angels Kasta",
+  "seed": "angels-evening-noir",
+  "description_raw": "Салон красоты Angels Kasta — вечерний гламур и безупречный сервис. Более 230 отзывов на Яндекс Картах.",
+  "address": "Москва, улица Академика Семёнова, 11",
+  "phone": "+7 (964) 588-96-69",
+  "working_hours": {
+    "пн–вс": "10:00–21:00"
+  },
+  "social_links": {
+    "Telegram": "https://t.me/+79645889669?profile",
+    "WhatsApp": "https://wa.me/79645889669"
+  },
+  "photos": [
+    "https://avatars.mds.yandex.net/get-altay/13851722/2a000001961ed88edbb66dad63f3542afcfe/L_height",
+    "https://avatars.mds.yandex.net/get-altay/14675673/2a000001949e3dd942dcfa42ac74e1a2946c/S",
+    "https://avatars.mds.yandex.net/get-altay/13851722/2a000001961ed88edbb66dad63f3542afcfe/XXL_height",
+    "https://avatars.mds.yandex.net/get-altay/13851722/2a000001961ed88edbb66dad63f3542afcfe/orig",
+    "https://avatars.mds.yandex.net/get-yandex-bookings/6221863/2a00000196489049695879ddd924743f410d/XS_height",
+    "https://avatars.mds.yandex.net/get-yandex-bookings/6220671/2a0000019648903fecd828c7f9404ffd1853/XS_height",
+    "https://avatars.mds.yandex.net/get-yandex-bookings/6220671/2a0000019648903f787a36238fc2918b5fe5/XS_height",
+    "https://avatars.mds.yandex.net/get-bunker/61205/63861a0e5b3011f1ae0c3a56c272e839/orig",
+    "https://avatars.mds.yandex.net/get-vh/5107607/2a00000196008884a8c304f7e51d5d7e1485/orig",
+    "https://avatars.mds.yandex.net/get-vh/3245183/2a00000195be4ccd2a5d56a2a62318cd4c27/orig"
+  ],
+  "menu_or_services": [
+    {
+      "name": "Женская стрижка",
+      "price": "от 2000 ₽",
+      "category": "Волосы",
+      "description": "Стрижка по форме лица + укладка в подарок"
+    },
+    {
+      "name": "Окрашивание в один тон",
+      "price": "от 3500 ₽",
+      "category": "Волосы",
+      "description": "Профессиональные красители, уход после процедуры"
+    },
+    {
+      "name": "Сложное окрашивание",
+      "price": "от 6500 ₽",
+      "category": "Волосы",
+      "description": "Балаяж, шатуш, аиртач — мягкие переходы без желтизны"
+    },
+    {
+      "name": "Маникюр с покрытием гель-лак",
+      "price": "2200 ₽",
+      "category": "Ногти",
+      "description": "Комбинированная техника, стерильные инструменты"
+    },
+    {
+      "name": "Педикюр",
+      "price": "2600 ₽",
+      "category": "Ногти",
+      "description": "Аппаратная техника, стойкое покрытие"
+    },
+    {
+      "name": "Чистка лица",
+      "price": "от 3000 ₽",
+      "category": "Косметология",
+      "description": "Глубокое очищение пор, успокаивающая маска"
+    }
+  ],
+  "reviews": [
+    {
+      "author": "Екатерина",
+      "rating": 5,
+      "text": "Попала по отзывам и не ошиблась: стрижка и окрашивание — супер, мастер подобрал оттенок под мой цвет кожи. Цена полностью соответствует качеству."
+    },
+    {
+      "author": "Наталья",
+      "rating": 5,
+      "text": "Очень внимательный персонал и приятная атмосфера. Сделали сложное окрашивание — волосы живые, блестящие, никакого вреда."
+    },
+    {
+      "author": "Юлия",
+      "rating": 5,
+      "text": "Обслуживание на высоте: кофе, забота, идеальный результат. Теперь только сюда — записалась на следующий визит сразу после первого."
+    }
+  ],
+  "stats": [
+    {
+      "value": "4.4",
+      "label": "рейтинг на Яндекс Картах"
+    },
+    {
+      "value": "230+",
+      "label": "отзывов клиентов"
+    }
+  ],
+  "highlights": [
+    {
+      "name": "Сложное окрашивание",
+      "description": "Балаяж и аиртач без желтизны",
+      "price": "от 6500 ₽"
+    },
+    {
+      "name": "Вечерний образ",
+      "description": "Стрижка + укладка + макияж",
+      "price": "от 5500 ₽"
+    },
+    {
+      "name": "Уход для волос",
+      "description": "Ботокс и кератин",
+      "price": "от 4000 ₽"
+    }
+  ],
+  "design": {
+    "tokenSetIndex": 4,
+    "sections": [
+      {
+        "id": "hero",
+        "variant": 3
+      },
+      {
+        "id": "about",
+        "variant": 2
+      },
+      {
+        "id": "services",
+        "variant": 0
+      },
+      {
+        "id": "highlights",
+        "variant": 0
+      },
+      {
+        "id": "gallery",
+        "variant": 2
+      },
+      {
+        "id": "reviews",
+        "variant": 1
+      },
+      {
+        "id": "booking",
+        "variant": 0
+      },
+      {
+        "id": "contact",
+        "variant": 0
+      },
+      {
+        "id": "footer",
+        "variant": 0
+      }
+    ]
+  }
+}

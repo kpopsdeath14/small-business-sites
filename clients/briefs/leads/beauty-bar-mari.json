@@ -1,0 +1,146 @@
+{
+  "business_type": "beauty-salon",
+  "name": "Beauty Bar Mari",
+  "seed": "mari-porcelain",
+  "description_raw": "Beauty Bar Mari — бьюти-бар бровей и ресниц. Свежий взгляд на классические процедуры.",
+  "address": "Москва, улица Адмирала Руднева, 20",
+  "phone": "+7 (916) 817-70-70",
+  "working_hours": {
+    "пн–вс": "10:00–21:00"
+  },
+  "social_links": {
+    "Telegram": "https://t.me/+79168177070?profile",
+    "WhatsApp": "https://wa.me/79168177070"
+  },
+  "photos": [
+    "https://avatars.mds.yandex.net/get-altay/1018126/2a0000018561e47adb79bd00b91d5e6204fc/L_height",
+    "https://avatars.mds.yandex.net/get-altay/239474/2a000001854e13367e071f32f2c3d4a8e700/S",
+    "https://avatars.mds.yandex.net/get-altay/1018126/2a0000018561e47adb79bd00b91d5e6204fc/XXL_height",
+    "https://avatars.mds.yandex.net/get-altay/953593/2a0000018561e47a2f775dac2d1a65020a32/XXL_height",
+    "https://avatars.mds.yandex.net/get-altay/1018126/2a0000018561e47adb79bd00b91d5e6204fc/orig",
+    "https://avatars.mds.yandex.net/get-altay/14837019/2a0000019654a57fe1bec77d9b616dc45a55/XXXL"
+  ],
+  "menu_or_services": [
+    {
+      "name": "Классическое наращивание ресниц",
+      "price": "от 2500 ₽",
+      "category": "Ресницы",
+      "description": "Естественный объём, подчёркивающий форму глаза"
+    },
+    {
+      "name": "Объёмное наращивание 2D–5D",
+      "price": "от 3200 ₽",
+      "category": "Ресницы",
+      "description": "Выразительный объём с лёгким пушистым эффектом"
+    },
+    {
+      "name": "Голливудский объём",
+      "price": "от 4500 ₽",
+      "category": "Ресницы",
+      "description": "Максимальная густота и драматичный изгиб"
+    },
+    {
+      "name": "Ламинирование ресниц",
+      "price": "2200 ₽",
+      "category": "Ресницы",
+      "description": "Завивка, питание и глубокий чёрный цвет на 6–8 недель"
+    },
+    {
+      "name": "Коррекция и окрашивание бровей",
+      "price": "от 1200 ₽",
+      "category": "Брови",
+      "description": "Форма по архитектуре лица, стойкий краситель или хна"
+    },
+    {
+      "name": "Ламинирование бровей",
+      "price": "1800 ₽",
+      "category": "Брови",
+      "description": "Укладка волосков, блеск и ухоженный вид на месяц"
+    }
+  ],
+  "reviews": [
+    {
+      "author": "Марина К.",
+      "rating": 5,
+      "text": "Хожу уже больше года — ресницы держатся больше месяца и выглядят идеально. Мастера внимательные, всё стерильно, атмосфера уютная."
+    },
+    {
+      "author": "Ольга",
+      "rating": 5,
+      "text": "Лучший лешмейкер, к которому я попадала! Подобрали изгиб под мои глаза, все подруги спрашивают адрес. Обязательно вернусь на ламинирование."
+    },
+    {
+      "author": "Дарья",
+      "rating": 5,
+      "text": "Записалась впервые по рекомендации — не пожалела ни разу. Работа аккуратная, время пролетело незаметно, а результат держится до сих пор."
+    }
+  ],
+  "stats": [
+    {
+      "value": "5.0",
+      "label": "рейтинг на Яндекс Картах"
+    },
+    {
+      "value": "25+",
+      "label": "отзывов клиентов"
+    }
+  ],
+  "highlights": [
+    {
+      "name": "Экспресс-брови",
+      "description": "Коррекция + окрашивание за час",
+      "price": "1400 ₽"
+    },
+    {
+      "name": "Классика ресниц",
+      "description": "Естественный эффект каждый день",
+      "price": "2500 ₽"
+    },
+    {
+      "name": "Ламинирование",
+      "description": "Курс из 3 процедур",
+      "price": "5500 ₽"
+    }
+  ],
+  "design": {
+    "tokenSetIndex": 9,
+    "sections": [
+      {
+        "id": "hero",
+        "variant": 1
+      },
+      {
+        "id": "about",
+        "variant": 2
+      },
+      {
+        "id": "highlights",
+        "variant": 0
+      },
+      {
+        "id": "services",
+        "variant": 0
+      },
+      {
+        "id": "gallery",
+        "variant": 2
+      },
+      {
+        "id": "reviews",
+        "variant": 0
+      },
+      {
+        "id": "booking",
+        "variant": 0
+      },
+      {
+        "id": "contact",
+        "variant": 0
+      },
+      {
+        "id": "footer",
+        "variant": 0
+      }
+    ]
+  }
+}
