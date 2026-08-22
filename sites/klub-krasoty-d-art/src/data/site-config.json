@@ -1,0 +1,42 @@
+{
+  "seed": "dart-sapphire",
+  "tokenSetIndex": 6,
+  "sections": [
+    {
+      "id": "hero",
+      "variant": 0
+    },
+    {
+      "id": "about",
+      "variant": 0
+    },
+    {
+      "id": "services",
+      "variant": 1
+    },
+    {
+      "id": "gallery",
+      "variant": 0
+    },
+    {
+      "id": "reviews",
+      "variant": 1
+    },
+    {
+      "id": "booking",
+      "variant": 0
+    },
+    {
+      "id": "contact",
+      "variant": 1
+    },
+    {
+      "id": "ticker",
+      "variant": 0
+    },
+    {
+      "id": "footer",
+      "variant": 0
+    }
+  ]
+}

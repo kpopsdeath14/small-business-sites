@@ -10,9 +10,59 @@ sites/*/
 # Local Netlify folder
 .netlify
 
-# The demo salon site is deployed to GitHub Pages by CI (see .github/workflows),
-# so its SOURCE is tracked despite the blanket sites/*/ ignore above.
+# Client demo sites deployed to GitHub Pages by CI (see .github/workflows/deploy-sites.yml).
+# Their SOURCE is tracked despite the blanket sites/*/ ignore above; build output stays ignored.
 !sites/studio-milka/
 sites/studio-milka/node_modules/
 sites/studio-milka/dist/
 sites/studio-milka/.astro/
+
+!sites/ak-lash-studio/
+sites/ak-lash-studio/node_modules/
+sites/ak-lash-studio/dist/
+sites/ak-lash-studio/.astro/
+
+!sites/salon-krasoty-alisa/
+sites/salon-krasoty-alisa/node_modules/
+sites/salon-krasoty-alisa/dist/
+sites/salon-krasoty-alisa/.astro/
+
+!sites/angels-kasta/
+sites/angels-kasta/node_modules/
+sites/angels-kasta/dist/
+sites/angels-kasta/.astro/
+
+!sites/art-look/
+sites/art-look/node_modules/
+sites/art-look/dist/
+sites/art-look/.astro/
+
+!sites/nogtevaya-studiya-astriya/
+sites/nogtevaya-studiya-astriya/node_modules/
+sites/nogtevaya-studiya-astriya/dist/
+sites/nogtevaya-studiya-astriya/.astro/
+
+!sites/studiya-beautyzone/
+sites/studiya-beautyzone/node_modules/
+sites/studiya-beautyzone/dist/
+sites/studiya-beautyzone/.astro/
+
+!sites/beauty/
+sites/beauty/node_modules/
+sites/beauty/dist/
+sites/beauty/.astro/
+
+!sites/krasota-i-stil/
+sites/krasota-i-stil/node_modules/
+sites/krasota-i-stil/dist/
+sites/krasota-i-stil/.astro/
+
+!sites/beauty-bar-mari/
+sites/beauty-bar-mari/node_modules/
+sites/beauty-bar-mari/dist/
+sites/beauty-bar-mari/.astro/
+
+!sites/klub-krasoty-d-art/
+sites/klub-krasoty-d-art/node_modules/
+sites/klub-krasoty-d-art/dist/
+sites/klub-krasoty-d-art/.astro/

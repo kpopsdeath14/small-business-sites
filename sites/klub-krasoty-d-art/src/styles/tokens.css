@@ -1,0 +1,17 @@
+:root {
+  --color-bg: #0E1420;
+  --color-surface: #16202F;
+  --color-text: #EDF1F7;
+  --color-text-muted: #93A1B5;
+  --color-primary: #AFC3DC;
+  --color-primary-contrast: #101826;
+  --color-accent: #D8E2EF;
+  --color-border: #223046;
+  --font-heading: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --font-body: 'Jost', 'Century Gothic', -apple-system, system-ui, sans-serif;
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 10px;
+  --shadow-card: 0 24px 60px rgba(0,0,0,0.5);
+  --shadow-elevated: 0 34px 80px rgba(0,0,0,0.6);
+}

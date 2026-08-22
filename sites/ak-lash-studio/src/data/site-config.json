@@ -1,0 +1,46 @@
+{
+  "seed": "ak-lash-atelier",
+  "tokenSetIndex": 2,
+  "sections": [
+    {
+      "id": "hero",
+      "variant": 1
+    },
+    {
+      "id": "about",
+      "variant": 0
+    },
+    {
+      "id": "highlights",
+      "variant": 0
+    },
+    {
+      "id": "services",
+      "variant": 0
+    },
+    {
+      "id": "gallery",
+      "variant": 0
+    },
+    {
+      "id": "reviews",
+      "variant": 0
+    },
+    {
+      "id": "booking",
+      "variant": 0
+    },
+    {
+      "id": "contact",
+      "variant": 0
+    },
+    {
+      "id": "ticker",
+      "variant": 0
+    },
+    {
+      "id": "footer",
+      "variant": 0
+    }
+  ]
+}

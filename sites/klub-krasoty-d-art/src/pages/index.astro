@@ -1,0 +1,122 @@
+---
+import Base from "../layouts/Base.astro";
+import SalonNav from "@sitegen/template-beauty-salon/components/SalonNav.astro";
+import HeroSection from "@sitegen/template-beauty-salon/sections/HeroSection.astro";
+import AboutSection from "@sitegen/template-beauty-salon/sections/AboutSection.astro";
+import ServicesSection from "@sitegen/template-beauty-salon/sections/ServicesSection.astro";
+import HighlightsSection from "@sitegen/template-beauty-salon/sections/HighlightsSection.astro";
+import StatsSection from "@sitegen/template-beauty-salon/sections/StatsSection.astro";
+import TeamSection from "@sitegen/template-beauty-salon/sections/TeamSection.astro";
+import GallerySection from "@sitegen/template-beauty-salon/sections/GallerySection.astro";
+import ReviewsSection from "@sitegen/template-beauty-salon/sections/ReviewsSection.astro";
+import ContactSection from "@sitegen/template-beauty-salon/sections/ContactSection.astro";
+import BookingSection from "@sitegen/template-beauty-salon/sections/BookingSection.astro";
+import TickerSection from "@sitegen/template-beauty-salon/sections/TickerSection.astro";
+import FooterSection from "@sitegen/template-beauty-salon/sections/FooterSection.astro";
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+import siteDataJson from "../data/site.json";
+import siteConfigJson from "../data/site-config.json";
+
+const data = siteDataJson as unknown as SiteData;
+const siteConfig = siteConfigJson as { sections: { id: string; variant: number }[] };
+
+const sectionComponents: Record<string, any> = {
+  hero: HeroSection,
+  about: AboutSection,
+  services: ServicesSection,
+  highlights: HighlightsSection,
+  stats: StatsSection,
+  team: TeamSection,
+  gallery: GallerySection,
+  reviews: ReviewsSection,
+  contact: ContactSection,
+  booking: BookingSection,
+  ticker: TickerSection,
+  footer: FooterSection,
+};
+
+const NAV_LABELS: Record<string, string> = {
+  about: "О нас",
+  services: "Услуги",
+  highlights: "Топ-процедуры",
+  team: "Мастера",
+  gallery: "Работы",
+  reviews: "Отзывы",
+  contact: "Контакты",
+  booking: "Записаться",
+};
+
+const navLinks = siteConfig.sections
+  .filter((section) => section.id in NAV_LABELS)
+  .map((section) => ({ label: NAV_LABELS[section.id], href: `#${section.id}`, primary: section.id === "booking" }));
+---
+
+<Base title={data.meta.title} description={data.meta.description}>
+  <!-- Fixed transparent-over-hero navigation (goes solid on scroll). -->
+  <SalonNav siteName={data.name} links={navLinks} phone={data.phone} />
+  {
+    siteConfig.sections.map((section) => {
+      const Cmp = sectionComponents[section.id];
+      return Cmp ? <Cmp variant={section.variant} data={data} /> : null;
+    })
+  }
+
+  <!-- Mobile sticky CTA: on a phone the nav is a burger, so the two actions that matter
+       (call / book) stay one thumb-tap away at all times. Slides up after the hero leaves
+       the viewport; hides again while the booking form itself is on screen. -->
+  {
+    data.phone && (
+      <div
+        id="mobile-cta"
+        class="md:hidden fixed inset-x-0 bottom-0 z-40 flex gap-2 px-4 pt-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))] bg-[#14110e]/95 backdrop-blur-lg border-t border-white/10"
+      >
+        <a
+          href={`tel:${data.phone.replace(/[^+\d]/g, "")}`}
+          class="flex-1 border border-white/25 text-[#F4EEE2] text-center py-3 text-[11px] font-semibold uppercase tracking-[0.2em] active:scale-95 transition-transform"
+        >
+          Позвонить
+        </a>
+        <a
+          href="#booking"
+          class="flex-1 bg-[#C8A96E] text-[#171310] text-center py-3 text-[11px] font-semibold uppercase tracking-[0.2em] active:scale-95 transition-transform"
+        >
+          Записаться
+        </a>
+      </div>
+    )
+  }
+</Base>
+
+<style>
+  /* Hidden below the fold: slides up once the hero has been scrolled past. Only transform
+     animates (compositor-friendly). */
+  #mobile-cta {
+    transform: translateY(calc(100% + 24px));
+    transition: transform 0.35s ease;
+  }
+  #mobile-cta.is-visible {
+    transform: translateY(0);
+  }
+</style>
+
+<script>
+  const cta = document.getElementById("mobile-cta");
+  if (cta) {
+    const booking = document.getElementById("booking");
+    let bookingInView = false;
+
+    if (booking && "IntersectionObserver" in window) {
+      new IntersectionObserver((entries) => {
+        bookingInView = entries[0]?.isIntersecting ?? false;
+        update();
+      }).observe(booking);
+    }
+
+    const update = () => {
+      const pastHero = window.scrollY > window.innerHeight * 0.55;
+      cta.classList.toggle("is-visible", pastHero && !bookingInView);
+    };
+    window.addEventListener("scroll", update, { passive: true });
+    update();
+  }
+</script>

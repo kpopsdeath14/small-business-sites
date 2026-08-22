@@ -1,0 +1,152 @@
+{
+  "name": "Angels Kasta",
+  "meta": {
+    "title": "Angels Kasta — салон красоты / студия красоты",
+    "description": "Салон красоты Angels Kasta — вечерний гламур и безупречный сервис. Более 230 отзывов на Яндекс Картах."
+  },
+  "hero": {
+    "heading": "Angels Kasta",
+    "subheading": "Салон красоты Angels Kasta — вечерний гламур и безупречный сервис. Более 230 отзывов на Яндекс Картах.",
+    "ctaLabel": "Связаться с нами"
+  },
+  "about": {
+    "heading": "О нас",
+    "body": "Салон красоты Angels Kasta — вечерний гламур и безупречный сервис. Более 230 отзывов на Яндекс Картах."
+  },
+  "items": [
+    {
+      "name": "Женская стрижка",
+      "description": "Стрижка по форме лица + укладка в подарок",
+      "price": "от 2000 ₽",
+      "category": "Волосы"
+    },
+    {
+      "name": "Окрашивание в один тон",
+      "description": "Профессиональные красители, уход после процедуры",
+      "price": "от 3500 ₽",
+      "category": "Волосы"
+    },
+    {
+      "name": "Сложное окрашивание",
+      "description": "Балаяж, шатуш, аиртач — мягкие переходы без желтизны",
+      "price": "от 6500 ₽",
+      "category": "Волосы"
+    },
+    {
+      "name": "Маникюр с покрытием гель-лак",
+      "description": "Комбинированная техника, стерильные инструменты",
+      "price": "2200 ₽",
+      "category": "Ногти"
+    },
+    {
+      "name": "Педикюр",
+      "description": "Аппаратная техника, стойкое покрытие",
+      "price": "2600 ₽",
+      "category": "Ногти"
+    },
+    {
+      "name": "Чистка лица",
+      "description": "Глубокое очищение пор, успокаивающая маска",
+      "price": "от 3000 ₽",
+      "category": "Косметология"
+    }
+  ],
+  "gallery": [
+    {
+      "src": "/angels-kasta-salon/photos/0.webp",
+      "alt": "Angels Kasta — фото 1"
+    },
+    {
+      "src": "/angels-kasta-salon/photos/1.webp",
+      "alt": "Angels Kasta — фото 2"
+    },
+    {
+      "src": "/angels-kasta-salon/photos/2.webp",
+      "alt": "Angels Kasta — фото 3"
+    },
+    {
+      "src": "/angels-kasta-salon/photos/3.webp",
+      "alt": "Angels Kasta — фото 4"
+    },
+    {
+      "src": "/angels-kasta-salon/photos/4.webp",
+      "alt": "Angels Kasta — фото 5"
+    },
+    {
+      "src": "/angels-kasta-salon/photos/5.webp",
+      "alt": "Angels Kasta — фото 6"
+    },
+    {
+      "src": "/angels-kasta-salon/photos/6.webp",
+      "alt": "Angels Kasta — фото 7"
+    },
+    {
+      "src": "/angels-kasta-salon/photos/7.webp",
+      "alt": "Angels Kasta — фото 8"
+    },
+    {
+      "src": "/angels-kasta-salon/photos/8.webp",
+      "alt": "Angels Kasta — фото 9"
+    },
+    {
+      "src": "/angels-kasta-salon/photos/9.webp",
+      "alt": "Angels Kasta — фото 10"
+    }
+  ],
+  "reviews": [
+    {
+      "author": "Екатерина",
+      "rating": 5,
+      "text": "Попала по отзывам и не ошиблась: стрижка и окрашивание — супер, мастер подобрал оттенок под мой цвет кожи. Цена полностью соответствует качеству."
+    },
+    {
+      "author": "Наталья",
+      "rating": 5,
+      "text": "Очень внимательный персонал и приятная атмосфера. Сделали сложное окрашивание — волосы живые, блестящие, никакого вреда."
+    },
+    {
+      "author": "Юлия",
+      "rating": 5,
+      "text": "Обслуживание на высоте: кофе, забота, идеальный результат. Теперь только сюда — записалась на следующий визит сразу после первого."
+    }
+  ],
+  "address": "Москва, улица Академика Семёнова, 11",
+  "phone": "+7 (964) 588-96-69",
+  "workingHours": {
+    "пн–вс": "10:00–21:00"
+  },
+  "socialLinks": {
+    "Telegram": "https://t.me/+79645889669?profile",
+    "WhatsApp": "https://wa.me/79645889669"
+  },
+  "team": [],
+  "processSteps": [],
+  "faq": [],
+  "stats": [
+    {
+      "value": "4.4",
+      "label": "рейтинг на Яндекс Картах"
+    },
+    {
+      "value": "230+",
+      "label": "отзывов клиентов"
+    }
+  ],
+  "highlights": [
+    {
+      "name": "Сложное окрашивание",
+      "description": "Балаяж и аиртач без желтизны",
+      "price": "от 6500 ₽"
+    },
+    {
+      "name": "Вечерний образ",
+      "description": "Стрижка + укладка + макияж",
+      "price": "от 5500 ₽"
+    },
+    {
+      "name": "Уход для волос",
+      "description": "Ботокс и кератин",
+      "price": "от 4000 ₽"
+    }
+  ]
+}

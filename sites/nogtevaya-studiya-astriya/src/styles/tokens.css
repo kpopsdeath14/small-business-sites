@@ -1,0 +1,17 @@
+:root {
+  --color-bg: #FBF5EC;
+  --color-surface: #F4E7D7;
+  --color-text: #33221A;
+  --color-text-muted: #8A7362;
+  --color-primary: #B4643C;
+  --color-primary-contrast: #FFF8EF;
+  --color-accent: #DDAF87;
+  --color-border: #EBDCC8;
+  --font-heading: 'Forum', Georgia, 'Times New Roman', serif;
+  --font-body: 'Manrope', -apple-system, 'Segoe UI', system-ui, sans-serif;
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --radius-lg: 12px;
+  --shadow-card: 0 1px 2px rgba(51,34,26,0.05), 0 14px 40px rgba(51,34,26,0.07);
+  --shadow-elevated: 0 30px 70px rgba(51,34,26,0.15);
+}

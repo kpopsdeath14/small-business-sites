@@ -1,0 +1,98 @@
+# Builds every client demo site in the monorepo and deploys them together to GitHub Pages.
+#
+#   Studio Milka            -> https://kpopsdeath14.github.io/small-business-sites/
+#   AK Lash Studio          -> .../small-business-sites/ak-lash-studio-salon/
+#   Алиса                   -> .../small-business-sites/alisa-salon/
+#   Angels Kasta            -> .../small-business-sites/angels-kasta-salon/
+#   Art Look                -> .../small-business-sites/art-look-salon/
+#   Астрия                  -> .../small-business-sites/astriya-salon/
+#   BeautyZone              -> .../small-business-sites/beautyzone-salon/
+#   Beauty                  -> .../small-business-sites/beauty-salon/
+#   Красота и Стиль         -> .../small-business-sites/krasota-i-stil-salon/
+#   Beauty Bar Mari         -> .../small-business-sites/beauty-bar-mari-salon/
+#   D'Арт                   -> .../small-business-sites/dart-salon/
+#
+# Each site's astro.config.mjs carries a matching `base`, so asset URLs resolve under
+# its subpath. CI must NOT re-run `npm run new-site` — without ANTHROPIC_API_KEY that
+# would overwrite committed generated copy with dry-run placeholder text.
+name: Deploy all client sites to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "sites/**"
+      - "packages/shared-ui/**"
+      - "packages/templates/**"
+      - ".github/workflows/deploy-sites.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+env:
+  # "site-dir:base-path" pairs; ROOT means the Pages document root.
+  SITES: |
+    studio-milka:ROOT
+    ak-lash-studio:/ak-lash-studio-salon
+    salon-krasoty-alisa:/alisa-salon
+    angels-kasta:/angels-kasta-salon
+    art-look:/art-look-salon
+    nogtevaya-studiya-astriya:/astriya-salon
+    studiya-beautyzone:/beautyzone-salon
+    beauty:/beauty-salon
+    krasota-i-stil:/krasota-i-stil-salon
+    beauty-bar-mari:/beauty-bar-mari-salon
+    klub-krasoty-d-art:/dart-salon
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies (workspace root)
+        run: npm ci
+
+      - name: Build all sites and assemble the Pages artifact
+        run: |
+          STAGING="$RUNNER_TEMP/pages"
+          mkdir -p "$STAGING"
+          echo "$SITES" | while IFS=: read -r dir base; do
+            [ -z "$dir" ] && continue
+            echo "::group::build $dir"
+            npm run build -w "site-$dir"
+            if [ "$base" = "ROOT" ]; then
+              cp -r "sites/$dir/dist/." "$STAGING/"
+            else
+              mkdir -p "$STAGING$base"
+              cp -r "sites/$dir/dist/." "$STAGING$base/"
+            fi
+            echo "::endgroup::"
+          done
+          find "$STAGING" -maxdepth 2 -type d | sort
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ runner.temp }}/pages
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

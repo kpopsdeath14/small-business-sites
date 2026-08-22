@@ -1,0 +1,306 @@
+@import "./tokens.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  font-weight: 400;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-heading);
+}
+
+/* Sticky/fixed header is ~4.5rem tall — without scroll-margin, anchor jumps (#services, #booking, …)
+   hide the section title underneath the header. */
+section[id] {
+  scroll-margin-top: 4.5rem;
+}
+
+/* The mobile sticky CTA bar is a fixed overlay — without this the page footer's last rows
+   sit permanently behind it. */
+@media (max-width: 767px) {
+  body {
+    padding-bottom: calc(4.25rem + env(safe-area-inset-bottom));
+  }
+}
+
+::selection {
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+}
+
+/* Visible, on-brand keyboard focus — accessibility without visual noise for mouse users. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+/* ============================================================
+   L'ATELIER primitives — the small vocabulary every section
+   draws from: micro-labels, hairlines, editorial frames.
+   ============================================================ */
+
+/* Eyebrow: the tiny letterspaced uppercase label that sits above every heading.
+   The single strongest "expensive magazine" signal in the whole system. */
+.eyebrow {
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.38em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
+/* Hairline: a quiet 1px rule used instead of heavy borders between content blocks. */
+.hairline {
+  height: 1px;
+  background: var(--color-border);
+  border: none;
+}
+
+/* Offset frame: a thin outline shifted a few pixels off the photo corner —
+   the classic atelier/gallery matting effect. Purely decorative (::after). */
+.lux-frame {
+  position: relative;
+}
+.lux-frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translate(14px, 14px);
+  border: 1px solid var(--color-accent);
+  pointer-events: none;
+  z-index: 1;
+}
+@media (min-width: 640px) {
+  .lux-frame::after {
+    transform: translate(20px, 20px);
+  }
+}
+
+/* Dotted leader between a service name and its price — the fine-dining menu trick. */
+.menu-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.875rem;
+}
+.menu-dots {
+  flex: 1 1 auto;
+  min-width: 1.5rem;
+  border-bottom: 1px dotted color-mix(in srgb, var(--color-text-muted) 55%, transparent);
+  transform: translateY(-3px);
+}
+
+/* Nav link underline that grows from the left on hover/active. */
+.link-line {
+  position: relative;
+}
+.link-line::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 100%;
+  bottom: -5px;
+  height: 1px;
+  background: currentColor;
+  transition: right 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.link-line:hover::after,
+.link-line.is-active::after {
+  right: 0;
+}
+
+/* Serif italic accent word inside headings — set via <em>, styled globally so any
+   section can drop one in without repeating utility chains. */
+h1 em,
+h2 em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--color-primary);
+}
+
+/* Charcoal room shared by the typographic hero, booking and footer: identical in every
+   palette, so the page always closes on the same deep, expensive note. Overriding the
+   full token quartet here means forms/images inside a noir section re-theme themselves
+   automatically (inputs get dark fields, shimmers go dark, etc.). */
+.salon-noir {
+  background: #14110e;
+  --color-bg: #1c1814;
+  --color-surface: #272119;
+  --color-text: #f4eee2;
+  --color-text-muted: #a79c89;
+  --color-border: rgba(244, 238, 226, 0.14);
+}
+
+/* ============================================================
+   Motion
+   ============================================================ */
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Hero entrance: elements tagged .hero-enter rise in once on page load.
+   Per-element timing via --enter-delay (set inline in the hero variants). */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(26px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-enter {
+  animation: rise-in 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--enter-delay, 0s);
+}
+
+/* Slow, barely-perceptible zoom on full-bleed hero photos — adds life without distraction. */
+@keyframes ken-burns {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.07);
+  }
+}
+
+.ken-burns {
+  animation: ken-burns 24s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+/* Gentle float for the hero scroll-down hint. */
+@keyframes drift-down {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.9;
+  }
+  50% {
+    transform: translateY(8px);
+    opacity: 0.5;
+  }
+}
+
+.drift-down {
+  animation: drift-down 2.2s ease-in-out infinite;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.25s ease-out;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.25s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in,
+  .animate-scale-in {
+    animation: none;
+  }
+}
+
+/* Skeleton/shimmer placeholder shown behind images while they load.
+   Animates `transform` only (never `background-position`) so the browser can run it
+   on the compositor thread — no per-frame repaint, so it stays smooth even with many
+   shimmering images on screen at once (team grid, gallery, ...). */
+@keyframes skel-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* :where() keeps this at zero specificity so a `class="skel-wrap absolute ..."` element still gets
+   `position: absolute` from Tailwind's utility — without :where(), this rule's plain .skel-wrap
+   selector has the same specificity as .absolute and, being declared later in the stylesheet than
+   @tailwind utilities, would silently win and break every absolutely-positioned hero photo. */
+:where(.skel-wrap) {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-surface);
+}
+
+.skel-wrap::before {
+  content: "";
+  position: absolute;
+  inset: -25% -10%;
+  z-index: 1;
+  background: linear-gradient(90deg, transparent 35%, rgba(255, 255, 255, 0.45) 50%, transparent 65%);
+  animation: skel-shimmer 1.6s linear infinite;
+  opacity: 1;
+  transition: opacity 0.25s ease;
+  will-change: transform;
+}
+
+.skel-wrap.is-loaded::before {
+  opacity: 0;
+  animation: none;
+}
+
+.skel-wrap > img {
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.skel-wrap.is-loaded > img {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skel-wrap::before {
+    animation: none;
+  }
+}
+
+/* Global reduced-motion kill switch: any animation/transition this stylesheet or Tailwind
+   added collapses to a near-instant state change. Covers hero entrances, ken-burns, ticker,
+   hover lifts — everything — in one place. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}

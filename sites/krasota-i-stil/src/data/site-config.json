@@ -1,0 +1,42 @@
+{
+  "seed": "krasota-champagne",
+  "tokenSetIndex": 1,
+  "sections": [
+    {
+      "id": "hero",
+      "variant": 2
+    },
+    {
+      "id": "stats",
+      "variant": 0
+    },
+    {
+      "id": "about",
+      "variant": 1
+    },
+    {
+      "id": "services",
+      "variant": 1
+    },
+    {
+      "id": "gallery",
+      "variant": 1
+    },
+    {
+      "id": "reviews",
+      "variant": 1
+    },
+    {
+      "id": "booking",
+      "variant": 0
+    },
+    {
+      "id": "contact",
+      "variant": 1
+    },
+    {
+      "id": "footer",
+      "variant": 0
+    }
+  ]
+}
