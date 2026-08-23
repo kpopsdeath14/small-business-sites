@@ -4,7 +4,7 @@
   "sections": [
     {
       "id": "hero",
-      "variant": 1
+      "variant": 3
     },
     {
       "id": "stats",
@@ -12,23 +12,19 @@
     },
     {
       "id": "about",
-      "variant": 2
-    },
-    {
-      "id": "highlights",
       "variant": 0
     },
     {
       "id": "services",
-      "variant": 1
-    },
-    {
-      "id": "gallery",
-      "variant": 2
+      "variant": 0
     },
     {
       "id": "reviews",
-      "variant": 1
+      "variant": 0
+    },
+    {
+      "id": "ticker",
+      "variant": 0
     },
     {
       "id": "booking",
@@ -36,7 +32,7 @@
     },
     {
       "id": "contact",
-      "variant": 1
+      "variant": 0
     },
     {
       "id": "footer",

@@ -110,20 +110,18 @@
     {
       "name": "Сложное окрашивание",
       "description": "Балаяж и аиртач без желтизны",
-      "price": "от 6500 ₽",
-      "photo": "/small-business-sites/angels-kasta-salon/photos/hl-0.jpg"
+      "price": "от 6500 ₽"
     },
     {
       "name": "Вечерний образ",
       "description": "Стрижка + укладка + макияж",
-      "price": "от 5500 ₽",
-      "photo": "/small-business-sites/angels-kasta-salon/photos/hl-1.jpg"
+      "price": "от 5500 ₽"
     },
     {
       "name": "Уход для волос",
       "description": "Ботокс и кератин",
-      "price": "от 4000 ₽",
-      "photo": "/small-business-sites/angels-kasta-salon/photos/hl-2.jpg"
+      "price": "от 4000 ₽"
     }
-  ]
+  ],
+  "bookingUrl": "https://salon-krasoty-angels-kasta.clients.site/"
 }

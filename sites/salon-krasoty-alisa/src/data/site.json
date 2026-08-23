@@ -53,28 +53,12 @@
   ],
   "gallery": [
     {
-      "src": "/small-business-sites/alisa-salon/photos/r0.jpg",
-      "alt": "Фото 1"
-    },
-    {
-      "src": "/small-business-sites/alisa-salon/photos/r1.jpg",
-      "alt": "Фото 2"
-    },
-    {
-      "src": "/small-business-sites/alisa-salon/photos/r2.jpg",
-      "alt": "Фото 3"
-    },
-    {
       "src": "/small-business-sites/alisa-salon/photos/0.webp",
       "alt": "Салон красоты Алиса — фото 1"
     },
     {
       "src": "/small-business-sites/alisa-salon/photos/1.webp",
       "alt": "Салон красоты Алиса — фото 2"
-    },
-    {
-      "src": "/small-business-sites/alisa-salon/photos/2.webp",
-      "alt": "Салон красоты Алиса — фото 3"
     }
   ],
   "heroPhoto": "/small-business-sites/alisa-salon/photos/hero.webp",

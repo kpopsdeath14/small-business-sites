@@ -12,18 +12,22 @@
     },
     {
       "id": "about",
-      "variant": 0
+      "variant": 2
     },
     {
       "id": "services",
-      "variant": 1
+      "variant": 0
     },
     {
       "id": "gallery",
-      "variant": 1
+      "variant": 2
     },
     {
       "id": "reviews",
+      "variant": 0
+    },
+    {
+      "id": "ticker",
       "variant": 0
     },
     {
@@ -32,7 +36,7 @@
     },
     {
       "id": "contact",
-      "variant": 1
+      "variant": 0
     },
     {
       "id": "footer",

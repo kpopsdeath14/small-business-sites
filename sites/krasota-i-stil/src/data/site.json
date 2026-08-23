@@ -53,6 +53,10 @@
   ],
   "gallery": [
     {
+      "src": "/small-business-sites/krasota-i-stil-salon/photos/0.webp",
+      "alt": "Красота и Стиль — фото 1"
+    },
+    {
       "src": "/small-business-sites/krasota-i-stil-salon/photos/1.webp",
       "alt": "Красота и Стиль — фото 2"
     },
@@ -71,22 +75,6 @@
     {
       "src": "/small-business-sites/krasota-i-stil-salon/photos/5.webp",
       "alt": "Красота и Стиль — фото 6"
-    },
-    {
-      "src": "/small-business-sites/krasota-i-stil-salon/photos/6.webp",
-      "alt": "Красота и Стиль — фото 7"
-    },
-    {
-      "src": "/small-business-sites/krasota-i-stil-salon/photos/g0.jpg",
-      "alt": "Красота и Стиль — фото 7"
-    },
-    {
-      "src": "/small-business-sites/krasota-i-stil-salon/photos/g1.jpg",
-      "alt": "Красота и Стиль — фото 8"
-    },
-    {
-      "src": "/small-business-sites/krasota-i-stil-salon/photos/g2.jpg",
-      "alt": "Красота и Стиль — фото 9"
     }
   ],
   "heroPhoto": "/small-business-sites/krasota-i-stil-salon/photos/hero.webp",

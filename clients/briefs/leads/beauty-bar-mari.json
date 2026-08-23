@@ -14,8 +14,7 @@
   },
   "photos": [
     "https://avatars.mds.yandex.net/get-altay/1018126/2a0000018561e47adb79bd00b91d5e6204fc/orig",
-    "https://avatars.mds.yandex.net/get-altay/953593/2a0000018561e47a2f775dac2d1a65020a32/orig",
-    "https://avatars.mds.yandex.net/get-altay/14837019/2a0000019654a57fe1bec77d9b616dc45a55/orig"
+    "https://avatars.mds.yandex.net/get-altay/953593/2a0000018561e47a2f775dac2d1a65020a32/orig"
   ],
   "menu_or_services": [
     {
@@ -112,10 +111,6 @@
       },
       {
         "id": "about",
-        "variant": 2
-      },
-      {
-        "id": "highlights",
         "variant": 0
       },
       {
@@ -123,11 +118,11 @@
         "variant": 0
       },
       {
-        "id": "gallery",
-        "variant": 2
+        "id": "reviews",
+        "variant": 0
       },
       {
-        "id": "reviews",
+        "id": "ticker",
         "variant": 0
       },
       {

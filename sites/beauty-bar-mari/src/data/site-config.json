@@ -12,10 +12,6 @@
     },
     {
       "id": "about",
-      "variant": 2
-    },
-    {
-      "id": "highlights",
       "variant": 0
     },
     {
@@ -23,11 +19,11 @@
       "variant": 0
     },
     {
-      "id": "gallery",
-      "variant": 2
+      "id": "reviews",
+      "variant": 0
     },
     {
-      "id": "reviews",
+      "id": "ticker",
       "variant": 0
     },
     {

@@ -12,11 +12,7 @@
     },
     {
       "id": "about",
-      "variant": 0
-    },
-    {
-      "id": "highlights",
-      "variant": 0
+      "variant": 2
     },
     {
       "id": "services",
@@ -24,7 +20,7 @@
     },
     {
       "id": "gallery",
-      "variant": 0
+      "variant": 2
     },
     {
       "id": "reviews",

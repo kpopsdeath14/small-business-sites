@@ -46,6 +46,7 @@ const NAV_LABELS: Record<string, string> = {
   booking: "Записаться",
 };
 
+const heroVariant = siteConfig.sections.find((s) => s.id === "hero")?.variant ?? 0;
 const navLinks = siteConfig.sections
   .filter((section) => section.id in NAV_LABELS)
   .map((section) => ({ label: NAV_LABELS[section.id], href: `#${section.id}`, primary: section.id === "booking" }));
@@ -53,7 +54,7 @@ const navLinks = siteConfig.sections
 
 <Base title={data.meta.title} description={data.meta.description}>
   <!-- Fixed transparent-over-hero navigation (goes solid on scroll). -->
-  <SalonNav siteName={data.name} links={navLinks} phone={data.phone} />
+  <SalonNav siteName={data.name} links={navLinks} phone={data.phone} onPhoto={heroVariant !== 1} />
   {
     siteConfig.sections.map((section) => {
       const Cmp = sectionComponents[section.id];

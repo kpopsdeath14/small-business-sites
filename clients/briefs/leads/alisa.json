@@ -14,8 +14,7 @@
   },
   "photos": [
     "https://avatars.mds.yandex.net/get-vh/6212107/2a0000019179b9addb9c632db0ae79bfe49e/orig",
-    "https://avatars.mds.yandex.net/get-vh/5283769/2a0000019179bac2736b2d5cd99827400078/orig",
-    "https://avatars.mds.yandex.net/get-altay/19646909/2a0000019d10ff41f440b732141f8f306265/orig"
+    "https://avatars.mds.yandex.net/get-vh/5283769/2a0000019179bac2736b2d5cd99827400078/orig"
   ],
   "menu_or_services": [
     {
@@ -96,19 +95,19 @@
       },
       {
         "id": "about",
-        "variant": 2
+        "variant": 0
       },
       {
         "id": "services",
-        "variant": 1
-      },
-      {
-        "id": "gallery",
-        "variant": 1
+        "variant": 0
       },
       {
         "id": "reviews",
-        "variant": 1
+        "variant": 0
+      },
+      {
+        "id": "ticker",
+        "variant": 0
       },
       {
         "id": "booking",
@@ -116,7 +115,7 @@
       },
       {
         "id": "contact",
-        "variant": 1
+        "variant": 0
       },
       {
         "id": "footer",
@@ -125,5 +124,6 @@
     ]
   },
   "hero_photo": "https://avatars.mds.yandex.net/get-vh/6212107/2a0000019179b9addb9c632db0ae79bfe49e/orig",
-  "reviews_url": "https://yandex.ru/maps/org/x/120317884619/reviews/"
+  "reviews_url": "https://yandex.ru/maps/org/x/120317884619/reviews/",
+  "booking_url": "https://widget.sonline.su/ru/services/?placeid=795194177"
 }

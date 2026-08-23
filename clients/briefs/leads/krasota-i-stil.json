@@ -17,8 +17,7 @@
     "https://avatars.mds.yandex.net/get-altay/16888214/2a0000019a8bec6e3b160872cf39fb2a3e20/orig",
     "https://avatars.mds.yandex.net/get-altay/16965486/2a0000019a8bec6d58410007fdbcc6efd1cc/orig",
     "https://avatars.mds.yandex.net/get-altay/18112381/2a0000019d1b6d6487370deeeeefe68e4856/orig",
-    "https://avatars.mds.yandex.net/get-altay/18152412/2a0000019d1b6d5ee09eeef46ed1aa57c537/orig",
-    "https://avatars.mds.yandex.net/get-altay/4489303/2a00000179290973a2b60d1001a4b7e7e81f/orig"
+    "https://avatars.mds.yandex.net/get-altay/18152412/2a0000019d1b6d5ee09eeef46ed1aa57c537/orig"
   ],
   "menu_or_services": [
     {
@@ -91,7 +90,7 @@
     "sections": [
       {
         "id": "hero",
-        "variant": 0
+        "variant": 1
       },
       {
         "id": "stats",
@@ -103,15 +102,19 @@
       },
       {
         "id": "services",
-        "variant": 1
+        "variant": 0
       },
       {
         "id": "gallery",
-        "variant": 1
+        "variant": 2
       },
       {
         "id": "reviews",
-        "variant": 1
+        "variant": 0
+      },
+      {
+        "id": "ticker",
+        "variant": 0
       },
       {
         "id": "booking",
@@ -119,7 +122,7 @@
       },
       {
         "id": "contact",
-        "variant": 1
+        "variant": 0
       },
       {
         "id": "footer",
@@ -127,6 +130,6 @@
       }
     ]
   },
-  "hero_photo": "https://avatars.mds.yandex.net/get-altay/4489303/2a00000179290973a2b60d1001a4b7e7e81f/orig",
+  "hero_photo": "https://avatars.mds.yandex.net/get-altay/18112381/2a0000019d1b6d6487370deeeeefe68e4856/orig",
   "reviews_url": "https://yandex.ru/maps/org/x/152282769690/reviews/"
 }

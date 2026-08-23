@@ -14,12 +14,11 @@ export const manifest: BusinessManifest = {
     { id: "team", variants: 1, required: false, probability: 0.8, order: 3 },
     { id: "services", variants: 2, required: true, order: 4 },
     { id: "highlights", variants: 1, required: false, probability: 0.85, order: 5 },
-    { id: "reviews", variants: 2, required: false, probability: 0.8, order: 6 },
-    { id: "contact", variants: 2, required: true, order: 7 },
-    { id: "booking", variants: 1, required: true, order: 8 },
-    { id: "gallery", variants: 3, required: false, probability: 0.7, order: 9 },
-    // Scrolling highlight banner — off by default (opt in per-client), not every salon wants it.
-    { id: "ticker", variants: 1, required: false, probability: 0, order: 10 },
+    { id: "gallery", variants: 3, required: false, probability: 0.7, order: 6 },
+    { id: "reviews", variants: 2, required: false, probability: 0.8, order: 7 },
+    { id: "ticker", variants: 1, required: false, probability: 0.5, order: 8 },
+    { id: "booking", variants: 1, required: true, order: 9 },
+    { id: "contact", variants: 2, required: true, order: 10 },
     { id: "footer", variants: 1, required: true, position: "end" },
   ],
 };

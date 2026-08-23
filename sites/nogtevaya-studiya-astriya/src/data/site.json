@@ -53,28 +53,12 @@
   ],
   "gallery": [
     {
-      "src": "/small-business-sites/astriya-salon/photos/r0.jpg",
-      "alt": "Фото 1"
-    },
-    {
-      "src": "/small-business-sites/astriya-salon/photos/r1.jpg",
-      "alt": "Фото 2"
-    },
-    {
-      "src": "/small-business-sites/astriya-salon/photos/r2.jpg",
-      "alt": "Фото 3"
-    },
-    {
       "src": "/small-business-sites/astriya-salon/photos/0.webp",
       "alt": "Ногтевая студия Астрия — фото 1"
     },
     {
       "src": "/small-business-sites/astriya-salon/photos/1.webp",
       "alt": "Ногтевая студия Астрия — фото 2"
-    },
-    {
-      "src": "/small-business-sites/astriya-salon/photos/2.webp",
-      "alt": "Ногтевая студия Астрия — фото 3"
     }
   ],
   "heroPhoto": "/small-business-sites/astriya-salon/photos/hero.webp",

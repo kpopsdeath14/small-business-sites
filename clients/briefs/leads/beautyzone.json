@@ -14,7 +14,6 @@
   },
   "photos": [
     "https://avatars.mds.yandex.net/get-altay/5255911/2a0000018cf87692b59d32d986465e0d63ae/orig",
-    "https://avatars.mds.yandex.net/get-altay/15185043/2a000001963ef2dd183e2a994c47702ac6cd/orig",
     "https://avatars.mds.yandex.net/get-altay/14307348/2a00000192ffe5641f1b785cefdd5d4c8d71/orig"
   ],
   "menu_or_services": [
@@ -104,7 +103,7 @@
     "sections": [
       {
         "id": "hero",
-        "variant": 0
+        "variant": 3
       },
       {
         "id": "stats",
@@ -112,23 +111,19 @@
       },
       {
         "id": "about",
-        "variant": 2
-      },
-      {
-        "id": "highlights",
         "variant": 0
       },
       {
         "id": "services",
-        "variant": 1
-      },
-      {
-        "id": "gallery",
-        "variant": 2
+        "variant": 0
       },
       {
         "id": "reviews",
-        "variant": 1
+        "variant": 0
+      },
+      {
+        "id": "ticker",
+        "variant": 0
       },
       {
         "id": "booking",
@@ -136,7 +131,7 @@
       },
       {
         "id": "contact",
-        "variant": 1
+        "variant": 0
       },
       {
         "id": "footer",

@@ -53,24 +53,12 @@
   ],
   "gallery": [
     {
-      "src": "/small-business-sites/beauty-bar-mari-salon/photos/r0.jpg",
-      "alt": "Фото 1"
-    },
-    {
-      "src": "/small-business-sites/beauty-bar-mari-salon/photos/r1.jpg",
-      "alt": "Фото 2"
-    },
-    {
       "src": "/small-business-sites/beauty-bar-mari-salon/photos/0.webp",
       "alt": "Beauty Bar Mari — фото 1"
     },
     {
       "src": "/small-business-sites/beauty-bar-mari-salon/photos/1.webp",
       "alt": "Beauty Bar Mari — фото 2"
-    },
-    {
-      "src": "/small-business-sites/beauty-bar-mari-salon/photos/2.webp",
-      "alt": "Beauty Bar Mari — фото 3"
     }
   ],
   "heroPhoto": "/small-business-sites/beauty-bar-mari-salon/photos/hero.webp",
@@ -118,20 +106,17 @@
     {
       "name": "Экспресс-брови",
       "description": "Коррекция + окрашивание за час",
-      "price": "1400 ₽",
-      "photo": "/small-business-sites/beauty-bar-mari-salon/photos/hl-0.jpg"
+      "price": "1400 ₽"
     },
     {
       "name": "Классика ресниц",
       "description": "Естественный эффект каждый день",
-      "price": "2500 ₽",
-      "photo": "/small-business-sites/beauty-bar-mari-salon/photos/hl-1.jpg"
+      "price": "2500 ₽"
     },
     {
       "name": "Ламинирование",
       "description": "Курс из 3 процедур",
-      "price": "5500 ₽",
-      "photo": "/small-business-sites/beauty-bar-mari-salon/photos/hl-2.jpg"
+      "price": "5500 ₽"
     }
   ]
 }

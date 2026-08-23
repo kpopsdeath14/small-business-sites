@@ -112,11 +112,7 @@
       },
       {
         "id": "about",
-        "variant": 0
-      },
-      {
-        "id": "highlights",
-        "variant": 0
+        "variant": 2
       },
       {
         "id": "services",
@@ -124,10 +120,14 @@
       },
       {
         "id": "gallery",
-        "variant": 0
+        "variant": 2
       },
       {
         "id": "reviews",
+        "variant": 0
+      },
+      {
+        "id": "ticker",
         "variant": 0
       },
       {
@@ -139,15 +139,12 @@
         "variant": 0
       },
       {
-        "id": "ticker",
-        "variant": 0
-      },
-      {
         "id": "footer",
         "variant": 0
       }
     ]
   },
   "hero_photo": "https://avatars.mds.yandex.net/get-altay/9728306/2a0000018acbb70f14ff494e9c5a51b60379/orig",
-  "reviews_url": "https://yandex.ru/maps/org/x/176890026169/reviews/"
+  "reviews_url": "https://yandex.ru/maps/org/x/176890026169/reviews/",
+  "booking_url": "https://ak-bulvar-admirala-ushakova.clients.site"
 }

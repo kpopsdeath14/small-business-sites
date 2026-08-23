@@ -92,7 +92,7 @@
     "sections": [
       {
         "id": "hero",
-        "variant": 0
+        "variant": 1
       },
       {
         "id": "stats",
@@ -100,19 +100,23 @@
       },
       {
         "id": "about",
-        "variant": 0
+        "variant": 2
       },
       {
         "id": "services",
-        "variant": 1
-      },
-      {
-        "id": "gallery",
         "variant": 0
       },
       {
+        "id": "gallery",
+        "variant": 2
+      },
+      {
         "id": "reviews",
-        "variant": 1
+        "variant": 0
+      },
+      {
+        "id": "ticker",
+        "variant": 0
       },
       {
         "id": "booking",
@@ -120,10 +124,6 @@
       },
       {
         "id": "contact",
-        "variant": 1
-      },
-      {
-        "id": "ticker",
         "variant": 0
       },
       {
@@ -133,5 +133,6 @@
     ]
   },
   "hero_photo": "https://avatars.mds.yandex.net/get-altay/11385489/2a0000018c6ed1aead35234497f95793f4e0/orig",
-  "reviews_url": "https://yandex.ru/maps/org/x/16668749028/reviews/"
+  "reviews_url": "https://yandex.ru/maps/org/x/16668749028/reviews/",
+  "booking_url": "https://klubkrasotydart-07.clients.site/"
 }

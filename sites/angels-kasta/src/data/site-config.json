@@ -19,16 +19,16 @@
       "variant": 0
     },
     {
-      "id": "highlights",
-      "variant": 0
-    },
-    {
       "id": "gallery",
       "variant": 2
     },
     {
       "id": "reviews",
-      "variant": 1
+      "variant": 0
+    },
+    {
+      "id": "ticker",
+      "variant": 0
     },
     {
       "id": "booking",

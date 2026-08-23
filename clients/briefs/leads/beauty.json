@@ -87,7 +87,7 @@
     "sections": [
       {
         "id": "hero",
-        "variant": 3
+        "variant": 1
       },
       {
         "id": "stats",
@@ -106,15 +106,15 @@
         "variant": 0
       },
       {
+        "id": "ticker",
+        "variant": 0
+      },
+      {
         "id": "booking",
         "variant": 0
       },
       {
         "id": "contact",
-        "variant": 0
-      },
-      {
-        "id": "ticker",
         "variant": 0
       },
       {

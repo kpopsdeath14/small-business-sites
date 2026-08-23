@@ -119,16 +119,16 @@
         "variant": 0
       },
       {
-        "id": "highlights",
-        "variant": 0
-      },
-      {
         "id": "gallery",
         "variant": 2
       },
       {
         "id": "reviews",
-        "variant": 1
+        "variant": 0
+      },
+      {
+        "id": "ticker",
+        "variant": 0
       },
       {
         "id": "booking",
@@ -145,5 +145,6 @@
     ]
   },
   "hero_photo": "https://avatars.mds.yandex.net/get-vh/5107607/2a00000196008884a8c304f7e51d5d7e1485/orig",
-  "reviews_url": "https://yandex.ru/maps/org/x/93926928900/reviews/"
+  "reviews_url": "https://yandex.ru/maps/org/x/93926928900/reviews/",
+  "booking_url": "https://salon-krasoty-angels-kasta.clients.site/"
 }

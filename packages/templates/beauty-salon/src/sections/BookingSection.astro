@@ -1,8 +1,7 @@
 ---
 import Container from "@sitegen/shared-ui/components/Container.astro";
 import SalonSection from "../components/SalonSection.astro";
-import BookingForm from "@sitegen/shared-ui/components/BookingForm.tsx";
-import BookingWidget from "@sitegen/shared-ui/components/BookingWidget.astro";
+import SalonButton from "../components/SalonButton.astro";
 import type { SiteData } from "@sitegen/shared-ui/types.ts";
 
 interface Props {
@@ -13,7 +12,16 @@ const { data } = Astro.props;
 const hoursSummary = Object.entries(data.workingHours ?? {})
   .map(([days, hours]) => `${days}: ${hours}`)
   .join(" · ");
-const serviceOptions = data.items.slice(0, 12).map((item) => item.name);
+const tel = data.phone ? `tel:${data.phone.replace(/[^+\d]/g, "")}` : undefined;
+const social = data.socialLinks ?? {};
+// Real, working channels only. An on-page form would need a backend to go anywhere —
+// without one it silently drops enquiries, so we send people to the salon's own
+// booking system and messengers instead.
+const channels = [
+  data.bookingUrl && { href: data.bookingUrl, label: "Записаться онлайн", primary: true },
+  social.telegram && { href: social.telegram, label: "Написать в Telegram" },
+  social.whatsapp && { href: social.whatsapp, label: "Написать в WhatsApp" },
+].filter(Boolean) as { href: string; label: string; primary?: boolean }[];
 ---
 
 <!-- The page's conversion anchor: always the charcoal room, regardless of palette.
@@ -30,7 +38,7 @@ const serviceOptions = data.items.slice(0, 12).map((item) => item.name);
         </h2>
         <div class="mt-7 h-px w-16 bg-[#C8A96E]" aria-hidden="true"></div>
         <p class="mt-7 text-[#A79C89] leading-[1.9] max-w-md font-light">
-          Оставьте заявку — администратор перезвонит, подберёт удобное время и ответит на все вопросы.
+          Выберите удобный способ — онлайн-запись, мессенджер или звонок. Ответим и подберём время.
         </p>
 
         {
@@ -49,17 +57,40 @@ const serviceOptions = data.items.slice(0, 12).map((item) => item.name);
         {hoursSummary && <p class="mt-5 text-sm text-[#A79C89]">{hoursSummary}</p>}
       </div>
 
-      <!-- Form column -->
+      <!-- Channels column: every button goes to a channel the salon actually monitors. -->
       <div data-reveal>
-        {
-          data.bookingUrl ? (
-            <BookingWidget url={data.bookingUrl} />
-          ) : (
-            <div class="border border-white/10 bg-white/[0.03] backdrop-blur-sm p-8 sm:p-10">
-              <BookingForm client:visible submitLabel="Отправить заявку" successMessage="Заявка отправлена — скоро свяжемся с вами!" phone={data.phone} serviceOptions={serviceOptions} />
-            </div>
-          )
-        }
+        <div class="border border-white/10 bg-white/[0.03] backdrop-blur-sm p-8 sm:p-10">
+          <p class="text-[10px] uppercase tracking-[0.28em] text-[#A79C89]">Как записаться</p>
+          <div class="mt-7 flex flex-col gap-3">
+            {
+              channels.map((c) => (
+                <a
+                  href={c.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class={`block w-full text-center px-6 py-4 text-[11px] font-semibold uppercase tracking-[0.22em] transition-all duration-300 ${
+                    c.primary
+                      ? "bg-[#C8A96E] text-[#171210] hover:bg-[#E3D2AF]"
+                      : "border border-white/25 text-[#F4EEE2] hover:bg-white/10 hover:border-white/50"
+                  }`}
+                >
+                  {c.label}
+                </a>
+              ))
+            }
+            {
+              tel && (
+                <a
+                  href={tel}
+                  class="block w-full text-center px-6 py-4 text-[11px] font-semibold uppercase tracking-[0.22em] border border-white/25 text-[#F4EEE2] hover:bg-white/10 hover:border-white/50 transition-all duration-300"
+                >
+                  Позвонить
+                </a>
+              )
+            }
+          </div>
+          {hoursSummary && <p class="mt-7 text-xs text-[#A79C89] leading-relaxed">Работаем {hoursSummary}</p>}
+        </div>
       </div>
     </div>
   </Container>
