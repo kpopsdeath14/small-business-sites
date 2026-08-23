@@ -110,17 +110,21 @@
     {
       "name": "Объёмное наращивание",
       "description": "Пушистый эффект от 2D до голливуда",
-      "price": "от 3200 ₽"
+      "price": "от 3200 ₽",
+      "photo": "/small-business-sites/ak-lash-studio-salon/photos/hl-0.jpg"
     },
     {
       "name": "Ламинирование",
       "description": "Свой объём — но лучше",
-      "price": "2200 ₽"
+      "price": "2200 ₽",
+      "photo": "/small-business-sites/ak-lash-studio-salon/photos/hl-1.jpg"
     },
     {
       "name": "Брови",
       "description": "Архитектура и окрашивание",
-      "price": "от 1200 ₽"
+      "price": "от 1200 ₽",
+      "photo": "/small-business-sites/ak-lash-studio-salon/photos/hl-2.jpg"
     }
-  ]
+  ],
+  "bookingUrl": "https://n728292.yclients.com/company/686690/select-master?o=m1975827"
 }

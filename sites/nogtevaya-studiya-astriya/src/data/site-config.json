@@ -27,15 +27,15 @@
       "variant": 1
     },
     {
+      "id": "ticker",
+      "variant": 0
+    },
+    {
       "id": "booking",
       "variant": 0
     },
     {
       "id": "contact",
-      "variant": 0
-    },
-    {
-      "id": "ticker",
       "variant": 0
     },
     {

@@ -53,6 +53,18 @@
   ],
   "gallery": [
     {
+      "src": "/small-business-sites/alisa-salon/photos/r0.jpg",
+      "alt": "Фото 1"
+    },
+    {
+      "src": "/small-business-sites/alisa-salon/photos/r1.jpg",
+      "alt": "Фото 2"
+    },
+    {
+      "src": "/small-business-sites/alisa-salon/photos/r2.jpg",
+      "alt": "Фото 3"
+    },
+    {
       "src": "/small-business-sites/alisa-salon/photos/0.webp",
       "alt": "Салон красоты Алиса — фото 1"
     },
@@ -106,5 +118,6 @@
       "label": "отзывов клиентов"
     }
   ],
-  "highlights": []
+  "highlights": [],
+  "bookingUrl": "https://widget.sonline.su/ru/services/?placeid=795194177"
 }

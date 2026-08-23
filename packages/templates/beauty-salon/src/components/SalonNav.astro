@@ -113,9 +113,18 @@ const { siteName, links, phone } = Astro.props;
   </div>
 
 <style>
-  /* Transparent-over-hero state: ivory text on the photo. */
+  /* Transparent-over-hero state. Text follows the palette (--color-text), NOT hardcoded
+     white: on light palettes (ivory, porcelain, blush…) white nav text was invisible over
+     the light hero. A soft scrim of the page's own bg color keeps contrast over photos
+     without ever looking like a bar. */
   #salon-nav {
-    color: #ffffff;
+    color: var(--color-text);
+    background: linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--color-bg) 72%, transparent),
+      color-mix(in srgb, var(--color-bg) 30%, transparent) 60%,
+      transparent
+    );
     transition: background-color 0.4s ease, box-shadow 0.4s ease, color 0.4s ease;
   }
   /* Solid state after scrolling past the hero's first screenful. */
@@ -145,6 +154,10 @@ const { siteName, links, phone } = Astro.props;
     color: var(--color-text);
     background: transparent;
     box-shadow: none;
+  }
+  /* The solid state replaces the scrim with a real surface. */
+  #salon-nav.is-solid {
+    background: color-mix(in srgb, var(--color-bg) 88%, transparent);
   }
 
   /* Staggered entrance for overlay links. */

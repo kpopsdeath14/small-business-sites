@@ -1,12 +1,12 @@
 :root {
-  --color-bg: #151019;
-  --color-surface: #201826;
-  --color-text: #F1EBF4;
-  --color-text-muted: #A294AC;
-  --color-primary: #C3A6D6;
-  --color-primary-contrast: #181220;
-  --color-accent: #DFCBEA;
-  --color-border: #2E2438;
+  --color-bg: #171210;
+  --color-surface: #221B16;
+  --color-text: #F3EDE6;
+  --color-text-muted: #A89A8C;
+  --color-primary: #C9A87E;
+  --color-primary-contrast: #191310;
+  --color-accent: #E2CDB2;
+  --color-border: #332A22;
   --font-heading: 'Playfair Display', Georgia, 'Times New Roman', serif;
   --font-body: 'Jost', 'Century Gothic', -apple-system, system-ui, sans-serif;
   --radius-sm: 2px;

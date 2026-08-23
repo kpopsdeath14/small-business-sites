@@ -9,9 +9,9 @@ interface Props {
 }
 const { data } = Astro.props;
 
-// Group services by category, preserving first-appearance order — renders as a
-// fine-dining-style price menu with dotted leaders. The single most scannable,
-// most conversion-friendly layout for a salon's service list.
+// Group services by category, preserving first-appearance order. One calm column,
+// no dotted leaders, no per-row rules — just quiet spacing and a hairline under
+// each category name. The most scannable, least noisy price list.
 const categories: { name: string; items: typeof data.items }[] = [];
 for (const item of data.items) {
   const key = item.category?.trim() || "Услуги";
@@ -32,19 +32,19 @@ for (const item of data.items) {
       {data.servicesNote && <p class="mt-4 text-sm text-[var(--color-text-muted)]">{data.servicesNote}</p>}
     </div>
 
-    <!-- Two-column menu on wide screens; single column keeps long names readable on mobile. -->
-    <div class="grid lg:grid-cols-2 gap-x-16 gap-y-12 max-w-5xl mx-auto" data-reveal-stagger="90">
+    <!-- Single column, max-w-2xl: long names stay on one line, prices align right,
+         and the eye travels straight down the list. -->
+    <div class="max-w-2xl mx-auto space-y-12" data-reveal>
       {
         categories.map((group) => (
           <div data-reveal>
-            <h3 class="flex items-baseline gap-4 font-[var(--font-heading)] text-xl font-medium text-[var(--color-text)] pb-3 border-b border-[var(--color-border)]">
+            <h3 class="font-[var(--font-heading)] text-xl font-medium text-[var(--color-text)] pb-3 border-b border-[var(--color-border)]">
               {group.name}
             </h3>
-            <ul class="mt-2 divide-y divide-[var(--color-border)]/60">
+            <ul>
               {group.items.map((item) => (
-                <li class="menu-row py-3.5">
-                  <span class="text-[15px] text-[var(--color-text)]">{item.name}</span>
-                  <span class="menu-dots" aria-hidden="true"></span>
+                <li class="flex items-baseline justify-between gap-6 py-4">
+                  <span class="text-[15px] leading-snug text-[var(--color-text)]">{item.name}</span>
                   {item.price && (
                     <span class="shrink-0 font-[var(--font-heading)] text-lg font-medium text-[var(--color-primary)] tabular-nums whitespace-nowrap">
                       {item.price}

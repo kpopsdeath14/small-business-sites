@@ -53,6 +53,14 @@
   ],
   "gallery": [
     {
+      "src": "/small-business-sites/beautyzone-salon/photos/r0.jpg",
+      "alt": "Фото 1"
+    },
+    {
+      "src": "/small-business-sites/beautyzone-salon/photos/r1.jpg",
+      "alt": "Фото 2"
+    },
+    {
       "src": "/small-business-sites/beautyzone-salon/photos/0.webp",
       "alt": "Студия BeautyZone — фото 1"
     },
@@ -110,17 +118,20 @@
     {
       "name": "Уход «Шёлк»",
       "description": "Глубокое восстановление волос",
-      "price": "от 3800 ₽"
+      "price": "от 3800 ₽",
+      "photo": "/small-business-sites/beautyzone-salon/photos/hl-0.jpg"
     },
     {
       "name": "Экспресс-маникюр",
       "description": "За 60 минут в обед",
-      "price": "1600 ₽"
+      "price": "1600 ₽",
+      "photo": "/small-business-sites/beautyzone-salon/photos/hl-1.jpg"
     },
     {
       "name": "Чистка лица",
       "description": "Сияние без воспалений",
-      "price": "от 3000 ₽"
+      "price": "от 3000 ₽",
+      "photo": "/small-business-sites/beautyzone-salon/photos/hl-2.jpg"
     }
   ]
 }
