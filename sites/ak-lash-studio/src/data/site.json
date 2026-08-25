@@ -54,15 +54,27 @@
   "gallery": [
     {
       "src": "/small-business-sites/ak-lash-studio-salon/photos/0.webp",
-      "alt": "AK Lash Studio — фото 1"
+      "alt": "Наращивание ресниц — работа студии AK Lash Studio"
+    },
+    {
+      "src": "/small-business-sites/ak-lash-studio-salon/photos/3.webp",
+      "alt": "Клиентка студии AK Lash Studio с объёмным наращиванием ресниц"
     },
     {
       "src": "/small-business-sites/ak-lash-studio-salon/photos/1.webp",
-      "alt": "AK Lash Studio — фото 2"
+      "alt": "Классическое наращивание ресниц — макросъёмка работы мастера"
+    },
+    {
+      "src": "/small-business-sites/ak-lash-studio-salon/photos/4.webp",
+      "alt": "Объёмное наращивание ресниц — работа студии AK Lash Studio"
+    },
+    {
+      "src": "/small-business-sites/ak-lash-studio-salon/photos/5.webp",
+      "alt": "Пушистые ресницы — работа студии AK Lash Studio"
     },
     {
       "src": "/small-business-sites/ak-lash-studio-salon/photos/2.webp",
-      "alt": "AK Lash Studio — фото 3"
+      "alt": "Процесс наращивания ресниц в студии AK Lash Studio"
     }
   ],
   "heroPhoto": "/small-business-sites/ak-lash-studio-salon/photos/hero.webp",
@@ -110,18 +122,21 @@
     {
       "name": "Объёмное наращивание",
       "description": "Пушистый эффект от 2D до голливуда",
-      "price": "от 3200 ₽"
+      "price": "от 3200 ₽",
+      "photo": "/small-business-sites/ak-lash-studio-salon/photos/highlight-0.webp"
     },
     {
       "name": "Ламинирование",
       "description": "Свой объём — но лучше",
-      "price": "2200 ₽"
+      "price": "2200 ₽",
+      "photo": "/small-business-sites/ak-lash-studio-salon/photos/highlight-1.webp"
     },
     {
       "name": "Брови",
       "description": "Архитектура и окрашивание",
-      "price": "от 1200 ₽"
+      "price": "от 1200 ₽",
+      "photo": "/small-business-sites/ak-lash-studio-salon/photos/highlight-2.webp"
     }
   ],
-  "bookingUrl": "https://ak-bulvar-admirala-ushakova.clients.site"
+  "bookingUrl": "https://n728292.yclients.com/"
 }

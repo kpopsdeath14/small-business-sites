@@ -13,8 +13,12 @@
     "whatsapp": "https://wa.me/79309641302"
   },
   "photos": [
-    "https://avatars.mds.yandex.net/get-altay/2701879/2a000001852181df5220c7f62de5bd65cbb8/orig",
-    "https://avatars.mds.yandex.net/get-vh/6472713/2a0000018b2371cf539fc8de651e6a098669/orig"
+    "https://avatars.mds.yandex.net/get-altay/14774583/2a00000198a3f260999fb27dff25b9b26eff/orig",
+    "https://avatars.mds.yandex.net/get-altay/6310045/2a0000018119d1923535f5760071ffbc3429/orig",
+    "https://avatars.mds.yandex.net/get-altay/4598810/2a0000017bfa2eaae8bf124e4e99e465abba/orig",
+    "https://avatars.mds.yandex.net/get-altay/11444509/2a0000018ea3f6fccc6312b051df7705373c/orig",
+    "https://avatars.mds.yandex.net/get-altay/13061180/2a0000018ea3ecc6f93efdfc5c4852555c35/orig",
+    "https://avatars.mds.yandex.net/get-altay/4612894/2a0000017bfa0b27d2f5413179647cc3ddd1/orig"
   ],
   "menu_or_services": [
     {
@@ -95,11 +99,15 @@
       },
       {
         "id": "about",
-        "variant": 0
+        "variant": 2
       },
       {
         "id": "services",
         "variant": 0
+      },
+      {
+        "id": "gallery",
+        "variant": 2
       },
       {
         "id": "reviews",
@@ -124,5 +132,6 @@
     ]
   },
   "hero_photo": "https://avatars.mds.yandex.net/get-altay/2701879/2a000001852181df5220c7f62de5bd65cbb8/orig",
-  "reviews_url": "https://yandex.ru/maps/org/x/28219879651/reviews/"
+  "reviews_url": "https://yandex.ru/maps/org/x/28219879651/reviews/",
+  "booking_url": "https://n400133.yclients.com/"
 }

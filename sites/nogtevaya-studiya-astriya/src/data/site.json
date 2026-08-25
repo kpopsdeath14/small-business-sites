@@ -59,6 +59,22 @@
     {
       "src": "/small-business-sites/astriya-salon/photos/1.webp",
       "alt": "Ногтевая студия Астрия — фото 2"
+    },
+    {
+      "src": "/small-business-sites/astriya-salon/photos/2.webp",
+      "alt": "Ногтевая студия Астрия — фото 3"
+    },
+    {
+      "src": "/small-business-sites/astriya-salon/photos/3.webp",
+      "alt": "Ногтевая студия Астрия — фото 4"
+    },
+    {
+      "src": "/small-business-sites/astriya-salon/photos/4.webp",
+      "alt": "Ногтевая студия Астрия — фото 5"
+    },
+    {
+      "src": "/small-business-sites/astriya-salon/photos/5.webp",
+      "alt": "Ногтевая студия Астрия — фото 6"
     }
   ],
   "heroPhoto": "/small-business-sites/astriya-salon/photos/hero.webp",
@@ -102,5 +118,6 @@
       "label": "отзывов клиентов"
     }
   ],
-  "highlights": []
+  "highlights": [],
+  "bookingUrl": "https://n400133.yclients.com/"
 }

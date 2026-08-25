@@ -13,9 +13,12 @@
     "whatsapp": "https://wa.me/79680604998"
   },
   "photos": [
-    "https://avatars.mds.yandex.net/get-altay/9728306/2a0000018acbb70f14ff494e9c5a51b60379/orig",
-    "https://avatars.mds.yandex.net/get-vh/5105395/2a00000192d938d6c105090bfba95a36fa60/orig",
-    "https://avatars.mds.yandex.net/get-altay/18135344/2a0000019c70353feb9dd92543446ef12f26/orig"
+    "https://avatars.mds.yandex.net/get-altay/10636707/2a0000018adc4aff576d56742547aede1145/orig",
+    "https://avatars.mds.yandex.net/get-altay/10648814/2a0000018acbdc8fa557b9f6c64032f10f98/orig",
+    "https://avatars.mds.yandex.net/get-altay/10705374/2a0000018acbdc8d5428a02b61496acdc6a0/orig",
+    "https://avatars.mds.yandex.net/get-altay/10488540/2a0000018ad329e657c8eb452d2c0ab982eb/orig",
+    "https://avatars.mds.yandex.net/get-altay/10702157/2a0000018acbdc8f85ce240bb2261361244e/orig",
+    "https://avatars.mds.yandex.net/get-altay/9776062/2a0000018ad31ebad3745e4a70aa74770f30/orig"
   ],
   "menu_or_services": [
     {
@@ -86,17 +89,20 @@
     {
       "name": "Объёмное наращивание",
       "description": "Пушистый эффект от 2D до голливуда",
-      "price": "от 3200 ₽"
+      "price": "от 3200 ₽",
+      "photo": "https://avatars.mds.yandex.net/get-altay/10648814/2a0000018acbdc8fa557b9f6c64032f10f98/orig"
     },
     {
       "name": "Ламинирование",
       "description": "Свой объём — но лучше",
-      "price": "2200 ₽"
+      "price": "2200 ₽",
+      "photo": "https://avatars.mds.yandex.net/get-altay/10705374/2a0000018acbdc8d5428a02b61496acdc6a0/orig"
     },
     {
       "name": "Брови",
       "description": "Архитектура и окрашивание",
-      "price": "от 1200 ₽"
+      "price": "от 1200 ₽",
+      "photo": "https://avatars.mds.yandex.net/get-altay/10488540/2a0000018ad329e657c8eb452d2c0ab982eb/orig"
     }
   ],
   "design": {
@@ -116,6 +122,10 @@
       },
       {
         "id": "services",
+        "variant": 0
+      },
+      {
+        "id": "highlights",
         "variant": 0
       },
       {
@@ -146,5 +156,5 @@
   },
   "hero_photo": "https://avatars.mds.yandex.net/get-altay/9728306/2a0000018acbb70f14ff494e9c5a51b60379/orig",
   "reviews_url": "https://yandex.ru/maps/org/x/176890026169/reviews/",
-  "booking_url": "https://ak-bulvar-admirala-ushakova.clients.site"
+  "booking_url": "https://n728292.yclients.com/"
 }

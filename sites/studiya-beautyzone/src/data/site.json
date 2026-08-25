@@ -53,12 +53,20 @@
   ],
   "gallery": [
     {
+      "src": "/small-business-sites/beautyzone-salon/photos/work-brows-lips.jpg",
+      "alt": "Перманентный макияж бровей и губ — работа мастера студии BeautyZone"
+    },
+    {
       "src": "/small-business-sites/beautyzone-salon/photos/0.webp",
-      "alt": "Студия BeautyZone — фото 1"
+      "alt": "Интерьер студии BeautyZone"
     },
     {
       "src": "/small-business-sites/beautyzone-salon/photos/1.webp",
-      "alt": "Студия BeautyZone — фото 2"
+      "alt": "Перманентный макияж бровей — клиентка студии BeautyZone"
+    },
+    {
+      "src": "/small-business-sites/beautyzone-salon/photos/work-lashes.jpg",
+      "alt": "Коррекция и окрашивание — клиентка студии BeautyZone"
     }
   ],
   "heroPhoto": "/small-business-sites/beautyzone-salon/photos/hero.webp",
@@ -104,19 +112,22 @@
   ],
   "highlights": [
     {
-      "name": "Уход «Шёлк»",
-      "description": "Глубокое восстановление волос",
-      "price": "от 3800 ₽"
+      "name": "Перманентный макияж бровей",
+      "description": "Естественный оттенок и форма под черты лица",
+      "price": "от 6000 ₽",
+      "photo": "/small-business-sites/beautyzone-salon/photos/work-brows.jpg"
     },
     {
-      "name": "Экспресс-маникюр",
-      "description": "За 60 минут в обед",
-      "price": "1600 ₽"
+      "name": "Перманентный макияж губ",
+      "description": "Мягкий цвет и чёткий контур",
+      "price": "от 7000 ₽",
+      "photo": "/small-business-sites/beautyzone-salon/photos/work-brows-lips.jpg"
     },
     {
-      "name": "Чистка лица",
-      "description": "Сияние без воспалений",
-      "price": "от 3000 ₽"
+      "name": "Коррекция и уход",
+      "description": "Обновление цвета через 4–6 недель",
+      "price": "от 3000 ₽",
+      "photo": "/small-business-sites/beautyzone-salon/photos/2.webp"
     }
   ]
 }

@@ -1,16 +1,11 @@
 ---
-// Embeds an existing booking system (YClients, Dikidi, etc.) instead of the built-in fake form —
-// no point showing a form that doesn't actually save anywhere when the client already has a real one.
-//
-// Styled entirely with design tokens (--color-*, --radius-*, --shadow-*) so it matches whichever
-// template/palette embeds it. The loading skeleton sits BEHIND the iframe (z-index below), visible
-// until the widget paints over it — no JS needed to dismiss it. The footer link covers systems
-// that block embedding (X-Frame-Options) or fail on a particular visitor's browser.
+// L'ATELIER booking embed: frames the salon's real booking system (YClients / Dikidi / …)
+// in the template's design language — hairline header with pulsing status dots, shimmer
+// skeleton behind the iframe while it loads, and an always-visible escape link for systems
+// that block iframing. Token-driven, so every palette dresses it natively.
 interface Props {
   url: string;
-  /** Small caps caption in the widget header bar. */
   title?: string;
-  /** Tailwind height utility for the iframe; override if the host layout needs another size. */
   heightClass?: string;
   class?: string;
 }
@@ -107,4 +102,3 @@ const { url, title = "Онлайн-запись", heightClass = "h-[720px]", cla
     }
   }
 </style>
-

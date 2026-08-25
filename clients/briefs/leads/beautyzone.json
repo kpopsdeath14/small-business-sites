@@ -14,7 +14,10 @@
   },
   "photos": [
     "https://avatars.mds.yandex.net/get-altay/5255911/2a0000018cf87692b59d32d986465e0d63ae/orig",
-    "https://avatars.mds.yandex.net/get-altay/14307348/2a00000192ffe5641f1b785cefdd5d4c8d71/orig"
+    "https://avatars.mds.yandex.net/get-altay/15181550/2a00000194f49163412111d48e8b5e8beec6/orig",
+    "https://avatars.mds.yandex.net/get-altay/14350490/2a00000194f491633c610a23d759eca7bd5c/orig",
+    "https://avatars.mds.yandex.net/get-altay/14021027/2a00000194f49166a1b6c30463f73abe735f/orig",
+    "https://avatars.mds.yandex.net/get-altay/14215987/2a00000194f49163355ced107b646b4efce1/orig"
   ],
   "menu_or_services": [
     {
@@ -83,19 +86,22 @@
   ],
   "highlights": [
     {
-      "name": "Уход «Шёлк»",
-      "description": "Глубокое восстановление волос",
-      "price": "от 3800 ₽"
+      "name": "Перманентный макияж бровей",
+      "price": "от 6000 ₽",
+      "description": "Естественный оттенок и форма под черты лица",
+      "photo": "https://avatars.mds.yandex.net/get-altay/14021027/2a00000194f49166a1b6c30463f73abe735f/orig"
     },
     {
-      "name": "Экспресс-маникюр",
-      "description": "За 60 минут в обед",
-      "price": "1600 ₽"
+      "name": "Перманентный макияж губ",
+      "price": "от 7000 ₽",
+      "description": "Мягкий цвет и чёткий контур",
+      "photo": "https://avatars.mds.yandex.net/get-altay/15181550/2a00000194f49163412111d48e8b5e8beec6/orig"
     },
     {
-      "name": "Чистка лица",
-      "description": "Сияние без воспалений",
-      "price": "от 3000 ₽"
+      "name": "Коррекция и уход",
+      "price": "от 3000 ₽",
+      "description": "Обновление цвета через 4–6 недель",
+      "photo": "https://avatars.mds.yandex.net/get-altay/14350490/2a00000194f491633c610a23d759eca7bd5c/orig"
     }
   ],
   "design": {
@@ -111,11 +117,19 @@
       },
       {
         "id": "about",
-        "variant": 0
+        "variant": 2
       },
       {
         "id": "services",
         "variant": 0
+      },
+      {
+        "id": "highlights",
+        "variant": 0
+      },
+      {
+        "id": "gallery",
+        "variant": 2
       },
       {
         "id": "reviews",
