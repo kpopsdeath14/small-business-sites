@@ -1,7 +1,6 @@
 ---
 import Container from "@sitegen/shared-ui/components/Container.astro";
 import SalonSection from "../components/SalonSection.astro";
-import BookingWidget from "../components/BookingWidgetLux.astro";
 import type { SiteData } from "@sitegen/shared-ui/types.ts";
 
 interface Props {
@@ -12,20 +11,28 @@ const { data } = Astro.props;
 const hoursSummary = Object.entries(data.workingHours ?? {})
   .map(([days, hours]) => `${days}: ${hours}`)
   .join(" · ");
+// Booking stays link-only by design: one tap opens the salon's own booking system
+// or a messenger — no third-party iframe slowing the page down or breaking in layout.
+// Order: booking system first (if the salon has one), then every social channel, then the phone line.
+const SOCIAL_LABELS: Record<string, string> = {
+  instagram: "Instagram",
+  vk: "VK",
+  telegram: "Telegram",
+  whatsapp: "WhatsApp",
+  facebook: "Facebook",
+  youtube: "YouTube",
+};
 const tel = data.phone ? `tel:${data.phone.replace(/[^+\d]/g, "")}` : undefined;
-const social = data.socialLinks ?? {};
-// The salon's own booking system is embedded here. Never a home-made form: it would
-// need a backend to go anywhere, and without one it silently drops enquiries. Where a
-// client has no booking system yet we hold the space visibly instead of filling it.
-const channels = [
-  social.telegram && { href: social.telegram, label: "Telegram" },
-  social.whatsapp && { href: social.whatsapp, label: "WhatsApp" },
-].filter(Boolean) as { href: string; label: string }[];
+const channels = Object.entries(data.socialLinks ?? {})
+  .filter(([, url]) => Boolean(url))
+  .map(([key, url]) => ({ href: url, label: SOCIAL_LABELS[key.toLowerCase()] ?? key }));
+const outlineBtn =
+  "px-6 py-3.5 text-[11px] font-semibold uppercase tracking-[0.22em] border border-white/25 text-[#F4EEE2] hover:bg-white/10 hover:border-white/50 transition-all duration-300";
 ---
 
 <!-- The page's conversion anchor: always the charcoal room, regardless of palette.
-     Split layout — persuasive copy + direct phone line on the left, the form on the right —
-     so a visitor who won't fill forms still sees the number first. -->
+     Split layout — persuasive copy + direct phone line on the left, the booking
+     links on the right — so a visitor picks their channel in one tap. -->
 <SalonSection id="booking" surface="noir" spacing="xl">
   <Container>
     <div class="grid lg:grid-cols-2 gap-14 lg:gap-20 items-center">
@@ -56,48 +63,36 @@ const channels = [
         {hoursSummary && <p class="mt-5 text-sm text-[#A79C89]">{hoursSummary}</p>}
       </div>
 
-      <!-- Booking column: the salon's live widget, or space held for it. -->
+      <!-- Booking column: plain links to every way to reach the salon. -->
       <div data-reveal>
-        {
-          data.bookingUrl ? (
-            <BookingWidget url={data.bookingUrl} />
-          ) : (
-            <div class="flex min-h-[560px] flex-col items-center justify-center border border-dashed border-white/25 bg-white/[0.03] backdrop-blur-sm p-10 sm:p-12 text-center">
-              <p class="text-[10px] uppercase tracking-[0.28em] text-[#C8A96E]">Онлайн-запись</p>
-              <p class="mt-5 font-[var(--font-heading)] text-2xl font-medium text-[#F4EEE2]">
-                Место под виджет записи
-              </p>
-              <p class="mt-4 text-sm text-[#A79C89] leading-relaxed max-w-sm mx-auto">
-                Сюда встроится ваша онлайн-запись — Dikidi, YClients или другая система.
-                Пришлите ссылку, и клиенты будут выбирать время прямо на сайте.
-              </p>
-              <div class="mt-8 flex flex-wrap justify-center gap-3">
-                {
-                  channels.map((c) => (
-                    <a
-                      href={c.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="px-6 py-3.5 text-[11px] font-semibold uppercase tracking-[0.22em] border border-white/25 text-[#F4EEE2] hover:bg-white/10 hover:border-white/50 transition-all duration-300"
-                    >
-                      {c.label}
-                    </a>
-                  ))
-                }
-                {
-                  tel && (
-                    <a
-                      href={tel}
-                      class="px-6 py-3.5 text-[11px] font-semibold uppercase tracking-[0.22em] border border-white/25 text-[#F4EEE2] hover:bg-white/10 hover:border-white/50 transition-all duration-300"
-                    >
-                      Позвонить
-                    </a>
-                  )
-                }
-              </div>
-            </div>
-          )
-        }
+        <div class="border border-white/10 bg-white/[0.03] backdrop-blur-sm p-8 sm:p-10 text-center">
+          <p class="text-[10px] uppercase tracking-[0.28em] text-[#C8A96E]">Выберите способ записи</p>
+
+          <div class="mt-8 flex flex-col items-stretch gap-3 max-w-xs mx-auto">
+            {
+              data.bookingUrl && (
+                <a
+                  href={data.bookingUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="px-6 py-3.5 text-[11px] font-semibold uppercase tracking-[0.22em] bg-[#C8A96E] text-[#171310] hover:bg-[#d9bd83] transition-colors duration-300"
+                >
+                  Онлайн-запись
+                </a>
+              )
+            }
+            {channels.map((c) => (
+              <a href={c.href} target="_blank" rel="noopener noreferrer" class={outlineBtn}>
+                {c.label}
+              </a>
+            ))}
+            {tel && (
+              <a href={tel} class={outlineBtn}>
+                Позвонить
+              </a>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   </Container>
