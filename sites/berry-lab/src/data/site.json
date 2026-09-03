@@ -16,31 +16,31 @@
   "items": [],
   "gallery": [
     {
-      "src": "/berry-shop/photos/0.webp",
+      "src": "/small-business-sites/berry-shop/photos/0.webp",
       "alt": "Berry Lab — фото 1"
     },
     {
-      "src": "/berry-shop/photos/1.webp",
+      "src": "/small-business-sites/berry-shop/photos/1.webp",
       "alt": "Berry Lab — фото 2"
     },
     {
-      "src": "/berry-shop/photos/2.webp",
+      "src": "/small-business-sites/berry-shop/photos/2.webp",
       "alt": "Berry Lab — фото 3"
     },
     {
-      "src": "/berry-shop/photos/3.webp",
+      "src": "/small-business-sites/berry-shop/photos/3.webp",
       "alt": "Berry Lab — фото 4"
     },
     {
-      "src": "/berry-shop/photos/4.webp",
+      "src": "/small-business-sites/berry-shop/photos/4.webp",
       "alt": "Berry Lab — фото 5"
     },
     {
-      "src": "/berry-shop/photos/5.webp",
+      "src": "/small-business-sites/berry-shop/photos/5.webp",
       "alt": "Berry Lab — фото 6"
     }
   ],
-  "heroPhoto": "/berry-shop/photos/hero.webp",
+  "heroPhoto": "/small-business-sites/berry-shop/photos/hero.webp",
   "reviews": [
     {
       "author": "Алиса Н.",
@@ -135,7 +135,7 @@
       "price": 890,
       "oldPrice": 1190,
       "category": "Очищение",
-      "photo": "/berry-shop/photos/product-0.webp",
+      "photo": "/small-business-sites/berry-shop/photos/product-0.webp",
       "badge": "Хит",
       "rating": 4.8,
       "reviewsCount": 6400,
@@ -163,7 +163,7 @@
       "description": "Стабилизированная форма — не желтеет к середине флакона.",
       "price": 1690,
       "category": "Уход",
-      "photo": "/berry-shop/photos/product-1.webp",
+      "photo": "/small-business-sites/berry-shop/photos/product-1.webp",
       "badge": "Новинка",
       "rating": 4.9,
       "reviewsCount": 2870,
@@ -178,7 +178,7 @@
       "description": "Лёгкая текстура для жирной кожи, не забивает поры.",
       "price": 1290,
       "category": "Уход",
-      "photo": "/berry-shop/photos/product-2.webp",
+      "photo": "/small-business-sites/berry-shop/photos/product-2.webp",
       "rating": 4.8,
       "reviewsCount": 4120,
       "sku": "BL-GEL50",
@@ -192,7 +192,7 @@
       "description": "Деликатное отшелушивание — подходит для чувствительной кожи.",
       "price": 990,
       "category": "Очищение",
-      "photo": "/berry-shop/photos/product-3.webp",
+      "photo": "/small-business-sites/berry-shop/photos/product-3.webp",
       "rating": 4.7,
       "reviewsCount": 1930,
       "sku": "BL-TON200",
@@ -206,7 +206,7 @@
       "description": "Растворяет стойкий макияж, смывается без плёнки.",
       "price": 1090,
       "category": "Очищение",
-      "photo": "/berry-shop/photos/product-4.webp",
+      "photo": "/small-business-sites/berry-shop/photos/product-4.webp",
       "rating": 4.9,
       "reviewsCount": 3350,
       "sku": "BL-OIL150",
@@ -220,7 +220,7 @@
       "description": "Не высыхает коркой — можно держать 15 минут без дискомфорта.",
       "price": 790,
       "category": "Маски",
-      "photo": "/berry-shop/photos/product-5.webp",
+      "photo": "/small-business-sites/berry-shop/photos/product-5.webp",
       "rating": 4.7,
       "reviewsCount": 2210,
       "sku": "BL-CLAY75",
@@ -234,7 +234,7 @@
       "description": "Наносится вместо крема, утром кожа заметно плотнее.",
       "price": 1890,
       "category": "Маски",
-      "photo": "/berry-shop/photos/product-6.webp",
+      "photo": "/small-business-sites/berry-shop/photos/product-6.webp",
       "badge": "Хит",
       "rating": 4.9,
       "reviewsCount": 1780,
@@ -249,7 +249,7 @@
       "description": "Вечерний уход для плотности кожи, стартовая концентрация.",
       "price": 1190,
       "category": "Уход",
-      "photo": "/berry-shop/photos/product-7.webp",
+      "photo": "/small-business-sites/berry-shop/photos/product-7.webp",
       "rating": 4.6,
       "reviewsCount": 5100,
       "sku": "BL-RET30",
@@ -263,7 +263,7 @@
       "description": "Впитывается за минуту — можно сразу брать телефон.",
       "price": 590,
       "category": "Тело",
-      "photo": "/berry-shop/photos/product-8.webp",
+      "photo": "/small-business-sites/berry-shop/photos/product-8.webp",
       "rating": 4.8,
       "reviewsCount": 3980,
       "sku": "BL-HAND75",
@@ -277,7 +277,7 @@
       "description": "Мелкий помол, не царапает и не забивает слив.",
       "price": 990,
       "category": "Тело",
-      "photo": "/berry-shop/photos/product-9.webp",
+      "photo": "/small-business-sites/berry-shop/photos/product-9.webp",
       "rating": 4.7,
       "reviewsCount": 1640,
       "sku": "BL-SCRUB250",
@@ -291,7 +291,7 @@
       "description": "Без отдушки — подходит для кожи, склонной к атопии.",
       "price": 1090,
       "category": "Тело",
-      "photo": "/berry-shop/photos/product-10.webp",
+      "photo": "/small-business-sites/berry-shop/photos/product-10.webp",
       "rating": 4.8,
       "reviewsCount": 1210,
       "sku": "BL-MILK250",
@@ -306,7 +306,7 @@
       "price": 1490,
       "oldPrice": 1790,
       "category": "Уход",
-      "photo": "/berry-shop/photos/product-11.webp",
+      "photo": "/small-business-sites/berry-shop/photos/product-11.webp",
       "rating": 4.8,
       "reviewsCount": 2560,
       "sku": "BL-SPF50",

@@ -16,31 +16,31 @@
   "items": [],
   "gallery": [
     {
-      "src": "/volta-shop/photos/0.webp",
+      "src": "/small-business-sites/volta-shop/photos/0.webp",
       "alt": "VOLTA — фото 1"
     },
     {
-      "src": "/volta-shop/photos/1.webp",
+      "src": "/small-business-sites/volta-shop/photos/1.webp",
       "alt": "VOLTA — фото 2"
     },
     {
-      "src": "/volta-shop/photos/2.webp",
+      "src": "/small-business-sites/volta-shop/photos/2.webp",
       "alt": "VOLTA — фото 3"
     },
     {
-      "src": "/volta-shop/photos/3.webp",
+      "src": "/small-business-sites/volta-shop/photos/3.webp",
       "alt": "VOLTA — фото 4"
     },
     {
-      "src": "/volta-shop/photos/4.webp",
+      "src": "/small-business-sites/volta-shop/photos/4.webp",
       "alt": "VOLTA — фото 5"
     },
     {
-      "src": "/volta-shop/photos/5.webp",
+      "src": "/small-business-sites/volta-shop/photos/5.webp",
       "alt": "VOLTA — фото 6"
     }
   ],
-  "heroPhoto": "/volta-shop/photos/hero.webp",
+  "heroPhoto": "/small-business-sites/volta-shop/photos/hero.webp",
   "reviews": [
     {
       "author": "Дмитрий К.",
@@ -135,7 +135,7 @@
       "price": 4290,
       "oldPrice": 5490,
       "category": "Звук",
-      "photo": "/volta-shop/photos/product-0.webp",
+      "photo": "/small-business-sites/volta-shop/photos/product-0.webp",
       "badge": "Хит",
       "rating": 4.8,
       "reviewsCount": 3120,
@@ -163,7 +163,7 @@
       "description": "12 часов музыки и защита IPX7 — можно брать в душ и на пляж.",
       "price": 3190,
       "category": "Звук",
-      "photo": "/volta-shop/photos/product-1.webp",
+      "photo": "/small-business-sites/volta-shop/photos/product-1.webp",
       "rating": 4.7,
       "reviewsCount": 980,
       "sku": "VB-MINI",
@@ -178,7 +178,7 @@
       "price": 2890,
       "oldPrice": 3590,
       "category": "Питание",
-      "photo": "/volta-shop/photos/product-2.webp",
+      "photo": "/small-business-sites/volta-shop/photos/product-2.webp",
       "badge": "Новинка",
       "rating": 4.9,
       "reviewsCount": 1560,
@@ -193,7 +193,7 @@
       "description": "Втрое компактнее штатного блока, греется заметно меньше.",
       "price": 2190,
       "category": "Питание",
-      "photo": "/volta-shop/photos/product-3.webp",
+      "photo": "/small-business-sites/volta-shop/photos/product-3.webp",
       "rating": 4.8,
       "reviewsCount": 2240,
       "sku": "VG-65",
@@ -207,7 +207,7 @@
       "description": "Нейлоновая оплётка выдерживает 25 000 перегибов.",
       "price": 690,
       "category": "Кабели",
-      "photo": "/volta-shop/photos/product-4.webp",
+      "photo": "/small-business-sites/volta-shop/photos/product-4.webp",
       "rating": 4.9,
       "reviewsCount": 4100,
       "sku": "VK-CC2",
@@ -221,7 +221,7 @@
       "description": "Сертификация MFi — работает с любой прошивкой iPhone.",
       "price": 590,
       "category": "Кабели",
-      "photo": "/volta-shop/photos/product-5.webp",
+      "photo": "/small-business-sites/volta-shop/photos/product-5.webp",
       "rating": 4.7,
       "reviewsCount": 2870,
       "sku": "VK-CL1",
@@ -235,7 +235,7 @@
       "description": "Заряжает телефон и планшет одновременно, не роняя напряжение в прикуривателе.",
       "price": 1490,
       "category": "Аксессуары",
-      "photo": "/volta-shop/photos/product-6.webp",
+      "photo": "/small-business-sites/volta-shop/photos/product-6.webp",
       "rating": 4.6,
       "reviewsCount": 760,
       "sku": "VC-CAR45",
@@ -250,7 +250,7 @@
       "price": 3690,
       "oldPrice": 4490,
       "category": "Питание",
-      "photo": "/volta-shop/photos/product-7.webp",
+      "photo": "/small-business-sites/volta-shop/photos/product-7.webp",
       "rating": 4.8,
       "reviewsCount": 1130,
       "sku": "VW-3IN1",
@@ -264,7 +264,7 @@
       "description": "HDMI 4K, два USB 3.0, картридер и сквозная зарядка 100 Вт.",
       "price": 2790,
       "category": "Аксессуары",
-      "photo": "/volta-shop/photos/product-8.webp",
+      "photo": "/small-business-sites/volta-shop/photos/product-8.webp",
       "rating": 4.7,
       "reviewsCount": 640,
       "sku": "VU-HUB7",
@@ -278,7 +278,7 @@
       "description": "0,3 / 1 / 2 м — на стол, в сумку и к розетке за диваном.",
       "price": 890,
       "category": "Кабели",
-      "photo": "/volta-shop/photos/product-9.webp",
+      "photo": "/small-business-sites/volta-shop/photos/product-9.webp",
       "rating": 4.8,
       "reviewsCount": 1890,
       "sku": "VK-SET3",
@@ -292,7 +292,7 @@
       "description": "Самая продаваемая модель: звук честнее цены.",
       "price": 1990,
       "category": "Звук",
-      "photo": "/volta-shop/photos/product-10.webp",
+      "photo": "/small-business-sites/volta-shop/photos/product-10.webp",
       "badge": "Хит",
       "rating": 4.6,
       "reviewsCount": 5240,
@@ -307,7 +307,7 @@
       "description": "Полноразмерные, с проводным режимом для студии и записи.",
       "price": 4990,
       "category": "Звук",
-      "photo": "/volta-shop/photos/product-11.webp",
+      "photo": "/small-business-sites/volta-shop/photos/product-11.webp",
       "rating": 4.7,
       "reviewsCount": 310,
       "sku": "VS-OVER",

@@ -16,31 +16,31 @@
   "items": [],
   "gallery": [
     {
-      "src": "/len-shop/photos/0.webp",
+      "src": "/small-business-sites/len-shop/photos/0.webp",
       "alt": "Лён и Хлопок — фото 1"
     },
     {
-      "src": "/len-shop/photos/1.webp",
+      "src": "/small-business-sites/len-shop/photos/1.webp",
       "alt": "Лён и Хлопок — фото 2"
     },
     {
-      "src": "/len-shop/photos/2.webp",
+      "src": "/small-business-sites/len-shop/photos/2.webp",
       "alt": "Лён и Хлопок — фото 3"
     },
     {
-      "src": "/len-shop/photos/3.webp",
+      "src": "/small-business-sites/len-shop/photos/3.webp",
       "alt": "Лён и Хлопок — фото 4"
     },
     {
-      "src": "/len-shop/photos/4.webp",
+      "src": "/small-business-sites/len-shop/photos/4.webp",
       "alt": "Лён и Хлопок — фото 5"
     },
     {
-      "src": "/len-shop/photos/5.webp",
+      "src": "/small-business-sites/len-shop/photos/5.webp",
       "alt": "Лён и Хлопок — фото 6"
     }
   ],
-  "heroPhoto": "/len-shop/photos/hero.webp",
+  "heroPhoto": "/small-business-sites/len-shop/photos/hero.webp",
   "reviews": [
     {
       "author": "Екатерина Л.",
@@ -135,7 +135,7 @@
       "price": 7900,
       "oldPrice": 9900,
       "category": "Постельное",
-      "photo": "/len-shop/photos/product-0.webp",
+      "photo": "/small-business-sites/len-shop/photos/product-0.webp",
       "badge": "Хит",
       "rating": 4.9,
       "reviewsCount": 2140,
@@ -163,7 +163,7 @@
       "description": "Мягкий с первой стирки — лён проходит стоун-вош.",
       "price": 4200,
       "category": "Постельное",
-      "photo": "/len-shop/photos/product-1.webp",
+      "photo": "/small-business-sites/len-shop/photos/product-1.webp",
       "rating": 4.8,
       "reviewsCount": 760,
       "sku": "LH-POD200",
@@ -177,7 +177,7 @@
       "description": "Клапан вместо пуговиц — подушка не выбивается ночью.",
       "price": 1890,
       "category": "Постельное",
-      "photo": "/len-shop/photos/product-2.webp",
+      "photo": "/small-business-sites/len-shop/photos/product-2.webp",
       "rating": 4.9,
       "reviewsCount": 1320,
       "sku": "LH-NAV2",
@@ -191,7 +191,7 @@
       "description": "Резинка по всему периметру, борт 30 см — сядет и на толстый матрас.",
       "price": 3600,
       "category": "Постельное",
-      "photo": "/len-shop/photos/product-3.webp",
+      "photo": "/small-business-sites/len-shop/photos/product-3.webp",
       "rating": 4.8,
       "reviewsCount": 540,
       "sku": "LH-PRR160",
@@ -205,7 +205,7 @@
       "description": "Сохнет за пару часов, не занимает половину чемодана.",
       "price": 890,
       "category": "Полотенца",
-      "photo": "/len-shop/photos/product-4.webp",
+      "photo": "/small-business-sites/len-shop/photos/product-4.webp",
       "rating": 4.7,
       "reviewsCount": 1980,
       "sku": "LH-VAF70",
@@ -220,7 +220,7 @@
       "price": 2690,
       "oldPrice": 3200,
       "category": "Полотенца",
-      "photo": "/len-shop/photos/product-5.webp",
+      "photo": "/small-business-sites/len-shop/photos/product-5.webp",
       "rating": 4.9,
       "reviewsCount": 890,
       "sku": "LH-BAN3",
@@ -234,7 +234,7 @@
       "description": "Подшита мережкой вручную — край не осыпается.",
       "price": 3400,
       "category": "Кухня",
-      "photo": "/len-shop/photos/product-6.webp",
+      "photo": "/small-business-sites/len-shop/photos/product-6.webp",
       "rating": 4.8,
       "reviewsCount": 430,
       "sku": "LH-SKAT145",
@@ -248,7 +248,7 @@
       "description": "Шесть спокойных цветов под любую посуду.",
       "price": 1190,
       "category": "Кухня",
-      "photo": "/len-shop/photos/product-7.webp",
+      "photo": "/small-business-sites/len-shop/photos/product-7.webp",
       "rating": 4.9,
       "reviewsCount": 610,
       "sku": "LH-SAL4",
@@ -262,7 +262,7 @@
       "description": "Регулируемая лямка и накладной карман на два кармана.",
       "price": 1590,
       "category": "Кухня",
-      "photo": "/len-shop/photos/product-8.webp",
+      "photo": "/small-business-sites/len-shop/photos/product-8.webp",
       "badge": "Новинка",
       "rating": 4.8,
       "reviewsCount": 280,
@@ -277,7 +277,7 @@
       "description": "Впитывают сразу, а не размазывают воду по столу.",
       "price": 990,
       "category": "Кухня",
-      "photo": "/len-shop/photos/product-9.webp",
+      "photo": "/small-business-sites/len-shop/photos/product-9.webp",
       "rating": 4.7,
       "reviewsCount": 1450,
       "sku": "LH-KUH3",
@@ -291,7 +291,7 @@
       "description": "Косичка ручной вязки, не колется и не электризуется.",
       "price": 4900,
       "category": "Пледы",
-      "photo": "/len-shop/photos/product-10.webp",
+      "photo": "/small-business-sites/len-shop/photos/product-10.webp",
       "badge": "Хит",
       "rating": 4.9,
       "reviewsCount": 1120,
@@ -306,7 +306,7 @@
       "description": "Лёгкое летнее покрывало, которое с каждой стиркой мягче.",
       "price": 5400,
       "category": "Пледы",
-      "photo": "/len-shop/photos/product-11.webp",
+      "photo": "/small-business-sites/len-shop/photos/product-11.webp",
       "rating": 4.8,
       "reviewsCount": 390,
       "sku": "LH-MUS4",
