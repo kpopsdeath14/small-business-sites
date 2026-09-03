@@ -1,0 +1,83 @@
+---
+import Container from "@sitegen/shared-ui/components/Container.astro";
+import StoreSection from "../components/StoreSection.astro";
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+
+interface Props {
+  variant: number;
+  data: SiteData;
+}
+const { data } = Astro.props;
+---
+
+<StoreSection id="stats" spacing="md">
+  <Container class="max-w-6xl">
+    <dl class="grid grid-cols-2 gap-x-6 gap-y-9 md:grid-cols-4" data-reveal-stagger="90">
+      {
+        data.stats.map((stat) => (
+          <div class="border-l-2 border-[var(--color-primary)] pl-4" data-reveal>
+            <dt class="num text-3xl font-extrabold leading-none tracking-tight text-[var(--color-text)] sm:text-4xl" data-countup>
+              {stat.value}
+            </dt>
+            <dd class="mt-2 text-[13px] leading-snug text-[var(--color-text-muted)]">{stat.label}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </Container>
+</StoreSection>
+
+<script>
+  /*
+    Counts each stat up from zero the first time it scrolls into view. Values are free-form strings
+    ("12 лет", "4.9", "> 40 000"), so the prefix/number/suffix are split apart and only the number
+    animates — the surrounding text is preserved exactly as the seller wrote it. Anything without a
+    number is left alone, and reduced-motion skips the animation entirely.
+  */
+  const targets = Array.from(document.querySelectorAll<HTMLElement>("[data-countup]"));
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (targets.length > 0 && !reduced && "IntersectionObserver" in window) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          const el = entry.target as HTMLElement;
+          observer.unobserve(el);
+
+          const raw = el.textContent ?? "";
+          // \u00A0 / \u202F: sellers write "40 000" with a non-breaking or narrow space.
+          const match = raw.match(/([\d\u0020\u00A0\u202F]*\d)([.,](\d+))?/);
+          if (!match) continue;
+
+          const [whole] = match;
+          const digits = whole.replace(/[^\d]/g, "");
+          const decimals = match[3]?.length ?? 0;
+          const target = Number(digits) / (decimals ? 10 ** decimals : 1);
+          if (!Number.isFinite(target) || target === 0) continue;
+
+          const prefix = raw.slice(0, match.index ?? 0);
+          const suffix = raw.slice((match.index ?? 0) + match[0].length);
+          const started = performance.now();
+          const duration = 1100;
+
+          const tick = (now: number) => {
+            const progress = Math.min(1, (now - started) / duration);
+            // easeOutCubic: fast start, soft landing on the real figure.
+            const eased = 1 - Math.pow(1 - progress, 3);
+            const value = target * eased;
+            el.textContent = `${prefix}${value.toLocaleString("ru-RU", {
+              minimumFractionDigits: decimals,
+              maximumFractionDigits: decimals,
+            })}${suffix}`;
+            if (progress < 1) requestAnimationFrame(tick);
+            else el.textContent = raw;
+          };
+          requestAnimationFrame(tick);
+        }
+      },
+      { threshold: 0.5 }
+    );
+    for (const target of targets) observer.observe(target);
+  }
+</script>

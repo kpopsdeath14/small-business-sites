@@ -1,0 +1,97 @@
+---
+import StoreButton from "../../components/StoreButton.astro";
+import MarketMark from "../../components/MarketMark.astro";
+import SkeletonImg from "@sitegen/shared-ui/components/SkeletonImg.astro";
+import { formatPrice } from "@sitegen/template-marketplace-store/shop/format.ts";
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+
+interface Props {
+  data: SiteData;
+}
+const { data } = Astro.props;
+
+// Typographic hero: no photograph at all. The proof of a real catalog is the strip of live product
+// tiles at the bottom of the screen instead — it doubles as the entrance to the catalog.
+const strip = data.products.filter((product) => !!product.photo).slice(0, 8);
+const categories = [...new Set(data.products.map((product) => product.category).filter(Boolean))] as string[];
+const ticker = categories.length > 0 ? categories : ["Доставка СДЭК", "Отправка за 1 день", "Гарантия обмена"];
+---
+
+<section id="hero" class="relative flex min-h-[100svh] flex-col justify-between overflow-hidden bg-[var(--color-bg)] pt-28">
+  <div class="mx-auto w-full max-w-7xl px-5 sm:px-8">
+    <div class="flex flex-wrap items-center gap-3">
+      {
+        data.marketplaces.map((marketplace, i) => (
+          <a
+            href={marketplace.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="hero-enter flex items-center gap-2 rounded-full border border-[var(--color-border)] px-3 py-1.5 text-[12px] font-semibold text-[var(--color-text-muted)] transition-colors hover:border-[var(--color-primary)] hover:text-[var(--color-text)]"
+            style={`--enter-delay:${0.05 + i * 0.08}s`}
+          >
+            <MarketMark name={marketplace.name} />
+            {marketplace.rating !== undefined ? `${marketplace.rating.toFixed(1)} ★` : marketplace.name}
+          </a>
+        ))
+      }
+    </div>
+
+    <h1
+      class="hero-enter mt-9 font-[var(--font-heading)] text-[clamp(2.75rem,9vw,7.5rem)] font-extrabold uppercase leading-[0.92] tracking-[-0.045em] text-[var(--color-text)]"
+      style="--enter-delay:0.15s"
+    >
+      {data.hero.heading}
+    </h1>
+
+    <div class="mt-10 grid gap-8 border-t border-[var(--color-border)] pt-8 md:grid-cols-[1.4fr_1fr] md:items-end">
+      <p class="hero-enter max-w-lg text-base leading-relaxed text-[var(--color-text-muted)] sm:text-lg" style="--enter-delay:0.32s">
+        {data.hero.subheading}
+      </p>
+      <div class="hero-enter flex flex-wrap gap-3 md:justify-end" style="--enter-delay:0.45s">
+        <StoreButton href="#catalog" size="lg">{data.hero.ctaLabel}</StoreButton>
+        <StoreButton href="#delivery" variant="outline" size="lg">Доставка</StoreButton>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-12">
+    <div class="marquee overflow-hidden border-y border-[var(--color-border)] py-3">
+      <div class="marquee-track" style="--marquee-duration:34s">
+        {
+          [0, 1].map(() => (
+            <div class="flex shrink-0 items-center" aria-hidden="true">
+              {ticker.map((label) => (
+                <span class="flex items-center whitespace-nowrap px-6 text-[13px] font-semibold uppercase tracking-[0.18em] text-[var(--color-text-muted)]">
+                  {label}
+                  <span class="ml-6 h-1.5 w-1.5 rounded-full bg-[var(--color-primary)]" />
+                </span>
+              ))}
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    {
+      strip.length > 0 && (
+        <div class="flex gap-3 overflow-x-auto px-5 py-6 sm:px-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {strip.map((product, i) => (
+            <a
+              href="#catalog"
+              class="hero-enter group relative block w-36 shrink-0 overflow-hidden rounded-[var(--radius-md)] border border-[var(--color-border)] sm:w-44"
+              style={`--enter-delay:${0.55 + i * 0.06}s`}
+            >
+              <SkeletonImg
+                src={product.photo!}
+                alt={product.name}
+                class="aspect-square w-full transition-transform duration-700 group-hover:scale-105"
+              />
+              <span class="block truncate px-2.5 pt-2 text-[11px] font-semibold text-[var(--color-text)]">{product.name}</span>
+              <span class="num block px-2.5 pb-2.5 text-[13px] font-extrabold text-[var(--color-text)]">{formatPrice(product.price)}</span>
+            </a>
+          ))}
+        </div>
+      )
+    }
+  </div>
+</section>

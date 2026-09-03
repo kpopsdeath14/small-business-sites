@@ -1,0 +1,761 @@
+---
+import CartDrawer from "@sitegen/template-marketplace-store/shop/CartDrawer.tsx";
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+
+/**
+ * Mounts the shop once per page: the hydrated cart/checkout drawer, the styles it and the
+ * catalog's buttons share, and the plain-DOM wiring that connects the static catalog to the
+ * island's store.
+ *
+ * Split this way on purpose — the catalog is the SEO-relevant part of a store page, so it stays
+ * server-rendered HTML; only the ~1 screen of interactive checkout ships as JS, hydrated on idle.
+ */
+interface Props {
+  data: SiteData;
+  /** localStorage namespace: sibling demo sites share a GitHub Pages origin. */
+  scope: string;
+}
+const { data, scope } = Astro.props;
+---
+
+<!-- The scope also has to reach the plain-DOM script below, which cannot read Astro props.
+     A hidden marker element is in the DOM before any deferred module script runs. -->
+<span data-shop-scope={scope} hidden></span>
+
+<!-- client:only, not client:idle: the drawer reads the cart from localStorage the moment it
+     renders, so there is nothing meaningful to server-render — and an SSR pass would touch
+     `window` on the server. It is closed chrome until a shopper opens it; nothing here is
+     content the page needs in its HTML. -->
+<CartDrawer client:only="preact" scope={scope} storeName={data.name} delivery={data.delivery} />
+
+<style is:global>
+  /* ============================================================
+     VITRINA shop chrome — cart bubble, drawer, checkout.
+     Global (not scoped): the drawer renders inside a Preact island,
+     which never carries this component's scope id.
+     ============================================================ */
+
+  .vt-bubble {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.7rem 1.1rem 0.7rem 0.85rem;
+    border-radius: 999px;
+    background: var(--color-primary);
+    color: var(--color-primary-contrast);
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.9375rem;
+    box-shadow: var(--shadow-elevated);
+    /* Parked off-screen until there is something in it — `visibility` (not display) so the
+       transform transition has something to animate. */
+    transform: translateY(140%) scale(0.9);
+    opacity: 0;
+    visibility: hidden;
+    transition: transform 0.45s cubic-bezier(0.34, 1.4, 0.64, 1), opacity 0.3s ease, visibility 0.3s;
+  }
+  .vt-bubble.is-shown {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+    visibility: visible;
+  }
+  .vt-bubble:hover {
+    filter: brightness(1.06);
+  }
+  .vt-bubble:active {
+    transform: scale(0.96);
+  }
+  .vt-bubble-icon {
+    position: relative;
+    display: inline-flex;
+  }
+  .vt-bubble-count {
+    position: absolute;
+    top: -0.45rem;
+    right: -0.55rem;
+    min-width: 1.15rem;
+    height: 1.15rem;
+    padding: 0 0.25rem;
+    border-radius: 999px;
+    background: var(--color-primary-contrast);
+    color: var(--color-primary);
+    font-size: 0.6875rem;
+    line-height: 1.15rem;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+  .vt-bubble-total {
+    font-variant-numeric: tabular-nums;
+  }
+  @media (min-width: 768px) {
+    .vt-bubble {
+      right: 1.75rem;
+      bottom: 1.75rem;
+    }
+  }
+
+  .vt-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 70;
+    background: rgba(8, 8, 10, 0.55);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease;
+  }
+  .vt-backdrop.is-open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .vt-drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 80;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 27rem;
+    height: 100dvh;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    border-left: 1px solid var(--color-border);
+    box-shadow: var(--shadow-elevated);
+    transform: translateX(101%);
+    transition: transform 0.42s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  .vt-drawer.is-open {
+    transform: translateX(0);
+  }
+
+  .vt-drawer-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.1rem 1.25rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .vt-drawer-title {
+    font-family: var(--font-heading);
+    font-size: 1.0625rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+  .vt-drawer-sub {
+    margin-top: 0.15rem;
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+  }
+  .vt-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    background: transparent;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+  }
+  .vt-icon-btn:hover {
+    background: var(--color-surface);
+    border-color: var(--color-primary);
+  }
+
+  .vt-progress {
+    display: flex;
+    gap: 3px;
+    padding: 0 1.25rem;
+    margin-top: 0.85rem;
+  }
+  .vt-progress-seg {
+    flex: 1;
+    height: 3px;
+    border-radius: 999px;
+    background: var(--color-border);
+    transition: background-color 0.4s ease;
+  }
+  .vt-progress-seg.is-done {
+    background: var(--color-primary);
+  }
+
+  .vt-drawer-body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 1.25rem;
+    animation: vt-step-in 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  @keyframes vt-step-in {
+    from {
+      opacity: 0;
+      transform: translateX(18px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .vt-drawer-foot {
+    flex: 0 0 auto;
+    padding: 1rem 1.25rem calc(1rem + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--color-border);
+    background: var(--color-surface);
+  }
+  .vt-foot-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 0.75rem;
+    font-size: 0.9375rem;
+  }
+  .vt-foot-row span {
+    color: var(--color-text-muted);
+  }
+  .vt-foot-row b {
+    font-family: var(--font-numeric, var(--font-body));
+    font-size: 1.25rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---------- cart lines ---------- */
+
+  .vt-lines {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .vt-line {
+    display: grid;
+    grid-template-columns: 4.5rem 1fr auto;
+    gap: 0.85rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--color-border);
+    animation: vt-line-in 0.35s ease both;
+  }
+  @keyframes vt-line-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+  .vt-line:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+  .vt-line-photo {
+    width: 4.5rem;
+    height: 4.5rem;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+  }
+  .vt-line-photo-empty {
+    border: 1px dashed var(--color-border);
+  }
+  .vt-line-name {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+  .vt-line-price {
+    margin-top: 0.15rem;
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+  }
+  .vt-qty {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.15rem;
+    margin-top: 0.6rem;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    padding: 0.1rem;
+  }
+  .vt-qty button {
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 999px;
+    font-size: 1rem;
+    line-height: 1;
+    color: var(--color-text);
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+  .vt-qty button:hover {
+    background: var(--color-primary);
+    color: var(--color-primary-contrast);
+  }
+  .vt-qty span {
+    min-width: 1.5rem;
+    text-align: center;
+    font-size: 0.875rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .vt-line-side {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: space-between;
+    text-align: right;
+  }
+  .vt-line-side b {
+    font-family: var(--font-numeric, var(--font-body));
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .vt-line-remove {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color 0.2s ease;
+  }
+  .vt-line-remove:hover {
+    color: var(--color-sale, #e0324c);
+  }
+
+  .vt-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.5rem;
+    padding: 3rem 1rem;
+  }
+  .vt-empty-mark {
+    display: grid;
+    place-items: center;
+    width: 4.5rem;
+    height: 4.5rem;
+    margin-bottom: 0.5rem;
+    border-radius: 999px;
+    background: var(--color-surface);
+    color: var(--color-text-muted);
+  }
+  .vt-empty-title {
+    font-family: var(--font-heading);
+    font-size: 1.0625rem;
+    font-weight: 700;
+  }
+
+  /* ---------- form controls ---------- */
+
+  .vt-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 1.35rem;
+  }
+  .vt-stack-sm {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+  .vt-field {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .vt-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+  .vt-label em {
+    font-style: normal;
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 400;
+  }
+  .vt-input {
+    width: 100%;
+    padding: 0.75rem 0.9rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: inherit;
+    font-size: 0.9375rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .vt-input::placeholder {
+    color: var(--color-text-muted);
+    opacity: 0.7;
+  }
+  .vt-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 22%, transparent);
+  }
+  .vt-textarea {
+    resize: vertical;
+    min-height: 5rem;
+  }
+  .vt-error {
+    font-size: 0.75rem;
+    color: var(--color-sale, #e0324c);
+  }
+
+  .vt-suggest {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 5;
+    margin-top: 0.3rem;
+    padding: 0.3rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-bg);
+    box-shadow: var(--shadow-card);
+    animation: vt-pop-in 0.18s ease both;
+  }
+  @keyframes vt-pop-in {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+  }
+  .vt-suggest button {
+    width: 100%;
+    padding: 0.5rem 0.6rem;
+    border-radius: var(--radius-sm);
+    text-align: left;
+    font-size: 0.9375rem;
+    color: var(--color-text);
+  }
+  .vt-suggest button:hover {
+    background: var(--color-surface);
+  }
+
+  .vt-choice {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 0.95rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: border-color 0.25s ease, background-color 0.25s ease, transform 0.25s ease;
+  }
+  .vt-choice:hover {
+    border-color: color-mix(in srgb, var(--color-primary) 55%, var(--color-border));
+  }
+  .vt-choice.is-active {
+    border-color: var(--color-primary);
+    background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+  }
+  .vt-choice input {
+    accent-color: var(--color-primary);
+    width: 1.05rem;
+    height: 1.05rem;
+    flex: 0 0 auto;
+  }
+  .vt-choice-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .vt-choice-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+  .vt-choice-hint {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    line-height: 1.35;
+  }
+  .vt-choice-price {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: right;
+    white-space: nowrap;
+  }
+  .vt-choice-price b {
+    font-family: var(--font-numeric, var(--font-body));
+    font-size: 0.875rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .vt-choice-price i {
+    font-style: normal;
+    font-size: 0.6875rem;
+    color: var(--color-text-muted);
+  }
+
+  .vt-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .vt-chip {
+    padding: 0.5rem 0.9rem;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    font-size: 0.8125rem;
+    color: var(--color-text);
+    transition: all 0.25s ease;
+  }
+  .vt-chip:hover {
+    border-color: var(--color-primary);
+  }
+  .vt-chip.is-active {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-primary-contrast);
+  }
+
+  .vt-agree {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    line-height: 1.45;
+    cursor: pointer;
+  }
+  .vt-agree input {
+    margin-top: 0.15rem;
+    accent-color: var(--color-primary);
+    width: 1rem;
+    height: 1rem;
+    flex: 0 0 auto;
+  }
+
+  .vt-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    font-size: 0.9375rem;
+  }
+  .vt-summary div {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .vt-summary span {
+    color: var(--color-text-muted);
+  }
+  .vt-summary b {
+    font-variant-numeric: tabular-nums;
+  }
+  .vt-summary-total {
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--color-border);
+  }
+  .vt-summary-total b {
+    font-family: var(--font-numeric, var(--font-body));
+    font-size: 1.125rem;
+  }
+
+  .vt-note {
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: var(--color-text-muted);
+  }
+  .vt-note a {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .vt-note-accent {
+    padding: 0.7rem 0.85rem;
+    border-radius: var(--radius-md);
+    background: color-mix(in srgb, var(--color-accent) 20%, transparent);
+    color: var(--color-text);
+  }
+  .vt-note-quiet {
+    font-size: 0.75rem;
+    opacity: 0.85;
+  }
+
+  /* ---------- buttons ---------- */
+
+  .vt-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.85rem 1.4rem;
+    border-radius: var(--radius-md);
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+    font-weight: 700;
+    text-align: center;
+    transition: transform 0.2s ease, filter 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+  }
+  .vt-btn:active {
+    transform: scale(0.985);
+  }
+  .vt-btn-block {
+    width: 100%;
+  }
+  .vt-btn-primary {
+    background: var(--color-primary);
+    color: var(--color-primary-contrast);
+  }
+  .vt-btn-primary:hover {
+    filter: brightness(1.07);
+  }
+  .vt-btn-primary:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    filter: none;
+  }
+  .vt-btn-ghost {
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+  }
+  .vt-btn-ghost:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  /* ---------- done screen ---------- */
+
+  .vt-done {
+    text-align: center;
+    align-items: center;
+  }
+  .vt-done-mark {
+    display: grid;
+    place-items: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 999px;
+    background: var(--color-primary);
+    color: var(--color-primary-contrast);
+    animation: vt-check-in 0.5s cubic-bezier(0.34, 1.5, 0.64, 1) both;
+  }
+  @keyframes vt-check-in {
+    from {
+      opacity: 0;
+      transform: scale(0.4);
+    }
+  }
+  .vt-done-title {
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+  .vt-order-text {
+    width: 100%;
+    max-height: 13rem;
+    overflow: auto;
+    padding: 0.9rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    font-family: var(--font-numeric, ui-monospace, monospace);
+    font-size: 0.75rem;
+    line-height: 1.55;
+    text-align: left;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .vt-done-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    width: 100%;
+  }
+  .vt-done-actions > * {
+    flex: 1 1 10rem;
+  }
+
+  /* ---------- add-to-cart button feedback (catalog cards, static HTML) ---------- */
+
+  .vt-add.is-added {
+    background: var(--color-accent) !important;
+    color: var(--color-text) !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vt-bubble,
+    .vt-drawer,
+    .vt-backdrop,
+    .vt-drawer-body,
+    .vt-line,
+    .vt-done-mark,
+    .vt-suggest {
+      animation: none !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+
+<script>
+  import { getCart, type CartItemInput } from "@sitegen/template-marketplace-store/shop/cartStore.ts";
+
+  // The scope must match the one handed to the island, or the two would key different carts.
+  const scope = document.querySelector<HTMLElement>("[data-shop-scope]")?.dataset.shopScope || "store";
+  const cart = getCart(scope);
+
+  // Header/nav cart counters live in static markup; keep them in step with the store.
+  const counters = Array.from(document.querySelectorAll<HTMLElement>("[data-cart-count]"));
+  cart.subscribe((lines) => {
+    const count = lines.reduce((sum, line) => sum + line.qty, 0);
+    for (const counter of counters) {
+      counter.textContent = String(count);
+      counter.classList.toggle("is-empty", count === 0);
+    }
+  });
+
+  document.querySelectorAll<HTMLElement>("[data-cart-open]").forEach((trigger) => {
+    trigger.addEventListener("click", (event) => {
+      event.preventDefault();
+      cart.requestOpen();
+    });
+  });
+
+  // Delegated so catalog cards rendered by any section variant work without re-binding.
+  document.addEventListener("click", (event) => {
+    const button = (event.target as HTMLElement)?.closest<HTMLElement>("[data-add-to-cart]");
+    if (!button) return;
+    let product: CartItemInput;
+    try {
+      product = JSON.parse(button.dataset.addToCart || "");
+    } catch {
+      return;
+    }
+    if (!product?.id) return;
+
+    cart.add(product, 1);
+
+    // Confirm in place rather than yanking the drawer open — a shopper adding three things in a
+    // row should not have to dismiss a panel between each one. The floating bubble does the rest.
+    const label = button.querySelector<HTMLElement>("[data-add-label]") ?? button;
+    if (button.dataset.busy === "1") return;
+    button.dataset.busy = "1";
+    const original = label.textContent;
+    label.textContent = "В корзине ✓";
+    button.classList.add("is-added");
+    setTimeout(() => {
+      label.textContent = original;
+      button.classList.remove("is-added");
+      delete button.dataset.busy;
+    }, 1500);
+  });
+</script>

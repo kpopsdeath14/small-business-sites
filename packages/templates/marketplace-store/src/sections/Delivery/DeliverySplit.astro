@@ -1,0 +1,68 @@
+---
+import Container from "@sitegen/shared-ui/components/Container.astro";
+import StoreSection from "../../components/StoreSection.astro";
+import DeliveryCalculator from "../../components/DeliveryCalculator.astro";
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+
+interface Props {
+  data: SiteData;
+}
+const { data } = Astro.props;
+
+const points = data.delivery?.pickupPoints ?? [];
+const terms = [
+  data.delivery?.processingDays ? { label: "Сборка заказа", value: data.delivery.processingDays } : null,
+  { label: "Служба доставки", value: "СДЭК — пункт выдачи или курьер" },
+  { label: "Оплата", value: (data.delivery?.paymentMethods ?? []).join(", ") },
+  { label: "Обмен и возврат", value: "14 дней по закону о защите прав потребителей" },
+].filter(Boolean) as { label: string; value: string }[];
+---
+
+<StoreSection id="delivery">
+  <Container class="max-w-6xl">
+    <div class="grid gap-10 lg:grid-cols-2 lg:gap-14">
+      <div data-reveal>
+        <p class="eyebrow mb-3">Доставка и оплата</p>
+        <h2 class="section-title">Считаем доставку до вашего города</h2>
+        <p class="mt-4 text-sm leading-relaxed text-[var(--color-text-muted)] sm:text-base">
+          {data.delivery?.note ??
+            "Отправляем СДЭК по всей России: до пункта выдачи или курьером до двери. Стоимость зависит от города и веса посылки — посчитайте заранее."}
+        </p>
+
+        <dl class="mt-8 divide-y divide-[var(--color-border)] border-y border-[var(--color-border)]">
+          {
+            terms.map((term) => (
+              <div class="flex flex-wrap justify-between gap-x-6 gap-y-1 py-3.5">
+                <dt class="text-[13px] font-semibold uppercase tracking-[0.1em] text-[var(--color-text-muted)]">{term.label}</dt>
+                <dd class="text-sm font-semibold text-[var(--color-text)]">{term.value}</dd>
+              </div>
+            ))
+          }
+        </dl>
+
+        {
+          points.length > 0 && (
+            <div class="mt-8">
+              <h3 class="font-[var(--font-heading)] text-base font-bold">Наши пункты выдачи</h3>
+              <ul class="mt-3 space-y-2.5">
+                {points.slice(0, 4).map((point) => (
+                  <li class="flex gap-3 text-[13px] leading-relaxed text-[var(--color-text-muted)]">
+                    <span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--color-primary)]" aria-hidden="true" />
+                    <span>
+                      <b class="font-semibold text-[var(--color-text)]">{point.city}</b> — {point.address}
+                      {point.hours && ` · ${point.hours}`}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )
+        }
+      </div>
+
+      <div class="lg:sticky lg:top-24 lg:self-start" data-reveal>
+        <DeliveryCalculator delivery={data.delivery} class="bg-[var(--color-surface)]" />
+      </div>
+    </div>
+  </Container>
+</StoreSection>

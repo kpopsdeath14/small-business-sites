@@ -1,0 +1,30 @@
+---
+/**
+ * Marketplace chip. Deliberately a typographic mark in the platform's own brand color rather than
+ * a copy of its logo: the seller links to their own storefront, and a wordmark on a neutral chip
+ * says which platform without reproducing anyone's trademark artwork.
+ */
+interface Props {
+  name: string;
+  class?: string;
+}
+const { name, class: className = "" } = Astro.props;
+
+const key = name.toLowerCase();
+const BRANDS: { match: RegExp; short: string; color: string }[] = [
+  { match: /wildberries|вайлдберриз|wb/, short: "WB", color: "#7B22C4" },
+  { match: /ozon|озон/, short: "OZON", color: "#0069FF" },
+  { match: /яндекс|yandex/, short: "ЯМ", color: "#FC3F1D" },
+  { match: /мегамаркет|megamarket|сбер/, short: "ММ", color: "#7B2FF7" },
+  { match: /avito|авито/, short: "AV", color: "#00AAFF" },
+];
+const brand = BRANDS.find((candidate) => candidate.match.test(key));
+---
+
+<span
+  class:list={["inline-flex items-center justify-center rounded-[var(--radius-sm)] px-2 py-1 text-[11px] font-black tracking-tight text-white", className]}
+  style={`background:${brand?.color ?? "var(--color-primary)"}`}
+  aria-hidden="true"
+>
+  {brand?.short ?? name.slice(0, 2).toUpperCase()}
+</span>

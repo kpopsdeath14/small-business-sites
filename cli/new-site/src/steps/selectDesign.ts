@@ -22,6 +22,11 @@ const DATA_AVAILABILITY: Record<string, (brief: Brief) => boolean> = {
   faq: (b) => b.faq.length > 0,
   stats: (b) => b.stats.length > 0,
   highlights: (b) => b.highlights.length > 0,
+  catalog: (b) => b.products.length > 0,
+  marketplaces: (b) => b.marketplaces.length > 0,
+  // The bestsellers strip repeats the badged products ("Хит", "Новинка") in a bigger format —
+  // pointless when the seller badged nothing.
+  bestsellers: (b) => b.products.some((p) => !!p.badge),
 };
 
 function withAvailableSections(manifest: BusinessManifest, brief: Brief): BusinessManifest {

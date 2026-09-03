@@ -11,6 +11,9 @@
 #   Красота и Стиль         -> .../small-business-sites/krasota-i-stil-salon/
 #   Beauty Bar Mari         -> .../small-business-sites/beauty-bar-mari-salon/
 #   D'Арт                   -> .../small-business-sites/dart-salon/
+#   VOLTA                   -> .../small-business-sites/volta-shop/
+#   Лён и Хлопок            -> .../small-business-sites/len-shop/
+#   Berry Lab               -> .../small-business-sites/berry-shop/
 #
 # Each site's astro.config.mjs carries a matching `base`, so asset URLs resolve under
 # its subpath. CI must NOT re-run `npm run new-site` — without ANTHROPIC_API_KEY that
@@ -50,6 +53,9 @@ env:
     krasota-i-stil:/krasota-i-stil-salon
     beauty-bar-mari:/beauty-bar-mari-salon
     klub-krasoty-d-art:/dart-salon
+    volta:/volta-shop
+    len-i-hlopok:/len-shop
+    berry-lab:/berry-shop
 
 jobs:
   build:

@@ -1,0 +1,51 @@
+---
+import Container from "@sitegen/shared-ui/components/Container.astro";
+import StoreSection from "../components/StoreSection.astro";
+import SkeletonImg from "@sitegen/shared-ui/components/SkeletonImg.astro";
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+
+interface Props {
+  variant: number;
+  data: SiteData;
+}
+const { data } = Astro.props;
+
+// Prefer a gallery shot the hero did not already use, so the two do not show the same photograph.
+const photo = data.gallery.find((image) => image.src !== data.heroPhoto)?.src ?? data.gallery[0]?.src;
+const paragraphs = data.about.body.split(/\n{2,}/).filter(Boolean);
+---
+
+<StoreSection id="about" surface="surface">
+  <Container class="max-w-6xl">
+    <div class="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+      {
+        photo && (
+          <div class="relative order-2 lg:order-1" data-reveal>
+            <SkeletonImg src={photo} alt={data.name} class="aspect-[4/3] w-full rounded-[var(--radius-lg)]" />
+            <div
+              class="pointer-events-none absolute -bottom-4 -right-4 h-24 w-24 rounded-[var(--radius-lg)] border-2 border-[var(--color-primary)] sm:h-32 sm:w-32"
+              aria-hidden="true"
+            />
+          </div>
+        )
+      }
+
+      <div class:list={["order-1 lg:order-2", !photo && "mx-auto max-w-2xl text-center"]} data-reveal>
+        <p class="eyebrow mb-3">О бренде</p>
+        <h2 class="section-title">{data.about.heading}</h2>
+        <div class="mt-6 space-y-4 text-[15px] leading-relaxed text-[var(--color-text-muted)] sm:text-base">
+          {paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+        </div>
+
+        {
+          data.delivery?.processingDays && (
+            <p class="mt-7 inline-flex items-center gap-2.5 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-bg)] px-4 py-3 text-[13px] font-semibold text-[var(--color-text)]">
+              <span class="h-2 w-2 shrink-0 rounded-full bg-[var(--color-primary)]" aria-hidden="true" />
+              Отправляем заказ за {data.delivery.processingDays}
+            </p>
+          )
+        }
+      </div>
+    </div>
+  </Container>
+</StoreSection>

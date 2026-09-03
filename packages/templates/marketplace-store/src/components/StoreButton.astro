@@ -1,0 +1,41 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+/**
+ * VITRINA button. Retail buttons need to read as tappable at a glance, so this one is filled and
+ * chunky by default (the shared Button.astro is quieter) and takes its corner radius from the
+ * palette's own `--radius-md` — that is what makes the tech palettes look sharp and the pop
+ * palettes look pill-round without any per-site overrides.
+ */
+interface Props extends HTMLAttributes<"a"> {
+  href?: string;
+  variant?: "primary" | "outline" | "soft";
+  size?: "sm" | "md" | "lg";
+  class?: string;
+}
+const { href, variant = "primary", size = "md", class: className = "", ...rest } = Astro.props;
+const Tag = href ? "a" : "button";
+
+const sizeClass = size === "sm" ? "px-4 py-2.5 text-[13px]" : size === "lg" ? "px-8 py-4 text-[15px]" : "px-6 py-3.5 text-sm";
+const variantClass =
+  variant === "primary"
+    ? "bg-[var(--color-primary)] text-[var(--color-primary-contrast)] hover:brightness-110 shadow-[var(--shadow-card)]"
+    : variant === "soft"
+      ? "bg-[var(--color-surface)] text-[var(--color-text)] hover:bg-[var(--color-primary)] hover:text-[var(--color-primary-contrast)]"
+      : "border border-[var(--color-border)] text-[var(--color-text)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]";
+---
+
+<Tag
+  href={href}
+  {...rest}
+  class:list={[
+    "inline-flex items-center justify-center gap-2 font-semibold",
+    "rounded-[var(--radius-md)] transition-all duration-300 ease-out",
+    "hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98]",
+    sizeClass,
+    variantClass,
+    className,
+  ]}
+>
+  <slot />
+</Tag>

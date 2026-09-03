@@ -1,0 +1,57 @@
+---
+import Container from "@sitegen/shared-ui/components/Container.astro";
+import StoreSection from "../../components/StoreSection.astro";
+import StoreButton from "../../components/StoreButton.astro";
+import Stars from "../../components/Stars.astro";
+import { initials } from "@sitegen/shared-ui/utils/initials.ts";
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+
+interface Props {
+  data: SiteData;
+}
+const { data } = Astro.props;
+const average = data.reviews.length
+  ? data.reviews.reduce((sum, review) => sum + review.rating, 0) / data.reviews.length
+  : undefined;
+---
+
+<StoreSection id="reviews" surface="surface">
+  <Container class="max-w-6xl">
+    <div class="mb-9 flex flex-wrap items-end justify-between gap-5" data-reveal>
+      <div>
+        <p class="eyebrow mb-3">Отзывы</p>
+        <h2 class="section-title">Что пишут покупатели</h2>
+        {
+          average !== undefined && (
+            <p class="mt-4 flex items-center gap-2.5 text-sm text-[var(--color-text-muted)]">
+              <Stars rating={average} size={15} />
+              <span class="num font-bold text-[var(--color-text)]">{average.toFixed(1)}</span>
+              из 5 по отзывам с маркетплейсов
+            </p>
+          )
+        }
+      </div>
+      {data.reviewsUrl && <StoreButton href={data.reviewsUrl} variant="outline" size="sm" target="_blank" rel="noopener noreferrer">Все отзывы</StoreButton>}
+    </div>
+
+    <div class="grid gap-4 sm:gap-5 md:grid-cols-2 lg:grid-cols-3" data-reveal-stagger="90">
+      {
+        data.reviews.map((review) => (
+          <figure
+            class="flex flex-col rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-bg)] p-6 transition-all duration-500 hover:-translate-y-1 hover:shadow-[var(--shadow-card)]"
+            data-reveal
+          >
+            <Stars rating={review.rating} size={15} />
+            <blockquote class="mt-4 grow text-[15px] leading-relaxed text-[var(--color-text)]">{review.text}</blockquote>
+            <figcaption class="mt-6 flex items-center gap-3 border-t border-[var(--color-border)] pt-5">
+              <span class="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[var(--color-primary)] text-[12px] font-bold text-[var(--color-primary-contrast)]">
+                {initials(review.author)}
+              </span>
+              <span class="text-sm font-semibold text-[var(--color-text)]">{review.author}</span>
+            </figcaption>
+          </figure>
+        ))
+      }
+    </div>
+  </Container>
+</StoreSection>

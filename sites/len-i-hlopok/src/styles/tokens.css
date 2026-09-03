@@ -1,0 +1,23 @@
+:root {
+  --color-bg: #FBF8F3;
+  --color-surface: #F2ECE2;
+  --color-text: #241E18;
+  --color-text-muted: #867B6C;
+  --color-primary: #A8613F;
+  --color-primary-contrast: #FFFFFF;
+  --color-accent: #C9A87C;
+  --color-border: #E6DDCE;
+  --color-sale: #C0442F;
+  --color-ink: #241E18;
+  --color-ink-text: #FBF8F3;
+  --color-ink-primary: #D9B27C;
+  --color-ink-primary-contrast: #241E18;
+  --font-heading: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-body: 'Manrope', -apple-system, 'Segoe UI', system-ui, sans-serif;
+  --font-numeric: 'Manrope', -apple-system, 'Segoe UI', system-ui, sans-serif;
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --radius-lg: 12px;
+  --shadow-card: 0 1px 2px rgba(36,30,24,0.04), 0 14px 36px rgba(36,30,24,0.07);
+  --shadow-elevated: 0 28px 64px rgba(36,30,24,0.14);
+}

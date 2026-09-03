@@ -1,0 +1,54 @@
+{
+  "seed": "len-i-hlopok",
+  "tokenSetIndex": 2,
+  "sections": [
+    {
+      "id": "hero",
+      "variant": 1
+    },
+    {
+      "id": "marketplaces",
+      "variant": 1
+    },
+    {
+      "id": "bestsellers",
+      "variant": 0
+    },
+    {
+      "id": "catalog",
+      "variant": 2
+    },
+    {
+      "id": "about",
+      "variant": 0
+    },
+    {
+      "id": "stats",
+      "variant": 0
+    },
+    {
+      "id": "gallery",
+      "variant": 0
+    },
+    {
+      "id": "reviews",
+      "variant": 0
+    },
+    {
+      "id": "delivery",
+      "variant": 1
+    },
+    {
+      "id": "faq",
+      "variant": 0
+    },
+    {
+      "id": "contact",
+      "variant": 0
+    },
+    {
+      "id": "footer",
+      "variant": 0
+    }
+  ]
+}

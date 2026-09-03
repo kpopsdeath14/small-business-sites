@@ -1,0 +1,16 @@
+---
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+import CatalogGrid from "./Catalog/CatalogGrid.astro";
+import CatalogSidebar from "./Catalog/CatalogSidebar.astro";
+import CatalogEditorial from "./Catalog/CatalogEditorial.astro";
+
+interface Props {
+  variant: number;
+  data: SiteData;
+}
+const { variant, data } = Astro.props;
+const variants = [CatalogGrid, CatalogSidebar, CatalogEditorial];
+const Variant = variants[variant] ?? variants[0];
+---
+
+<Variant data={data} />

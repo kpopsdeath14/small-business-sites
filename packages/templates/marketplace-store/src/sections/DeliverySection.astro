@@ -1,0 +1,15 @@
+---
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+import DeliverySteps from "./Delivery/DeliverySteps.astro";
+import DeliverySplit from "./Delivery/DeliverySplit.astro";
+
+interface Props {
+  variant: number;
+  data: SiteData;
+}
+const { variant, data } = Astro.props;
+const variants = [DeliverySteps, DeliverySplit];
+const Variant = variants[variant] ?? variants[0];
+---
+
+<Variant data={data} />

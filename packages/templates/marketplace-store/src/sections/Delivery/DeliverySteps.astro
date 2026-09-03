@@ -1,0 +1,87 @@
+---
+import Container from "@sitegen/shared-ui/components/Container.astro";
+import StoreSection from "../../components/StoreSection.astro";
+import DeliveryCalculator from "../../components/DeliveryCalculator.astro";
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+
+interface Props {
+  data: SiteData;
+}
+const { data } = Astro.props;
+
+// The seller can override these in the brief via `process_steps`; otherwise this is the flow the
+// checkout actually implements, described honestly step by step.
+const steps =
+  data.processSteps.length > 0
+    ? data.processSteps
+    : [
+        { title: "Собираете заказ", description: "Добавляете товары в корзину прямо на сайте — регистрация не нужна." },
+        { title: "Считаем доставку", description: "Указываете город: сразу видно стоимость и срок СДЭК до пункта выдачи или курьером." },
+        { title: "Подтверждаем", description: "Заказ уходит менеджеру в мессенджер — он проверяет наличие и присылает ссылку на оплату." },
+        { title: "Отправляем и трекаем", description: "Передаём посылку в СДЭК и присылаем трек-номер: путь до пункта выдачи виден на cdek.ru." },
+      ];
+const pickupCities = [...new Set((data.delivery?.pickupPoints ?? []).map((point) => point.city))];
+---
+
+<StoreSection id="delivery" surface="contrast">
+  <Container class="max-w-6xl">
+    <div class="mb-11 max-w-2xl" data-reveal>
+      <p class="eyebrow mb-3">Доставка и оплата</p>
+      <h2 class="section-title">Как проходит заказ</h2>
+      {data.delivery?.note && <p class="mt-4 text-sm leading-relaxed text-[var(--color-text-muted)] sm:text-base">{data.delivery.note}</p>}
+    </div>
+
+    <!-- Numbered rail: a hairline runs behind the row of markers on desktop, so the four steps read
+         as one route instead of four unrelated cards. -->
+    <ol class="relative grid gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6" data-reveal-stagger="110">
+      <div
+        class="pointer-events-none absolute left-0 right-0 top-[1.15rem] hidden h-px bg-[var(--color-border)] lg:block"
+        aria-hidden="true"
+      >
+      </div>
+      {
+        steps.map((step, i) => (
+          <li class="relative" data-reveal>
+            <span class="num relative z-10 grid h-9 w-9 place-items-center rounded-full bg-[var(--color-primary)] text-sm font-extrabold text-[var(--color-primary-contrast)]">
+              {i + 1}
+            </span>
+            <h3 class="mt-4 font-[var(--font-heading)] text-lg font-bold leading-snug">{step.title}</h3>
+            {step.description && <p class="mt-2 text-sm leading-relaxed text-[var(--color-text-muted)]">{step.description}</p>}
+          </li>
+        ))
+      }
+    </ol>
+
+    <div class="mt-12 grid gap-6 lg:grid-cols-[1.15fr_1fr]" data-reveal>
+      <DeliveryCalculator delivery={data.delivery} />
+
+      <div class="flex flex-col gap-4">
+        <div class="rounded-[var(--radius-lg)] border border-[var(--color-border)] p-5 sm:p-7">
+          <h3 class="font-[var(--font-heading)] text-lg font-bold">Оплата</h3>
+          <ul class="mt-4 flex flex-wrap gap-2">
+            {
+              (data.delivery?.paymentMethods ?? []).map((method) => (
+                <li class="rounded-full border border-[var(--color-border)] px-3.5 py-1.5 text-[13px] font-semibold">{method}</li>
+              ))
+            }
+          </ul>
+          <p class="mt-4 text-[13px] leading-relaxed text-[var(--color-text-muted)]">
+            Ссылку на оплату менеджер присылает после подтверждения наличия — предоплата на сайте не требуется.
+          </p>
+        </div>
+
+        {
+          pickupCities.length > 0 && (
+            <div class="rounded-[var(--radius-lg)] border border-[var(--color-border)] p-5 sm:p-7">
+              <h3 class="font-[var(--font-heading)] text-lg font-bold">Пункты выдачи</h3>
+              <p class="mt-3 text-[13px] leading-relaxed text-[var(--color-text-muted)]">
+                Свои пункты в списке: {pickupCities.join(", ")}. В остальных городах подберём ближайший из{" "}
+                <a href="https://www.cdek.ru/ru/offices" target="_blank" rel="noopener noreferrer" class="font-semibold text-[var(--color-primary)] underline underline-offset-2">сети СДЭК</a>.
+              </p>
+            </div>
+          )
+        }
+      </div>
+    </div>
+  </Container>
+</StoreSection>

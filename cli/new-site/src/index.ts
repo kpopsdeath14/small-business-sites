@@ -26,7 +26,7 @@ const { values } = parseArgs({
 
 if (!values.brief || !values.type) {
   console.error(
-    "Использование: npm run new-site -- --brief=<путь до JSON> --type=<restaurant|autoschool|barbershop|dental-clinic|bakery> [--dry-run] [--regenerate-content] [--seed=...]"
+    "Использование: npm run new-site -- --brief=<путь до JSON> --type=<restaurant|autoschool|barbershop|dental-clinic|bakery|beauty-salon|tattoo-studio|marketplace-store> [--dry-run] [--regenerate-content] [--seed=...] [--base=/subpath]"
   );
   process.exit(1);
 }
@@ -73,11 +73,12 @@ async function main() {
   const localPhotoPaths = await downloadImages(brief.photos, siteDir, basePath);
   const optimizedHighlights = await downloadPhotoFields(brief.highlights, siteDir, "highlight", basePath);
   const optimizedTeam = await downloadPhotoFields(brief.team, siteDir, "team", basePath);
+  const optimizedProducts = await downloadPhotoFields(brief.products, siteDir, "product", basePath);
   content.items = await downloadPhotoFields(content.items, siteDir, "item", basePath);
   const heroPhoto = brief.hero_photo ? await downloadSinglePhoto(brief.hero_photo, siteDir, "hero", basePath) : undefined;
 
   const siteData = buildSiteData(
-    { ...brief, highlights: optimizedHighlights, team: optimizedTeam },
+    { ...brief, highlights: optimizedHighlights, team: optimizedTeam, products: optimizedProducts },
     content,
     localPhotoPaths,
     heroPhoto

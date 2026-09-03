@@ -1,0 +1,107 @@
+---
+import StoreButton from "../../components/StoreButton.astro";
+import Stars from "../../components/Stars.astro";
+import MarketMark from "../../components/MarketMark.astro";
+import SkeletonImg from "@sitegen/shared-ui/components/SkeletonImg.astro";
+import { formatPrice } from "@sitegen/template-marketplace-store/shop/format.ts";
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+
+interface Props {
+  data: SiteData;
+}
+const { data } = Astro.props;
+
+const photo = data.heroPhoto ?? data.gallery[0]?.src ?? data.products[0]?.photo;
+// The card that overlaps the photo seam: the cheapest possible proof that this is a shop, not a
+// landing page. Prefer a badged product, since that is what the seller wants seen first.
+// Overlaps the seam between the two columns on desktop; sits inside the photo on mobile.
+const featured = data.products.find((product) => !!product.badge) ?? data.products[0];
+const freeFrom = data.delivery?.freeFrom;
+---
+
+<section id="hero" class="relative overflow-hidden bg-[var(--color-bg)]">
+  <div class="grid min-h-[100svh] lg:grid-cols-[1.05fr_1fr]">
+    <div class="relative z-10 flex items-center px-5 pb-16 pt-28 sm:px-10 lg:px-14 xl:px-20 lg:py-24">
+      <div class="max-w-xl">
+        <p class="hero-enter eyebrow mb-6" style="--enter-delay:0.05s">Интернет-магазин</p>
+        <h1
+          class="hero-enter font-[var(--font-heading)] text-[clamp(2.25rem,5.2vw,4rem)] font-extrabold leading-[1.05] tracking-[-0.03em] text-[var(--color-text)]"
+          style="--enter-delay:0.15s"
+        >
+          {data.hero.heading}
+        </h1>
+        <p class="hero-enter mt-6 max-w-md text-base leading-relaxed text-[var(--color-text-muted)] sm:text-lg" style="--enter-delay:0.3s">
+          {data.hero.subheading}
+        </p>
+
+        <div class="hero-enter mt-9 flex flex-wrap gap-3" style="--enter-delay:0.42s">
+          <StoreButton href="#catalog" size="lg">{data.hero.ctaLabel}</StoreButton>
+          <StoreButton href="#delivery" variant="outline" size="lg">Доставка и оплата</StoreButton>
+        </div>
+
+        {
+          data.marketplaces.length > 0 && (
+            <div class="hero-enter mt-11 flex flex-wrap items-center gap-x-6 gap-y-3" style="--enter-delay:0.55s">
+              {data.marketplaces.map((marketplace) => (
+                <a
+                  href={marketplace.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="group flex items-center gap-2.5 transition-transform duration-300 hover:-translate-y-0.5"
+                >
+                  <MarketMark name={marketplace.name} />
+                  <span class="flex flex-col leading-tight">
+                    {marketplace.rating !== undefined && (
+                      <span class="flex items-center gap-1.5 text-[13px] font-bold text-[var(--color-text)]">
+                        <Stars rating={marketplace.rating} size={12} />
+                        {marketplace.rating.toFixed(1)}
+                      </span>
+                    )}
+                    <span class="text-[11px] text-[var(--color-text-muted)]">{marketplace.name}</span>
+                  </span>
+                </a>
+              ))}
+            </div>
+          )
+        }
+
+        {
+          freeFrom !== undefined && (
+            <p class="hero-enter mt-7 text-sm text-[var(--color-text-muted)]" style="--enter-delay:0.65s">
+              Бесплатная доставка СДЭК от <span class="num font-bold text-[var(--color-text)]">{formatPrice(freeFrom)}</span>
+            </p>
+          )
+        }
+      </div>
+    </div>
+
+    <div class="relative min-h-[55vh] lg:min-h-0">
+      {
+        photo ? (
+          <SkeletonImg src={photo} alt="" class="absolute inset-0 h-full w-full ken-burns" loading="eager" />
+        ) : (
+          <div class="absolute inset-0 bg-[var(--color-surface)]" aria-hidden="true" />
+        )
+      }
+
+      {
+        featured && (
+          <a
+            href="#catalog"
+            class="hero-enter absolute bottom-5 left-5 right-5 flex items-center gap-3 rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-bg)] p-3 shadow-[var(--shadow-elevated)] transition-transform duration-500 hover:-translate-y-1 sm:bottom-10 sm:left-auto sm:right-10 sm:w-[19rem] lg:-left-16 lg:right-auto"
+            style="--enter-delay:0.75s"
+          >
+            {featured.photo && (
+              <SkeletonImg src={featured.photo} alt="" class="h-16 w-16 shrink-0 rounded-[var(--radius-md)]" />
+            )}
+            <span class="min-w-0 flex-1">
+              {featured.badge && <span class="eyebrow text-[10px]">{featured.badge}</span>}
+              <span class="mt-0.5 block truncate text-sm font-bold text-[var(--color-text)]">{featured.name}</span>
+              <span class="num mt-0.5 block text-base font-extrabold text-[var(--color-text)]">{formatPrice(featured.price)}</span>
+            </span>
+          </a>
+        )
+      }
+    </div>
+  </div>
+</section>

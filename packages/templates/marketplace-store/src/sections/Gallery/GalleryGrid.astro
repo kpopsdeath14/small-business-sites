@@ -1,0 +1,23 @@
+---
+import Container from "@sitegen/shared-ui/components/Container.astro";
+import StoreSection from "../../components/StoreSection.astro";
+import Lightbox from "@sitegen/shared-ui/components/Lightbox.tsx";
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+
+interface Props {
+  data: SiteData;
+}
+const { data } = Astro.props;
+---
+
+<StoreSection id="gallery">
+  <Container class="max-w-6xl">
+    <div class="mb-9 max-w-xl" data-reveal>
+      <p class="eyebrow mb-3">Как выглядит вживую</p>
+      <h2 class="section-title">Фото товаров и упаковки</h2>
+    </div>
+    <div data-reveal>
+      <Lightbox client:visible photos={data.gallery} />
+    </div>
+  </Container>
+</StoreSection>

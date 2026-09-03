@@ -1,0 +1,170 @@
+---
+import SkeletonImg from "@sitegen/shared-ui/components/SkeletonImg.astro";
+import Stars from "./Stars.astro";
+import { formatPrice } from "@sitegen/template-marketplace-store/shop/format.ts";
+import type { StoreProduct } from "@sitegen/shared-ui/types.ts";
+
+/**
+ * One catalog card. Rendered on the server (the catalog is the page's SEO payload) and wired to
+ * the cart purely through `data-add-to-cart`, which the shop runtime's delegated listener reads —
+ * so no part of the grid needs hydrating.
+ *
+ * The filter/sort script reads the `data-*` attributes on the root, so every layout stays
+ * filterable without knowing anything about the markup inside.
+ */
+interface Props {
+  product: StoreProduct;
+  /** grid = the default portrait card, wide = horizontal row, showcase = oversized hero card. */
+  layout?: "grid" | "wide" | "showcase";
+  class?: string;
+}
+const { product, layout = "grid", class: className = "" } = Astro.props;
+
+const discount =
+  product.oldPrice && product.oldPrice > product.price ? Math.round((1 - product.price / product.oldPrice) * 100) : 0;
+
+// Only what the cart actually needs travels in the attribute — a whole product object would put
+// the description into the HTML twice for nothing.
+const cartPayload = JSON.stringify({
+  id: product.id,
+  name: product.name,
+  price: product.price,
+  photo: product.photo,
+  sku: product.sku,
+  weightKg: product.weightKg,
+});
+
+const isWide = layout === "wide";
+const isShowcase = layout === "showcase";
+---
+
+<article
+  class:list={[
+    "store-card group relative flex overflow-hidden bg-[var(--color-bg)] border border-[var(--color-border)]",
+    "rounded-[var(--radius-lg)] transition-all duration-500 ease-out",
+    "hover:-translate-y-1.5 hover:shadow-[var(--shadow-elevated)] hover:border-[color-mix(in_srgb,var(--color-primary)_45%,var(--color-border))]",
+    isWide ? "flex-row items-stretch" : "flex-col",
+    !product.inStock && "opacity-60",
+    className,
+  ]}
+  data-product-card
+  data-name={product.name.toLowerCase()}
+  data-category={product.category ?? ""}
+  data-price={product.price}
+  data-rating={product.rating ?? 0}
+  data-badge={product.badge ?? ""}
+  data-reveal
+>
+  <div
+    class:list={[
+      "relative overflow-hidden bg-[var(--color-surface)] shrink-0",
+      isWide ? "w-32 sm:w-44" : isShowcase ? "aspect-[4/5]" : "aspect-square",
+    ]}
+  >
+    {
+      product.photo ? (
+        <SkeletonImg
+          src={product.photo}
+          alt={product.name}
+          class="h-full w-full transition-transform duration-[900ms] ease-out group-hover:scale-[1.07]"
+        />
+      ) : (
+        <div class="h-full w-full grid place-items-center text-[var(--color-text-muted)] text-xs">нет фото</div>
+      )
+    }
+
+    <div class="absolute left-2.5 top-2.5 flex flex-col items-start gap-1.5">
+      {
+        product.badge && (
+          <span class="rounded-[var(--radius-sm)] bg-[var(--color-primary)] px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--color-primary-contrast)]">
+            {product.badge}
+          </span>
+        )
+      }
+      {
+        discount > 0 && (
+          <span class="rounded-[var(--radius-sm)] bg-[var(--color-sale)] px-2 py-1 text-[10px] font-bold tracking-wider text-white">
+            −{discount}%
+          </span>
+        )
+      }
+    </div>
+
+    {
+      !product.inStock && (
+        <div class="absolute inset-0 grid place-items-center bg-[var(--color-bg)]/70 backdrop-blur-[1px]">
+          <span class="rounded-[var(--radius-sm)] border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-1.5 text-xs font-semibold">
+            Нет в наличии
+          </span>
+        </div>
+      )
+    }
+  </div>
+
+  <div class:list={["flex grow flex-col", isWide ? "p-4 sm:p-5" : isShowcase ? "p-6" : "p-4 sm:p-5"]}>
+    {
+      product.category && (
+        <p class="text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--color-text-muted)]">{product.category}</p>
+      )
+    }
+    <h3
+      class:list={[
+        "mt-1.5 font-[var(--font-heading)] font-bold leading-snug text-[var(--color-text)]",
+        isShowcase ? "text-xl sm:text-2xl" : "text-[15px]",
+      ]}
+    >
+      {product.name}
+    </h3>
+    {
+      product.description && (
+        <p class:list={["mt-2 text-[13px] leading-relaxed text-[var(--color-text-muted)]", !isShowcase && "line-clamp-2"]}>
+          {product.description}
+        </p>
+      )
+    }
+
+    {
+      product.rating !== undefined && (
+        <p class="mt-2.5 flex items-center gap-2 text-[11px] text-[var(--color-text-muted)]">
+          <Stars rating={product.rating} size={13} />
+          <span class="font-semibold text-[var(--color-text)]">{product.rating.toFixed(1)}</span>
+          {product.reviewsCount !== undefined && <span>· {product.reviewsCount} отзывов</span>}
+        </p>
+      )
+    }
+
+    <div class="mt-auto pt-4 flex items-end justify-between gap-3">
+      <div class="flex flex-col">
+        {
+          product.oldPrice && (
+            <s class="text-[13px] text-[var(--color-text-muted)] decoration-[var(--color-sale)]">{formatPrice(product.oldPrice)}</s>
+          )
+        }
+        <span
+          class:list={[
+            "font-[var(--font-numeric,var(--font-heading))] font-bold tabular-nums text-[var(--color-text)]",
+            isShowcase ? "text-2xl" : "text-lg",
+          ]}
+        >
+          {formatPrice(product.price)}
+        </span>
+      </div>
+
+      {
+        product.inStock ? (
+          <button
+            type="button"
+            class="vt-add shrink-0 rounded-[var(--radius-md)] bg-[var(--color-primary)] px-4 py-2.5 text-[13px] font-bold text-[var(--color-primary-contrast)] transition-all duration-300 hover:brightness-110 active:scale-95"
+            data-add-to-cart={cartPayload}
+          >
+            <span data-add-label>В корзину</span>
+          </button>
+        ) : (
+          <span class="shrink-0 rounded-[var(--radius-md)] border border-[var(--color-border)] px-4 py-2.5 text-[13px] font-semibold text-[var(--color-text-muted)]">
+            Ждём поставку
+          </span>
+        )
+      }
+    </div>
+  </div>
+</article>

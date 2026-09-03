@@ -1,0 +1,287 @@
+---
+import MarketMark from "./MarketMark.astro";
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+
+/**
+ * VITRINA header. Starts as a plain transparent bar over the hero and, once the page scrolls,
+ * contracts into a floating rounded capsule — a retail-app gesture that keeps the cart within
+ * reach without a heavy permanent bar over the products.
+ *
+ * The cart button is static markup: the shop runtime keeps `[data-cart-count]` in step with the
+ * store and opens the drawer on click, so the header itself never hydrates.
+ */
+interface NavLink {
+  label: string;
+  href: string;
+}
+interface Props {
+  siteName: string;
+  links: NavLink[];
+  marketplaces: SiteData["marketplaces"];
+  /** True when the hero is full-bleed photography — the bar needs light text over a dark scrim. */
+  onPhoto?: boolean;
+}
+const { siteName, links, marketplaces, onPhoto = false } = Astro.props;
+---
+
+<header id="store-nav" class:list={["fixed inset-x-0 top-0 z-50 px-3 sm:px-5 pt-3", onPhoto && "on-photo"]}>
+  <div class="nav-shell relative z-10 mx-auto flex max-w-7xl items-center gap-4 px-4 sm:px-5 h-14 sm:h-16">
+    <a href="#hero" class="nav-fg flex items-center gap-2 font-[var(--font-heading)] text-base sm:text-lg font-extrabold tracking-tight">
+      {siteName}
+    </a>
+
+    <nav class="hidden lg:flex items-center gap-6 ml-4">
+      {
+        links.map((link) => (
+          <a href={link.href} class="nav-fg nav-link text-[13px] font-semibold opacity-80 hover:opacity-100 transition-opacity">
+            {link.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <div class="ml-auto flex items-center gap-2 sm:gap-3">
+      <div class="hidden md:flex items-center gap-1.5">
+        {
+          marketplaces.slice(0, 3).map((marketplace) => (
+            <a
+              href={marketplace.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              title={`Наш магазин на ${marketplace.name}`}
+              class="transition-transform duration-300 hover:-translate-y-0.5"
+            >
+              <MarketMark name={marketplace.name} />
+            </a>
+          ))
+        }
+      </div>
+
+      <button type="button" data-cart-open class="nav-cart" aria-label="Открыть корзину">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="18" height="18" aria-hidden="true">
+          <path d="M4 5h2l2.2 10.2a2 2 0 0 0 2 1.6h7a2 2 0 0 0 2-1.5L21 8H7" stroke-linecap="round" stroke-linejoin="round"></path>
+          <circle cx="10" cy="20" r="1.4" fill="currentColor" stroke="none"></circle>
+          <circle cx="17.5" cy="20" r="1.4" fill="currentColor" stroke="none"></circle>
+        </svg>
+        <span class="nav-cart-count is-empty" data-cart-count>0</span>
+      </button>
+
+      <button
+        type="button"
+        id="nav-burger"
+        class="nav-fg lg:hidden relative w-9 h-9 flex flex-col items-center justify-center gap-[5px]"
+        aria-label="Меню"
+        aria-expanded="false"
+        aria-controls="nav-overlay"
+      >
+        <span class="burger-line block w-5 h-[2px] bg-current rounded-full transition-transform duration-300"></span>
+        <span class="burger-line block w-5 h-[2px] bg-current rounded-full transition-transform duration-300"></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!--
+  Sibling of <header>, not a child: the scrolled header carries `backdrop-filter`, and a filtered
+  ancestor becomes the containing block for fixed descendants — nested, this overlay would size
+  itself to the 56px bar instead of the viewport.
+-->
+<div
+  id="nav-overlay"
+  class="lg:hidden fixed inset-0 z-[45] flex flex-col bg-[var(--color-bg)] opacity-0 pointer-events-none transition-opacity duration-300"
+>
+  <div class="flex-1 flex flex-col justify-center px-7 pt-20 pb-10 overflow-y-auto">
+    <nav class="flex flex-col">
+      {
+        links.map((link, i) => (
+          <a
+            href={link.href}
+            class="overlay-link flex items-baseline justify-between border-b border-[var(--color-border)] py-4 font-[var(--font-heading)] text-3xl font-bold text-[var(--color-text)]"
+            style={`--i:${i}`}
+          >
+            <span>{link.label}</span>
+            <span class="text-xs font-semibold tracking-[0.2em] text-[var(--color-primary)]">0{i + 1}</span>
+          </a>
+        ))
+      }
+    </nav>
+    {
+      marketplaces.length > 0 && (
+        <div class="overlay-link mt-10 flex flex-wrap gap-2" style="--i:9">
+          {marketplaces.map((marketplace) => (
+            <a
+              href={marketplace.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="flex items-center gap-2 rounded-[var(--radius-md)] border border-[var(--color-border)] px-3 py-2 text-sm font-semibold text-[var(--color-text)]"
+            >
+              <MarketMark name={marketplace.name} />
+              {marketplace.name}
+            </a>
+          ))}
+        </div>
+      )
+    }
+  </div>
+</div>
+
+<style>
+  /* At the top of the page the bar is invisible chrome over the hero. */
+  #store-nav {
+    color: var(--color-text);
+    transition: padding-top 0.4s ease, color 0.4s ease;
+  }
+  #store-nav.on-photo {
+    color: #fff;
+  }
+  #store-nav .nav-shell {
+    border-radius: var(--radius-lg);
+    border: 1px solid transparent;
+    background: transparent;
+    transition: background-color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease, max-width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  /* Scrolled: contracts into a floating capsule that sits above the products. */
+  #store-nav.is-solid .nav-shell {
+    max-width: 68rem;
+    background: color-mix(in srgb, var(--color-bg) 86%, transparent);
+    border-color: var(--color-border);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: var(--shadow-card);
+  }
+  #store-nav.is-solid,
+  #store-nav.on-photo.is-solid {
+    color: var(--color-text);
+  }
+
+  /* Underline that grows from the left. */
+  .nav-link {
+    position: relative;
+  }
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 100%;
+    bottom: -6px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--color-primary);
+    transition: right 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .nav-link:hover::after,
+  .nav-link.is-active::after {
+    right: 0;
+  }
+
+  .nav-cart {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--radius-md);
+    background: var(--color-primary);
+    color: var(--color-primary-contrast);
+    transition: transform 0.25s ease, filter 0.25s ease;
+  }
+  .nav-cart:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+  }
+  .nav-cart-count {
+    position: absolute;
+    top: -0.35rem;
+    right: -0.35rem;
+    min-width: 1.1rem;
+    height: 1.1rem;
+    padding: 0 0.22rem;
+    border-radius: 999px;
+    background: var(--color-sale, #e0324c);
+    color: #fff;
+    font-size: 0.625rem;
+    font-weight: 700;
+    line-height: 1.1rem;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+    transform: scale(1);
+    transition: transform 0.3s cubic-bezier(0.34, 1.5, 0.64, 1), opacity 0.2s ease;
+  }
+  .nav-cart-count.is-empty {
+    transform: scale(0);
+    opacity: 0;
+  }
+
+  #store-nav.is-open .burger-line:first-child {
+    transform: translateY(3.5px) rotate(45deg);
+  }
+  #store-nav.is-open .burger-line:last-child {
+    transform: translateY(-3.5px) rotate(-45deg);
+  }
+  #store-nav.is-open {
+    color: var(--color-text);
+  }
+  #store-nav.is-open .nav-shell {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+
+  .overlay-link {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: calc(55ms * var(--i, 0) + 100ms);
+  }
+  #nav-overlay.is-open .overlay-link {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+
+<script>
+  const header = document.getElementById("store-nav");
+  const burger = document.getElementById("nav-burger");
+  const overlay = document.getElementById("nav-overlay");
+
+  const onScroll = () => header?.classList.toggle("is-solid", window.scrollY > 32);
+  onScroll();
+  window.addEventListener("scroll", onScroll, { passive: true });
+
+  const setOpen = (open: boolean) => {
+    header?.classList.toggle("is-open", open);
+    overlay?.classList.toggle("is-open", open);
+    overlay?.classList.toggle("opacity-0", !open);
+    overlay?.classList.toggle("pointer-events-none", !open);
+    burger?.setAttribute("aria-expanded", String(open));
+    document.body.style.overflow = open ? "hidden" : "";
+  };
+
+  burger?.addEventListener("click", () => setOpen(!header?.classList.contains("is-open")));
+  overlay?.querySelectorAll("a").forEach((link) => link.addEventListener("click", () => setOpen(false)));
+  window.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") setOpen(false);
+  });
+
+  // Scrollspy: underline whichever section is crossing the viewport's middle band.
+  const navLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>("#store-nav .nav-link[href^='#']"));
+  const linkById = new Map<string, HTMLAnchorElement>();
+  for (const link of navLinks) {
+    const id = link.getAttribute("href")!.slice(1);
+    if (id && document.getElementById(id)) linkById.set(id, link);
+  }
+  if (linkById.size > 0 && "IntersectionObserver" in window) {
+    const spy = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          for (const [id, link] of linkById) link.classList.toggle("is-active", id === entry.target.id);
+        }
+      },
+      { rootMargin: "-45% 0px -50% 0px", threshold: 0 }
+    );
+    for (const id of linkById.keys()) spy.observe(document.getElementById(id)!);
+  }
+</script>

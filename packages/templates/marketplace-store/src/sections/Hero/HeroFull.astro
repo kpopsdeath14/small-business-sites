@@ -1,0 +1,82 @@
+---
+import StoreButton from "../../components/StoreButton.astro";
+import Stars from "../../components/Stars.astro";
+import SkeletonImg from "@sitegen/shared-ui/components/SkeletonImg.astro";
+import { formatPrice } from "@sitegen/template-marketplace-store/shop/format.ts";
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+
+interface Props {
+  data: SiteData;
+}
+const { data } = Astro.props;
+
+// Landscape crops work best full-bleed: prefer the dedicated hero shot, then the gallery, and only
+// fall back to a product photo (usually a square pack shot) if there is nothing else.
+const photo = data.heroPhoto ?? data.gallery[0]?.src ?? data.products[0]?.photo;
+const topMarketplace = [...data.marketplaces].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0))[0];
+const freeFrom = data.delivery?.freeFrom;
+---
+
+<section id="hero" class="relative min-h-[100svh] overflow-hidden bg-[var(--color-bg)]">
+  {
+    photo ? (
+      <SkeletonImg src={photo} alt="" class="absolute inset-0 h-full w-full ken-burns" loading="eager" />
+    ) : (
+      <div class="absolute inset-0 bg-[var(--color-surface)]" aria-hidden="true" />
+    )
+  }
+  <!-- Two scrims, not one: a top wash so the transparent nav stays legible, and a bottom column
+       gradient that holds the headline without dimming the whole photograph. -->
+  <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/25 to-black/80" aria-hidden="true"></div>
+
+  <div class="relative z-10 mx-auto flex min-h-[100svh] max-w-7xl flex-col justify-end px-5 pb-16 pt-32 sm:px-8 sm:pb-24">
+    {
+      topMarketplace && (
+        <div
+          class="hero-enter mb-7 inline-flex w-fit items-center gap-2.5 rounded-full border border-white/25 bg-white/10 px-4 py-2 text-xs font-semibold text-white backdrop-blur-md"
+          style="--enter-delay:0.05s"
+        >
+          {topMarketplace.rating !== undefined && <Stars rating={topMarketplace.rating} size={13} />}
+          <span>
+            {topMarketplace.rating?.toFixed(1)} на {topMarketplace.name}
+            {topMarketplace.reviewsCount !== undefined && ` · ${topMarketplace.reviewsCount.toLocaleString("ru-RU")} отзывов`}
+          </span>
+        </div>
+      )
+    }
+
+    <h1
+      class="hero-enter max-w-4xl font-[var(--font-heading)] text-[clamp(2.5rem,7vw,5rem)] font-extrabold leading-[1.02] tracking-[-0.03em] text-white"
+      style="--enter-delay:0.15s"
+    >
+      {data.hero.heading}
+    </h1>
+    <p class="hero-enter mt-6 max-w-xl text-base leading-relaxed text-white/80 sm:text-lg" style="--enter-delay:0.3s">
+      {data.hero.subheading}
+    </p>
+
+    <div class="hero-enter mt-10 flex flex-wrap gap-3" style="--enter-delay:0.45s">
+      <StoreButton href="#catalog" size="lg">{data.hero.ctaLabel}</StoreButton>
+      <a
+        href="#delivery"
+        class="inline-flex items-center justify-center gap-2 rounded-[var(--radius-md)] border border-white/50 px-8 py-4 text-[15px] font-semibold text-white backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:text-black"
+      >
+        Как доставляем
+      </a>
+    </div>
+
+    {
+      freeFrom !== undefined && (
+        <p class="hero-enter mt-8 text-sm text-white/70" style="--enter-delay:0.6s">
+          Доставка СДЭК бесплатно от <span class="num font-bold text-white">{formatPrice(freeFrom)}</span>
+        </p>
+      )
+    }
+  </div>
+
+  <div class="absolute inset-x-0 bottom-5 z-10 flex justify-center" aria-hidden="true">
+    <svg class="drift-down text-white/60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="22" height="22">
+      <path d="M12 5v14M6 13l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"></path>
+    </svg>
+  </div>
+</section>

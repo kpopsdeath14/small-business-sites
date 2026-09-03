@@ -1,0 +1,15 @@
+---
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+import MarketplacesCards from "./Marketplaces/MarketplacesCards.astro";
+import MarketplacesStrip from "./Marketplaces/MarketplacesStrip.astro";
+
+interface Props {
+  variant: number;
+  data: SiteData;
+}
+const { variant, data } = Astro.props;
+const variants = [MarketplacesCards, MarketplacesStrip];
+const Variant = variants[variant] ?? variants[0];
+---
+
+<Variant data={data} />

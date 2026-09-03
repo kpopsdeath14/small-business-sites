@@ -1,0 +1,45 @@
+---
+import Container from "@sitegen/shared-ui/components/Container.astro";
+import StoreSection from "../../components/StoreSection.astro";
+import MarketMark from "../../components/MarketMark.astro";
+import Stars from "../../components/Stars.astro";
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+
+interface Props {
+  data: SiteData;
+}
+const { data } = Astro.props;
+---
+
+<StoreSection id="marketplaces" surface="contrast" spacing="sm">
+  <Container class="max-w-6xl">
+    <div class="flex flex-col gap-7 lg:flex-row lg:items-center lg:justify-between" data-reveal>
+      <div class="max-w-sm">
+        <p class="eyebrow mb-2">Проверить продавца</p>
+        <h2 class="font-[var(--font-heading)] text-2xl font-extrabold leading-tight sm:text-3xl">Наши магазины на площадках</h2>
+      </div>
+
+      <div class="flex flex-wrap gap-x-9 gap-y-5">
+        {
+          data.marketplaces.map((marketplace) => (
+            <a href={marketplace.url} target="_blank" rel="noopener noreferrer" class="group flex items-center gap-3.5">
+              <MarketMark name={marketplace.name} class="!text-[13px] !px-2.5 !py-1.5" />
+              <span class="flex flex-col leading-tight">
+                <span class="flex items-center gap-2">
+                  {marketplace.rating !== undefined && (
+                    <span class="num text-xl font-extrabold text-[var(--color-text)]">{marketplace.rating.toFixed(1)}</span>
+                  )}
+                  {marketplace.rating !== undefined && <Stars rating={marketplace.rating} size={12} />}
+                </span>
+                <span class="text-[11px] text-[var(--color-text-muted)] transition-colors group-hover:text-[var(--color-text)]">
+                  {marketplace.name}
+                  {marketplace.reviewsCount !== undefined && ` · ${marketplace.reviewsCount.toLocaleString("ru-RU")} отзывов`}
+                </span>
+              </span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </Container>
+</StoreSection>

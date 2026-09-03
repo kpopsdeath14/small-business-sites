@@ -1,0 +1,387 @@
+{
+  "name": "VOLTA",
+  "meta": {
+    "title": "VOLTA — зарядки, кабели и наушники напрямую от бренда",
+    "description": "Аксессуары для техники VOLTA без комиссии маркетплейса: повербанки, GaN-зарядки, кабели и наушники. Доставка СДЭК по России, бесплатно от 3 000 ₽."
+  },
+  "hero": {
+    "heading": "Зарядит всё, что у вас есть",
+    "subheading": "Повербанки, GaN-зарядки, кабели и наушники — те же, что на Wildberries и Ozon, но на 15–25% дешевле: комиссию площадки мы вам не перекладываем.",
+    "ctaLabel": "Смотреть каталог"
+  },
+  "about": {
+    "heading": "Мы проверяем каждую партию на стенде",
+    "body": "VOLTA начиналась в 2019 году с одного повербанка, который мы сделали для себя — все, что продавалось тогда, выдавало половину заявленной ёмкости. Сегодня в линейке 40 позиций, но принцип не изменился: перед отправкой партия идёт на стенд. Мощность зарядок, реальная ёмкость аккумуляторов, скорость кабелей — всё измеряется, а не переписывается из спецификации поставщика. Если партия не проходит, она едет обратно, а не к вам."
+  },
+  "items": [],
+  "gallery": [
+    {
+      "src": "/volta-shop/photos/0.webp",
+      "alt": "VOLTA — фото 1"
+    },
+    {
+      "src": "/volta-shop/photos/1.webp",
+      "alt": "VOLTA — фото 2"
+    },
+    {
+      "src": "/volta-shop/photos/2.webp",
+      "alt": "VOLTA — фото 3"
+    },
+    {
+      "src": "/volta-shop/photos/3.webp",
+      "alt": "VOLTA — фото 4"
+    },
+    {
+      "src": "/volta-shop/photos/4.webp",
+      "alt": "VOLTA — фото 5"
+    },
+    {
+      "src": "/volta-shop/photos/5.webp",
+      "alt": "VOLTA — фото 6"
+    }
+  ],
+  "heroPhoto": "/volta-shop/photos/hero.webp",
+  "reviews": [
+    {
+      "author": "Дмитрий К.",
+      "rating": 5,
+      "text": "Брал повербанк на 20 000 — реально тянет MacBook Air часа три. До этого покупал безымянный, тот выдавал половину от заявленного."
+    },
+    {
+      "author": "Анна С.",
+      "rating": 5,
+      "text": "Наушники Air Pro пришли за два дня в пункт СДЭК. Шумодав работает в метро, для своей цены это очень хорошо."
+    },
+    {
+      "author": "Ильдар М.",
+      "rating": 5,
+      "text": "Заказал кабели сразу три штуки. Оплётка плотная, разъёмы не болтаются. Через полгода все живы, а обычные я менял каждые два месяца."
+    },
+    {
+      "author": "Ольга В.",
+      "rating": 4,
+      "text": "Зарядка GaN отличная, но хотелось бы вилку с евро-переходником в комплекте. Написала в поддержку — ответили за 10 минут, прислали инструкцию."
+    },
+    {
+      "author": "Сергей П.",
+      "rating": 5,
+      "text": "Держатель в машину держит намертво даже на грунтовке. Отдельное спасибо за упаковку — коробка в коробке, ничего не помялось."
+    },
+    {
+      "author": "Марина Т.",
+      "rating": 5,
+      "text": "Заказывала через сайт, а не через WB — вышло на 600 рублей дешевле. Менеджер ответил в телеграме сразу, трек прислали вечером того же дня."
+    }
+  ],
+  "address": "Московская обл., Химки, Транспортный проезд, 6 — склад и самовывоз",
+  "phone": "+7 495 118-40-90",
+  "workingHours": {
+    "пн-пт": "10:00–20:00",
+    "сб": "11:00–17:00"
+  },
+  "socialLinks": {
+    "telegram": "https://t.me/volta_store",
+    "whatsapp": "https://wa.me/74951184090",
+    "vk": "https://vk.com/volta_store"
+  },
+  "team": [],
+  "processSteps": [],
+  "faq": [
+    {
+      "question": "Почему на сайте дешевле, чем на Wildberries?",
+      "answer": "Маркетплейс берёт комиссию и оплачивает логистику до вашего города — это 15–25% цены. При заказе напрямую эти расходы не возникают, и мы отдаём разницу вам."
+    },
+    {
+      "question": "Есть ли гарантия, если я заказал не на маркетплейсе?",
+      "answer": "Да, гарантия одинаковая — 12 месяцев на всю электронику. Чек и гарантийный талон кладём в посылку, обмен по браку делаем за свой счёт."
+    },
+    {
+      "question": "Как быстро отправляете?",
+      "answer": "Заказы до 16:00 передаём в СДЭК в тот же день, позже — на следующий рабочий. Трек-номер приходит в мессенджер, которым вы оформляли заказ."
+    },
+    {
+      "question": "Можно забрать самовывозом?",
+      "answer": "Да, со склада в Химках по будням с 10:00 до 20:00. Напишите в заказе «самовывоз» — соберём и придержим двое суток."
+    },
+    {
+      "question": "Что делать, если товар не подошёл?",
+      "answer": "14 дней на возврат по закону, если сохранён товарный вид. Отправку возврата оплачиваем мы, если проблема на нашей стороне."
+    }
+  ],
+  "stats": [
+    {
+      "value": "6 лет",
+      "label": "на маркетплейсах"
+    },
+    {
+      "value": "60 000",
+      "label": "выполненных заказов"
+    },
+    {
+      "value": "4.8",
+      "label": "средний рейтинг"
+    },
+    {
+      "value": "1 день",
+      "label": "на сборку заказа"
+    }
+  ],
+  "highlights": [],
+  "products": [
+    {
+      "id": "besprovodnye-naushniki-volta-air-pro-0",
+      "name": "Беспроводные наушники VOLTA Air Pro",
+      "description": "Активное шумоподавление и 28 часов работы с кейсом.",
+      "price": 4290,
+      "oldPrice": 5490,
+      "category": "Звук",
+      "photo": "/volta-shop/photos/product-0.webp",
+      "badge": "Хит",
+      "rating": 4.8,
+      "reviewsCount": 3120,
+      "sku": "VA-AIRPRO",
+      "inStock": true,
+      "weightKg": 0.3,
+      "specs": [
+        [
+          "Тип",
+          "Внутриканальные, TWS"
+        ],
+        [
+          "Автономность",
+          "до 28 ч с кейсом"
+        ],
+        [
+          "Шумоподавление",
+          "Гибридное ANC"
+        ]
+      ]
+    },
+    {
+      "id": "portativnaya-kolonka-volta-boom-mini-1",
+      "name": "Портативная колонка VOLTA Boom Mini",
+      "description": "12 часов музыки и защита IPX7 — можно брать в душ и на пляж.",
+      "price": 3190,
+      "category": "Звук",
+      "photo": "/volta-shop/photos/product-1.webp",
+      "rating": 4.7,
+      "reviewsCount": 980,
+      "sku": "VB-MINI",
+      "inStock": true,
+      "weightKg": 0.6,
+      "specs": []
+    },
+    {
+      "id": "poverbank-20-000-ma-ch-volta-core-2",
+      "name": "Повербанк 20 000 мА·ч VOLTA Core",
+      "description": "Заряжает ноутбук: два порта USB-C по 65 Вт одновременно.",
+      "price": 2890,
+      "oldPrice": 3590,
+      "category": "Питание",
+      "photo": "/volta-shop/photos/product-2.webp",
+      "badge": "Новинка",
+      "rating": 4.9,
+      "reviewsCount": 1560,
+      "sku": "VC-20K",
+      "inStock": true,
+      "weightKg": 0.45,
+      "specs": []
+    },
+    {
+      "id": "zaryadnoe-ustroystvo-gan-65-vt-3",
+      "name": "Зарядное устройство GaN 65 Вт",
+      "description": "Втрое компактнее штатного блока, греется заметно меньше.",
+      "price": 2190,
+      "category": "Питание",
+      "photo": "/volta-shop/photos/product-3.webp",
+      "rating": 4.8,
+      "reviewsCount": 2240,
+      "sku": "VG-65",
+      "inStock": true,
+      "weightKg": 0.15,
+      "specs": []
+    },
+    {
+      "id": "kabel-usb-c-usb-c-100-vt-2-m-4",
+      "name": "Кабель USB-C ↔ USB-C 100 Вт, 2 м",
+      "description": "Нейлоновая оплётка выдерживает 25 000 перегибов.",
+      "price": 690,
+      "category": "Кабели",
+      "photo": "/volta-shop/photos/product-4.webp",
+      "rating": 4.9,
+      "reviewsCount": 4100,
+      "sku": "VK-CC2",
+      "inStock": true,
+      "weightKg": 0.1,
+      "specs": []
+    },
+    {
+      "id": "kabel-lightning-usb-c-1-m-5",
+      "name": "Кабель Lightning ↔ USB-C, 1 м",
+      "description": "Сертификация MFi — работает с любой прошивкой iPhone.",
+      "price": 590,
+      "category": "Кабели",
+      "photo": "/volta-shop/photos/product-5.webp",
+      "rating": 4.7,
+      "reviewsCount": 2870,
+      "sku": "VK-CL1",
+      "inStock": true,
+      "weightKg": 0.08,
+      "specs": []
+    },
+    {
+      "id": "avtomobilnaya-zaryadka-45-vt-2-porta-6",
+      "name": "Автомобильная зарядка 45 Вт, 2 порта",
+      "description": "Заряжает телефон и планшет одновременно, не роняя напряжение в прикуривателе.",
+      "price": 1490,
+      "category": "Аксессуары",
+      "photo": "/volta-shop/photos/product-6.webp",
+      "rating": 4.6,
+      "reviewsCount": 760,
+      "sku": "VC-CAR45",
+      "inStock": true,
+      "weightKg": 0.2,
+      "specs": []
+    },
+    {
+      "id": "besprovodnaya-zaryadka-3-v-1-7",
+      "name": "Беспроводная зарядка 3-в-1",
+      "description": "Телефон, часы и наушники на одной подставке.",
+      "price": 3690,
+      "oldPrice": 4490,
+      "category": "Питание",
+      "photo": "/volta-shop/photos/product-7.webp",
+      "rating": 4.8,
+      "reviewsCount": 1130,
+      "sku": "VW-3IN1",
+      "inStock": true,
+      "weightKg": 0.5,
+      "specs": []
+    },
+    {
+      "id": "hab-usb-c-7-v-1-8",
+      "name": "Хаб USB-C 7-в-1",
+      "description": "HDMI 4K, два USB 3.0, картридер и сквозная зарядка 100 Вт.",
+      "price": 2790,
+      "category": "Аксессуары",
+      "photo": "/volta-shop/photos/product-8.webp",
+      "rating": 4.7,
+      "reviewsCount": 640,
+      "sku": "VU-HUB7",
+      "inStock": true,
+      "weightKg": 0.2,
+      "specs": []
+    },
+    {
+      "id": "komplekt-kabeley-usb-c-3-sht-9",
+      "name": "Комплект кабелей USB-C, 3 шт",
+      "description": "0,3 / 1 / 2 м — на стол, в сумку и к розетке за диваном.",
+      "price": 890,
+      "category": "Кабели",
+      "photo": "/volta-shop/photos/product-9.webp",
+      "rating": 4.8,
+      "reviewsCount": 1890,
+      "sku": "VK-SET3",
+      "inStock": true,
+      "weightKg": 0.05,
+      "specs": []
+    },
+    {
+      "id": "naushniki-volta-buds-lite-10",
+      "name": "Наушники VOLTA Buds Lite",
+      "description": "Самая продаваемая модель: звук честнее цены.",
+      "price": 1990,
+      "category": "Звук",
+      "photo": "/volta-shop/photos/product-10.webp",
+      "badge": "Хит",
+      "rating": 4.6,
+      "reviewsCount": 5240,
+      "sku": "VB-LITE",
+      "inStock": true,
+      "weightKg": 0.15,
+      "specs": []
+    },
+    {
+      "id": "naushniki-volta-studio-over-ear-11",
+      "name": "Наушники VOLTA Studio Over-Ear",
+      "description": "Полноразмерные, с проводным режимом для студии и записи.",
+      "price": 4990,
+      "category": "Звук",
+      "photo": "/volta-shop/photos/product-11.webp",
+      "rating": 4.7,
+      "reviewsCount": 310,
+      "sku": "VS-OVER",
+      "inStock": false,
+      "weightKg": 1.2,
+      "specs": []
+    }
+  ],
+  "marketplaces": [
+    {
+      "name": "Wildberries",
+      "url": "https://www.wildberries.ru/",
+      "rating": 4.8,
+      "reviewsCount": 21400,
+      "note": "Более 60 000 заказов за три года, 98% выкупа."
+    },
+    {
+      "name": "Ozon",
+      "url": "https://www.ozon.ru/",
+      "rating": 4.9,
+      "reviewsCount": 8930,
+      "note": "Premium-продавец, отгрузка в день заказа."
+    },
+    {
+      "name": "Яндекс Маркет",
+      "url": "https://market.yandex.ru/",
+      "rating": 4.7,
+      "reviewsCount": 2140,
+      "note": "Витрина открыта в 2024 году."
+    }
+  ],
+  "delivery": {
+    "freeFrom": 3000,
+    "basePrice": 290,
+    "processingDays": "1 рабочий день",
+    "note": "Отправляем СДЭК по всей России со склада в Химках. До пункта выдачи — от 290 ₽, при заказе от 3 000 ₽ бесплатно.",
+    "pickupPoints": [
+      {
+        "city": "Москва",
+        "address": "ул. Складочная, 1с18, ПВЗ СДЭК",
+        "hours": "пн-вс 10:00–21:00",
+        "note": ""
+      },
+      {
+        "city": "Москва",
+        "address": "Ленинский пр-т, 109, ТЦ «Спектр», -1 этаж",
+        "hours": "пн-вс 10:00–22:00",
+        "note": ""
+      },
+      {
+        "city": "Санкт-Петербург",
+        "address": "Лиговский пр-т, 50, к.15",
+        "hours": "пн-сб 10:00–20:00",
+        "note": ""
+      },
+      {
+        "city": "Казань",
+        "address": "ул. Право-Булачная, 35/2",
+        "hours": "пн-пт 10:00–19:00",
+        "note": ""
+      },
+      {
+        "city": "Екатеринбург",
+        "address": "ул. Малышева, 71а",
+        "hours": "пн-сб 10:00–20:00",
+        "note": ""
+      }
+    ],
+    "paymentMethods": [
+      "Картой онлайн",
+      "СБП по QR-коду",
+      "При получении в СДЭК"
+    ],
+    "orderChannel": "telegram",
+    "orderContact": "https://t.me/volta_store"
+  }
+}

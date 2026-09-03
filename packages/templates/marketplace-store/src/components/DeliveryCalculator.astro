@@ -1,0 +1,166 @@
+---
+import { formatPrice } from "@sitegen/template-marketplace-store/shop/format.ts";
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+
+/**
+ * Standalone СДЭК estimate, outside the checkout: a visitor deciding whether to order at all wants
+ * the shipping number before they build a cart. Shares `shop/delivery.ts` with the drawer, so the
+ * figure quoted here is the figure the checkout will quote.
+ *
+ * Plain DOM, no hydration — three inputs and a re-render of nine numbers do not need a framework.
+ */
+interface Props {
+  delivery: SiteData["delivery"];
+  class?: string;
+}
+const { delivery, class: className = "" } = Astro.props;
+
+const WEIGHT_OPTIONS = [
+  { value: 0.5, label: "до 0,5 кг" },
+  { value: 1, label: "до 1 кг" },
+  { value: 3, label: "до 3 кг" },
+  { value: 5, label: "до 5 кг" },
+  { value: 10, label: "до 10 кг" },
+];
+const defaultSum = delivery?.freeFrom ? Math.round(delivery.freeFrom * 0.6) : 2000;
+---
+
+<div
+  class:list={["rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-bg)] p-5 sm:p-7", className]}
+  data-calc
+  data-base-price={delivery?.basePrice ?? 290}
+  data-free-from={delivery?.freeFrom ?? ""}
+>
+  <p class="eyebrow mb-4">Калькулятор доставки</p>
+
+  <div class="grid gap-4 sm:grid-cols-[1.4fr_1fr_1fr]">
+    <label class="relative flex flex-col gap-1.5">
+      <span class="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--color-text-muted)]">Город</span>
+      <input
+        type="text"
+        data-calc-city
+        autocomplete="off"
+        placeholder="Например, Казань"
+        class="w-full rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-bg)] px-3.5 py-2.5 text-sm text-[var(--color-text)] outline-none transition-colors placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-primary)]"
+      />
+      <ul
+        data-calc-suggest
+        class="absolute left-0 right-0 top-full z-20 mt-1 hidden overflow-hidden rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-bg)] shadow-[var(--shadow-card)]"
+      >
+      </ul>
+    </label>
+
+    <label class="flex flex-col gap-1.5">
+      <span class="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--color-text-muted)]">Вес</span>
+      <select
+        data-calc-weight
+        class="w-full rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2.5 text-sm text-[var(--color-text)] outline-none transition-colors focus:border-[var(--color-primary)]"
+      >
+        {WEIGHT_OPTIONS.map((option) => <option value={option.value} selected={option.value === 1}>{option.label}</option>)}
+      </select>
+    </label>
+
+    <label class="flex flex-col gap-1.5">
+      <span class="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--color-text-muted)]">Сумма заказа</span>
+      <input
+        type="number"
+        min="0"
+        step="100"
+        value={defaultSum}
+        data-calc-sum
+        class="w-full rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-bg)] px-3.5 py-2.5 text-sm text-[var(--color-text)] outline-none transition-colors focus:border-[var(--color-primary)]"
+      />
+    </label>
+  </div>
+
+  <div class="mt-5 divide-y divide-[var(--color-border)] border-t border-[var(--color-border)]" data-calc-results>
+    <p class="py-6 text-center text-sm text-[var(--color-text-muted)]" data-calc-placeholder>
+      Укажите город — покажем стоимость и сроки по всем способам доставки.
+    </p>
+  </div>
+
+  {
+    delivery?.freeFrom !== undefined && (
+      <p class="mt-4 text-[13px] text-[var(--color-text-muted)]">
+        Доставка до пункта выдачи бесплатно от <span class="num font-bold text-[var(--color-text)]">{formatPrice(delivery.freeFrom)}</span>.
+      </p>
+    )
+  }
+  <p class="mt-2 text-[12px] leading-relaxed text-[var(--color-text-muted)]">
+    Расчёт по тарифам СДЭК ориентировочный — точную сумму менеджер подтвердит при оформлении.
+  </p>
+</div>
+
+<script>
+  import { DELIVERY_METHODS, findCity, quoteDelivery, suggestCities } from "@sitegen/template-marketplace-store/shop/delivery.ts";
+  import { formatPrice } from "@sitegen/template-marketplace-store/shop/format.ts";
+
+  const root = document.querySelector<HTMLElement>("[data-calc]");
+  if (root) {
+    const cityInput = root.querySelector<HTMLInputElement>("[data-calc-city]")!;
+    const suggestList = root.querySelector<HTMLUListElement>("[data-calc-suggest]")!;
+    const weightSelect = root.querySelector<HTMLSelectElement>("[data-calc-weight]")!;
+    const sumInput = root.querySelector<HTMLInputElement>("[data-calc-sum]")!;
+    const results = root.querySelector<HTMLElement>("[data-calc-results]")!;
+
+    const basePrice = Number(root.dataset.basePrice) || 290;
+    const freeFromRaw = root.dataset.freeFrom;
+    const freeFrom = freeFromRaw ? Number(freeFromRaw) : undefined;
+
+    const render = () => {
+      const city = findCity(cityInput.value);
+      if (!city) {
+        results.innerHTML =
+          '<p class="py-6 text-center text-sm text-[var(--color-text-muted)]">Укажите город — покажем стоимость и сроки по всем способам доставки.</p>';
+        return;
+      }
+
+      const weightKg = Number(weightSelect.value) || 1;
+      const subtotal = Number(sumInput.value) || 0;
+
+      results.innerHTML = DELIVERY_METHODS.map((method) => {
+        const quote = quoteDelivery({ city, method: method.id, weightKg, subtotal, basePrice, freeFrom });
+        if (!quote) return "";
+        const price = quote.isFree ? "бесплатно" : formatPrice(quote.price);
+        return `<div class="flex items-center justify-between gap-4 py-3.5">
+            <div class="min-w-0">
+              <p class="text-sm font-semibold text-[var(--color-text)]">${method.label}</p>
+              <p class="text-[12px] text-[var(--color-text-muted)]">${quote.days}</p>
+            </div>
+            <p class="num shrink-0 text-base font-extrabold text-[var(--color-text)]">${price}</p>
+          </div>`;
+      }).join("");
+    };
+
+    const closeSuggestions = () => suggestList.classList.add("hidden");
+
+    cityInput.addEventListener("input", () => {
+      const matches = suggestCities(cityInput.value);
+      if (matches.length === 0) {
+        closeSuggestions();
+      } else {
+        suggestList.innerHTML = matches
+          .map(
+            (match) =>
+              `<li><button type="button" class="w-full px-3.5 py-2.5 text-left text-sm text-[var(--color-text)] hover:bg-[var(--color-surface)]" data-city="${match.name}">${match.name}</button></li>`
+          )
+          .join("");
+        suggestList.classList.remove("hidden");
+      }
+      render();
+    });
+
+    // mousedown, not click: the input's blur would tear the list down before a click landed.
+    suggestList.addEventListener("mousedown", (event) => {
+      const button = (event.target as HTMLElement).closest<HTMLElement>("[data-city]");
+      if (!button) return;
+      cityInput.value = button.dataset.city!;
+      closeSuggestions();
+      render();
+    });
+    cityInput.addEventListener("blur", () => setTimeout(closeSuggestions, 120));
+
+    weightSelect.addEventListener("change", render);
+    sumInput.addEventListener("input", render);
+  }
+</script>

@@ -1,0 +1,38 @@
+---
+/** Compact rating: filled stars to one decimal, drawn with a clipped overlay so 4.7 really shows
+ *  70% of the fifth star instead of rounding up to a full one. */
+interface Props {
+  rating: number;
+  size?: number;
+  class?: string;
+}
+const { rating, size = 14, class: className = "" } = Astro.props;
+const percent = `${Math.max(0, Math.min(5, rating)) * 20}%`;
+const star = "★★★★★";
+---
+
+<span class:list={["store-stars", className]} style={`--star-size:${size}px;--star-fill:${percent}`} aria-label={`Рейтинг ${rating} из 5`}>
+  <span class="store-stars-track" aria-hidden="true">{star}</span>
+  <span class="store-stars-fill" aria-hidden="true">{star}</span>
+</span>
+
+<style is:global>
+  .store-stars {
+    position: relative;
+    display: inline-block;
+    font-size: var(--star-size, 14px);
+    line-height: 1;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+  .store-stars-track {
+    color: color-mix(in srgb, var(--color-text-muted) 35%, transparent);
+  }
+  .store-stars-fill {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    width: var(--star-fill, 100%);
+    color: #f5a623;
+  }
+</style>

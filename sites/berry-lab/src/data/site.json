@@ -1,0 +1,386 @@
+{
+  "name": "Berry Lab",
+  "meta": {
+    "title": "Berry Lab — уход за кожей напрямую от лаборатории",
+    "description": "Сыворотки, кремы и очищение Berry Lab: полный состав по INCI, проценты активов на упаковке. Доставка СДЭК, бесплатно от 2 500 ₽."
+  },
+  "hero": {
+    "heading": "Уход, у которого нечего скрывать в составе",
+    "subheading": "Пишем проценты активов цифрами, а не словами «высокая концентрация». Разрабатываем в Петербурге, производим на заводе с сертификатом GMP.",
+    "ctaLabel": "Собрать уход"
+  },
+  "about": {
+    "heading": "Формулы, которые можно проверить",
+    "body": "Berry Lab начался с простого вопроса: почему на баночке написано «с витамином C», но нигде не сказано сколько его и в какой форме. Мы решили писать всё: полный INCI, процент каждого актива, pH, срок годности после вскрытия. Это неудобно для маркетинга — зато косметолог может посмотреть на упаковку и сказать, подойдёт вам средство или нет. Каждая партия проходит тест на стабильность, и мы не держим складских остатков дольше двух месяцев."
+  },
+  "items": [],
+  "gallery": [
+    {
+      "src": "/berry-shop/photos/0.webp",
+      "alt": "Berry Lab — фото 1"
+    },
+    {
+      "src": "/berry-shop/photos/1.webp",
+      "alt": "Berry Lab — фото 2"
+    },
+    {
+      "src": "/berry-shop/photos/2.webp",
+      "alt": "Berry Lab — фото 3"
+    },
+    {
+      "src": "/berry-shop/photos/3.webp",
+      "alt": "Berry Lab — фото 4"
+    },
+    {
+      "src": "/berry-shop/photos/4.webp",
+      "alt": "Berry Lab — фото 5"
+    },
+    {
+      "src": "/berry-shop/photos/5.webp",
+      "alt": "Berry Lab — фото 6"
+    }
+  ],
+  "heroPhoto": "/berry-shop/photos/hero.webp",
+  "reviews": [
+    {
+      "author": "Алиса Н.",
+      "rating": 5,
+      "text": "Сыворотка с витамином C у меня третий флакон. Не окисляется до конца банки, что для C-шек редкость. Пигментные пятна после лета ушли за пару месяцев."
+    },
+    {
+      "author": "Юлия К.",
+      "rating": 5,
+      "text": "Гель для умывания спасение для комбинированной кожи. Не стягивает, при этом SPF смывает полностью — проверяла гидрофильным маслом после."
+    },
+    {
+      "author": "Дарья Ф.",
+      "rating": 5,
+      "text": "Заказала набор на сайте — вышло дешевле, чем поштучно на WB, ещё и пробники положили. Приехало в Новосибирск за четыре дня."
+    },
+    {
+      "author": "Марина О.",
+      "rating": 4,
+      "text": "Ночная маска классная, но флакон 50 мл уходит за полтора месяца. Хотелось бы объём побольше. Состав честный, аллергии не было."
+    },
+    {
+      "author": "Полина Г.",
+      "rating": 5,
+      "text": "Наконец-то SPF, который не превращает лицо в маску. Под тональный ложится нормально, к вечеру не скатывается."
+    },
+    {
+      "author": "Кристина В.",
+      "rating": 5,
+      "text": "Написала в телеграм, что не знаю, с чего начать уход. Задали пять вопросов и собрали подборку на 3 000 вместо 8 000, которые я собиралась потратить."
+    }
+  ],
+  "address": "Санкт-Петербург, наб. Обводного канала, 199 — офис и пункт самовывоза",
+  "phone": "+7 812 409-77-15",
+  "workingHours": {
+    "пн-пт": "10:00–19:00",
+    "сб-вс": "выходной"
+  },
+  "socialLinks": {
+    "telegram": "https://t.me/berrylab_ru",
+    "whatsapp": "https://wa.me/78124097715",
+    "instagram": "https://instagram.com/berrylab.ru"
+  },
+  "team": [],
+  "processSteps": [],
+  "faq": [
+    {
+      "question": "Почему у вас дешевле, чем на Wildberries?",
+      "answer": "Площадка забирает комиссию и оплату логистики — около 20% розничной цены. Продавая напрямую, мы этих расходов не несём и снижаем цену на ту же величину."
+    },
+    {
+      "question": "Как понять, что подойдёт моей коже?",
+      "answer": "Напишите в телеграм тип кожи и что беспокоит — соберём схему из 3–4 средств и объясним порядок нанесения. Это бесплатно и ни к чему не обязывает."
+    },
+    {
+      "question": "Даёте пробники?",
+      "answer": "Да, к каждому заказу от 2 000 ₽ кладём два саше на выбор. Можно указать, какие именно, в комментарии к заказу."
+    },
+    {
+      "question": "Какой срок годности приходит?",
+      "answer": "Не меньше 10 месяцев от даты отправки. Мы не держим большие остатки: партия расходится за 6–8 недель."
+    },
+    {
+      "question": "Можно вернуть косметику?",
+      "answer": "Нераспечатанную — да, в течение 14 дней. Если возникла реакция на средство, напишите нам: разберём состав вместе и вернём деньги, даже если упаковка вскрыта."
+    }
+  ],
+  "stats": [
+    {
+      "value": "4 года",
+      "label": "на маркетплейсах"
+    },
+    {
+      "value": "120 000",
+      "label": "заказов доставлено"
+    },
+    {
+      "value": "4.8",
+      "label": "средняя оценка"
+    },
+    {
+      "value": "GMP",
+      "label": "сертификат производства"
+    }
+  ],
+  "highlights": [],
+  "products": [
+    {
+      "id": "gel-dlya-umyvaniya-s-niatsinamidom-150-ml-0",
+      "name": "Гель для умывания с ниацинамидом, 150 мл",
+      "description": "Мягкие ПАВ и 4% ниацинамида: смывает SPF, не стягивает кожу.",
+      "price": 890,
+      "oldPrice": 1190,
+      "category": "Очищение",
+      "photo": "/berry-shop/photos/product-0.webp",
+      "badge": "Хит",
+      "rating": 4.8,
+      "reviewsCount": 6400,
+      "sku": "BL-CLN150",
+      "inStock": true,
+      "weightKg": 0.2,
+      "specs": [
+        [
+          "Объём",
+          "150 мл"
+        ],
+        [
+          "Активы",
+          "Ниацинамид 4%"
+        ],
+        [
+          "pH",
+          "5,5"
+        ]
+      ]
+    },
+    {
+      "id": "syvorotka-s-vitaminom-c-15-30-ml-1",
+      "name": "Сыворотка с витамином C 15%, 30 мл",
+      "description": "Стабилизированная форма — не желтеет к середине флакона.",
+      "price": 1690,
+      "category": "Уход",
+      "photo": "/berry-shop/photos/product-1.webp",
+      "badge": "Новинка",
+      "rating": 4.9,
+      "reviewsCount": 2870,
+      "sku": "BL-VITC30",
+      "inStock": true,
+      "weightKg": 0.1,
+      "specs": []
+    },
+    {
+      "id": "krem-gel-uvlazhnyayuschiy-50-ml-2",
+      "name": "Крем-гель увлажняющий, 50 мл",
+      "description": "Лёгкая текстура для жирной кожи, не забивает поры.",
+      "price": 1290,
+      "category": "Уход",
+      "photo": "/berry-shop/photos/product-2.webp",
+      "rating": 4.8,
+      "reviewsCount": 4120,
+      "sku": "BL-GEL50",
+      "inStock": true,
+      "weightKg": 0.12,
+      "specs": []
+    },
+    {
+      "id": "tonik-s-pha-kislotami-200-ml-3",
+      "name": "Тоник с PHA-кислотами, 200 мл",
+      "description": "Деликатное отшелушивание — подходит для чувствительной кожи.",
+      "price": 990,
+      "category": "Очищение",
+      "photo": "/berry-shop/photos/product-3.webp",
+      "rating": 4.7,
+      "reviewsCount": 1930,
+      "sku": "BL-TON200",
+      "inStock": true,
+      "weightKg": 0.25,
+      "specs": []
+    },
+    {
+      "id": "gidrofilnoe-maslo-150-ml-4",
+      "name": "Гидрофильное масло, 150 мл",
+      "description": "Растворяет стойкий макияж, смывается без плёнки.",
+      "price": 1090,
+      "category": "Очищение",
+      "photo": "/berry-shop/photos/product-4.webp",
+      "rating": 4.9,
+      "reviewsCount": 3350,
+      "sku": "BL-OIL150",
+      "inStock": true,
+      "weightKg": 0.2,
+      "specs": []
+    },
+    {
+      "id": "glinyanaya-maska-s-tsinkom-75-ml-5",
+      "name": "Глиняная маска с цинком, 75 мл",
+      "description": "Не высыхает коркой — можно держать 15 минут без дискомфорта.",
+      "price": 790,
+      "category": "Маски",
+      "photo": "/berry-shop/photos/product-5.webp",
+      "rating": 4.7,
+      "reviewsCount": 2210,
+      "sku": "BL-CLAY75",
+      "inStock": true,
+      "weightKg": 0.12,
+      "specs": []
+    },
+    {
+      "id": "nochnaya-maska-s-peptidami-50-ml-6",
+      "name": "Ночная маска с пептидами, 50 мл",
+      "description": "Наносится вместо крема, утром кожа заметно плотнее.",
+      "price": 1890,
+      "category": "Маски",
+      "photo": "/berry-shop/photos/product-6.webp",
+      "badge": "Хит",
+      "rating": 4.9,
+      "reviewsCount": 1780,
+      "sku": "BL-NIGHT50",
+      "inStock": true,
+      "weightKg": 0.1,
+      "specs": []
+    },
+    {
+      "id": "syvorotka-s-retinolom-0-3-30-ml-7",
+      "name": "Сыворотка с ретинолом 0,3%, 30 мл",
+      "description": "Вечерний уход для плотности кожи, стартовая концентрация.",
+      "price": 1190,
+      "category": "Уход",
+      "photo": "/berry-shop/photos/product-7.webp",
+      "rating": 4.6,
+      "reviewsCount": 5100,
+      "sku": "BL-RET30",
+      "inStock": true,
+      "weightKg": 0.1,
+      "specs": []
+    },
+    {
+      "id": "krem-dlya-ruk-s-maslom-shi-75-ml-8",
+      "name": "Крем для рук с маслом ши, 75 мл",
+      "description": "Впитывается за минуту — можно сразу брать телефон.",
+      "price": 590,
+      "category": "Тело",
+      "photo": "/berry-shop/photos/product-8.webp",
+      "rating": 4.8,
+      "reviewsCount": 3980,
+      "sku": "BL-HAND75",
+      "inStock": true,
+      "weightKg": 0.1,
+      "specs": []
+    },
+    {
+      "id": "skrab-dlya-tela-kofeynyy-250-ml-9",
+      "name": "Скраб для тела кофейный, 250 мл",
+      "description": "Мелкий помол, не царапает и не забивает слив.",
+      "price": 990,
+      "category": "Тело",
+      "photo": "/berry-shop/photos/product-9.webp",
+      "rating": 4.7,
+      "reviewsCount": 1640,
+      "sku": "BL-SCRUB250",
+      "inStock": true,
+      "weightKg": 0.3,
+      "specs": []
+    },
+    {
+      "id": "molochko-dlya-tela-250-ml-10",
+      "name": "Молочко для тела, 250 мл",
+      "description": "Без отдушки — подходит для кожи, склонной к атопии.",
+      "price": 1090,
+      "category": "Тело",
+      "photo": "/berry-shop/photos/product-10.webp",
+      "rating": 4.8,
+      "reviewsCount": 1210,
+      "sku": "BL-MILK250",
+      "inStock": true,
+      "weightKg": 0.3,
+      "specs": []
+    },
+    {
+      "id": "solntsezaschitnyy-krem-spf50-50-ml-11",
+      "name": "Солнцезащитный крем SPF50, 50 мл",
+      "description": "Без белёсого следа, поверх можно наносить макияж.",
+      "price": 1490,
+      "oldPrice": 1790,
+      "category": "Уход",
+      "photo": "/berry-shop/photos/product-11.webp",
+      "rating": 4.8,
+      "reviewsCount": 2560,
+      "sku": "BL-SPF50",
+      "inStock": true,
+      "weightKg": 0.1,
+      "specs": []
+    }
+  ],
+  "marketplaces": [
+    {
+      "name": "Wildberries",
+      "url": "https://www.wildberries.ru/",
+      "rating": 4.8,
+      "reviewsCount": 34200,
+      "note": "В топ-20 российских брендов ухода за лицом."
+    },
+    {
+      "name": "Ozon",
+      "url": "https://www.ozon.ru/",
+      "rating": 4.9,
+      "reviewsCount": 11700,
+      "note": "Ozon Premium, доставка из четырёх складов."
+    },
+    {
+      "name": "Мегамаркет",
+      "url": "https://megamarket.ru/",
+      "rating": 4.7,
+      "reviewsCount": 1980,
+      "note": "Полный ассортимент, включая наборы."
+    }
+  ],
+  "delivery": {
+    "freeFrom": 2500,
+    "basePrice": 260,
+    "processingDays": "1 рабочий день",
+    "note": "Отправляем СДЭК из Санкт-Петербурга. Флаконы едут в пузырчатой плёнке и жёсткой коробке — за четыре года ни одной разбитой сыворотки.",
+    "pickupPoints": [
+      {
+        "city": "Санкт-Петербург",
+        "address": "наб. Обводного канала, 199 — наш офис",
+        "hours": "пн-пт 10:00–19:00",
+        "note": "самовывоз без доставки"
+      },
+      {
+        "city": "Санкт-Петербург",
+        "address": "Невский пр-т, 114, ТЦ «Невский Атриум»",
+        "hours": "пн-вс 10:00–21:00",
+        "note": ""
+      },
+      {
+        "city": "Москва",
+        "address": "ул. Бауманская, 43/1",
+        "hours": "пн-вс 10:00–21:00",
+        "note": ""
+      },
+      {
+        "city": "Новосибирск",
+        "address": "ул. Ленина, 12",
+        "hours": "пн-сб 10:00–20:00",
+        "note": ""
+      },
+      {
+        "city": "Краснодар",
+        "address": "ул. Красная, 176",
+        "hours": "пн-сб 10:00–20:00",
+        "note": ""
+      }
+    ],
+    "paymentMethods": [
+      "Картой онлайн",
+      "СБП по QR-коду",
+      "Долями (4 платежа)"
+    ],
+    "orderChannel": "telegram",
+    "orderContact": "https://t.me/berrylab_ru"
+  }
+}

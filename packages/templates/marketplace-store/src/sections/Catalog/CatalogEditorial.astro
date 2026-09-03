@@ -1,0 +1,44 @@
+---
+import Container from "@sitegen/shared-ui/components/Container.astro";
+import StoreSection from "../../components/StoreSection.astro";
+import CatalogFilters from "../../components/CatalogFilters.astro";
+import ProductCard from "../../components/ProductCard.astro";
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+
+interface Props {
+  data: SiteData;
+}
+const { data } = Astro.props;
+const categories = [...new Set(data.products.map((product) => product.category).filter(Boolean))] as string[];
+
+// Editorial rhythm comes from the card size, not from mixing widths: an earlier version ran every
+// fifth card at col-span-2, which forced each grid row to the tallest card in it and left large
+// holes under the short ones. Three oversized cards per row give the same magazine feel and tile
+// cleanly under any filter.
+---
+
+<StoreSection id="catalog" surface="surface" class="scroll-mt-24">
+  <Container class="max-w-7xl">
+    <div class="mb-10 text-center" data-reveal>
+      <p class="eyebrow mb-3">Каталог</p>
+      <h2 class="section-title mx-auto max-w-2xl">Что можно заказать прямо здесь</h2>
+      <p class="mx-auto mt-4 max-w-lg text-sm leading-relaxed text-[var(--color-text-muted)] sm:text-base">
+        Тот же товар, что и на маркетплейсах, но без комиссии площадки — и с доставкой СДЭК в ваш город.
+      </p>
+    </div>
+
+    <div data-catalog>
+      <div class="mx-auto mb-9 max-w-3xl" data-reveal>
+        <CatalogFilters categories={categories} total={data.products.length} />
+      </div>
+
+      <div class="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3" data-catalog-grid data-reveal-stagger="70">
+        {data.products.map((product) => <ProductCard product={product} layout="showcase" />)}
+      </div>
+
+      <p class="hidden py-14 text-center text-sm text-[var(--color-text-muted)]" data-catalog-empty>
+        По этому запросу ничего не нашлось. Попробуйте другую категорию или напишите нам — подберём вручную.
+      </p>
+    </div>
+  </Container>
+</StoreSection>

@@ -1,0 +1,17 @@
+{
+  "name": "Магазин",
+  "meta": { "title": "Магазин", "description": "Плейсхолдер: данные подставит генератор." },
+  "hero": { "heading": "Магазин", "subheading": "Плейсхолдер", "ctaLabel": "В каталог" },
+  "about": { "heading": "О бренде", "body": "Плейсхолдер." },
+  "items": [],
+  "gallery": [],
+  "reviews": [],
+  "team": [],
+  "processSteps": [],
+  "faq": [],
+  "stats": [],
+  "highlights": [],
+  "products": [],
+  "marketplaces": [],
+  "delivery": { "pickupPoints": [], "paymentMethods": ["Картой онлайн", "СБП по QR-коду", "При получении"] }
+}

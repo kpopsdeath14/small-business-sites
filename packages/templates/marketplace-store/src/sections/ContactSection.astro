@@ -1,0 +1,103 @@
+---
+import Container from "@sitegen/shared-ui/components/Container.astro";
+import StoreSection from "../components/StoreSection.astro";
+import StoreButton from "../components/StoreButton.astro";
+import MarketMark from "../components/MarketMark.astro";
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+
+interface Props {
+  variant: number;
+  data: SiteData;
+}
+const { data } = Astro.props;
+
+const SOCIAL_LABELS: Record<string, string> = {
+  telegram: "Telegram",
+  whatsapp: "WhatsApp",
+  vk: "ВКонтакте",
+  instagram: "Instagram",
+  youtube: "YouTube",
+  email: "Почта",
+};
+const socials = Object.entries(data.socialLinks ?? {}).filter(([, url]) => !!url);
+const tel = data.phone ? `tel:${data.phone.replace(/[^+\d]/g, "")}` : undefined;
+const hours = Object.entries(data.workingHours ?? {});
+---
+
+<StoreSection id="contact">
+  <Container class="max-w-6xl">
+    <div class="grid gap-10 lg:grid-cols-[1fr_1fr] lg:gap-16">
+      <div data-reveal>
+        <p class="eyebrow mb-3">Связаться</p>
+        <h2 class="section-title">Поможем выбрать</h2>
+        <p class="mt-4 max-w-md text-sm leading-relaxed text-[var(--color-text-muted)] sm:text-base">
+          Напишите в мессенджер: подскажем размер, состав и наличие, поможем собрать заказ и посчитаем доставку до вашего города.
+        </p>
+
+        <div class="mt-8 flex flex-wrap gap-3">
+          {tel && <StoreButton href={tel} size="lg">{data.phone}</StoreButton>}
+          {
+            socials.map(([key, url]) => (
+              <StoreButton href={url} variant="outline" size="lg" target="_blank" rel="noopener noreferrer">
+                {SOCIAL_LABELS[key] ?? key}
+              </StoreButton>
+            ))
+          }
+        </div>
+
+        <button
+          type="button"
+          data-cart-open
+          class="mt-6 inline-flex items-center gap-2 text-sm font-bold text-[var(--color-primary)] underline underline-offset-4 transition-opacity hover:opacity-75"
+        >
+          Открыть корзину и оформить заказ
+        </button>
+      </div>
+
+      <dl class="grid gap-6 self-start rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 sm:grid-cols-2 sm:p-8" data-reveal>
+        {
+          data.address && (
+            <div class="sm:col-span-2">
+              <dt class="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--color-text-muted)]">Склад и пункт самовывоза</dt>
+              <dd class="mt-1.5 text-[15px] font-semibold text-[var(--color-text)]">{data.address}</dd>
+            </div>
+          )
+        }
+        {
+          hours.length > 0 && (
+            <div>
+              <dt class="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--color-text-muted)]">Работаем</dt>
+              <dd class="mt-1.5 space-y-1 text-[15px] text-[var(--color-text)]">
+                {hours.map(([days, time]) => (
+                  <p>
+                    <b class="font-semibold">{days}</b> — {time}
+                  </p>
+                ))}
+              </dd>
+            </div>
+          )
+        }
+        {
+          data.marketplaces.length > 0 && (
+            <div>
+              <dt class="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--color-text-muted)]">Мы на площадках</dt>
+              <dd class="mt-2 flex flex-wrap gap-2">
+                {data.marketplaces.map((marketplace) => (
+                  <a
+                    href={marketplace.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="flex items-center gap-2 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-bg)] px-2.5 py-1.5 text-[13px] font-semibold text-[var(--color-text)] transition-transform hover:-translate-y-0.5"
+                  >
+                    <MarketMark name={marketplace.name} />
+                    {marketplace.name}
+                  </a>
+                ))}
+              </dd>
+            </div>
+          )
+        }
+      </dl>
+    </div>
+  </Container>
+</StoreSection>

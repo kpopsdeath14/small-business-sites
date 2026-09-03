@@ -1,0 +1,63 @@
+---
+import Container from "@sitegen/shared-ui/components/Container.astro";
+import StoreSection from "../../components/StoreSection.astro";
+import StoreButton from "../../components/StoreButton.astro";
+import Stars from "../../components/Stars.astro";
+import { initials } from "@sitegen/shared-ui/utils/initials.ts";
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+
+interface Props {
+  data: SiteData;
+}
+const { data } = Astro.props;
+const average = data.reviews.length
+  ? data.reviews.reduce((sum, review) => sum + review.rating, 0) / data.reviews.length
+  : undefined;
+// Fewer than four cards leave a visible gap mid-scroll; repeat the list until the track is wide enough.
+const cards = data.reviews.length < 4 ? [...data.reviews, ...data.reviews, ...data.reviews] : data.reviews;
+---
+
+<StoreSection id="reviews" spacing="md" class="overflow-hidden">
+  <Container class="max-w-6xl">
+    <div class="mb-9 flex flex-wrap items-end justify-between gap-5" data-reveal>
+      <div>
+        <p class="eyebrow mb-3">Отзывы</p>
+        <h2 class="section-title">Что пишут покупатели</h2>
+        {
+          average !== undefined && (
+            <p class="mt-4 flex items-center gap-2.5 text-sm text-[var(--color-text-muted)]">
+              <Stars rating={average} size={15} />
+              <span class="num font-bold text-[var(--color-text)]">{average.toFixed(1)}</span>
+              из 5 по отзывам с маркетплейсов
+            </p>
+          )
+        }
+      </div>
+      {data.reviewsUrl && <StoreButton href={data.reviewsUrl} variant="outline" size="sm" target="_blank" rel="noopener noreferrer">Все отзывы</StoreButton>}
+    </div>
+  </Container>
+
+  <!-- Pauses on hover so a review that catches the eye can actually be read. -->
+  <div class="marquee overflow-hidden" data-reveal>
+    <div class="marquee-track gap-4 sm:gap-5" style="--marquee-duration:64s">
+      {
+        [0, 1].map((copy) => (
+          <div class="flex shrink-0 gap-4 sm:gap-5" aria-hidden={copy === 1 ? "true" : undefined}>
+            {cards.map((review) => (
+              <figure class="flex w-[19rem] shrink-0 flex-col rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 sm:w-[22rem]">
+                <Stars rating={review.rating} size={15} />
+                <blockquote class="mt-4 grow text-[15px] leading-relaxed text-[var(--color-text)]">{review.text}</blockquote>
+                <figcaption class="mt-6 flex items-center gap-3 border-t border-[var(--color-border)] pt-5">
+                  <span class="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[var(--color-primary)] text-[12px] font-bold text-[var(--color-primary-contrast)]">
+                    {initials(review.author)}
+                  </span>
+                  <span class="text-sm font-semibold text-[var(--color-text)]">{review.author}</span>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</StoreSection>

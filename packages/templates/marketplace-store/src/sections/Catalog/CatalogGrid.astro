@@ -1,0 +1,41 @@
+---
+import Container from "@sitegen/shared-ui/components/Container.astro";
+import StoreSection from "../../components/StoreSection.astro";
+import CatalogFilters from "../../components/CatalogFilters.astro";
+import ProductCard from "../../components/ProductCard.astro";
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+
+interface Props {
+  data: SiteData;
+}
+const { data } = Astro.props;
+const categories = [...new Set(data.products.map((product) => product.category).filter(Boolean))] as string[];
+---
+
+<StoreSection id="catalog" surface="surface" class="scroll-mt-24">
+  <Container class="max-w-7xl">
+    <div class="mb-9 flex flex-col gap-5 md:flex-row md:items-end md:justify-between" data-reveal>
+      <div>
+        <p class="eyebrow mb-3">Каталог</p>
+        <h2 class="section-title">Все товары</h2>
+      </div>
+      <p class="max-w-sm text-sm leading-relaxed text-[var(--color-text-muted)]">
+        Цены на сайте — без комиссии маркетплейса. Собираем и отправляем СДЭК из собственного склада.
+      </p>
+    </div>
+
+    <div data-catalog>
+      <div class="mb-8" data-reveal>
+        <CatalogFilters categories={categories} total={data.products.length} />
+      </div>
+
+      <div class="grid grid-cols-2 gap-3.5 sm:gap-5 lg:grid-cols-3 xl:grid-cols-4" data-catalog-grid data-reveal-stagger="55">
+        {data.products.map((product) => <ProductCard product={product} />)}
+      </div>
+
+      <p class="hidden py-14 text-center text-sm text-[var(--color-text-muted)]" data-catalog-empty>
+        По этому запросу ничего не нашлось. Попробуйте другую категорию или напишите нам — подберём вручную.
+      </p>
+    </div>
+  </Container>
+</StoreSection>

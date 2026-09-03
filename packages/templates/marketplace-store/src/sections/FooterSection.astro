@@ -1,0 +1,71 @@
+---
+import Container from "@sitegen/shared-ui/components/Container.astro";
+import MarketMark from "../components/MarketMark.astro";
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+
+interface Props {
+  variant: number;
+  data: SiteData;
+}
+const { data } = Astro.props;
+
+const year = new Date().getFullYear();
+const links = [
+  { label: "Каталог", href: "#catalog" },
+  { label: "Доставка и оплата", href: "#delivery" },
+  { label: "Отзывы", href: "#reviews" },
+  { label: "Контакты", href: "#contact" },
+];
+const tel = data.phone ? `tel:${data.phone.replace(/[^+\d]/g, "")}` : undefined;
+---
+
+<footer class="store-contrast border-t border-[var(--color-border)] py-14 sm:py-16">
+  <Container class="max-w-6xl">
+    <div class="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
+      <div>
+        <p class="font-[var(--font-heading)] text-xl font-extrabold tracking-tight">{data.name}</p>
+        <p class="mt-3 max-w-xs text-sm leading-relaxed text-[var(--color-text-muted)]">{data.meta.description}</p>
+        {
+          data.marketplaces.length > 0 && (
+            <div class="mt-6 flex flex-wrap gap-2">
+              {data.marketplaces.map((marketplace) => (
+                <a
+                  href={marketplace.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={`Магазин на ${marketplace.name}`}
+                  class="transition-transform duration-300 hover:-translate-y-0.5"
+                >
+                  <MarketMark name={marketplace.name} />
+                </a>
+              ))}
+            </div>
+          )
+        }
+      </div>
+
+      <nav class="flex flex-col gap-2.5 text-sm">
+        {
+          links.map((link) => (
+            <a href={link.href} class="text-[var(--color-text-muted)] transition-colors hover:text-[var(--color-text)]">
+              {link.label}
+            </a>
+          ))
+        }
+        <button type="button" data-cart-open class="text-left text-[var(--color-text-muted)] transition-colors hover:text-[var(--color-text)]">
+          Корзина
+        </button>
+      </nav>
+
+      <div class="flex flex-col gap-2.5 text-sm">
+        {tel && <a href={tel} class="font-semibold">{data.phone}</a>}
+        {data.address && <p class="text-[var(--color-text-muted)]">{data.address}</p>}
+      </div>
+    </div>
+
+    <div class="mt-11 flex flex-col gap-3 border-t border-[var(--color-border)] pt-6 text-[12px] text-[var(--color-text-muted)] sm:flex-row sm:items-center sm:justify-between">
+      <p>© {year} {data.name}</p>
+      <p>Оформление заказа на сайте — предварительное; наличие и стоимость доставки подтверждает менеджер.</p>
+    </div>
+  </Container>
+</footer>

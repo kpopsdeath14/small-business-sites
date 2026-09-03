@@ -1,0 +1,53 @@
+---
+import Container from "@sitegen/shared-ui/components/Container.astro";
+import StoreSection from "../../components/StoreSection.astro";
+import SkeletonImg from "@sitegen/shared-ui/components/SkeletonImg.astro";
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+
+interface Props {
+  data: SiteData;
+}
+const { data } = Astro.props;
+
+// Two rows drifting in opposite directions. Each row's track holds its photos twice, so the -50%
+// translate lands on an identical frame and the loop has no seam. Short galleries are padded by
+// repeating the list, otherwise a 3-photo row would leave visible gaps mid-scroll.
+const half = Math.ceil(data.gallery.length / 2);
+const rows = [data.gallery.slice(0, half), data.gallery.slice(half)].map((row) =>
+  row.length === 0 ? data.gallery : row.length < 4 ? [...row, ...row, ...row] : row
+);
+---
+
+<StoreSection id="gallery" spacing="md" class="overflow-hidden">
+  <Container class="max-w-6xl">
+    <div class="mb-9 max-w-xl" data-reveal>
+      <p class="eyebrow mb-3">Как выглядит вживую</p>
+      <h2 class="section-title">Фото товаров и упаковки</h2>
+    </div>
+  </Container>
+
+  <div class="marquee flex flex-col gap-3 sm:gap-4" data-reveal>
+    {
+      rows.map((row, rowIndex) => (
+        <div class="overflow-hidden">
+          <div
+            class="marquee-track gap-3 sm:gap-4"
+            style={`--marquee-duration:${rowIndex === 0 ? "46s" : "58s"};${rowIndex === 1 ? "animation-direction:reverse;" : ""}`}
+          >
+            {[0, 1].map(() => (
+              <div class="flex shrink-0 gap-3 sm:gap-4" aria-hidden={rowIndex === 1 ? "true" : undefined}>
+                {row.map((photo) => (
+                  <SkeletonImg
+                    src={photo.src}
+                    alt={photo.alt}
+                    class="h-40 w-56 shrink-0 rounded-[var(--radius-md)] sm:h-56 sm:w-80"
+                  />
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</StoreSection>

@@ -1,0 +1,180 @@
+---
+/**
+ * Catalog toolbar: category chips, live search, sort. Every catalog variant renders this and a
+ * grid of `[data-product-card]`s; the script below is written against those data attributes only,
+ * so a new layout variant is filterable the moment it uses ProductCard.
+ *
+ * Filtering happens in the DOM rather than by re-rendering: the cards are already server-rendered
+ * HTML (that is the page's SEO payload), and hiding/reordering 40 nodes is instant.
+ */
+interface Props {
+  categories: string[];
+  total: number;
+  /** "row" puts the chips above the grid; "column" stacks them for the sidebar layout. */
+  layout?: "row" | "column";
+}
+const { categories, total, layout = "row" } = Astro.props;
+const isColumn = layout === "column";
+---
+
+<div class:list={["flex gap-4", isColumn ? "flex-col" : "flex-col gap-5"]}>
+  <div class:list={["flex gap-2.5", isColumn ? "flex-col" : "flex-wrap items-center"]}>
+    <button
+      type="button"
+      data-filter-category=""
+      class:list={[
+        "catalog-chip is-active",
+        isColumn
+          ? "w-full justify-between rounded-[var(--radius-md)] px-4 py-2.5 text-left text-sm"
+          : "rounded-full px-4 py-2 text-[13px]",
+      ]}
+    >
+      <span>Все товары</span>
+      <span class="num opacity-60">{total}</span>
+    </button>
+    {
+      categories.map((category) => (
+        <button
+          type="button"
+          data-filter-category={category}
+          class:list={[
+            "catalog-chip",
+            isColumn
+              ? "w-full justify-between rounded-[var(--radius-md)] px-4 py-2.5 text-left text-sm"
+              : "rounded-full px-4 py-2 text-[13px]",
+          ]}
+        >
+          <span>{category}</span>
+        </button>
+      ))
+    }
+  </div>
+
+  <div class:list={["flex gap-2.5", isColumn ? "flex-col" : "flex-wrap items-center justify-between"]}>
+    <label class="relative flex-1 min-w-[12rem]">
+      <span class="sr-only">Поиск по каталогу</span>
+      <svg
+        class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        width="16"
+        height="16"
+        aria-hidden="true"
+      >
+        <circle cx="11" cy="11" r="6.5"></circle>
+        <path d="M16 16l4 4" stroke-linecap="round"></path>
+      </svg>
+      <input
+        type="search"
+        data-catalog-search
+        placeholder="Найти товар"
+        class="w-full rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-bg)] py-2.5 pl-10 pr-3 text-sm text-[var(--color-text)] outline-none transition-colors placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-primary)]"
+      />
+    </label>
+
+    <label class="flex items-center gap-2 text-[13px] text-[var(--color-text-muted)]">
+      <span class="whitespace-nowrap">Сортировка</span>
+      <select
+        data-catalog-sort
+        class="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2.5 text-sm font-medium text-[var(--color-text)] outline-none transition-colors focus:border-[var(--color-primary)]"
+      >
+        <option value="default">по популярности</option>
+        <option value="price-asc">сначала дешевле</option>
+        <option value="price-desc">сначала дороже</option>
+        <option value="rating">по рейтингу</option>
+      </select>
+    </label>
+  </div>
+
+  <p class="text-[13px] text-[var(--color-text-muted)]">
+    Показано <span class="num font-bold text-[var(--color-text)]" data-catalog-count>{total}</span> из {total}
+  </p>
+</div>
+
+<style is:global>
+  .catalog-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    border: 1px solid var(--color-border);
+    font-weight: 600;
+    color: var(--color-text);
+    transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease, transform 0.25s ease;
+  }
+  .catalog-chip:hover {
+    border-color: var(--color-primary);
+    transform: translateY(-1px);
+  }
+  .catalog-chip.is-active {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-primary-contrast);
+  }
+
+  /* Cards fade/scale out instead of vanishing, so a filter change reads as a transition rather
+     than a flash. `display:none` after the animation keeps hidden cards out of the grid flow. */
+  [data-product-card] {
+    transition: opacity 0.28s ease, transform 0.28s ease;
+  }
+  [data-product-card].is-filtered-out {
+    display: none;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-catalog]").forEach((root) => {
+    const cards = Array.from(root.querySelectorAll<HTMLElement>("[data-product-card]"));
+    if (cards.length === 0) return;
+
+    const chips = Array.from(root.querySelectorAll<HTMLElement>("[data-filter-category]"));
+    const search = root.querySelector<HTMLInputElement>("[data-catalog-search]");
+    const sort = root.querySelector<HTMLSelectElement>("[data-catalog-sort]");
+    const counter = root.querySelector<HTMLElement>("[data-catalog-count]");
+    const empty = root.querySelector<HTMLElement>("[data-catalog-empty]");
+
+    // The server-rendered order is the seller's own "по популярности"; keep it to restore later.
+    const naturalOrder = new Map(cards.map((card, i) => [card, i]));
+    let category = "";
+
+    const apply = () => {
+      const query = (search?.value ?? "").trim().toLowerCase();
+      let shown = 0;
+
+      for (const card of cards) {
+        const matchesCategory = !category || card.dataset.category === category;
+        const matchesQuery = !query || (card.dataset.name ?? "").includes(query);
+        const visible = matchesCategory && matchesQuery;
+        card.classList.toggle("is-filtered-out", !visible);
+        if (visible) shown++;
+      }
+
+      const mode = sort?.value ?? "default";
+      const visibleCards = cards.filter((card) => !card.classList.contains("is-filtered-out"));
+      const ranked = [...visibleCards].sort((a, b) => {
+        if (mode === "price-asc") return Number(a.dataset.price) - Number(b.dataset.price);
+        if (mode === "price-desc") return Number(b.dataset.price) - Number(a.dataset.price);
+        if (mode === "rating") return Number(b.dataset.rating) - Number(a.dataset.rating);
+        return naturalOrder.get(a)! - naturalOrder.get(b)!;
+      });
+      // CSS `order` reorders the grid without touching the DOM — no re-parenting, no layout thrash,
+      // and the reveal animation state on each card survives.
+      ranked.forEach((card, i) => (card.style.order = String(i)));
+
+      if (counter) counter.textContent = String(shown);
+      if (empty) empty.classList.toggle("hidden", shown > 0);
+    };
+
+    for (const chip of chips) {
+      chip.addEventListener("click", () => {
+        category = chip.dataset.filterCategory ?? "";
+        for (const other of chips) other.classList.toggle("is-active", other === chip);
+        apply();
+      });
+    }
+    search?.addEventListener("input", apply);
+    sort?.addEventListener("change", apply);
+    apply();
+  });
+</script>

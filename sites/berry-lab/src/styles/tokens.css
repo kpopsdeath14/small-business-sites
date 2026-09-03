@@ -1,0 +1,23 @@
+:root {
+  --color-bg: #FFF6F7;
+  --color-surface: #FFEAEF;
+  --color-text: #2B0E1B;
+  --color-text-muted: #96707E;
+  --color-primary: #E0326E;
+  --color-primary-contrast: #FFFFFF;
+  --color-accent: #FFB44D;
+  --color-border: #FBD8E1;
+  --color-sale: #D81E5B;
+  --color-ink: #2B0E1B;
+  --color-ink-text: #FFF6F7;
+  --color-ink-primary: #FF7BA8;
+  --color-ink-primary-contrast: #2B0E1B;
+  --font-heading: 'Unbounded', 'Trebuchet MS', system-ui, sans-serif;
+  --font-body: 'Onest', -apple-system, 'Segoe UI', system-ui, sans-serif;
+  --font-numeric: 'Onest', -apple-system, 'Segoe UI', system-ui, sans-serif;
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 28px;
+  --shadow-card: 0 1px 2px rgba(126,20,60,0.05), 0 14px 36px rgba(126,20,60,0.10);
+  --shadow-elevated: 0 28px 64px rgba(126,20,60,0.18);
+}

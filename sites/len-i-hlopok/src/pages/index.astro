@@ -1,0 +1,78 @@
+---
+import Base from "../layouts/Base.astro";
+import StoreNav from "@sitegen/template-marketplace-store/components/StoreNav.astro";
+import ShopRuntime from "@sitegen/template-marketplace-store/components/ShopRuntime.astro";
+import HeroSection from "@sitegen/template-marketplace-store/sections/HeroSection.astro";
+import MarketplacesSection from "@sitegen/template-marketplace-store/sections/MarketplacesSection.astro";
+import BestsellersSection from "@sitegen/template-marketplace-store/sections/BestsellersSection.astro";
+import CatalogSection from "@sitegen/template-marketplace-store/sections/CatalogSection.astro";
+import AboutSection from "@sitegen/template-marketplace-store/sections/AboutSection.astro";
+import StatsSection from "@sitegen/template-marketplace-store/sections/StatsSection.astro";
+import GallerySection from "@sitegen/template-marketplace-store/sections/GallerySection.astro";
+import ReviewsSection from "@sitegen/template-marketplace-store/sections/ReviewsSection.astro";
+import DeliverySection from "@sitegen/template-marketplace-store/sections/DeliverySection.astro";
+import FaqSection from "@sitegen/template-marketplace-store/sections/FaqSection.astro";
+import ContactSection from "@sitegen/template-marketplace-store/sections/ContactSection.astro";
+import FooterSection from "@sitegen/template-marketplace-store/sections/FooterSection.astro";
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+import siteDataJson from "../data/site.json";
+import siteConfigJson from "../data/site-config.json";
+
+const data = siteDataJson as unknown as SiteData;
+const siteConfig = siteConfigJson as { sections: { id: string; variant: number }[] };
+
+const sectionComponents: Record<string, any> = {
+  hero: HeroSection,
+  marketplaces: MarketplacesSection,
+  bestsellers: BestsellersSection,
+  catalog: CatalogSection,
+  about: AboutSection,
+  stats: StatsSection,
+  gallery: GallerySection,
+  reviews: ReviewsSection,
+  delivery: DeliverySection,
+  faq: FaqSection,
+  contact: ContactSection,
+  footer: FooterSection,
+};
+
+// Only the sections worth a header link; stats/hero/footer are not destinations.
+const NAV_LABELS: Record<string, string> = {
+  catalog: "Каталог",
+  bestsellers: "Хиты",
+  about: "О бренде",
+  delivery: "Доставка",
+  reviews: "Отзывы",
+  faq: "Вопросы",
+  contact: "Контакты",
+};
+
+const heroVariant = siteConfig.sections.find((section) => section.id === "hero")?.variant ?? 0;
+// Variant 0 is the only full-bleed photo hero; the others put the bar over a palette surface,
+// where white nav text would vanish on the light palettes.
+const heroOnPhoto = heroVariant === 0;
+
+const navLinks = siteConfig.sections
+  .filter((section) => section.id in NAV_LABELS)
+  .map((section) => ({ label: NAV_LABELS[section.id], href: `#${section.id}` }));
+
+// localStorage namespace for the cart. Every demo site shares one GitHub Pages origin, so it has
+// to be per-store or two sites would hand each other their carts.
+const cartScope = data.name
+  .toLowerCase()
+  .replace(/[^a-zа-яё0-9]+/gi, "-")
+  .replace(/^-+|-+$/g, "");
+---
+
+<Base title={data.meta.title} description={data.meta.description}>
+  <StoreNav siteName={data.name} links={navLinks} marketplaces={data.marketplaces} onPhoto={heroOnPhoto} />
+
+  {
+    siteConfig.sections.map((section) => {
+      const Component = sectionComponents[section.id];
+      return Component ? <Component variant={section.variant} data={data} /> : null;
+    })
+  }
+
+  <ShopRuntime data={data} scope={cartScope} />
+</Base>

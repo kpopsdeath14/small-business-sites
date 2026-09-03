@@ -15,6 +15,7 @@ const PACKAGE_NAMES: Record<BusinessType, string> = {
   bakery: "@sitegen/template-bakery",
   "beauty-salon": "@sitegen/template-beauty-salon",
   "tattoo-studio": "@sitegen/template-tattoo-studio",
+  "marketplace-store": "@sitegen/template-marketplace-store",
 };
 
 /** Absolute path (relative to this file) to each template's `astro-project` skeleton, for scaffolding. */

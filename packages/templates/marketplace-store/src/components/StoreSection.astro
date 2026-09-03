@@ -1,0 +1,92 @@
+---
+/**
+ * VITRINA section wrapper. Local to this template — the shared Section.astro paints blurred
+ * color blobs that fight a retail page's need for calm, high-contrast product rows.
+ *
+ * Carries its own copy of the scroll-reveal system (same fail-open pattern the other templates
+ * use): the hidden state only applies once JS adds `reveal-ready`, so the page is fully readable
+ * with JS off.
+ */
+interface Props {
+  id?: string;
+  class?: string;
+  surface?: "base" | "surface" | "contrast";
+  spacing?: "sm" | "md" | "lg" | "xl";
+}
+const { id, class: className = "", surface = "base", spacing = "lg" } = Astro.props;
+
+const surfaceClass =
+  surface === "surface"
+    ? "bg-[var(--color-surface)]"
+    : surface === "contrast"
+      ? "store-contrast"
+      : "bg-[var(--color-bg)]";
+const spacingClass =
+  spacing === "sm"
+    ? "py-10 sm:py-14"
+    : spacing === "md"
+      ? "py-14 sm:py-20"
+      : spacing === "xl"
+        ? "py-24 sm:py-36"
+        : "py-[4.5rem] sm:py-[6.5rem]";
+---
+
+<section id={id} data-reveal class:list={["relative", surfaceClass, spacingClass, className]}>
+  <slot />
+</section>
+
+<style is:global>
+  /*
+    Scroll-reveal — GLOBAL on purpose: `reveal-ready` lands on <html>, which carries no component
+    cid, so a scoped rule would never match. Fails open (no JS → everything visible).
+  */
+  .reveal-ready [data-reveal] {
+    opacity: 0;
+    transform: translateY(26px);
+    transition: opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1), transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  .reveal-ready [data-reveal].is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-ready [data-reveal] {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  if ("IntersectionObserver" in window) {
+    document.documentElement.classList.add("reveal-ready");
+
+    // Inside [data-reveal-stagger], direct [data-reveal] descendants get an incremental delay so
+    // product grids cascade in row by row instead of popping as one slab.
+    document.querySelectorAll<HTMLElement>("[data-reveal-stagger]").forEach((container) => {
+      const stepMs = parseInt(container.dataset.revealStagger || "", 10) || 70;
+      const items = Array.from(container.querySelectorAll<HTMLElement>(":scope [data-reveal]"));
+      items.forEach((el, i) => el.style.setProperty("--reveal-delay", `${Math.min(i * stepMs, 560)}ms`));
+    });
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        }
+      },
+      { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
+    );
+    document.querySelectorAll("[data-reveal]").forEach((el) => observer.observe(el));
+
+    // Safety net for very fast loads where intersection already happened before observation.
+    setTimeout(() => {
+      document.querySelectorAll("[data-reveal]:not(.is-visible)").forEach((el) => el.classList.add("is-visible"));
+    }, 1500);
+  }
+</script>

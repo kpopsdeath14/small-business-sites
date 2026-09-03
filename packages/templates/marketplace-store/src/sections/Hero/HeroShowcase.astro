@@ -1,0 +1,97 @@
+---
+import StoreButton from "../../components/StoreButton.astro";
+import SkeletonImg from "@sitegen/shared-ui/components/SkeletonImg.astro";
+import { formatPrice } from "@sitegen/template-marketplace-store/shop/format.ts";
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+
+interface Props {
+  data: SiteData;
+}
+const { data } = Astro.props;
+
+// Three pack shots drifting on different periods. Badged products first — they are the ones the
+// seller wants on the first screen — then whatever else has a photo.
+const withPhotos = data.products.filter((product) => !!product.photo);
+const showcase = [...withPhotos.filter((p) => p.badge), ...withPhotos.filter((p) => !p.badge)].slice(0, 3);
+const floats = [
+  { class: "col-span-7 row-span-6 col-start-1 row-start-1", duration: "7.5s", delay: "0s", distance: "-16px" },
+  { class: "col-span-5 row-span-5 col-start-8 row-start-3", duration: "9s", delay: "0.8s", distance: "14px" },
+  { class: "col-span-6 row-span-4 col-start-3 row-start-8", duration: "8.2s", delay: "1.6s", distance: "-11px" },
+];
+const categories = [...new Set(data.products.map((product) => product.category).filter(Boolean))] as string[];
+---
+
+<section id="hero" class="relative flex min-h-[100svh] items-center overflow-hidden bg-[var(--color-bg)]">
+  <!-- Aurora: two soft color washes drifting behind everything. Pure CSS transform animation on a
+       blurred element, so it costs one composited layer and no repaints. -->
+  <div class="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+    <div
+      class="aurora absolute -left-[15%] -top-[20%] h-[65vw] w-[65vw] rounded-full blur-[90px] opacity-60"
+      style="background:radial-gradient(circle,var(--color-primary),transparent 68%);--aurora-duration:22s"
+    >
+    </div>
+    <div
+      class="aurora absolute -bottom-[25%] -right-[10%] h-[55vw] w-[55vw] rounded-full blur-[90px] opacity-50"
+      style="background:radial-gradient(circle,var(--color-accent),transparent 68%);--aurora-duration:27s"
+    >
+    </div>
+  </div>
+
+  <div class="relative z-10 mx-auto grid w-full max-w-7xl items-center gap-12 px-5 pb-16 pt-28 sm:px-8 lg:grid-cols-[1fr_1fr] lg:py-28">
+    <div>
+      <p class="hero-enter eyebrow mb-6" style="--enter-delay:0.05s">
+        {categories.slice(0, 3).join(" · ") || "Каталог"}
+      </p>
+      <h1
+        class="hero-enter font-[var(--font-heading)] text-[clamp(2.5rem,6.2vw,4.5rem)] font-extrabold leading-[1.02] tracking-[-0.035em] text-[var(--color-text)]"
+        style="--enter-delay:0.15s"
+      >
+        {data.hero.heading}
+      </h1>
+      <p class="hero-enter mt-6 max-w-md text-base leading-relaxed text-[var(--color-text-muted)] sm:text-lg" style="--enter-delay:0.32s">
+        {data.hero.subheading}
+      </p>
+      <div class="hero-enter mt-10 flex flex-wrap gap-3" style="--enter-delay:0.45s">
+        <StoreButton href="#catalog" size="lg">{data.hero.ctaLabel}</StoreButton>
+        <StoreButton href="#delivery" variant="soft" size="lg">Доставка СДЭК</StoreButton>
+      </div>
+
+      {
+        data.stats.length > 0 && (
+          <dl class="hero-enter mt-12 grid max-w-md grid-cols-3 gap-5" style="--enter-delay:0.6s">
+            {data.stats.slice(0, 3).map((stat) => (
+              <div>
+                <dt class="num text-2xl font-extrabold leading-none text-[var(--color-text)]">{stat.value}</dt>
+                <dd class="mt-1.5 text-[11px] leading-tight text-[var(--color-text-muted)]">{stat.label}</dd>
+              </div>
+            ))}
+          </dl>
+        )
+      }
+    </div>
+
+    {
+      showcase.length > 0 && (
+        <div class="relative grid aspect-square w-full grid-cols-12 grid-rows-12 gap-3">
+          {showcase.map((product, i) => (
+            <a
+              href="#catalog"
+              class:list={["hero-enter float-y group relative block overflow-hidden rounded-[var(--radius-lg)] shadow-[var(--shadow-elevated)]", floats[i].class]}
+              style={`--enter-delay:${0.25 + i * 0.12}s;--float-duration:${floats[i].duration};--float-delay:${floats[i].delay};--float-distance:${floats[i].distance}`}
+            >
+              <SkeletonImg
+                src={product.photo!}
+                alt={product.name}
+                class="h-full w-full transition-transform duration-700 group-hover:scale-105"
+              />
+              <span class="absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 bg-gradient-to-t from-black/75 to-transparent p-3 pt-8">
+                <span class="min-w-0 truncate text-[11px] font-semibold text-white/90">{product.name}</span>
+                <span class="num shrink-0 text-[13px] font-extrabold text-white">{formatPrice(product.price)}</span>
+              </span>
+            </a>
+          ))}
+        </div>
+      )
+    }
+  </div>
+</section>

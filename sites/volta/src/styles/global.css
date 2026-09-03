@@ -1,0 +1,244 @@
+@import "./tokens.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  font-weight: 400;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-heading);
+}
+
+/* The floating capsule header is ~4.5rem tall including its top gap — without this, an anchor jump
+   to #catalog parks the section title underneath it. */
+section[id] {
+  scroll-margin-top: 5.5rem;
+}
+
+::selection {
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+/* ============================================================
+   VITRINA primitives — the small vocabulary every section draws
+   from: the eyebrow label, the section heading, hairlines.
+   ============================================================ */
+
+/* Eyebrow: short letterspaced caps in the accent color, above every section heading. */
+.eyebrow {
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
+/* Section heading: one class instead of repeating the same six utilities per section. */
+.section-title {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  color: var(--color-text);
+}
+
+/* Tabular numerals everywhere a price or a count appears — columns of prices that jitter as they
+   change width are the fastest way to make a storefront feel cheap. */
+.num {
+  font-family: var(--font-numeric, var(--font-body));
+  font-variant-numeric: tabular-nums;
+}
+
+/* The palette's opposite room (see --color-ink in tokens.ts): light palettes get a deep block,
+   dark palettes get a bright one. Redefining the whole token quartet — not just the background —
+   means cards, inputs and shimmers inside re-theme themselves with no per-element overrides. */
+.store-contrast {
+  background: var(--color-ink);
+  color: var(--color-ink-text);
+  --color-bg: var(--color-ink);
+  --color-surface: color-mix(in srgb, var(--color-ink) 86%, var(--color-ink-text));
+  --color-text: var(--color-ink-text);
+  --color-text-muted: color-mix(in srgb, var(--color-ink-text) 58%, transparent);
+  --color-border: color-mix(in srgb, var(--color-ink-text) 18%, transparent);
+}
+
+/* ============================================================
+   Motion
+   ============================================================ */
+
+/* Hero entrance: elements tagged .hero-enter rise in once on load, staggered by --enter-delay. */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.hero-enter {
+  animation: rise-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--enter-delay, 0s);
+}
+
+/* Slow zoom on full-bleed hero photography. */
+@keyframes ken-burns {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.08);
+  }
+}
+.ken-burns {
+  animation: ken-burns 26s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+/* Endless horizontal marquee. The track holds the content twice; translating by -50% therefore
+   lands on an identical frame, so the loop has no visible seam. */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee var(--marquee-duration, 32s) linear infinite;
+  will-change: transform;
+}
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+/* Lazy float used by hero collages — three cards on slightly different periods never resync,
+   so the group keeps drifting instead of pulsing in unison. */
+@keyframes float-y {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(var(--float-distance, -14px));
+  }
+}
+.float-y {
+  animation: float-y var(--float-duration, 7s) ease-in-out infinite;
+  animation-delay: var(--float-delay, 0s);
+}
+
+/* Slowly drifting color wash behind pop-palette heroes. */
+@keyframes aurora-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(6%, -4%, 0) scale(1.12);
+  }
+  66% {
+    transform: translate3d(-5%, 5%, 0) scale(0.95);
+  }
+}
+.aurora {
+  animation: aurora-drift var(--aurora-duration, 20s) ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes drift-down {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.9;
+  }
+  50% {
+    transform: translateY(7px);
+    opacity: 0.45;
+  }
+}
+.drift-down {
+  animation: drift-down 2.2s ease-in-out infinite;
+}
+
+/* Skeleton/shimmer behind images while they load. Animates `transform` only, so the browser runs
+   it on the compositor — a catalog grid can shimmer 24 tiles at once without repainting. */
+@keyframes skel-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* :where() keeps this at zero specificity, so `class="skel-wrap absolute inset-0"` still gets
+   `position: absolute` from Tailwind — without it this rule, declared after @tailwind utilities,
+   would silently win and break every absolutely-positioned hero photo. */
+:where(.skel-wrap) {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-surface);
+}
+.skel-wrap::before {
+  content: "";
+  position: absolute;
+  inset: -25% -10%;
+  z-index: 1;
+  background: linear-gradient(90deg, transparent 35%, rgba(255, 255, 255, 0.28) 50%, transparent 65%);
+  animation: skel-shimmer 1.6s linear infinite;
+  transition: opacity 0.25s ease;
+  will-change: transform;
+}
+.skel-wrap.is-loaded::before {
+  opacity: 0;
+  animation: none;
+}
+.skel-wrap > img {
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.skel-wrap.is-loaded > img {
+  opacity: 1;
+}
+
+/* Global reduced-motion kill switch: hero entrances, ken-burns, marquees, floats, hover lifts —
+   everything this stylesheet or Tailwind animates collapses to a near-instant state change. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}

@@ -1,0 +1,49 @@
+---
+import Container from "@sitegen/shared-ui/components/Container.astro";
+import StoreSection from "../../components/StoreSection.astro";
+import CatalogFilters from "../../components/CatalogFilters.astro";
+import ProductCard from "../../components/ProductCard.astro";
+import { formatPrice } from "@sitegen/template-marketplace-store/shop/format.ts";
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+
+interface Props {
+  data: SiteData;
+}
+const { data } = Astro.props;
+const categories = [...new Set(data.products.map((product) => product.category).filter(Boolean))] as string[];
+const prices = data.products.map((product) => product.price);
+const minPrice = Math.min(...prices);
+const maxPrice = Math.max(...prices);
+---
+
+<StoreSection id="catalog" class="scroll-mt-24">
+  <Container class="max-w-7xl">
+    <div class="mb-10 max-w-2xl" data-reveal>
+      <p class="eyebrow mb-3">Каталог</p>
+      <h2 class="section-title">Выберите категорию</h2>
+      <p class="mt-4 text-sm leading-relaxed text-[var(--color-text-muted)] sm:text-base">
+        {data.products.length} позиций в наличии. Цена на сайте ниже, чем на маркетплейсе — мы не платим комиссию площадки.
+      </p>
+    </div>
+
+    <div class="grid gap-8 lg:grid-cols-[16rem_1fr] lg:gap-10" data-catalog>
+      <!-- Sticky rail: on desktop the filters follow the grid down instead of scrolling away. -->
+      <aside class="lg:sticky lg:top-24 lg:self-start" data-reveal>
+        <CatalogFilters categories={categories} total={data.products.length} layout="column" />
+        <div class="mt-6 rounded-[var(--radius-md)] border border-[var(--color-border)] p-4 text-[13px] text-[var(--color-text-muted)]">
+          Цены в каталоге: <span class="num font-bold text-[var(--color-text)]">{formatPrice(minPrice)}</span> —
+          <span class="num font-bold text-[var(--color-text)]">{formatPrice(maxPrice)}</span>
+        </div>
+      </aside>
+
+      <div>
+        <div class="grid grid-cols-2 gap-3.5 sm:gap-5 xl:grid-cols-3" data-catalog-grid data-reveal-stagger="55">
+          {data.products.map((product) => <ProductCard product={product} />)}
+        </div>
+        <p class="hidden py-14 text-center text-sm text-[var(--color-text-muted)]" data-catalog-empty>
+          По этому запросу ничего не нашлось. Попробуйте другую категорию или напишите нам — подберём вручную.
+        </p>
+      </div>
+    </div>
+  </Container>
+</StoreSection>

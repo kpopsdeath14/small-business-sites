@@ -1,0 +1,384 @@
+{
+  "business_type": "marketplace-store",
+  "name": "VOLTA",
+  "seed": "volta-store",
+  "description_raw": "Бренд аксессуаров для техники: зарядки, кабели, наушники и держатели. Продаём на Wildberries и Ozon с 2019 года, собственный склад в Подмосковье. Каждую партию проверяем на стенде перед отправкой: мощность зарядок и ёмкость повербанков соответствуют заявленным, а не «маркетинговым» цифрам.",
+  "address": "Московская обл., Химки, Транспортный проезд, 6 — склад и самовывоз",
+  "phone": "+7 495 118-40-90",
+  "working_hours": {
+    "пн-пт": "10:00–20:00",
+    "сб": "11:00–17:00"
+  },
+  "social_links": {
+    "telegram": "https://t.me/volta_store",
+    "whatsapp": "https://wa.me/74951184090",
+    "vk": "https://vk.com/volta_store"
+  },
+  "hero_photo": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=1200&q=80",
+  "photos": [
+    "https://images.unsplash.com/photo-1518671678551-911467efe539?auto=format&fit=crop&w=1200&q=80",
+    "https://images.unsplash.com/photo-1529359744902-86b2ab9edaea?auto=format&fit=crop&w=1200&q=80",
+    "https://images.unsplash.com/photo-1507878566509-a0dbe19677a5?auto=format&fit=crop&w=1200&q=80",
+    "https://images.unsplash.com/photo-1579065560489-989b0cc394ce?auto=format&fit=crop&w=1200&q=80",
+    "https://images.unsplash.com/photo-1641048930621-ab5d225ae5b0?auto=format&fit=crop&w=1200&q=80",
+    "https://images.unsplash.com/photo-1628116709703-c1c9ad550d36?auto=format&fit=crop&w=1200&q=80"
+  ],
+  "marketplaces": [
+    {
+      "name": "Wildberries",
+      "url": "https://www.wildberries.ru/",
+      "rating": 4.8,
+      "reviews_count": 21400,
+      "note": "Более 60 000 заказов за три года, 98% выкупа."
+    },
+    {
+      "name": "Ozon",
+      "url": "https://www.ozon.ru/",
+      "rating": 4.9,
+      "reviews_count": 8930,
+      "note": "Premium-продавец, отгрузка в день заказа."
+    },
+    {
+      "name": "Яндекс Маркет",
+      "url": "https://market.yandex.ru/",
+      "rating": 4.7,
+      "reviews_count": 2140,
+      "note": "Витрина открыта в 2024 году."
+    }
+  ],
+  "stats": [
+    {
+      "value": "6 лет",
+      "label": "на маркетплейсах"
+    },
+    {
+      "value": "60 000",
+      "label": "выполненных заказов"
+    },
+    {
+      "value": "4.8",
+      "label": "средний рейтинг"
+    },
+    {
+      "value": "1 день",
+      "label": "на сборку заказа"
+    }
+  ],
+  "products": [
+    {
+      "name": "Беспроводные наушники VOLTA Air Pro",
+      "price": 4290,
+      "category": "Звук",
+      "photo": "https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&w=1200&q=80",
+      "old_price": 5490,
+      "badge": "Хит",
+      "rating": 4.8,
+      "reviews_count": 3120,
+      "weight_kg": 0.3,
+      "sku": "VA-AIRPRO",
+      "description": "Активное шумоподавление и 28 часов работы с кейсом.",
+      "specs": [
+        [
+          "Тип",
+          "Внутриканальные, TWS"
+        ],
+        [
+          "Автономность",
+          "до 28 ч с кейсом"
+        ],
+        [
+          "Шумоподавление",
+          "Гибридное ANC"
+        ]
+      ]
+    },
+    {
+      "name": "Портативная колонка VOLTA Boom Mini",
+      "price": 3190,
+      "category": "Звук",
+      "photo": "https://images.unsplash.com/photo-1547052178-7f2c5a20c332?auto=format&fit=crop&w=1200&q=80",
+      "rating": 4.7,
+      "reviews_count": 980,
+      "weight_kg": 0.6,
+      "sku": "VB-MINI",
+      "description": "12 часов музыки и защита IPX7 — можно брать в душ и на пляж."
+    },
+    {
+      "name": "Повербанк 20 000 мА·ч VOLTA Core",
+      "price": 2890,
+      "category": "Питание",
+      "photo": "https://images.unsplash.com/photo-1600577231598-31ea4cb50da3?auto=format&fit=crop&w=1200&q=80",
+      "old_price": 3590,
+      "badge": "Новинка",
+      "rating": 4.9,
+      "reviews_count": 1560,
+      "weight_kg": 0.45,
+      "sku": "VC-20K",
+      "description": "Заряжает ноутбук: два порта USB-C по 65 Вт одновременно."
+    },
+    {
+      "name": "Зарядное устройство GaN 65 Вт",
+      "price": 2190,
+      "category": "Питание",
+      "photo": "https://images.unsplash.com/photo-1524226108234-3cccbbbfa86d?auto=format&fit=crop&w=1200&q=80",
+      "rating": 4.8,
+      "reviews_count": 2240,
+      "weight_kg": 0.15,
+      "sku": "VG-65",
+      "description": "Втрое компактнее штатного блока, греется заметно меньше."
+    },
+    {
+      "name": "Кабель USB-C ↔ USB-C 100 Вт, 2 м",
+      "price": 690,
+      "category": "Кабели",
+      "photo": "https://images.unsplash.com/photo-1595756630452-736bc8ef3693?auto=format&fit=crop&w=1200&q=80",
+      "rating": 4.9,
+      "reviews_count": 4100,
+      "weight_kg": 0.1,
+      "sku": "VK-CC2",
+      "description": "Нейлоновая оплётка выдерживает 25 000 перегибов."
+    },
+    {
+      "name": "Кабель Lightning ↔ USB-C, 1 м",
+      "price": 590,
+      "category": "Кабели",
+      "photo": "https://images.unsplash.com/photo-1573868388390-2739872961e6?auto=format&fit=crop&w=1200&q=80",
+      "rating": 4.7,
+      "reviews_count": 2870,
+      "weight_kg": 0.08,
+      "sku": "VK-CL1",
+      "description": "Сертификация MFi — работает с любой прошивкой iPhone."
+    },
+    {
+      "name": "Автомобильная зарядка 45 Вт, 2 порта",
+      "price": 1490,
+      "category": "Аксессуары",
+      "photo": "https://images.unsplash.com/photo-1619459072761-496c0812331b?auto=format&fit=crop&w=1200&q=80",
+      "rating": 4.6,
+      "reviews_count": 760,
+      "weight_kg": 0.2,
+      "sku": "VC-CAR45",
+      "description": "Заряжает телефон и планшет одновременно, не роняя напряжение в прикуривателе."
+    },
+    {
+      "name": "Беспроводная зарядка 3-в-1",
+      "price": 3690,
+      "category": "Питание",
+      "photo": "https://images.unsplash.com/photo-1583142485083-291557266e6a?auto=format&fit=crop&w=1200&q=80",
+      "old_price": 4490,
+      "rating": 4.8,
+      "reviews_count": 1130,
+      "weight_kg": 0.5,
+      "sku": "VW-3IN1",
+      "description": "Телефон, часы и наушники на одной подставке."
+    },
+    {
+      "name": "Хаб USB-C 7-в-1",
+      "price": 2790,
+      "category": "Аксессуары",
+      "photo": "https://images.unsplash.com/photo-1492107376256-4026437926cd?auto=format&fit=crop&w=1200&q=80",
+      "rating": 4.7,
+      "reviews_count": 640,
+      "weight_kg": 0.2,
+      "sku": "VU-HUB7",
+      "description": "HDMI 4K, два USB 3.0, картридер и сквозная зарядка 100 Вт."
+    },
+    {
+      "name": "Комплект кабелей USB-C, 3 шт",
+      "price": 890,
+      "category": "Кабели",
+      "photo": "https://images.unsplash.com/photo-1572721546624-05bf65ad7679?auto=format&fit=crop&w=1200&q=80",
+      "rating": 4.8,
+      "reviews_count": 1890,
+      "weight_kg": 0.05,
+      "sku": "VK-SET3",
+      "description": "0,3 / 1 / 2 м — на стол, в сумку и к розетке за диваном."
+    },
+    {
+      "name": "Наушники VOLTA Buds Lite",
+      "price": 1990,
+      "category": "Звук",
+      "photo": "https://images.unsplash.com/photo-1614399113305-a127bb2ca893?auto=format&fit=crop&w=1200&q=80",
+      "badge": "Хит",
+      "rating": 4.6,
+      "reviews_count": 5240,
+      "weight_kg": 0.15,
+      "sku": "VB-LITE",
+      "description": "Самая продаваемая модель: звук честнее цены."
+    },
+    {
+      "name": "Наушники VOLTA Studio Over-Ear",
+      "price": 4990,
+      "category": "Звук",
+      "photo": "https://images.unsplash.com/photo-1487215078519-e21cc028cb29?auto=format&fit=crop&w=1200&q=80",
+      "rating": 4.7,
+      "reviews_count": 310,
+      "weight_kg": 1.2,
+      "sku": "VS-OVER",
+      "in_stock": false,
+      "description": "Полноразмерные, с проводным режимом для студии и записи."
+    }
+  ],
+  "reviews": [
+    {
+      "author": "Дмитрий К.",
+      "rating": 5,
+      "text": "Брал повербанк на 20 000 — реально тянет MacBook Air часа три. До этого покупал безымянный, тот выдавал половину от заявленного."
+    },
+    {
+      "author": "Анна С.",
+      "rating": 5,
+      "text": "Наушники Air Pro пришли за два дня в пункт СДЭК. Шумодав работает в метро, для своей цены это очень хорошо."
+    },
+    {
+      "author": "Ильдар М.",
+      "rating": 5,
+      "text": "Заказал кабели сразу три штуки. Оплётка плотная, разъёмы не болтаются. Через полгода все живы, а обычные я менял каждые два месяца."
+    },
+    {
+      "author": "Ольга В.",
+      "rating": 4,
+      "text": "Зарядка GaN отличная, но хотелось бы вилку с евро-переходником в комплекте. Написала в поддержку — ответили за 10 минут, прислали инструкцию."
+    },
+    {
+      "author": "Сергей П.",
+      "rating": 5,
+      "text": "Держатель в машину держит намертво даже на грунтовке. Отдельное спасибо за упаковку — коробка в коробке, ничего не помялось."
+    },
+    {
+      "author": "Марина Т.",
+      "rating": 5,
+      "text": "Заказывала через сайт, а не через WB — вышло на 600 рублей дешевле. Менеджер ответил в телеграме сразу, трек прислали вечером того же дня."
+    }
+  ],
+  "faq": [
+    {
+      "question": "Почему на сайте дешевле, чем на Wildberries?",
+      "answer": "Маркетплейс берёт комиссию и оплачивает логистику до вашего города — это 15–25% цены. При заказе напрямую эти расходы не возникают, и мы отдаём разницу вам."
+    },
+    {
+      "question": "Есть ли гарантия, если я заказал не на маркетплейсе?",
+      "answer": "Да, гарантия одинаковая — 12 месяцев на всю электронику. Чек и гарантийный талон кладём в посылку, обмен по браку делаем за свой счёт."
+    },
+    {
+      "question": "Как быстро отправляете?",
+      "answer": "Заказы до 16:00 передаём в СДЭК в тот же день, позже — на следующий рабочий. Трек-номер приходит в мессенджер, которым вы оформляли заказ."
+    },
+    {
+      "question": "Можно забрать самовывозом?",
+      "answer": "Да, со склада в Химках по будням с 10:00 до 20:00. Напишите в заказе «самовывоз» — соберём и придержим двое суток."
+    },
+    {
+      "question": "Что делать, если товар не подошёл?",
+      "answer": "14 дней на возврат по закону, если сохранён товарный вид. Отправку возврата оплачиваем мы, если проблема на нашей стороне."
+    }
+  ],
+  "delivery": {
+    "free_from": 3000,
+    "base_price": 290,
+    "processing_days": "1 рабочий день",
+    "note": "Отправляем СДЭК по всей России со склада в Химках. До пункта выдачи — от 290 ₽, при заказе от 3 000 ₽ бесплатно.",
+    "pickup_points": [
+      {
+        "city": "Москва",
+        "address": "ул. Складочная, 1с18, ПВЗ СДЭК",
+        "hours": "пн-вс 10:00–21:00"
+      },
+      {
+        "city": "Москва",
+        "address": "Ленинский пр-т, 109, ТЦ «Спектр», -1 этаж",
+        "hours": "пн-вс 10:00–22:00"
+      },
+      {
+        "city": "Санкт-Петербург",
+        "address": "Лиговский пр-т, 50, к.15",
+        "hours": "пн-сб 10:00–20:00"
+      },
+      {
+        "city": "Казань",
+        "address": "ул. Право-Булачная, 35/2",
+        "hours": "пн-пт 10:00–19:00"
+      },
+      {
+        "city": "Екатеринбург",
+        "address": "ул. Малышева, 71а",
+        "hours": "пн-сб 10:00–20:00"
+      }
+    ],
+    "order_channel": "telegram",
+    "order_contact": "https://t.me/volta_store",
+    "payment_methods": [
+      "Картой онлайн",
+      "СБП по QR-коду",
+      "При получении в СДЭК"
+    ]
+  },
+  "copy": {
+    "meta": {
+      "title": "VOLTA — зарядки, кабели и наушники напрямую от бренда",
+      "description": "Аксессуары для техники VOLTA без комиссии маркетплейса: повербанки, GaN-зарядки, кабели и наушники. Доставка СДЭК по России, бесплатно от 3 000 ₽."
+    },
+    "hero": {
+      "heading": "Зарядит всё, что у вас есть",
+      "subheading": "Повербанки, GaN-зарядки, кабели и наушники — те же, что на Wildberries и Ozon, но на 15–25% дешевле: комиссию площадки мы вам не перекладываем.",
+      "ctaLabel": "Смотреть каталог"
+    },
+    "about": {
+      "heading": "Мы проверяем каждую партию на стенде",
+      "body": "VOLTA начиналась в 2019 году с одного повербанка, который мы сделали для себя — все, что продавалось тогда, выдавало половину заявленной ёмкости.\n\nСегодня в линейке 40 позиций, но принцип не изменился: перед отправкой партия идёт на стенд. Мощность зарядок, реальная ёмкость аккумуляторов, скорость кабелей — всё измеряется, а не переписывается из спецификации поставщика. Если партия не проходит, она едет обратно, а не к вам."
+    }
+  },
+  "design": {
+    "tokenSetIndex": 0,
+    "sections": [
+      {
+        "id": "hero",
+        "variant": 3
+      },
+      {
+        "id": "marketplaces",
+        "variant": 0
+      },
+      {
+        "id": "bestsellers",
+        "variant": 0
+      },
+      {
+        "id": "catalog",
+        "variant": 1
+      },
+      {
+        "id": "about",
+        "variant": 0
+      },
+      {
+        "id": "stats",
+        "variant": 0
+      },
+      {
+        "id": "gallery",
+        "variant": 1
+      },
+      {
+        "id": "reviews",
+        "variant": 1
+      },
+      {
+        "id": "delivery",
+        "variant": 0
+      },
+      {
+        "id": "faq",
+        "variant": 0
+      },
+      {
+        "id": "contact",
+        "variant": 0
+      },
+      {
+        "id": "footer",
+        "variant": 0
+      }
+    ]
+  }
+}

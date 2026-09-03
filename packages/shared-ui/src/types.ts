@@ -30,4 +30,40 @@ export interface SiteData {
   highlights: { name: string; description?: string; price?: string | number; photo?: string }[];
   /** Existing online booking widget (YClients, Dikidi, etc.) — replaces the built-in contact form when set. */
   bookingUrl?: string;
+  /** Store catalog (marketplace-seller sites). Prices are numbers so the cart can add them up. */
+  products: StoreProduct[];
+  /** The seller's WB / Ozon / Яндекс Маркет storefronts, with their public ratings. */
+  marketplaces: { name: string; url: string; rating?: number; reviewsCount?: number; note?: string }[];
+  /** Shipping + payment terms driving the СДЭК estimate and the checkout flow. */
+  delivery?: StoreDelivery;
+}
+
+export interface StoreProduct {
+  /** Stable slug derived from the name — the cart line key and the DOM id of the card. */
+  id: string;
+  name: string;
+  description?: string;
+  price: number;
+  oldPrice?: number;
+  category?: string;
+  photo?: string;
+  badge?: string;
+  rating?: number;
+  reviewsCount?: number;
+  sku?: string;
+  inStock: boolean;
+  weightKg?: number;
+  specs: [string, string][];
+}
+
+export interface StoreDelivery {
+  freeFrom?: number;
+  basePrice?: number;
+  processingDays?: string;
+  note?: string;
+  pickupPoints: { city: string; address: string; hours?: string; note?: string }[];
+  /** Resolved by the pipeline: where "оформить заказ" sends the composed order. */
+  orderChannel?: "whatsapp" | "telegram" | "email";
+  orderContact?: string;
+  paymentMethods: string[];
 }

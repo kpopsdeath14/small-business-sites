@@ -66,3 +66,19 @@ sites/beauty-bar-mari/.astro/
 sites/klub-krasoty-d-art/node_modules/
 sites/klub-krasoty-d-art/dist/
 sites/klub-krasoty-d-art/.astro/
+
+# Marketplace-seller demo stores (VITRINA template).
+!sites/volta/
+sites/volta/node_modules/
+sites/volta/dist/
+sites/volta/.astro/
+
+!sites/len-i-hlopok/
+sites/len-i-hlopok/node_modules/
+sites/len-i-hlopok/dist/
+sites/len-i-hlopok/.astro/
+
+!sites/berry-lab/
+sites/berry-lab/node_modules/
+sites/berry-lab/dist/
+sites/berry-lab/.astro/

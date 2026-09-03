@@ -16,6 +16,7 @@ const BUSINESS_TYPE_LABELS: Record<Brief["business_type"], string> = {
   bakery: "кофейня / пекарня",
   "beauty-salon": "салон красоты / студия красоты",
   "tattoo-studio": "тату-студия / тату-мастер",
+  "marketplace-store": "интернет-магазин продавца на маркетплейсах (Wildberries / Ozon)",
 };
 
 function loadPrompt(file: string, vars: Record<string, string>): string {
@@ -35,6 +36,7 @@ function briefToVars(brief: Brief): Record<string, string> {
     phone: brief.phone,
     working_hours: JSON.stringify(brief.working_hours),
     menu_or_services: JSON.stringify(brief.menu_or_services),
+    products: JSON.stringify(brief.products.map(({ name, description, category }) => ({ name, description, category }))),
     reviews: JSON.stringify(brief.reviews),
     photos: JSON.stringify(brief.photos),
   };
@@ -69,14 +71,14 @@ export async function generateContent(brief: Brief, options: GenerateOptions = {
   const dryRun = options.dryRun || !apiKey;
 
   const content = dryRun ? dryRunContent(brief) : await liveGenerate(brief, apiKey!);
-  return GeneratedContentSchema.parse(content);
+  return GeneratedContentSchema.parse(applyCopyOverrides(brief, content));
 }
 
 async function liveGenerate(brief: Brief, apiKey: string): Promise<GeneratedContent> {
   const client = new Anthropic({ apiKey });
   const vars = briefToVars(brief);
 
-  const [meta, hero, about, itemsResult, altsResult, reviewsResult] = await Promise.all([
+  const [meta, hero, about, itemsResult, altsResult, reviewsResult, productsResult] = await Promise.all([
     callClaude(client, loadPrompt("seo-meta.md", vars)) as Promise<{ title: string; description: string }>,
     callClaude(client, loadPrompt("hero.md", vars)) as Promise<{ heading: string; subheading: string; ctaLabel: string }>,
     callClaude(client, loadPrompt("about.md", vars)) as Promise<{ heading: string; body: string }>,
@@ -89,6 +91,11 @@ async function liveGenerate(brief: Brief, apiKey: string): Promise<GeneratedCont
     brief.reviews.length > 0
       ? (callClaude(client, loadPrompt("reviews-format.md", vars)) as Promise<{ reviews: GeneratedContent["reviews"] }>)
       : Promise.resolve({ reviews: [] }),
+    // Store templates only: catalog copy. Prices/photos never round-trip through Claude —
+    // only names and one-line descriptions do, so a hallucinated number can't reach a price tag.
+    brief.products.length > 0
+      ? (callClaude(client, loadPrompt("products.md", vars)) as Promise<{ products: { name: string; description?: string }[] }>)
+      : Promise.resolve({ products: [] }),
   ]);
 
   return {
@@ -98,7 +105,31 @@ async function liveGenerate(brief: Brief, apiKey: string): Promise<GeneratedCont
     items: itemsResult.items.map((item, i) => ({ ...item, photo: brief.menu_or_services[i]?.photo })),
     gallery: brief.photos.map((src, i) => ({ src, alt: altsResult.alts[i] ?? brief.name })),
     reviews: reviewsResult.reviews.length > 0 ? reviewsResult.reviews : brief.reviews,
+    // Only accept the rewrite when Claude returned exactly one entry per product — a short or
+    // reordered list would silently mislabel items, so fall back to the brief's own copy.
+    products:
+      productsResult.products.length === brief.products.length
+        ? productsResult.products.map((p, i) => ({ name: p.name || brief.products[i].name, description: p.description ?? "" }))
+        : brief.products.map((p) => ({ name: p.name, description: p.description })),
   };
+}
+
+/** Field-by-field override from `brief.copy`; anything the brief leaves out keeps the generated
+ *  (or placeholder) value, so a brief can pin just the headline and leave the rest to Claude. */
+function applyCopyOverrides(brief: Brief, content: GeneratedContent): GeneratedContent {
+  const copy = brief.copy;
+  if (!copy) return content;
+  return {
+    ...content,
+    meta: { ...content.meta, ...stripUndefined(copy.meta) },
+    hero: { ...content.hero, ...stripUndefined(copy.hero) },
+    about: { ...content.about, ...stripUndefined(copy.about) },
+  };
+}
+
+function stripUndefined<T extends object>(value: T | undefined): Partial<T> {
+  if (!value) return {};
+  return Object.fromEntries(Object.entries(value).filter(([, v]) => v !== undefined)) as Partial<T>;
 }
 
 function truncateAtWord(input: string, maxLength: number): string {
@@ -136,10 +167,10 @@ function dryRunContent(brief: Brief): GeneratedContent {
     hero: {
       heading: brief.name,
       subheading: truncateAtSentence(brief.description_raw, 115) || "Добро пожаловать!",
-      ctaLabel: "Связаться с нами",
+      ctaLabel: brief.business_type === "marketplace-store" ? "Перейти в каталог" : "Связаться с нами",
     },
     about: {
-      heading: "О нас",
+      heading: brief.business_type === "marketplace-store" ? "О бренде" : "О нас",
       body: brief.description_raw || "Расскажем о себе подробнее совсем скоро.",
     },
     items: brief.menu_or_services.map((item) => ({
@@ -151,5 +182,6 @@ function dryRunContent(brief: Brief): GeneratedContent {
     })),
     gallery: brief.photos.map((src, i) => ({ src, alt: `${brief.name} — фото ${i + 1}` })),
     reviews: brief.reviews,
+    products: brief.products.map((product) => ({ name: product.name, description: product.description })),
   };
 }

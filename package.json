@@ -9,11 +9,13 @@
     "sites/*"
   ],
   "scripts": {
-    "new-site": "tsx cli/new-site/src/index.ts"
+    "new-site": "tsx cli/new-site/src/index.ts",
+    "verify-stores": "node scripts/verify-stores.mjs"
   },
   "devDependencies": {
     "typescript": "^5.6.0",
-    "tsx": "^4.19.0"
+    "tsx": "^4.19.0",
+    "playwright": "^1.48.0"
   },
   "engines": {
     "node": ">=18.17.0"

@@ -1,0 +1,54 @@
+{
+  "seed": "berry-lab",
+  "tokenSetIndex": 5,
+  "sections": [
+    {
+      "id": "hero",
+      "variant": 2
+    },
+    {
+      "id": "marketplaces",
+      "variant": 0
+    },
+    {
+      "id": "bestsellers",
+      "variant": 0
+    },
+    {
+      "id": "catalog",
+      "variant": 0
+    },
+    {
+      "id": "about",
+      "variant": 0
+    },
+    {
+      "id": "stats",
+      "variant": 0
+    },
+    {
+      "id": "gallery",
+      "variant": 1
+    },
+    {
+      "id": "reviews",
+      "variant": 1
+    },
+    {
+      "id": "delivery",
+      "variant": 0
+    },
+    {
+      "id": "faq",
+      "variant": 0
+    },
+    {
+      "id": "contact",
+      "variant": 0
+    },
+    {
+      "id": "footer",
+      "variant": 0
+    }
+  ]
+}

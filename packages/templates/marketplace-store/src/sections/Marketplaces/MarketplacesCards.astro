@@ -1,0 +1,77 @@
+---
+import Container from "@sitegen/shared-ui/components/Container.astro";
+import StoreSection from "../../components/StoreSection.astro";
+import MarketMark from "../../components/MarketMark.astro";
+import Stars from "../../components/Stars.astro";
+import type { SiteData } from "@sitegen/shared-ui/types.ts";
+
+interface Props {
+  data: SiteData;
+}
+const { data } = Astro.props;
+---
+
+<StoreSection id="marketplaces" spacing="md">
+  <Container class="max-w-6xl">
+    <div class="mb-9 max-w-2xl" data-reveal>
+      <p class="eyebrow mb-3">Нам уже доверяют</p>
+      <h2 class="section-title">Мы на маркетплейсах</h2>
+      <p class="mt-4 text-sm leading-relaxed text-[var(--color-text-muted)] sm:text-base">
+        Рейтинг и отзывы можно проверить на площадке — а заказать здесь дешевле, без комиссии маркетплейса.
+      </p>
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" data-reveal-stagger="90">
+      {
+        data.marketplaces.map((marketplace) => (
+          <a
+            href={marketplace.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="group flex flex-col rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 transition-all duration-500 hover:-translate-y-1.5 hover:border-[color-mix(in_srgb,var(--color-primary)_50%,var(--color-border))] hover:shadow-[var(--shadow-elevated)]"
+            data-reveal
+          >
+            <div class="flex items-center gap-3">
+              <MarketMark name={marketplace.name} class="!text-[13px] !px-2.5 !py-1.5" />
+              <span class="font-[var(--font-heading)] text-lg font-bold text-[var(--color-text)]">{marketplace.name}</span>
+            </div>
+
+            {marketplace.rating !== undefined && (
+              <div class="mt-5 flex items-baseline gap-3">
+                <span class="num text-4xl font-extrabold leading-none text-[var(--color-text)]">
+                  {marketplace.rating.toFixed(1)}
+                </span>
+                <span class="flex flex-col">
+                  <Stars rating={marketplace.rating} size={14} />
+                  {marketplace.reviewsCount !== undefined && (
+                    <span class="mt-1 text-[11px] text-[var(--color-text-muted)]">
+                      {marketplace.reviewsCount.toLocaleString("ru-RU")} отзывов
+                    </span>
+                  )}
+                </span>
+              </div>
+            )}
+
+            {marketplace.note && <p class="mt-4 text-sm leading-relaxed text-[var(--color-text-muted)]">{marketplace.note}</p>}
+
+            <span class="mt-auto pt-6 inline-flex items-center gap-2 text-[13px] font-bold text-[var(--color-primary)]">
+              Открыть магазин
+              <svg
+                class="transition-transform duration-300 group-hover:translate-x-1"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                width="15"
+                height="15"
+                aria-hidden="true"
+              >
+                <path d="M5 12h13M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </span>
+          </a>
+        ))
+      }
+    </div>
+  </Container>
+</StoreSection>
