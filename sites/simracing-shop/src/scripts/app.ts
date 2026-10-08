@@ -153,10 +153,31 @@ document.addEventListener("click", (e) => {
   const q = Number(b.dataset.qty || 1);
   if (!items[id]) return;
   cart.add(id, q);
-  try { navigator.vibrate?.(14); } catch {}
+  haptic();
   rpmFlash();
   pitBoard(id, q);
 });
+
+/**
+ * A short tap of haptic feedback. Android: Vibration API. iPhone: Safari has no Vibration API,
+ * but since iOS 18 toggling a native <input switch> plays a system haptic, so we click a hidden
+ * one. Must run inside the user's tap handler (it does: called from the click listener).
+ */
+function haptic() {
+  if (typeof navigator.vibrate === "function") { try { navigator.vibrate(14); } catch {} return; }
+  try {
+    const label = document.createElement("label");
+    label.ariaHidden = "true";
+    label.style.display = "none";
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.setAttribute("switch", "");
+    label.appendChild(input);
+    document.head.appendChild(label);
+    label.click();
+    label.remove();
+  } catch {}
+}
 
 const pit = $(".pit")!;
 let pitT = 0, pitRaf = 0, addN = 0;
