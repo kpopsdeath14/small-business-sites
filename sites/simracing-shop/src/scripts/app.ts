@@ -75,7 +75,7 @@ function renderCart() {
   const ls = cart.lines();
   renderLines(list, { compact: true });
   if (!ls.length) list.innerHTML = `<p class="lead" style="padding:28px 0"><span class="bwoah">«Bwoah.»</span> В боксах пока пусто — начните с кокпита.</p>`;
-  const tr = $("[data-track]", drawer);
+  const tr = $("[data-dtrack]", drawer);
   if (tr) updateTrack(tr, cart.total());
   $(".drawer__foot", drawer)!.hidden = !ls.length;
   syncButtons();

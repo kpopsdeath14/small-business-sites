@@ -2,12 +2,16 @@
 import Base from "../../layouts/Base.astro";
 import ProductCard from "../../components/ProductCard.astro";
 import Icon from "../../components/Icon.astro";
-import { products, bySlug, url, pimg, rub, catTitle, wa, contacts } from "../../lib/site";
+import Plate from "../../components/Plate.astro";
+import Footprint from "../../components/Footprint.astro";
+import { products, bySlug, url, pimg, rub, catTitle, wa, contacts, DIMS, PLATE } from "../../lib/site";
 
 export function getStaticPaths() {
   return products.map((p) => ({ params: { slug: p.slug } }));
 }
 const p = bySlug(Astro.params.slug!);
+const dims = DIMS[p.slug];
+const plate = PLATE[p.slug];
 const v = p.variants[0];
 const multi = p.variants.length > 1;
 const related = products.filter((x) => x.cat === p.cat && x.slug !== p.slug).concat(products.filter((x) => x.cat !== p.cat && x.cat === "cockpits")).slice(0, 8);
@@ -27,6 +31,7 @@ const desc = `${p.name} — ${p.sub || catTitle(p.cat)}. Цена ${rub(p.from)}
     <div class="wrap pp__grid">
       <!-- gallery -->
       <section class="gal" aria-label="Фотографии">
+        <span class="loupe" data-loupe aria-hidden="true"></span>
         <div class="gal__track studio" data-track>
           {v.img.map((id, i) => (
             <figure class="gal__slide"><img src={pimg(id, 1200)} srcset={`${pimg(id, 600)} 600w, ${pimg(id, 1200)} 1200w`} sizes="(min-width: 1000px) 56vw, 100vw" alt={`${p.name}, фото ${i + 1}`} loading={i === 0 ? "eager" : "lazy"} decoding="async" /></figure>
@@ -85,8 +90,20 @@ const desc = `${p.name} — ${p.sub || catTitle(p.cat)}. Цена ${rub(p.from)}
           <li><span class="tag">Монтаж</span><span>Сборка, подключение и настройка под ваш рост</span></li>
           <li><span class="tag">Тест-драйв</span><span>Попробуйте вживую в шоуруме — <a href={url("showroom/")}>записаться</a></span></li>
         </ul>
+        {plate && <Plate model={p.name.replace(/ — .*/, "")} line={plate.line} warranty={plate.warranty} />}
       </section>
     </div>
+
+    {dims && (
+      <section class="wrap dims">
+        <div class="dims__head">
+          <div class="sh__top"><span class="tag">[▭]</span><span class="tag">Габариты</span></div>
+          <h2 class="d2" data-in>Впишется <b>в вашу комнату</b></h2>
+          <p class="lead" data-in>Вид сверху в масштабе. Сплошной контур — минимальная длина, пунктир — с выдвинутыми салазками{dims.w[0] !== dims.w[1] ? " и стойкой" : ""}.</p>
+        </div>
+        <Footprint l={dims.l} w={dims.w} h={dims.h} kind={p.cat === "stands" ? "stand" : "cockpit"} />
+      </section>
+    )}
 
     {p.features.length > 0 && (
       <section class="wrap feats">
@@ -235,6 +252,29 @@ const desc = `${p.name} — ${p.sub || catTitle(p.cat)}. Цена ${rub(p.from)}
   const pre = new URLSearchParams(location.search).get("v");
   if (pre && pre !== D.v[0].id) pick(pre, false);
 
+  // loupe (mouse only): a magnified circle of the 1200px photo follows the cursor
+  const loupe = $("[data-loupe]");
+  if (matchMedia("(hover: hover) and (pointer: fine)").matches) {
+    const Z = 2.4;
+    let raf = 0;
+    track.addEventListener("pointermove", (e) => {
+      const im = (e.target as HTMLElement).closest(".gal__slide")?.querySelector("img");
+      if (!im) return;
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const r = im.getBoundingClientRect(), g = track.getBoundingClientRect();
+        const x = e.clientX - r.left, y = e.clientY - r.top;
+        const src = im.currentSrc || im.src;
+        if (loupe.dataset.src !== src) { loupe.style.backgroundImage = `url("${src.replace("-600.webp", "-1200.webp")}")`; loupe.dataset.src = src; }
+        loupe.style.backgroundSize = `${r.width * Z}px ${r.height * Z}px`;
+        loupe.style.backgroundPosition = `${-(x * Z - 90)}px ${-(y * Z - 90)}px`;
+        loupe.style.transform = `translate3d(${e.clientX - g.left - 90}px, ${e.clientY - g.top - 90}px, 0)`;
+        loupe.classList.add("on");
+      });
+    });
+    track.addEventListener("pointerleave", () => { cancelAnimationFrame(raf); loupe.classList.remove("on"); });
+  }
+
   // sticky bar appears when the main buy box scrolls away (phones)
   const sbar = $("[data-sbar]");
   new IntersectionObserver(([e]) => {
@@ -262,6 +302,12 @@ const desc = `${p.name} — ${p.sub || catTitle(p.cat)}. Цена ${rub(p.from)}
   .gal__frame i:nth-child(3) { left: 12px; bottom: 12px; border-width: 0 0 1px 1px; display: none; }
   .gal__frame i:nth-child(4) { right: 12px; bottom: 12px; border-width: 0 1px 1px 0; }
   .gal__thumbs { display: none; }
+  .loupe { position: absolute; left: 0; top: 0; z-index: 5; width: 180px; height: 180px; border-radius: 50%; pointer-events: none; background-color: #fff; background-repeat: no-repeat; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12), 0 18px 40px rgba(0, 0, 0, 0.35), inset 0 0 0 4px rgba(255, 255, 255, 0.9); opacity: 0; transition: opacity 0.25s; display: none; }
+  .loupe.on { opacity: 1; }
+  @media (hover: hover) and (pointer: fine) { .loupe { display: block; } .gal__track { cursor: zoom-in; } }
+  .buy :global(.plate) { margin-top: 10px; }
+  .dims { display: grid; gap: 28px; margin-top: 72px; }
+  .dims__head { display: grid; gap: 16px; }
   .gal__track { -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y; overscroll-behavior-x: contain; }
   .gal :global(.gal__slide img) { mix-blend-mode: normal; }
   .gal__frame, .gal__count, .gal__dots { pointer-events: none; }
@@ -328,6 +374,7 @@ const desc = `${p.name} — ${p.sub || catTitle(p.cat)}. Цена ${rub(p.from)}
     .gal__frame i:nth-child(3) { display: block; }
     .gal__count { left: 20px; bottom: 18px; }
     .gal__sw, .gal__dots { display: none; }
+    .dims { grid-template-columns: 1fr 1.35fr; gap: 64px; align-items: center; margin-top: 120px; }
     .vpick { display: grid; }
     .gal__thumbs { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-top: 8px; }
     .gal__thumbs :global(button) { aspect-ratio: 1; opacity: 0.55; transition: opacity 0.3s; outline: 1px solid transparent; outline-offset: -1px; }

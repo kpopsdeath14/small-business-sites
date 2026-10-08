@@ -1,0 +1,72 @@
+---
+// Top-down footprint drawn to scale on a 50 cm floor grid, like a technical drawing.
+// Solid outline = shortest setting, dashed = full length / width with rails extended.
+interface Props { l: [number, number]; w: [number, number]; h?: string; kind: "cockpit" | "stand" }
+const { l, w, h, kind } = Astro.props;
+const fmt = (a: number, b: number) => (a === b ? `${a}` : `${a}–${b}`);
+const PAD = 420;
+const W = Math.ceil((l[1] + PAD * 2) / 500) * 500;
+const H = Math.ceil((w[1] + PAD * 2) / 500) * 500;
+const x0 = (W - l[1]) / 2;
+const y0 = (H - w[1]) / 2;
+const yMin = y0 + (w[1] - w[0]) / 2;
+const area = ((l[1] * w[1]) / 1e6).toFixed(1).replace(".", ",");
+const grid: number[] = [];
+for (let g = 500; g < Math.max(W, H); g += 500) grid.push(g);
+const T = 70; // label size in mm units
+---
+<figure class="fp" data-in>
+  <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`Габариты: длина ${fmt(l[0], l[1])} мм, ширина ${fmt(w[0], w[1])} мм`}>
+    <rect width={W} height={H} class="fp__floor" />
+    {grid.filter((g) => g < W).map((g) => <line x1={g} y1="0" x2={g} y2={H} class="fp__grid" />)}
+    {grid.filter((g) => g < H).map((g) => <line x1="0" y1={g} x2={W} y2={g} class="fp__grid" />)}
+
+    <!-- full extent (rails out / widest) -->
+    <rect x={x0} y={y0} width={l[1]} height={w[1]} class="fp__max" />
+    <!-- shortest setting -->
+    <rect x={x0} y={yMin} width={l[0]} height={w[0]} class="fp__min" />
+    {kind === "cockpit" && (
+      <g class="fp__seat">
+        <rect x={x0 + l[0] * 0.08} y={yMin + w[0] * 0.22} width={l[0] * 0.3} height={w[0] * 0.56} rx="60" />
+        <circle cx={x0 + l[0] * 0.78} cy={yMin + w[0] / 2} r={Math.min(150, w[0] * 0.2)} />
+      </g>
+    )}
+
+    <!-- length -->
+    <g class="fp__dim">
+      <line x1={x0} y1={y0 - 160} x2={x0 + l[1]} y2={y0 - 160} />
+      <line x1={x0} y1={y0 - 210} x2={x0} y2={y0 - 110} />
+      <line x1={x0 + l[1]} y1={y0 - 210} x2={x0 + l[1]} y2={y0 - 110} />
+      <text x={x0 + l[1] / 2} y={y0 - 200} font-size={T}>{fmt(l[0], l[1])} мм</text>
+    </g>
+    <!-- width -->
+    <g class="fp__dim">
+      <line x1={x0 + l[1] + 160} y1={y0} x2={x0 + l[1] + 160} y2={y0 + w[1]} />
+      <line x1={x0 + l[1] + 110} y1={y0} x2={x0 + l[1] + 210} y2={y0} />
+      <line x1={x0 + l[1] + 110} y1={y0 + w[1]} x2={x0 + l[1] + 210} y2={y0 + w[1]} />
+      <text x={x0 + l[1] + 230} y={y0 + w[1] / 2} font-size={T} class="fp__vt" transform={`rotate(90 ${x0 + l[1] + 230} ${y0 + w[1] / 2})`}>{fmt(w[0], w[1])} мм</text>
+    </g>
+  </svg>
+  <figcaption class="fp__cap">
+    <div><span class="tag">Площадь</span><b>{area} м²</b></div>
+    {h && <div><span class="tag">Высота</span><b>{h} мм</b></div>}
+    <div><span class="tag">Сетка</span><b>50 × 50 см</b></div>
+  </figcaption>
+</figure>
+
+<style>
+  .fp { display: grid; gap: 14px; }
+  .fp svg { width: 100%; height: auto; display: block; background: var(--panel); border: 1px solid var(--line); }
+  .fp__floor { fill: var(--panel); }
+  .fp__grid { stroke: rgba(236, 240, 245, 0.06); stroke-width: 3; }
+  .fp__max { fill: none; stroke: rgba(236, 240, 245, 0.35); stroke-width: 6; stroke-dasharray: 26 20; }
+  .fp__min { fill: rgba(255, 45, 32, 0.08); stroke: var(--red); stroke-width: 8; stroke-dasharray: 9000; stroke-dashoffset: 9000; transition: stroke-dashoffset 1.6s var(--ease) 0.2s; }
+  .in .fp__min, :global(html:not(.js)) .fp__min { stroke-dashoffset: 0; }
+  .fp__seat { fill: none; stroke: rgba(236, 240, 245, 0.28); stroke-width: 6; }
+  .fp__dim line { stroke: var(--mute); stroke-width: 4; }
+  .fp__dim text { fill: var(--text); font-family: var(--mono); text-anchor: middle; letter-spacing: 0.04em; }
+  .fp__cap { display: flex; flex-wrap: wrap; gap: 8px 28px; }
+  .fp__cap div { display: grid; gap: 2px; }
+  .fp__cap .tag { color: var(--dim); font-size: 9.5px; }
+  .fp__cap b { font-weight: 500; font-variant-numeric: tabular-nums; }
+</style>

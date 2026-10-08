@@ -1,0 +1,51 @@
+---
+// Builder's plate, like the one riveted to an RSEAT chassis: brushed metal, engraved type.
+// A highlight sweeps across once when it scrolls into view and again on hover.
+interface Props { model: string; line: string; warranty: string }
+const { model, line, warranty } = Astro.props;
+---
+<div class="plate" data-in aria-label={`RSEAT ${model}, сделано в ЕС, гарантия ${warranty}`}>
+  <i class="plate__rivet"></i><i class="plate__rivet"></i><i class="plate__rivet"></i><i class="plate__rivet"></i>
+  <div class="plate__top">
+    <span class="plate__brand">RSEAT</span>
+    <span class="plate__made">MADE IN EU</span>
+  </div>
+  <p class="plate__model">{model}</p>
+  <div class="plate__bot">
+    <span>{line}</span>
+    <span>WARRANTY {warranty}</span>
+  </div>
+  <span class="plate__shine" aria-hidden="true"></span>
+</div>
+
+<style>
+  .plate {
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    gap: 6px;
+    padding: 16px 22px 14px;
+    color: #2b2f35;
+    background:
+      repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0 1px, rgba(0, 0, 0, 0.035) 1px 2px),
+      linear-gradient(180deg, #d9dde2 0%, #b6bcc4 48%, #c9ced5 100%);
+    border-radius: 3px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), inset 0 -1px 0 rgba(0, 0, 0, 0.25), 0 10px 24px rgba(0, 0, 0, 0.35);
+  }
+  .plate__rivet { position: absolute; width: 7px; height: 7px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #f2f4f6, #8a9099 70%); box-shadow: inset 0 -1px 1px rgba(0, 0, 0, 0.3); }
+  .plate__rivet:nth-child(1) { left: 7px; top: 7px; }
+  .plate__rivet:nth-child(2) { right: 7px; top: 7px; }
+  .plate__rivet:nth-child(3) { left: 7px; bottom: 7px; }
+  .plate__rivet:nth-child(4) { right: 7px; bottom: 7px; }
+  /* engraved: dark letter with a light lower edge */
+  .plate span, .plate p { text-shadow: 0 1px 0 rgba(255, 255, 255, 0.55), 0 -1px 0 rgba(0, 0, 0, 0.18); }
+  .plate__top, .plate__bot { display: flex; justify-content: space-between; gap: 12px; font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.16em; }
+  .plate__brand { font-family: var(--display); font-weight: 500; font-size: 13px; letter-spacing: 0.24em; }
+  .plate__made { align-self: center; }
+  .plate__model { font-family: var(--display); font-weight: 400; font-size: 22px; letter-spacing: 0.02em; text-transform: uppercase; color: #22262b; }
+  .plate__bot { color: #464b52; }
+  .plate__shine { position: absolute; inset: -40% auto -40% -60%; width: 40%; transform: rotate(18deg) translateX(0); background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.65), transparent); opacity: 0; pointer-events: none; }
+  .plate.in .plate__shine { animation: shine 1.3s 0.4s var(--ease-io) both; }
+  @media (hover: hover) { .plate:hover .plate__shine { animation: shine 1.1s var(--ease-io) both; } }
+  @keyframes shine { 0% { opacity: 1; transform: rotate(18deg) translateX(0); } 100% { opacity: 1; transform: rotate(18deg) translateX(520%); } }
+</style>

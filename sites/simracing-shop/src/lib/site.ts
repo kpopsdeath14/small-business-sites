@@ -60,3 +60,36 @@ export const cartIndex = Object.fromEntries(
     ]),
   ),
 );
+
+/**
+ * Footprints from the client's product pages (mm). `l`/`w` may be ranges [min, max]
+ * (seat rails / adjustable stand). Only products with explicit figures are listed.
+ */
+export const DIMS: Record<string, { l: [number, number]; w: [number, number]; h?: string }> = {
+  "a1-pro-formula": { l: [1425, 1750], w: [660, 660] },
+  "a1-pro-gt": { l: [1425, 1750], w: [660, 660] },
+  "rs-formula-v2": { l: [1950, 2150], w: [620, 620], h: "980" },
+  p1: { l: [1680, 1750], w: [600, 600] },
+  rs1: { l: [1815, 1815], w: [640, 640], h: "1305" },
+  "rs-formula-turnkey": { l: [1950, 2150], w: [620, 1300], h: "980" },
+  "rs-formula-m4a-full-motion": { l: [2000, 2200], w: [800, 800], h: "940" },
+  "rs-stand-t3xl": { l: [2700, 2700], w: [900, 900], h: "1100–1350" },
+  "rs-stand-s3": { l: [1350, 1350], w: [685, 685], h: "1000–1250" },
+};
+
+/** Builder's plate details for RSEAT-made products. */
+export const PLATE: Record<string, { line: string; warranty: string }> = {
+  "a1-pro-formula": { line: "ALU 6063-T6 · FORMULA", warranty: "5 YRS" },
+  "a1-pro-gt": { line: "ALU 6063-T6 · GT", warranty: "5 YRS" },
+  p1: { line: "TUBULAR FRAME · GT", warranty: "5 YRS" },
+  "p1-sparco": { line: "TUBULAR FRAME · SPARCO", warranty: "2 YRS" },
+  c1: { line: "TUBULAR FRAME · SPARCO", warranty: "2 YRS" },
+  b1: { line: "MODULAR PLATFORM", warranty: "2 YRS" },
+  "rs-formula-v2": { line: "FORMULA POSITION", warranty: "2 YRS" },
+  s1: { line: "STEEL FRAME · GT", warranty: "2 YRS" },
+  n1: { line: "STEEL FRAME · GT", warranty: "2 YRS" },
+  rs1: { line: "CARBON STEEL · LASER CUT", warranty: "2 YRS" },
+  "rs-formula-m4a-full-motion": { line: "D-BOX 4250i · 4 ACTUATORS", warranty: "2 YRS" },
+  "rs1-light": { line: "TURNKEY SIMULATOR", warranty: "2 YRS" },
+  "rs-formula-turnkey": { line: "TURNKEY SIMULATOR", warranty: "2 YRS" },
+};
