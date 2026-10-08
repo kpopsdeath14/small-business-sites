@@ -55,6 +55,7 @@ const links = [
         </a>
         <button class="hdr__btn burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="menu"><span></span><span></span></button>
       </div>
+      <div class="rpm" aria-hidden="true">{Array.from({ length: 15 }, () => <i></i>)}</div>
     </header>
 
     <div class="menu" id="menu" aria-hidden="true">
@@ -100,6 +101,7 @@ const links = [
         </div>
         <div class="ftr__base">
           <p class="tag">© 2014–{year} SimRacing Shop</p>
+          <p class="tag lap">Ваш круг · <span class="num" data-lap>0:00.000</span></p>
           <p class="tag">Москва · Самара</p>
         </div>
       </div>

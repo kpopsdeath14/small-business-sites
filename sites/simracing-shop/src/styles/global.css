@@ -439,3 +439,23 @@ textarea.input { min-height: 104px; resize: vertical; }
 ::view-transition-new(root) { animation: vtIn 0.6s var(--ease) both; }
 @keyframes vtOut { to { opacity: 0; } }
 @keyframes vtIn { from { opacity: 0; transform: translateY(14px); } }
+
+/* ---------- shift lights (scroll progress) ---------- */
+.rpm { position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; display: grid; grid-template-columns: repeat(15, 1fr); gap: 3px; pointer-events: none; }
+.rpm i { background: rgba(236, 240, 245, 0.06); transition: background 0.25s, box-shadow 0.25s; }
+.rpm i.on:nth-child(-n + 5) { background: #3ddc84; box-shadow: 0 0 8px rgba(61, 220, 132, 0.7); }
+.rpm i.on:nth-child(n + 6):nth-child(-n + 10) { background: #ff2d20; box-shadow: 0 0 8px rgba(255, 45, 32, 0.7); }
+.rpm i.on:nth-child(n + 11) { background: #4c7dff; box-shadow: 0 0 8px rgba(76, 125, 255, 0.8); }
+.rpm.limit i { background: #4c7dff; box-shadow: 0 0 10px rgba(76, 125, 255, 0.9); animation: limiter 0.14s steps(1) 6 alternate; }
+@keyframes limiter { 50% { background: rgba(236, 240, 245, 0.06); box-shadow: none; } }
+
+/* ---------- "pit stop" add-to-cart state ---------- */
+.btn.is-added { background: var(--panel-2); color: var(--text); box-shadow: inset 0 0 0 1px rgba(61, 220, 132, 0.45); justify-content: flex-start; gap: 12px; pointer-events: none; }
+.btn.is-added::before { transform: translateY(101%); }
+.lamp { width: 9px; height: 9px; flex: none; border-radius: 50%; background: var(--ok); box-shadow: 0 0 10px var(--ok), 0 0 26px rgba(61, 220, 132, 0.5); animation: lamp 0.5s var(--ease); }
+@keyframes lamp { from { transform: scale(0); } }
+.card__plus.is-added { background: #1f9d57 !important; pointer-events: none; }
+
+/* lap timer */
+.lap .num { color: var(--text); }
+@media (max-width: 639px) { .ftr__base { flex-direction: column; } }

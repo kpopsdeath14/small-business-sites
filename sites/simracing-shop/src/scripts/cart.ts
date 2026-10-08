@@ -82,3 +82,17 @@ export function bindLines(root: HTMLElement) {
     else if (t.closest("[data-rm]")) cart.remove(id);
   });
 }
+
+/** Timing-screen style: digits run from the current value to the new one. */
+export function rollPrice(el: HTMLElement, to: number) {
+  const from = Number(el.dataset.val ?? el.textContent!.replace(/\D/g, "")) || to;
+  el.dataset.val = String(to);
+  if (from === to || matchMedia("(prefers-reduced-motion: reduce)").matches) { el.textContent = rub(to); return; }
+  const t0 = performance.now(), dur = 560;
+  const step = (t: number) => {
+    const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+    el.textContent = rub(Math.round(from + (to - from) * e));
+    if (k < 1 && el.dataset.val === String(to)) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}

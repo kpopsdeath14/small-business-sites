@@ -96,6 +96,52 @@ document.addEventListener("click", (e) => {
   const q = Number(b.dataset.qty || 1);
   if (!items[id]) return;
   cart.add(id, q);
-  if (b.dataset.mode === "drawer") openCart();
-  else toast(`Добавлено · ${items[id].n}`);
+  pitStop(b);
+  if (b.dataset.mode === "drawer") setTimeout(openCart, 420);
+  else toast(`В корзине · ${items[id].n}`);
 });
+
+/* "pit stop": the button lights a green lamp for a moment */
+const CHECK = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg>';
+function pitStop(b: HTMLElement) {
+  if (b.classList.contains("is-added")) return;
+  const html = b.innerHTML;
+  b.classList.add("is-added");
+  b.innerHTML = b.classList.contains("btn") ? '<span class="lamp"></span><span>В корзине</span>' : CHECK;
+  setTimeout(() => { b.innerHTML = html; b.classList.remove("is-added"); }, 1500);
+}
+
+/* ---------- shift lights: scroll progress as an F1 wheel rev bar ---------- */
+const rpm = $(".rpm");
+const leds = rpm ? $$("i", rpm) : [];
+let rpmTick = false;
+const revs = () => {
+  rpmTick = false;
+  const max = root.scrollHeight - innerHeight;
+  const p = max > 0 ? scrollY / max : 0;
+  const n = Math.round(p * leds.length);
+  leds.forEach((l, i) => l.classList.toggle("on", i < n));
+  rpm!.classList.toggle("limit", p > 0.995 && max > innerHeight * 0.6);
+};
+if (rpm) {
+  addEventListener("scroll", () => { if (!rpmTick) { rpmTick = true; requestAnimationFrame(revs); } }, { passive: true });
+  addEventListener("resize", revs);
+  revs();
+}
+
+/* ---------- lap timer in the footer: time on the site this session ---------- */
+const lapEl = $("[data-lap]");
+if (lapEl) {
+  let start = Date.now();
+  try {
+    const s = Number(sessionStorage.getItem("rseat-lap"));
+    if (s) start = s; else sessionStorage.setItem("rseat-lap", String(start));
+  } catch {}
+  const fmt = (ms: number) => {
+    const m = Math.floor(ms / 60000), sec = Math.floor((ms % 60000) / 1000), mil = ms % 1000;
+    return `${m}:${String(sec).padStart(2, "0")}.${String(mil).padStart(3, "0")}`;
+  };
+  let vis = false;
+  const loop = () => { if (!vis) return; lapEl.textContent = fmt(Date.now() - start); requestAnimationFrame(loop); };
+  new IntersectionObserver(([e]) => { vis = e.isIntersecting; if (vis) loop(); }).observe(lapEl);
+}

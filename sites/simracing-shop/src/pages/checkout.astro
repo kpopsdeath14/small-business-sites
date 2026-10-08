@@ -60,8 +60,10 @@ import { url, contacts } from "../lib/site";
 
     <section class="wrap done" data-done hidden>
       <div class="done__box ticks">
-        <span class="done__ico"><Icon name="check" /></span>
-        <p class="tag">Заказ <span class="num" data-oid></span></p>
+        <div class="flag" aria-hidden="true">
+          {Array.from({ length: 35 }, (_, i) => <i class:list={{ b: (Math.floor(i / 7) + (i % 7)) % 2 === 1 }} style={`--c:${i % 7}`}></i>)}
+        </div>
+        <p class="tag">Финиш · заказ <span class="num" data-oid></span></p>
         <h2 class="d2">Заказ <b>принят</b></h2>
         <p class="lead">Отправьте его менеджеру одним нажатием — так он попадёт в работу сразу. Мы подтвердим наличие, сроки и пришлём ссылку на оплату.</p>
         <div class="done__ctas">
@@ -152,10 +154,19 @@ import { url, contacts } from "../lib/site";
     $("[data-pre]").textContent = text;
     $<HTMLAnchorElement>("[data-send-wa]").href = `https://wa.me/${WA}?text=${encodeURIComponent(text)}`;
     $<HTMLAnchorElement>("[data-send-mail]").href = `mailto:${MAIL}?subject=${encodeURIComponent(`Заказ ${oid}`)}&body=${encodeURIComponent(text)}`;
-    $("[data-form-wrap]").hidden = true;
-    $("[data-done]").hidden = false;
-    cart.clear();
-    scrollTo({ top: 0, behavior: "smooth" });
+    // a tiny start sequence on the button, then the chequered flag
+    const btn = form.querySelector<HTMLButtonElement>("button[type=submit]")!;
+    btn.disabled = true;
+    btn.innerHTML = `<span class="mini">${"<i></i>".repeat(5)}</span>`;
+    const minis = [...btn.querySelectorAll("i")];
+    minis.forEach((m, i) => setTimeout(() => m.classList.add("on"), 120 + i * 160));
+    setTimeout(() => {
+      minis.forEach((m) => m.classList.remove("on"));
+      $("[data-form-wrap]").hidden = true;
+      $("[data-done]").hidden = false;
+      cart.clear();
+      scrollTo({ top: 0, behavior: "smooth" });
+    }, 120 + 5 * 160 + 320);
   });
 </script>
 
@@ -185,6 +196,16 @@ import { url, contacts } from "../lib/site";
 
   .done[hidden] { display: none; }
   .done__box { display: grid; gap: 18px; justify-items: start; padding: 28px 18px; background: var(--panel); border: 1px solid var(--line); max-width: 760px; }
+  .flag { position: relative; display: grid; grid-template-columns: repeat(7, 11px); grid-auto-rows: 11px; margin: 6px 0 16px 10px; }
+  .flag::before { content: ""; position: absolute; left: -10px; top: -6px; bottom: -14px; width: 2px; background: linear-gradient(180deg, #c9cdd3, #5d636c); }
+  .flag i { background: #eceff2; animation: wave 1.5s ease-in-out infinite, flagIn 0.6s var(--ease) both; animation-delay: calc(var(--c) * -0.09s), calc(var(--c) * 0.04s); }
+  .flag i.b { background: #0b0c0e; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06); }
+  @keyframes wave { 0%, 100% { transform: translateY(0); filter: brightness(1); } 50% { transform: translateY(-4px); filter: brightness(0.82); } }
+  @keyframes flagIn { from { opacity: 0; } }
+  .co__form :global(.mini) { display: flex; gap: 8px; margin: 0 auto; }
+  .co__form :global(.mini i) { width: 10px; height: 10px; border-radius: 50%; background: rgba(0, 0, 0, 0.35); transition: background 0.08s, box-shadow 0.08s; }
+  .co__form :global(.mini i.on) { background: #fff; box-shadow: 0 0 10px #fff; }
+  .co__form button[disabled] { opacity: 1; justify-content: center; }
   .done__ico { width: 52px; height: 52px; display: grid; place-content: center; background: var(--red); color: #fff; animation: pop 0.8s var(--ease); }
   .done__ico :global(svg) { width: 26px; height: 26px; stroke-dasharray: 30; stroke-dashoffset: 30; animation: draw 0.7s 0.3s var(--ease) forwards; }
   @keyframes pop { from { transform: scale(0.4); opacity: 0; } }

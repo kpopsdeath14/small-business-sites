@@ -143,6 +143,7 @@ const desc = `${p.name} — ${p.sub || catTitle(p.cat)}. Цена ${rub(p.from)}
 </Base>
 
 <script>
+  import { rollPrice } from "../../scripts/cart";
   const D = JSON.parse(document.getElementById("pdata")!.textContent!) as { name: string; multi: boolean; wa: string; v: { id: string; n: string; p: number; st: string; img: string[] }[] };
   const base = (document.querySelector('link[rel="icon"]') as HTMLLinkElement).getAttribute("href")!.replace(/\/favicon\.svg$/, "");
   const pimg = (id: string, w = 600) => `${base}/p/${id}-${w}.webp`;
@@ -185,7 +186,7 @@ const desc = `${p.name} — ${p.sub || catTitle(p.cat)}. Цена ${rub(p.from)}
     $$("[data-v]").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.v === id)));
     const nm = document.querySelector("[data-vname]");
     if (nm) nm.textContent = v.n;
-    $$("[data-price]").forEach((el) => (el.textContent = rub(v.p)));
+    $$("[data-price]").forEach((el) => rollPrice(el, v.p));
     const st = $("[data-stock]");
     st.textContent = v.st === "in" ? "В наличии" : "Предзаказ · 2–3 недели";
     st.classList.toggle("stock--pre", v.st !== "in");

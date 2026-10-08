@@ -26,6 +26,20 @@ const steps = [
 const installs = [5, 8, 27, 10, 4, 11, 12, 19, 3];
 ---
 <Base nav="home">
+  <script is:inline slot="head">
+    try {
+      if (!sessionStorage.getItem("rseat-lights") && !matchMedia("(prefers-reduced-motion: reduce)").matches)
+        document.documentElement.classList.add("lights-on");
+    } catch (e) {}
+  </script>
+  <!-- F1 start: five pairs of reds, one by one, then all out. Once per session. -->
+  <div class="lights" aria-hidden="true">
+    <div class="lights__gantry">
+      {[0, 1, 2, 3, 4].map(() => <span class="pod"><i></i><i></i></span>)}
+    </div>
+    <p class="tag lights__cap" data-lcap>Внимание · старт</p>
+    <p class="tag lights__skip">Коснитесь, чтобы пропустить</p>
+  </div>
   <main>
     <!-- HERO -->
     <section class="hero">
@@ -228,7 +242,7 @@ const installs = [5, 8, 27, 10, 4, 11, 12, 19, 3];
 </Base>
 
 <script>
-  import { items } from "../scripts/cart";
+  import { items, rollPrice } from "../scripts/cart";
   const $$ = <T extends Element = HTMLElement>(s: string, el: ParentNode = document) => [...el.querySelectorAll<T>(s)];
   const rub = (n: number) => n.toLocaleString("ru-RU").replace(/\s/g, " ") + " ₽";
 
@@ -236,7 +250,31 @@ const installs = [5, 8, 27, 10, 4, 11, 12, 19, 3];
   const hero = document.querySelector(".hero")!;
   const go = () => requestAnimationFrame(() => hero.classList.add("on"));
   const im = hero.querySelector("img")!;
-  im.complete ? go() : (im.addEventListener("load", go, { once: true }), setTimeout(go, 1200));
+  const html = document.documentElement;
+  if (html.classList.contains("lights-on")) {
+    const pods = $$(".pod");
+    const cap = document.querySelector("[data-lcap]")!;
+    const timers: number[] = [];
+    let done = false;
+    const out = () => {
+      if (done) return;
+      done = true;
+      timers.forEach(clearTimeout);
+      pods.forEach((p) => p.classList.remove("on"));
+      cap.textContent = "Поехали";
+      html.classList.add("lights-out");
+      try { sessionStorage.setItem("rseat-lights", "1"); } catch {}
+      setTimeout(go, 280);
+      setTimeout(() => html.classList.remove("lights-on", "lights-out"), 1200);
+    };
+    pods.forEach((p, i) => timers.push(window.setTimeout(() => p.classList.add("on"), 450 + i * 340)));
+    // like the real start: a short, unpredictable hold before lights out
+    timers.push(window.setTimeout(out, 450 + 4 * 340 + 450 + Math.random() * 550));
+    document.querySelector(".lights")!.addEventListener("click", out);
+    addEventListener("keydown", out, { once: true });
+  } else {
+    im.complete ? go() : (im.addEventListener("load", go, { once: true }), setTimeout(go, 1200));
+  }
 
   // counters
   const cio = new IntersectionObserver((es) => es.forEach((e) => {
@@ -261,7 +299,7 @@ const installs = [5, 8, 27, 10, 4, 11, 12, 19, 3];
     sws.forEach((s) => s.setAttribute("aria-checked", String(s === b)));
     imgs.forEach((i) => i.classList.toggle("on", i.dataset.v === id));
     name.textContent = b.dataset.name!;
-    price.textContent = rub(items[id].p);
+    rollPrice(price as HTMLElement, items[id].p);
     add.dataset.add = id;
   };
   sws.forEach((s, i) => {
@@ -288,6 +326,31 @@ const installs = [5, 8, 27, 10, 4, 11, 12, 19, 3];
     upd();
   }
 </script>
+
+<style is:global>
+  .lights { display: none; }
+  html.lights-on { overflow: hidden; }
+  html.lights-on .lights {
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 22px;
+    background: radial-gradient(60% 50% at 50% 45%, #111215 0%, var(--bg) 70%);
+    cursor: pointer;
+  }
+  html.lights-out .lights { opacity: 0; visibility: hidden; transition: opacity 0.75s var(--ease-io) 0.2s, visibility 0s 1s; }
+  .lights__gantry { position: relative; display: flex; gap: 8px; padding: 10px; background: #0c0d0f; border: 1px solid var(--line); }
+  .lights__gantry::before { content: ""; position: absolute; left: -36%; right: -36%; top: 50%; height: 1px; background: linear-gradient(90deg, transparent, var(--line-2) 20%, var(--line-2) 80%, transparent); z-index: -1; }
+  .pod { display: grid; gap: 7px; padding: 7px; background: #050506; border-radius: 4px; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04); }
+  .pod i { width: clamp(22px, 7.2vw, 36px); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #2a1311, #110706 70%); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05); transition: background 0.06s, box-shadow 0.06s; }
+  .pod.on i { background: radial-gradient(circle at 35% 30%, #ff8d82, #ff2d20 45%, #b0140b); box-shadow: 0 0 18px 3px rgba(255, 45, 32, 0.55), 0 0 64px 10px rgba(255, 45, 32, 0.16); }
+  .lights__cap { color: var(--text); letter-spacing: 0.3em; }
+  .lights__skip { position: fixed; bottom: calc(24px + env(safe-area-inset-bottom)); left: 0; right: 0; text-align: center; color: var(--dim); }
+  .js .hero:not(.on) [data-in].in { opacity: 0; transform: translateY(22px); }
+</style>
 
 <style>
   /* hero */
