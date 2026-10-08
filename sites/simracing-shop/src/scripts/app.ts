@@ -93,7 +93,6 @@ export const RADIO: Record<string, Line> = {
   remove: { no: "16", q: "No, no, no, no, no!", t: "Позиция удалена из корзины" },
   free: { no: "44", q: "Get in there!", t: "Доставка теперь бесплатная" },
   focus: { no: "7", q: "Leave me alone, I know what I'm doing.", t: "Не отвлекаем — заполняйте спокойно" },
-  purple: { no: "63", q: "Mr Saturday.", t: "Все три сектора фиолетовые — круг как в квалификации" },
   flag: { no: "", q: "Жёлтый флаг", t: "Проверьте отмеченные поля" },
 };
 const ADD: Line[] = [
@@ -192,8 +191,8 @@ $(".pit__x", pit)!.addEventListener("click", hidePit);
 function rpmFlash() {
   const r = $(".rpm");
   if (!r) return;
-  r.classList.remove("pit"); void r.offsetWidth; r.classList.add("pit");
-  setTimeout(() => r.classList.remove("pit"), 900);
+  r.classList.remove("flash"); void r.offsetWidth; r.classList.add("flash");
+  setTimeout(() => r.classList.remove("flash"), 1000);
 }
 
 renderCart();

@@ -125,18 +125,24 @@ import { url, contacts } from "../lib/site";
   const tick = () => { olap.textContent = fmt(Date.now() - t0); if (!stopped) raf = requestAnimationFrame(tick); };
   form.addEventListener("focusin", () => { if (!t0) { t0 = Date.now(); tick(); radioLater("focus", 500); } });
   const val = (id: string) => ($("#" + id) as HTMLInputElement).value.trim();
+  // S2 only counts once the driver has actually reached "Получение" (its defaults are already valid);
+  // S3 is the finish line — it lights on submit, and only then does the whole lap go purple.
+  const fs = [...form.querySelectorAll("fieldset")];
+  let reached2 = false, finished = false;
+  const reach = (e: Event) => { if (fs[1].contains(e.target as Node) || fs[2].contains(e.target as Node)) { reached2 = true; sectors(); } };
+  form.addEventListener("focusin", reach);
+  form.addEventListener("pointerdown", reach);
   function sectors() {
     const s1 = val("f-name").length > 1 && val("f-phone").replace(/\D/g, "").length === 11;
     const ship = (form.elements.namedItem("ship") as RadioNodeList).value;
-    const s2 = s1 && (ship.startsWith("Самовывоз") || val("f-addr").length > 4);
-    const s3 = s2 && ($<HTMLInputElement>("[name=agree]")).checked;
+    const s2 = s1 && reached2 && (ship.startsWith("Самовывоз") || val("f-addr").length > 4);
+    const s3 = s2 && finished;
     [s1, s2, s3].forEach((ok, i) => {
       const el = $(`[data-sec="${i + 1}"]`);
       const was = el.classList.contains("ok");
       el.classList.toggle("ok", ok);
-      if (ok && !was) el.animate([{ filter: "brightness(2)" }, { filter: "none" }], { duration: 500, delay: i * 140, fill: "backwards" });
+      if (ok && !was) el.animate([{ filter: "brightness(2)" }, { filter: "none" }], { duration: 500, fill: "backwards" });
     });
-    if (s3 && !$(".sect").classList.contains("best")) radioLater("purple", 500);
     $(".sect").classList.toggle("best", s3);
   }
   form.addEventListener("input", sectors);
@@ -194,6 +200,7 @@ import { url, contacts } from "../lib/site";
     $<HTMLAnchorElement>("[data-send-wa]").href = `https://wa.me/${WA}?text=${encodeURIComponent(text)}`;
     $<HTMLAnchorElement>("[data-send-mail]").href = `mailto:${MAIL}?subject=${encodeURIComponent(`Заказ ${oid}`)}&body=${encodeURIComponent(text)}`;
     // a tiny start sequence on the button, then the chequered flag
+    reached2 = true; finished = true; sectors();
     const btn = form.querySelector<HTMLButtonElement>("button[type=submit]")!;
     btn.disabled = true;
     btn.innerHTML = `<span class="mini">${"<i></i>".repeat(5)}</span>`;
