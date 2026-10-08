@@ -34,10 +34,21 @@ const desc = `${p.name} — ${p.sub || catTitle(p.cat)}. Цена ${rub(p.from)}
         </div>
         <span class="gal__frame" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
         <p class="gal__count tag num" data-count>01 / {String(v.img.length).padStart(2, "0")}</p>
+        <div class="gal__dots" data-dots aria-hidden="true">{v.img.map((_, i) => <i class:list={{ on: i === 0 }}></i>)}</div>
         <div class="gal__thumbs" data-thumbs>
           {v.img.map((id, i) => <button type="button" class:list={["studio", { on: i === 0 }]} data-i={i} aria-label={`Фото ${i + 1}`}><img src={pimg(id)} alt="" loading="lazy" /></button>)}
         </div>
       </section>
+      {multi && (
+          <div class="gal__sw" role="radiogroup" aria-label="Исполнение">
+            <p class="tag gal__swname" data-vname>{v.labelRu}</p>
+            <div class="gal__swrow">
+              {p.variants.map((x, i) => (
+                <button type="button" role="radio" aria-checked={i === 0 ? "true" : "false"} aria-label={x.labelRu} data-v={x.id} style={sw(x.swatch)}></button>
+              ))}
+            </div>
+          </div>
+        )}
 
       <!-- buy box -->
       <section class="buy">
@@ -144,7 +155,7 @@ const desc = `${p.name} — ${p.sub || catTitle(p.cat)}. Цена ${rub(p.from)}
 
 <script>
   import { rollPrice, cart, gear } from "../../scripts/cart";
-  import { syncButtons, streak } from "../../scripts/app";
+  import { syncButtons } from "../../scripts/app";
   const D = JSON.parse(document.getElementById("pdata")!.textContent!) as { name: string; multi: boolean; wa: string; v: { id: string; n: string; p: number; st: string; img: string[] }[] };
   const base = (document.querySelector('link[rel="icon"]') as HTMLLinkElement).getAttribute("href")!.replace(/\/favicon\.svg$/, "");
   const pimg = (id: string, w = 600) => `${base}/p/${id}-${w}.webp`;
@@ -162,6 +173,7 @@ const desc = `${p.name} — ${p.sub || catTitle(p.cat)}. Цена ${rub(p.from)}
   const setCount = (i: number) => {
     count.textContent = `${String(i + 1).padStart(2, "0")} / ${String(n).padStart(2, "0")}`;
     $$(".gal__thumbs button").forEach((b, j) => b.classList.toggle("on", j === i));
+    $$("[data-dots] i").forEach((d, j) => d.classList.toggle("on", j === i));
   };
   track.addEventListener("scroll", () => requestAnimationFrame(() => setCount(cur())), { passive: true });
   thumbs.addEventListener("click", (e) => {
@@ -201,27 +213,28 @@ const desc = `${p.name} — ${p.sub || catTitle(p.cat)}. Цена ${rub(p.from)}
     const v = D.v.find((x) => x.id === id);
     if (!v) return;
     $$("[data-v]").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.v === id)));
-    const nm = document.querySelector("[data-vname]");
-    if (nm) nm.textContent = v.n;
+    $$("[data-vname]").forEach((nm) => (nm.textContent = v.n));
     $$("[data-price]").forEach((el) => rollPrice(el, v.p));
     const st = $("[data-stock]");
     st.textContent = v.st === "in" ? "В наличии" : "Предзаказ · 2–3 недели";
     st.classList.toggle("stock--pre", v.st !== "in");
     adds.forEach((a) => (a.dataset.add = v.id));
     syncButtons();
-    if (push) streak($(".gal"));
     one.href = `https://wa.me/${D.wa}?text=${encodeURIComponent(`Здравствуйте! Хочу купить ${D.name}${D.multi ? `, ${v.n.toLowerCase()}` : ""}.`)}`;
     n = v.img.length;
-    track.animate([{ opacity: 1 }, { opacity: 0.2 }], { duration: 160, fill: "forwards" }).onfinish = () => {
+    track.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 180, easing: "ease-in", fill: "forwards" }).onfinish = () => {
       track.innerHTML = v.img.map((im, i) => `<figure class="gal__slide"><img src="${pimg(im, 1200)}" srcset="${pimg(im)} 600w, ${pimg(im, 1200)} 1200w" sizes="(min-width: 1000px) 56vw, 100vw" alt="${D.name}, фото ${i + 1}" decoding="async"></figure>`).join("");
       thumbs.innerHTML = v.img.map((im, i) => `<button type="button" class="studio${i ? "" : " on"}" data-i="${i}" aria-label="Фото ${i + 1}"><img src="${pimg(im)}" alt=""></button>`).join("");
+      $("[data-dots]").innerHTML = v.img.map(() => "<i></i>").join("");
       track.scrollLeft = 0;
       setCount(0);
-      track.animate([{ opacity: 0.2 }, { opacity: 1 }], { duration: 500, easing: "cubic-bezier(.16,1,.3,1)", fill: "forwards" });
+      const first = track.querySelector("img")!;
+      const show = () => track.animate([{ opacity: 0, transform: "scale(1.015)" }, { opacity: 1, transform: "none" }], { duration: 420, easing: "cubic-bezier(.16,1,.3,1)", fill: "forwards" });
+      first.complete ? show() : first.addEventListener("load", show, { once: true });
     };
     if (push) history.replaceState(null, "", `?v=${id}`);
   };
-  $$(".vpick__sw [data-v]").forEach((b) => b.addEventListener("click", () => pick(b.dataset.v!)));
+  $$(".vpick__sw [data-v], .gal__sw [data-v]").forEach((b) => b.addEventListener("click", () => pick(b.dataset.v!)));
   const pre = new URLSearchParams(location.search).get("v");
   if (pre && pre !== D.v[0].id) pick(pre, false);
 
@@ -252,6 +265,20 @@ const desc = `${p.name} — ${p.sub || catTitle(p.cat)}. Цена ${rub(p.from)}
   .gal__frame i:nth-child(3) { left: 12px; bottom: 12px; border-width: 0 0 1px 1px; display: none; }
   .gal__frame i:nth-child(4) { right: 12px; bottom: 12px; border-width: 0 1px 1px 0; }
   .gal__thumbs { display: none; }
+  .gal__track { -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y; overscroll-behavior-x: contain; }
+  .gal :global(.gal__slide img) { mix-blend-mode: normal; }
+  .gal__frame, .gal__count, .gal__dots { pointer-events: none; }
+  .gal__dots { position: absolute; right: var(--gut); bottom: 18px; display: flex; gap: 5px; }
+  .gal__dots :global(i) { width: 14px; height: 2px; background: rgba(0, 0, 0, 0.2); transition: background 0.3s, width 0.4s var(--ease); }
+  .gal__dots :global(i.on) { width: 26px; background: #111; }
+  .gal__sw { display: grid; gap: 8px; margin: -26px calc(var(--gut) * -1) 0; padding: 12px var(--gut) 14px; background: var(--bg-2); border-bottom: 1px solid var(--line); }
+  .gal__swname { color: var(--text); }
+  .gal__swrow { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding: 4px 4px 4px 4px; margin: -4px; }
+  .gal__swrow::-webkit-scrollbar { display: none; }
+  .gal__swrow button { position: relative; flex: none; width: 34px; height: 34px; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2); }
+  .gal__swrow button::after { content: ""; position: absolute; inset: -4px; border: 1px solid var(--text); opacity: 0; transform: scale(0.85); transition: opacity 0.3s, transform 0.45s var(--ease); }
+  .gal__swrow button[aria-checked="true"]::after { opacity: 1; transform: none; }
+  .vpick { display: none; }
 
   .buy { display: grid; gap: 16px; align-content: start; }
   .buy__cat { color: var(--red); }
@@ -300,6 +327,8 @@ const desc = `${p.name} — ${p.sub || catTitle(p.cat)}. Цена ${rub(p.from)}
     .gal { margin: 0; position: sticky; top: calc(var(--hdr) + 24px); }
     .gal__frame i:nth-child(3) { display: block; }
     .gal__count { left: 20px; bottom: 18px; }
+    .gal__sw, .gal__dots { display: none; }
+    .vpick { display: grid; }
     .gal__thumbs { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-top: 8px; }
     .gal__thumbs :global(button) { aspect-ratio: 1; opacity: 0.55; transition: opacity 0.3s; outline: 1px solid transparent; outline-offset: -1px; }
     .gal__thumbs :global(button.on), .gal__thumbs :global(button:hover) { opacity: 1; }

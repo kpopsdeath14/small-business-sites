@@ -196,33 +196,6 @@ function rpmFlash() {
   setTimeout(() => r.classList.remove("pit"), 900);
 }
 
-/* ---------- timing beam: a light sweeps across on every page change ---------- */
-document.addEventListener("click", (e) => {
-  const a = (e.target as HTMLElement).closest<HTMLAnchorElement>("a[href]");
-  if (!a || a.target || e.metaKey || e.ctrlKey) return;
-  const u = new URL(a.href, location.href);
-  if (u.origin !== location.origin || (u.pathname === location.pathname && u.hash)) return;
-  try { sessionStorage.setItem("rseat-beam", "1"); } catch {}
-});
-try {
-  if (sessionStorage.getItem("rseat-beam")) {
-    sessionStorage.removeItem("rseat-beam");
-    if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      root.classList.add("beam-go");
-      setTimeout(() => root.classList.remove("beam-go"), 1100);
-    }
-  }
-} catch {}
-
-/** A red light streak passes over an image stage — used when a colour changes. */
-export function streak(el: HTMLElement) {
-  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  const s = document.createElement("span");
-  s.className = "streak";
-  el.appendChild(s);
-  s.addEventListener("animationend", () => s.remove());
-}
-
 renderCart();
 
 /* ---------- shift lights: scroll progress as an F1 wheel rev bar ---------- */

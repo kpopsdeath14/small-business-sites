@@ -243,7 +243,7 @@ const installs = [5, 8, 27, 10, 4, 11, 12, 19, 3];
 
 <script>
   import { items, rollPrice } from "../scripts/cart";
-  import { syncButtons, streak } from "../scripts/app";
+  import { syncButtons } from "../scripts/app";
   const $$ = <T extends Element = HTMLElement>(s: string, el: ParentNode = document) => [...el.querySelectorAll<T>(s)];
   const rub = (n: number) => n.toLocaleString("ru-RU").replace(/\s/g, " ") + " ₽";
 
@@ -303,7 +303,6 @@ const installs = [5, 8, 27, 10, 4, 11, 12, 19, 3];
     rollPrice(price as HTMLElement, items[id].p);
     add.dataset.add = id;
     syncButtons();
-    streak(cfg.querySelector(".cfg__stage")!);
   };
   sws.forEach((s, i) => {
     s.addEventListener("click", () => pick(s));

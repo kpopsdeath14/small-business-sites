@@ -502,17 +502,6 @@ textarea.input { min-height: 104px; resize: vertical; }
 @keyframes pitIn { from { transform: translateX(-30px) scale(0.9); opacity: 0; } }
 @media (min-width: 640px) { .pit { left: auto; right: 20px; bottom: 20px; width: 420px; } }
 
-/* ---------- timing beam on page change ---------- */
-.beam { position: fixed; top: 0; bottom: 0; left: 0; width: 2px; z-index: 400; pointer-events: none; opacity: 0; background: var(--red); box-shadow: 0 0 14px 2px rgba(255, 45, 32, 0.8), -60px 0 80px 10px rgba(255, 45, 32, 0.08); }
-.beam::after { content: ""; position: absolute; right: 2px; top: 0; bottom: 0; width: 34vw; background: linear-gradient(90deg, transparent, rgba(255, 45, 32, 0.09)); }
-.beam-go .beam { animation: beam 0.9s cubic-bezier(0.55, 0, 0.25, 1) both; }
-@keyframes beam { 0% { transform: translateX(-2vw); opacity: 0; } 12% { opacity: 1; } 85% { opacity: 1; } 100% { transform: translateX(102vw); opacity: 0; } }
-
-/* ---------- light streak over an image stage (colour change) ---------- */
-.streak { position: absolute; top: 0; bottom: 0; left: 0; width: 55%; z-index: 4; pointer-events: none; background: linear-gradient(90deg, transparent 0%, rgba(255, 45, 32, 0) 20%, rgba(255, 45, 32, 0.22) 70%, rgba(255, 255, 255, 0.75) 96%, transparent 100%); filter: blur(1px); transform: translateX(-110%) skewX(-18deg); animation: streak 0.75s cubic-bezier(0.55, 0, 0.25, 1) forwards; mix-blend-mode: multiply; }
-.streak::after { content: ""; position: absolute; right: 3%; top: 0; bottom: 0; width: 2px; background: var(--red); box-shadow: 0 0 12px var(--red); }
-@keyframes streak { to { transform: translateX(240%) skewX(-18deg); } }
-
 /* ---------- free-delivery track ---------- */
 .track { display: grid; gap: 8px; }
 .track__bar { position: relative; height: 14px; margin-right: 18px; }
