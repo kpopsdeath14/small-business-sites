@@ -1,4 +1,4 @@
-import { cart, items, rub, lineHTML, bindLines, afterRender, trackHTML, FREE } from "./cart";
+import { cart, items, rub, bindLines, renderLines, updateTrack, rollPrice, FREE } from "./cart";
 
 const root = document.documentElement;
 const $ = <T extends Element = HTMLElement>(s: string, el: ParentNode = document) => el.querySelector<T>(s);
@@ -71,14 +71,12 @@ function renderCart() {
     if (n > lastCount) { el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump"); }
   });
   $$("[data-cart-count-text]").forEach((el) => (el.textContent = String(n)));
-  $$("[data-cart-total]").forEach((el) => (el.textContent = rub(cart.total())));
+  $$("[data-cart-total]").forEach((el) => rollPrice(el, cart.total()));
   const ls = cart.lines();
-  list.innerHTML = ls.length
-    ? ls.map((l) => lineHTML(l, { compact: true })).join("")
-    : `<p class="lead" style="padding:28px 0"><span class="bwoah">«Bwoah.»</span> В боксах пока пусто — начните с кокпита.</p>`;
-  afterRender(list);
+  renderLines(list, { compact: true });
+  if (!ls.length) list.innerHTML = `<p class="lead" style="padding:28px 0"><span class="bwoah">«Bwoah.»</span> В боксах пока пусто — начните с кокпита.</p>`;
   const tr = $("[data-track]", drawer);
-  if (tr) tr.innerHTML = ls.length ? trackHTML(cart.total()) : "";
+  if (tr) updateTrack(tr, cart.total());
   $(".drawer__foot", drawer)!.hidden = !ls.length;
   syncButtons();
   const tot = cart.total();

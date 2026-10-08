@@ -35,7 +35,7 @@ import { url } from "../lib/site";
 </Base>
 
 <script>
-  import { cart, lineHTML, bindLines, rub, afterRender, trackHTML, FREE } from "../scripts/cart";
+  import { cart, bindLines, rub, renderLines, updateTrack, rollPrice, FREE } from "../scripts/cart";
   const $ = <T extends Element = HTMLElement>(s: string) => document.querySelector<T>(s)!;
   const list = $("[data-list]");
   bindLines(list);
@@ -45,13 +45,12 @@ import { url } from "../lib/site";
     $("[data-empty]").hidden = ls.length > 0;
     $("[data-sum]").hidden = ls.length === 0;
     list.hidden = ls.length === 0;
-    list.innerHTML = ls.map((l) => lineHTML(l)).join("");
-    afterRender(list);
+    renderLines(list);
     $("[data-n]").textContent = String(cart.count());
-    $("[data-sub]").textContent = rub(sub);
+    rollPrice($("[data-sub]"), sub);
     $("[data-del]").textContent = sub >= FREE ? "Бесплатно" : "Рассчитает менеджер";
-    $("[data-total]").textContent = rub(sub);
-    $("[data-track]").innerHTML = trackHTML(sub);
+    rollPrice($("[data-total]"), sub);
+    updateTrack($("[data-track]"), sub);
   }
   document.addEventListener("cart:change", render);
   render();

@@ -107,10 +107,13 @@ import { url, contacts } from "../lib/site";
     const ls = cart.lines();
     if (!ls.length && $("[data-done]").hidden) { location.replace(form.baseURI.replace(/checkout\/?.*$/, "cart/")); return; }
     $("[data-n]").textContent = String(cart.count());
-    $("[data-lines]").innerHTML = ls.map((l) => {
+    // order lines only depend on the cart, not on the form: rebuild only when they really change
+    const html = ls.map((l) => {
       const it = items[l.id];
       return `<div class="co__line"><span class="studio"><img src="${pimg(it.i)}" alt=""></span><span><b>${esc(it.n)}</b>${it.v ? `<small>${esc(it.v)}</small>` : ""}<small>${l.q} шт.</small></span><span class="num">${rub(it.p * l.q)}</span></div>`;
     }).join("");
+    const box = $("[data-lines]");
+    if (box.dataset.h !== html) { box.innerHTML = html; box.dataset.h = html; }
     const sub = cart.total();
     const ship = (form.elements.namedItem("ship") as RadioNodeList).value;
     $("[data-sub]").textContent = rub(sub);

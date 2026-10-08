@@ -69,7 +69,6 @@ export function lineHTML(l: Line, opts: { compact?: boolean } = {}) {
 }
 
 /** Wire +/−/remove buttons inside a container of .line-item rows. */
-let lastQ: { id: string; dir: number } | null = null;
 export function bindLines(root: HTMLElement) {
   root.addEventListener("click", (e) => {
     const t = e.target as HTMLElement;
@@ -86,17 +85,54 @@ export function bindLines(root: HTMLElement) {
         { duration: 420, easing: "cubic-bezier(.7,0,.2,1)" },
       ).onfinish = () => cart.remove(id);
     };
-    if (t.closest("[data-inc]")) { lastQ = { id, dir: 1 }; cart.set(id, l.q + 1); }
-    else if (t.closest("[data-dec]")) { if (l.q <= 1) drop(); else { lastQ = { id, dir: -1 }; cart.set(id, l.q - 1); } }
+    if (t.closest("[data-inc]")) cart.set(id, l.q + 1);
+    else if (t.closest("[data-dec]")) { if (l.q <= 1) drop(); else cart.set(id, l.q - 1); }
     else if (t.closest("[data-rm]")) drop();
   });
 }
-/** After re-rendering rows, roll the changed quantity like a gear indicator. */
-export function afterRender(root: HTMLElement) {
-  if (!lastQ) return;
-  const o = root.querySelector(`[data-line="${lastQ.id}"] output`);
-  if (o) gear(o as HTMLElement, lastQ.dir);
+/**
+ * Keyed update of .line-item rows: existing rows stay in the DOM (no image reload,
+ * no flicker); only quantity and price text change. New rows are inserted, gone rows removed.
+ */
+export function renderLines(root: HTMLElement, opts: { compact?: boolean } = {}) {
+  const ls = cart.lines();
+  const want = new Set(ls.map((l) => l.id));
+  [...root.children].forEach((c) => {
+    const id = (c as HTMLElement).dataset.line;
+    if (!id || !want.has(id)) c.remove();
+  });
+  let prev: Element | null = null;
+  for (const l of ls) {
+    let row = root.querySelector<HTMLElement>(`[data-line="${l.id}"]`);
+    if (!row) {
+      const t = document.createElement("template");
+      t.innerHTML = lineHTML(l, opts).trim();
+      row = t.content.firstElementChild as HTMLElement;
+    } else {
+      const o = row.querySelector<HTMLElement>("output")!;
+      const was = Number(o.textContent);
+      if (was !== l.q) { o.textContent = String(l.q); gear(o, l.q > was ? 1 : -1); }
+      const pr = row.querySelector<HTMLElement>(".line-item__price")!;
+      rollPrice(pr, items[l.id].p * l.q);
+    }
+    const next: Element | null = prev ? prev.nextElementSibling : root.firstElementChild;
+    if (next !== row) root.insertBefore(row, next);
+    prev = row;
+  }
 }
+
+/** Update a free-delivery track in place so the car glides instead of the bar being rebuilt. */
+export function updateTrack(host: HTMLElement, sub: number) {
+  const tr = host.querySelector<HTMLElement>(".track");
+  if (tr && sub > 0 && sub < FREE) {
+    tr.style.setProperty("--p", `${((sub / FREE) * 100).toFixed(1)}%`);
+    tr.querySelector(".track__t")!.textContent = `До бесплатной доставки · ${rub(FREE - sub)}`;
+    return;
+  }
+  const html = sub > 0 ? trackHTML(sub) : "";
+  if (host.dataset.th !== html) { host.innerHTML = html; host.dataset.th = html; }
+}
+
 export function gear(el: HTMLElement, dir: number) {
   el.animate([{ transform: `translateY(${dir * 70}%)`, opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 300, easing: "cubic-bezier(.16,1,.3,1)" });
 }
