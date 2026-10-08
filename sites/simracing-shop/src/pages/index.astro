@@ -61,7 +61,7 @@ const installs = [5, 8, 27, 10, 4, 11, 12, 19, 3];
         <p class="lead hero__lead" data-in style="--d:.6s">Кокпиты RSEAT, motion-платформы D‑BOX и рули Fanatec. Подбор, доставка, монтаж и настройка под ключ.</p>
         <div class="hero__ctas" data-in style="--d:.7s">
           <a class="btn" href={url("catalog/")}>Каталог <Icon name="arrow" class="btn__ar" /></a>
-          <a class="btn btn--ghost" href={url("showroom/")}>Тест-драйв <Icon name="arrow" class="btn__ar" /></a>
+          <a class="btn btn--ghost" href={url("showroom/#book")}>Тест-драйв <Icon name="arrow" class="btn__ar" /></a>
         </div>
       </div>
       <dl class="hero__hud wrap" data-in style="--d:.8s">
@@ -231,7 +231,7 @@ const installs = [5, 8, 27, 10, 4, 11, 12, 19, 3];
               {contacts.locations.map((l) => <li><span class="tag">{l.kind}</span><span>{l.city}, {l.address}</span></li>)}
             </ul>
             <div class="show__ctas" data-in>
-              <a class="btn" href={wa("Здравствуйте! Хочу записаться на тест-драйв в шоуруме RSEAT.")} target="_blank" rel="noopener">Записаться <Icon name="wa" class="btn__ar" /></a>
+              <a class="btn" href={url("showroom/#book")}>Выбрать время <Icon name="arrow" class="btn__ar" /></a>
               <a class="btn btn--ghost" href={contacts.phoneHref}>{contacts.phone} <Icon name="phone" class="btn__ar" /></a>
             </div>
           </div>

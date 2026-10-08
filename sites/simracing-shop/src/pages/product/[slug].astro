@@ -88,7 +88,7 @@ const desc = `${p.name} — ${p.sub || catTitle(p.cat)}. Цена ${rub(p.from)}
         <ul class="perks">
           <li><span class="tag">Доставка</span><span>Бесплатно от 200 000 ₽. Со склада в Москве — за рабочие сутки</span></li>
           <li><span class="tag">Монтаж</span><span>Сборка, подключение и настройка под ваш рост</span></li>
-          <li><span class="tag">Тест-драйв</span><span>Попробуйте вживую в шоуруме — <a href={url("showroom/")}>записаться</a></span></li>
+          <li><span class="tag">Тест-драйв</span><span>Попробуйте вживую в шоуруме — <a href={url("showroom/#book")}>записаться</a></span></li>
         </ul>
         {plate && <Plate model={p.name.replace(/ — .*/, "")} line={plate.line} warranty={plate.warranty} />}
       </section>
