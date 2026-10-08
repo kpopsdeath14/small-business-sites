@@ -1,4 +1,4 @@
-import { cart, items, rub, lineHTML, bindLines, afterRender, trackHTML } from "./cart";
+import { cart, items, rub, lineHTML, bindLines, afterRender, trackHTML, FREE } from "./cart";
 
 const root = document.documentElement;
 const $ = <T extends Element = HTMLElement>(s: string, el: ParentNode = document) => el.querySelector<T>(s);
@@ -55,12 +55,14 @@ const closeCart = () => { root.classList.remove("drawer-open"); drawer.setAttrib
 $$("[data-close-cart]").forEach((b) => b.addEventListener("click", closeCart));
 addEventListener("keydown", (e) => { if (e.key === "Escape") { closeCart(); setMenu(false); } });
 const onCartPage = /\/(cart|checkout)\/?$/.test(location.pathname);
+const onCheckout = /\/checkout\/?$/.test(location.pathname);
 $$("[data-open-cart]").forEach((a) =>
   a.addEventListener("click", (e) => { if (!onCartPage) { e.preventDefault(); openCart(); } }),
 );
 bindLines(list);
 
 let lastCount = cart.count();
+let lastTotal = cart.total();
 function renderCart() {
   const n = cart.count();
   $$("[data-cart-count]").forEach((el) => {
@@ -73,24 +75,52 @@ function renderCart() {
   const ls = cart.lines();
   list.innerHTML = ls.length
     ? ls.map((l) => lineHTML(l, { compact: true })).join("")
-    : `<p class="lead" style="padding:28px 0">В боксах пока пусто. Загляните в каталог — начните с кокпита.</p>`;
+    : `<p class="lead" style="padding:28px 0"><span class="bwoah">«Bwoah.»</span> В боксах пока пусто — начните с кокпита.</p>`;
   afterRender(list);
   const tr = $("[data-track]", drawer);
   if (tr) tr.innerHTML = ls.length ? trackHTML(cart.total()) : "";
-  $$(".drawer__foot .btn", drawer).forEach((b) => b.toggleAttribute("hidden", !ls.length));
+  $(".drawer__foot", drawer)!.hidden = !ls.length;
   syncButtons();
+  const tot = cart.total();
+  if (n < lastCount && !onCheckout) radio("remove");
+  else if (tot >= FREE && lastTotal < FREE && lastTotal > 0) radioLater("free", 900);
   lastCount = n;
+  lastTotal = tot;
 }
 document.addEventListener("cart:change", renderCart);
 
-/* ---------- toast ---------- */
-const toastEl = $(".toast")!;
-let toastT = 0;
-export function toast(msg: string) {
-  toastEl.textContent = msg;
-  toastEl.classList.add("on");
-  clearTimeout(toastT);
-  toastT = window.setTimeout(() => toastEl.classList.remove("on"), 2400);
+/* ---------- team radio: famous lines, credited by car number only ---------- */
+type Line = { no: string; q: string; t: string };
+export const RADIO: Record<string, Line> = {
+  remove: { no: "16", q: "No, no, no, no, no!", t: "Позиция удалена из корзины" },
+  free: { no: "44", q: "Get in there!", t: "Доставка теперь бесплатная" },
+  focus: { no: "7", q: "Leave me alone, I know what I'm doing.", t: "Не отвлекаем — заполняйте спокойно" },
+  purple: { no: "55", q: "Smooth operator.", t: "Все три сектора — фиолетовые" },
+  flag: { no: "", q: "Жёлтый флаг", t: "Проверьте отмеченные поля" },
+};
+const ADD: Line[] = [
+  { no: "33", q: "Simply lovely.", t: "Добавлено в корзину" },
+  { no: "44", q: "Get in there!", t: "Добавлено в корзину" },
+];
+const radioEl = $(".radio")!;
+let radioT = 0;
+let radioSeq = 0;
+/** Fire a line after `delay` ms, unless another line went out meanwhile. */
+export function radioLater(key: string, delay: number) {
+  const seq = radioSeq;
+  setTimeout(() => { if (seq === radioSeq) radio(key); }, delay);
+}
+export function radio(key: string | Line) {
+  radioSeq++;
+  const l = typeof key === "string" ? RADIO[key] : key;
+  if (!l) return;
+  $(".radio__no", radioEl)!.textContent = l.no ? `#${l.no}` : "";
+  radioEl.classList.toggle("radio--flag", !l.no);
+  $(".radio__q", radioEl)!.textContent = l.no ? `«${l.q}»` : l.q;
+  $(".radio__t", radioEl)!.textContent = l.t;
+  radioEl.classList.remove("on"); void radioEl.offsetWidth; radioEl.classList.add("on");
+  clearTimeout(radioT);
+  radioT = window.setTimeout(() => radioEl.classList.remove("on"), 3400);
 }
 
 /* ---------- buttons remember what is already in the cart ---------- */
@@ -132,13 +162,15 @@ document.addEventListener("click", (e) => {
 });
 
 const pit = $(".pit")!;
-let pitT = 0, pitRaf = 0;
+let pitT = 0, pitRaf = 0, addN = 0;
 function hidePit() { pit.classList.remove("on"); clearTimeout(pitT); }
 function pitBoard(id: string, q: number) {
   const it = items[id];
   $<HTMLImageElement>(".pit__img img", pit)!.src = `${BASE}/p/${it.i}-600.webp`;
   $(".pit__n", pit)!.textContent = it.n;
   $(".pit__v", pit)!.textContent = [it.v, q > 1 ? `${q} шт.` : ""].filter(Boolean).join(" · ");
+  const r = ADD[addN++ % ADD.length];
+  $(".pit__rq", pit)!.textContent = `#${r.no} · «${r.q}»`;
   const time = $(".pit__time", pit)!;
   const target = 1.9 + Math.random() * 0.8; // a decent stop is ~2 s
   time.classList.remove("best");
@@ -211,21 +243,4 @@ if (rpm) {
   addEventListener("scroll", () => { if (!rpmTick) { rpmTick = true; requestAnimationFrame(revs); } }, { passive: true });
   addEventListener("resize", revs);
   revs();
-}
-
-/* ---------- lap timer in the footer: time on the site this session ---------- */
-const lapEl = $("[data-lap]");
-if (lapEl) {
-  let start = Date.now();
-  try {
-    const s = Number(sessionStorage.getItem("rseat-lap"));
-    if (s) start = s; else sessionStorage.setItem("rseat-lap", String(start));
-  } catch {}
-  const fmt = (ms: number) => {
-    const m = Math.floor(ms / 60000), sec = Math.floor((ms % 60000) / 1000), mil = ms % 1000;
-    return `${m}:${String(sec).padStart(2, "0")}.${String(mil).padStart(3, "0")}`;
-  };
-  let vis = false;
-  const loop = () => { if (!vis) return; lapEl.textContent = fmt(Date.now() - start); requestAnimationFrame(loop); };
-  new IntersectionObserver(([e]) => { vis = e.isIntersecting; if (vis) loop(); }).observe(lapEl);
 }

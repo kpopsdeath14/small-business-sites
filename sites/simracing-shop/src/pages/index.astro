@@ -455,8 +455,12 @@ const installs = [5, 8, 27, 10, 4, 11, 12, 19, 3];
   .motion__ctas { display: grid; gap: 8px; }
 
   /* steps */
-  .steps { display: grid; gap: 10px; }
-  .steps li { padding: 22px 18px 24px; background: var(--panel); border: 1px solid var(--line); display: grid; gap: 10px; }
+  .steps { display: grid; border-top: 1px solid var(--line); }
+  .steps li { padding: 18px 0 20px; border-bottom: 1px solid var(--line); display: grid; grid-template-columns: 44px 1fr; gap: 4px 12px; }
+  .steps li::before, .steps li::after { display: none; }
+  .steps li :global(.d3), .steps li p { grid-column: 2; }
+  .steps__n { grid-row: span 2; align-self: start; padding-top: 6px; }
+  .steps__n i { display: none; }
   .steps__n { display: flex; align-items: center; gap: 12px; color: var(--red); font-size: 12px; }
   .steps__n i { flex: 1; height: 1px; background: linear-gradient(90deg, var(--red), transparent); }
   .steps p { color: var(--mute); font-size: 14px; }
@@ -482,7 +486,7 @@ const installs = [5, 8, 27, 10, 4, 11, 12, 19, 3];
     .cat--hero { grid-column: span 2; grid-row: span 2; }
     .cat--hero .cat__media { aspect-ratio: auto; flex: 1; }
     .film { grid-auto-columns: 40%; }
-    .steps { grid-template-columns: 1fr 1fr; }
+
     .motion__ctas, .show__ctas { display: flex; flex-wrap: wrap; }
   }
 
@@ -516,8 +520,12 @@ const installs = [5, 8, 27, 10, 4, 11, 12, 19, 3];
     .motion__media::after { background: linear-gradient(270deg, var(--bg) 0%, rgba(6, 7, 8, 0) 45%), linear-gradient(0deg, var(--bg) 0%, rgba(6, 7, 8, 0) 20%), linear-gradient(180deg, var(--bg) 0%, rgba(6, 7, 8, 0) 20%); }
     .motion__body { margin-top: 0; grid-template-columns: min(520px, 100%); justify-content: end; padding-block: 120px; }
 
-    .steps { grid-template-columns: repeat(4, 1fr); gap: 14px; }
-    .steps li { min-height: 260px; align-content: start; }
+    .steps { grid-template-columns: repeat(4, 1fr); gap: 14px; border: 0; }
+    .steps li { min-height: 260px; align-content: start; grid-template-columns: 1fr; gap: 10px; padding: 22px 18px 24px; background: var(--panel); border: 1px solid var(--line); }
+    .steps li::before, .steps li::after { display: block; }
+    .steps li :global(.d3), .steps li p { grid-column: auto; }
+    .steps__n { grid-row: auto; padding-top: 0; }
+    .steps__n i { display: block; }
     .film { grid-auto-columns: 26%; }
 
     .show { grid-template-columns: 1.1fr 1fr; }

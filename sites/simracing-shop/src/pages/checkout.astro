@@ -50,7 +50,7 @@ import { url, contacts } from "../lib/site";
         </fieldset>
 
         <label class="check"><input type="checkbox" name="agree" required checked /><span>Согласен на обработку персональных данных для оформления заказа</span></label>
-        <p class="co__err" data-err hidden>Заполните отмеченные поля.</p>
+        <p class="yflag" data-err hidden><span class="yflag__f" aria-hidden="true"></span>Жёлтый флаг · заполните отмеченные поля</p>
         <button class="btn btn--block" type="submit">Подтвердить заказ <Icon name="arrow" class="btn__ar" /></button>
         <p class="co__note">Менеджер свяжется в рабочее время, подтвердит наличие и сроки. Оплата — только после подтверждения.</p>
       </form>
@@ -68,10 +68,17 @@ import { url, contacts } from "../lib/site";
 
     <section class="wrap done" data-done hidden>
       <div class="done__box ticks">
-        <div class="flag" aria-hidden="true">
+        <div class="podium" aria-hidden="true">
+          <svg class="tpose" viewBox="0 0 60 64" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+            <circle cx="30" cy="9" r="5.5" />
+            <path d="M30 15v22M30 37l-7 22M30 37l7 22" />
+            <path class="tpose__l" d="M30 21H12" /><path class="tpose__r" d="M30 21h18" />
+          </svg>
+          <div class="flag">
           {Array.from({ length: 35 }, (_, i) => <i class:list={{ b: (Math.floor(i / 7) + (i % 7)) % 2 === 1 }} style={`--c:${i % 7}`}></i>)}
         </div>
-        <p class="tag">Финиш · заказ <span class="num" data-oid></span></p>
+        </div>
+        <p class="tag">Финиш · заказ <span class="num" data-oid></span> · победная поза #63</p>
         <h2 class="d2">Заказ <b>принят</b></h2>
         <p class="tag done__lap">Время круга оформления · <span class="num" data-flap></span></p>
         <p class="lead">Отправьте его менеджеру одним нажатием — так он попадёт в работу сразу. Мы подтвердим наличие, сроки и пришлём ссылку на оплату.</p>
@@ -88,6 +95,7 @@ import { url, contacts } from "../lib/site";
 
 <script>
   import { cart, items, rub, esc, pimg } from "../scripts/cart";
+  import { radio, radioLater } from "../scripts/app";
   const FREE = 200000;
   const WA = "79265578210";
   const MAIL = "Info@Simracing-shop.ru";
@@ -120,7 +128,7 @@ import { url, contacts } from "../lib/site";
   let t0 = 0, raf = 0, stopped = false;
   const olap = $("[data-olap]");
   const tick = () => { olap.textContent = fmt(Date.now() - t0); if (!stopped) raf = requestAnimationFrame(tick); };
-  form.addEventListener("focusin", () => { if (!t0) { t0 = Date.now(); tick(); } });
+  form.addEventListener("focusin", () => { if (!t0) { t0 = Date.now(); tick(); radioLater("focus", 500); } });
   const val = (id: string) => ($("#" + id) as HTMLInputElement).value.trim();
   function sectors() {
     const s1 = val("f-name").length > 1 && val("f-phone").replace(/\D/g, "").length === 11;
@@ -133,6 +141,7 @@ import { url, contacts } from "../lib/site";
       el.classList.toggle("ok", ok);
       if (ok && !was) el.animate([{ filter: "brightness(2)" }, { filter: "none" }], { duration: 500, delay: i * 140, fill: "backwards" });
     });
+    if (s3 && !$(".sect").classList.contains("best")) radioLater("purple", 500);
     $(".sect").classList.toggle("best", s3);
   }
   form.addEventListener("input", sectors);
@@ -161,7 +170,7 @@ import { url, contacts } from "../lib/site";
       if (!ok) bad.push(el);
     });
     $("[data-err]").hidden = !bad.length;
-    if (bad.length) { bad[0].focus(); return; }
+    if (bad.length) { radio("flag"); bad[0].focus(); return; }
 
     const d = new Date();
     const oid = `RS-${String(d.getFullYear()).slice(2)}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
@@ -212,7 +221,10 @@ import { url, contacts } from "../lib/site";
   fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: 14px; min-width: 0; }
   legend { display: flex; align-items: baseline; gap: 12px; padding: 0 0 6px; }
   .field[hidden] { display: none; }
-  .co__err { color: var(--red); font-size: 13px; margin-bottom: -20px; }
+  .yflag { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: rgba(255, 214, 0, 0.08); border-left: 3px solid #ffd600; color: #ffe259; font-size: 13px; margin-bottom: -18px; }
+  .yflag[hidden] { display: none; }
+  .yflag__f { width: 18px; height: 13px; flex: none; background: #ffd600; transform-origin: left; animation: wave2 0.5s ease-in-out infinite alternate; }
+  @keyframes wave2 { to { transform: skewY(-10deg) scaleX(0.86); } }
   .co__note { color: var(--dim); font-size: 12.5px; margin-top: -18px; }
   .co__sum { display: grid; gap: 14px; padding: 20px 16px; background: var(--panel); border: 1px solid var(--line); align-self: start; order: -1; }
   .co__sumhead { display: flex; justify-content: space-between; }
@@ -231,6 +243,12 @@ import { url, contacts } from "../lib/site";
 
   .done[hidden] { display: none; }
   .done__box { display: grid; gap: 18px; justify-items: start; padding: 28px 18px; background: var(--panel); border: 1px solid var(--line); max-width: 760px; }
+  .podium { display: flex; align-items: flex-end; gap: 22px; }
+  .tpose { width: 52px; height: 56px; color: var(--text); }
+  .tpose__l, .tpose__r { transform-box: fill-box; animation: tpose 0.9s 0.5s var(--ease) both; }
+  .tpose__l { transform-origin: right center; --r: -62deg; }
+  .tpose__r { transform-origin: left center; --r: 62deg; }
+  @keyframes tpose { from { transform: rotate(var(--r)); } }
   .flag { position: relative; display: grid; grid-template-columns: repeat(7, 11px); grid-auto-rows: 11px; margin: 6px 0 16px 10px; }
   .flag::before { content: ""; position: absolute; left: -10px; top: -6px; bottom: -14px; width: 2px; background: linear-gradient(180deg, #c9cdd3, #5d636c); }
   .flag i { background: #eceff2; animation: wave 1.5s ease-in-out infinite, flagIn 0.6s var(--ease) both; animation-delay: calc(var(--c) * -0.09s), calc(var(--c) * 0.04s); }
@@ -252,10 +270,6 @@ import { url, contacts } from "../lib/site";
   .sect__lap { color: var(--dim); }
   .sect__lap .num { color: var(--text); }
   .done__lap .num { color: #c98bff; }
-  .done__ico { width: 52px; height: 52px; display: grid; place-content: center; background: var(--red); color: #fff; animation: pop 0.8s var(--ease); }
-  .done__ico :global(svg) { width: 26px; height: 26px; stroke-dasharray: 30; stroke-dashoffset: 30; animation: draw 0.7s 0.3s var(--ease) forwards; }
-  @keyframes pop { from { transform: scale(0.4); opacity: 0; } }
-  @keyframes draw { to { stroke-dashoffset: 0; } }
   .done__ctas { display: grid; gap: 8px; width: 100%; }
   .done__pre { width: 100%; margin: 0; padding: 16px; background: var(--bg); border: 1px solid var(--line); font-family: var(--mono); font-size: 11.5px; line-height: 1.6; color: var(--mute); white-space: pre-wrap; }
 

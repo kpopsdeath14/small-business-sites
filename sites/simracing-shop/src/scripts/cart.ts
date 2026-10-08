@@ -104,11 +104,12 @@ export function gear(el: HTMLElement, dir: number) {
 /** Free-delivery "track": a car runs towards the chequered line as the order grows. */
 export const FREE = 200000;
 export function trackHTML(sub: number) {
-  const p = Math.min(1, sub / FREE);
-  const done = p >= 1;
-  return `<div class="track${done ? " track--done" : ""}" style="--p:${(p * 100).toFixed(1)}%">
+  // past the threshold there is nothing left to race for: just say so
+  if (sub >= FREE) return `<p class="track-done tag"><span class="track__flag"></span>Доставка бесплатно</p>`;
+  const p = (sub / FREE) * 100;
+  return `<div class="track" style="--p:${p.toFixed(1)}%">
     <div class="track__bar"><i></i><span class="track__car"></span><span class="track__flag"></span></div>
-    <p class="tag track__t">${done ? "Финиш · доставка бесплатно" : `До бесплатной доставки · ${rub(FREE - sub)}`}</p>
+    <p class="tag track__t">До бесплатной доставки · ${rub(FREE - sub)}</p>
   </div>`;
 }
 

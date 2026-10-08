@@ -101,7 +101,6 @@ const links = [
         </div>
         <div class="ftr__base">
           <p class="tag">© 2014–{year} SimRacing Shop</p>
-          <p class="tag lap">Ваш круг · <span class="num" data-lap>0:00.000</span></p>
           <p class="tag">Москва · Самара</p>
         </div>
       </div>
@@ -118,16 +117,24 @@ const links = [
         <div data-track></div>
         <div class="drawer__sum"><span class="tag">Итого</span><strong data-cart-total>0 ₽</strong></div>
         <a class="btn btn--block" href={url("checkout/")}>Оформить заказ <Icon name="arrow" class="btn__ar" /></a>
-        <a class="btn btn--ghost btn--block" href={url("cart/")}>Открыть корзину <Icon name="arrow" class="btn__ar" /></a>
+        <a class="ulink drawer__all" href={url("cart/")}>Перейти в корзину</a>
       </div>
     </aside>
-    <div class="toast" role="status" aria-live="polite"></div>
+    <div class="radio" role="status" aria-live="polite">
+      <span class="radio__no num"></span>
+      <div class="radio__body">
+        <p class="tag radio__h">Радио <span class="radio__wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span></p>
+        <p class="radio__q"></p>
+        <p class="radio__t"></p>
+      </div>
+    </div>
     <div class="pit" role="status" aria-live="polite">
       <span class="pit__img studio"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" alt="" /></span>
       <div class="pit__body">
         <p class="tag pit__t"><span class="pit__dot"></span>Пит-стоп · <span class="pit__time num">0.00</span> с</p>
         <p class="pit__n"></p>
         <p class="pit__v"></p>
+        <p class="pit__r"><span class="radio__wave" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="pit__rq"></span></p>
       </div>
       <div class="pit__act">
         <a class="pit__go" href={url("cart/")}>Оформить</a>
