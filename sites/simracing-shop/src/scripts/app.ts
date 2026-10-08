@@ -93,7 +93,7 @@ export const RADIO: Record<string, Line> = {
   remove: { no: "16", q: "No, no, no, no, no!", t: "Позиция удалена из корзины" },
   free: { no: "44", q: "Get in there!", t: "Доставка теперь бесплатная" },
   focus: { no: "7", q: "Leave me alone, I know what I'm doing.", t: "Не отвлекаем — заполняйте спокойно" },
-  purple: { no: "55", q: "Smooth operator.", t: "Все три сектора — фиолетовые" },
+  purple: { no: "63", q: "Mr Saturday.", t: "Все три сектора фиолетовые — круг как в квалификации" },
   flag: { no: "", q: "Жёлтый флаг", t: "Проверьте отмеченные поля" },
 };
 const ADD: Line[] = [

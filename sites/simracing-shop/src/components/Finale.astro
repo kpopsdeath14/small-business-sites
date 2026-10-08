@@ -1,0 +1,156 @@
+---
+// Finish scene: a driver silhouette strikes #63's T-pose under a spotlight — head down,
+// arms out, then the slow look up to camera — while fireworks go off and two donuts
+// leave rubber and smoke on the floor. Starts on `finale:go`.
+---
+<div class="finale" data-finale aria-hidden="true">
+  <canvas class="finale__fx" data-fx></canvas>
+  <span class="finale__spot"></span>
+
+  <svg class="finale__floor" viewBox="0 0 400 90" preserveAspectRatio="xMidYMax meet">
+    <defs>
+      <filter id="smoke" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6" /></filter>
+    </defs>
+    <ellipse class="donut d1" cx="118" cy="58" rx="74" ry="17" />
+    <ellipse class="donut d1b" cx="118" cy="58" rx="66" ry="14" />
+    <ellipse class="donut d2" cx="282" cy="62" rx="74" ry="17" />
+    <ellipse class="donut d2b" cx="282" cy="62" rx="66" ry="14" />
+    <g filter="url(#smoke)" class="puffs">
+      <circle cx="60" cy="52" r="14" /><circle cx="176" cy="48" r="16" /><circle cx="226" cy="54" r="15" /><circle cx="342" cy="50" r="14" />
+    </g>
+  </svg>
+
+  <span class="finale__glow"></span>
+  <svg class="driver" viewBox="0 0 240 232">
+    <!-- one solid silhouette, backlit: torso + legs, two arms and the head move separately -->
+    <path class="driver__body" d="M114 50 C110 54 100 55 94 57 C89 59 88 66 89 74 C92 92 98 108 101 122 C100 128 99 136 100 146
+      C101 170 103 196 104 212 C99 214 95 217 95 221 L117 221 C117 210 117 190 118 168 L119 148 L121 148 L122 168
+      C123 190 123 210 123 221 L145 221 C145 217 141 214 136 212 C137 196 139 170 140 146 C141 136 140 128 139 122
+      C142 108 148 92 151 74 C152 66 151 59 146 57 C140 55 130 54 126 50 Z" />
+    <g class="driver__arm driver__arm--l">
+      <path d="M97 57 C80 58 60 60 42 61 L42 71 C60 71 80 73 97 76 Z
+        M43 60.5 L36 60 L34 53 C34 50.5 30.5 50.5 30.5 53 L30.5 60 L20 61 C17 61 17 63.5 20 63.5 L16.5 64.5 C14 65.5 14 68 16.5 68 L17.5 69 C15 70 15 72.5 17.5 72.5 L20 73 C18 74.5 19 76.5 21.5 76 L36 74.5 L43 71.5 Z" />
+    </g>
+    <g class="driver__arm driver__arm--r">
+      <path d="M143 57 C160 58 180 60 198 61 L198 71 C180 71 160 73 143 76 Z
+        M197 60.5 L204 60 L206 53 C206 50.5 209.5 50.5 209.5 53 L209.5 60 L220 61 C223 61 223 63.5 220 63.5 L223.5 64.5 C226 65.5 226 68 223.5 68 L222.5 69 C225 70 225 72.5 222.5 72.5 L220 73 C222 74.5 221 76.5 218.5 76 L204 74.5 L197 71.5 Z" />
+    </g>
+    <g class="driver__head">
+      <path d="M120 16 C127 16 131.5 22 131.5 29.5 C131.5 37.5 126.5 43.5 120 43.5 C113.5 43.5 108.5 37.5 108.5 29.5 C108.5 22 113 16 120 16 Z" />
+      <path d="M115 39 L125 39 L126.5 54 L113.5 54 Z" />
+    </g>
+  </svg>
+
+  <p class="finale__tag tag"><span>#63</span> T-pose</p>
+</div>
+
+<script>
+  const root = document.querySelector<HTMLElement>("[data-finale]")!;
+  const cv = root.querySelector<HTMLCanvasElement>("[data-fx]")!;
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  type P = { x: number; y: number; vx: number; vy: number; life: number; max: number; c: string };
+  const COLS = ["#ff2d20", "#ffffff", "#ffd27a", "#27d3c3"];
+  let parts: P[] = [];
+  let raf = 0;
+
+  function burst(x: number, y: number) {
+    const c = COLS[Math.floor(Math.random() * COLS.length)];
+    const n = 46 + Math.floor(Math.random() * 20);
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * Math.PI * 2 + Math.random() * 0.2;
+      const s = 1.4 + Math.random() * 2.2;
+      parts.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, life: 0, max: 55 + Math.random() * 30, c: Math.random() < 0.2 ? "#fff" : c });
+    }
+  }
+  function frame() {
+    const ctx = cv.getContext("2d")!;
+    const w = cv.width, h = cv.height, dpr = devicePixelRatio || 1;
+    ctx.globalCompositeOperation = "destination-out";
+    ctx.fillStyle = "rgba(0,0,0,0.22)";
+    ctx.fillRect(0, 0, w, h);
+    ctx.globalCompositeOperation = "lighter";
+    parts = parts.filter((p) => p.life < p.max);
+    for (const p of parts) {
+      p.life++;
+      p.vx *= 0.975; p.vy = p.vy * 0.975 + 0.035;
+      p.x += p.vx * dpr; p.y += p.vy * dpr;
+      ctx.globalAlpha = Math.max(0, 1 - p.life / p.max);
+      ctx.fillStyle = p.c;
+      ctx.beginPath(); ctx.arc(p.x, p.y, 1.6 * dpr, 0, 7); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    raf = requestAnimationFrame(frame);
+  }
+  function fireworks() {
+    const r = cv.getBoundingClientRect(), dpr = devicePixelRatio || 1;
+    cv.width = r.width * dpr; cv.height = r.height * dpr;
+    cancelAnimationFrame(raf);
+    frame();
+    const fire = (i: number) => burst(cv.width * (0.15 + Math.random() * 0.7), cv.height * (0.12 + Math.random() * 0.3));
+    [0, 350, 700, 1150, 1500, 2100, 2600].forEach((t, i) => setTimeout(() => fire(i), 1700 + t));
+    // keep a gentle celebration going while the screen is open
+    setInterval(() => document.visibilityState === "visible" && fire(0), 2600);
+  }
+
+  document.addEventListener("finale:go", () => {
+    root.classList.add("go");
+    if (!reduced) fireworks();
+  });
+</script>
+
+<style>
+  .finale {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 11;
+    overflow: hidden;
+    background: radial-gradient(60% 70% at 50% 30%, #1a1d22 0%, #08090b 70%);
+    border: 1px solid var(--line);
+    isolation: isolate;
+  }
+  .finale__fx { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; }
+  .finale__spot {
+    position: absolute; left: 50%; top: 0; width: 76%; height: 100%; z-index: 0; transform: translateX(-50%);
+    clip-path: polygon(42% 0, 58% 0, 100% 100%, 0 100%);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.04) 70%, rgba(255, 255, 255, 0.07));
+    opacity: 0; transition: opacity 0.8s ease 0.05s;
+  }
+  .finale::after { content: ""; position: absolute; left: 50%; bottom: -6%; width: 90%; height: 30%; z-index: 0; transform: translateX(-50%); border-radius: 50%; background: radial-gradient(closest-side, rgba(255, 255, 255, 0.16), transparent); opacity: 0; transition: opacity 1s 0.3s; }
+  .go.finale::after { opacity: 1; }
+  .go .finale__spot { opacity: 1; }
+
+  .finale__floor { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 38%; z-index: 1; }
+  .donut { fill: none; stroke: #000; stroke-width: 6; opacity: 0.9; stroke-dasharray: 480; stroke-dashoffset: 480; }
+  .donut.d1b, .donut.d2b { stroke-width: 3; opacity: 0.6; }
+  .go .donut { animation: skid 1.6s 1.6s cubic-bezier(0.5, 0, 0.3, 1) forwards; }
+  .go .d2, .go .d2b { animation-delay: 1.9s; }
+  @keyframes skid { to { stroke-dashoffset: 0; } }
+  .puffs circle { fill: #d9dce2; opacity: 0; }
+  .go .puffs circle { animation: puff 3.2s 1.9s ease-out forwards; }
+  .go .puffs circle:nth-child(2n) { animation-delay: 2.2s; }
+  @keyframes puff { 0% { opacity: 0; transform: translateY(0) scale(0.6); } 25% { opacity: 0.35; } 100% { opacity: 0.12; transform: translateY(-22px) scale(1.8); } }
+  .puffs circle { transform-box: fill-box; transform-origin: center; }
+
+  .finale__glow { position: absolute; left: 50%; top: 18%; width: 62%; aspect-ratio: 1; z-index: 1; transform: translateX(-50%) scale(0.6); border-radius: 50%; background: radial-gradient(closest-side, rgba(220, 228, 240, 0.32), rgba(220, 228, 240, 0.08) 55%, transparent); opacity: 0; transition: opacity 1.2s ease 0.2s, transform 1.6s var(--ease) 0.2s; }
+  .go .finale__glow { opacity: 1; transform: translateX(-50%) scale(1); }
+  .driver { position: absolute; left: 50%; bottom: 9%; height: 78%; z-index: 2; transform: translateX(-50%); overflow: visible; opacity: 0; transition: opacity 0.7s; filter: drop-shadow(0 0 1px rgba(235, 240, 248, 0.75)) drop-shadow(0 0 10px rgba(235, 240, 248, 0.18)); }
+  .go .driver { opacity: 1; }
+  .driver path { fill: #050608; }
+  .driver__arm { transform-box: view-box; transition: transform 1.2s cubic-bezier(0.3, 0, 0.1, 1) 0.3s; }
+  .driver__arm--l { transform-origin: 95px 66px; transform: rotate(-74deg); }
+  .driver__arm--r { transform-origin: 145px 66px; transform: rotate(74deg); }
+  .go .driver__arm { transform: none; }
+  /* head down … then the slow look up to camera */
+  .driver__head { transform-box: view-box; transform-origin: 120px 54px; transform: translateY(5px) rotateX(0) scaleY(0.9); transition: transform 1s cubic-bezier(0.3, 0, 0.1, 1) 1.45s; }
+  .go .driver__head { transform: none; }
+
+  .finale__tag { position: absolute; left: 14px; bottom: 12px; z-index: 3; color: var(--mute); display: flex; gap: 8px; opacity: 0; transition: opacity 0.6s 2.4s; }
+  .finale__tag span { color: #fff; background: var(--red); padding: 0 6px; }
+  .go .finale__tag { opacity: 1; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .driver__arm, .driver__head { transform: none; }
+    .donut { stroke-dashoffset: 0; }
+  }
+</style>

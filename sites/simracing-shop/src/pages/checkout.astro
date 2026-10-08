@@ -1,6 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
 import Icon from "../components/Icon.astro";
+import Finale from "../components/Finale.astro";
 import { url, contacts } from "../lib/site";
 ---
 <Base title="Оформление заказа — RSEAT Russia" nav="cart">
@@ -68,17 +69,8 @@ import { url, contacts } from "../lib/site";
 
     <section class="wrap done" data-done hidden>
       <div class="done__box ticks">
-        <div class="podium" aria-hidden="true">
-          <svg class="tpose" viewBox="0 0 60 64" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
-            <circle cx="30" cy="9" r="5.5" />
-            <path d="M30 15v22M30 37l-7 22M30 37l7 22" />
-            <path class="tpose__l" d="M30 21H12" /><path class="tpose__r" d="M30 21h18" />
-          </svg>
-          <div class="flag">
-          {Array.from({ length: 35 }, (_, i) => <i class:list={{ b: (Math.floor(i / 7) + (i % 7)) % 2 === 1 }} style={`--c:${i % 7}`}></i>)}
-        </div>
-        </div>
-        <p class="tag">Финиш · заказ <span class="num" data-oid></span> · победная поза #63</p>
+        <Finale />
+        <p class="tag">Финиш · заказ <span class="num" data-oid></span></p>
         <h2 class="d2">Заказ <b>принят</b></h2>
         <p class="tag done__lap">Время круга оформления · <span class="num" data-flap></span></p>
         <p class="lead">Отправьте его менеджеру одним нажатием — так он попадёт в работу сразу. Мы подтвердим наличие, сроки и пришлём ссылку на оплату.</p>
@@ -211,6 +203,7 @@ import { url, contacts } from "../lib/site";
       minis.forEach((m) => m.classList.remove("on"));
       $("[data-form-wrap]").hidden = true;
       $("[data-done]").hidden = false;
+      requestAnimationFrame(() => document.dispatchEvent(new CustomEvent("finale:go")));
       cart.clear();
       scrollTo({ top: 0, behavior: "smooth" });
     }, 120 + 5 * 160 + 320);
@@ -246,18 +239,6 @@ import { url, contacts } from "../lib/site";
 
   .done[hidden] { display: none; }
   .done__box { display: grid; gap: 18px; justify-items: start; padding: 28px 18px; background: var(--panel); border: 1px solid var(--line); max-width: 760px; }
-  .podium { display: flex; align-items: flex-end; gap: 22px; }
-  .tpose { width: 52px; height: 56px; color: var(--text); }
-  .tpose__l, .tpose__r { transform-box: fill-box; animation: tpose 0.9s 0.5s var(--ease) both; }
-  .tpose__l { transform-origin: right center; --r: -62deg; }
-  .tpose__r { transform-origin: left center; --r: 62deg; }
-  @keyframes tpose { from { transform: rotate(var(--r)); } }
-  .flag { position: relative; display: grid; grid-template-columns: repeat(7, 11px); grid-auto-rows: 11px; margin: 6px 0 16px 10px; }
-  .flag::before { content: ""; position: absolute; left: -10px; top: -6px; bottom: -14px; width: 2px; background: linear-gradient(180deg, #c9cdd3, #5d636c); }
-  .flag i { background: #eceff2; animation: wave 1.5s ease-in-out infinite, flagIn 0.6s var(--ease) both; animation-delay: calc(var(--c) * -0.09s), calc(var(--c) * 0.04s); }
-  .flag i.b { background: #0b0c0e; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06); }
-  @keyframes wave { 0%, 100% { transform: translateY(0); filter: brightness(1); } 50% { transform: translateY(-4px); filter: brightness(0.82); } }
-  @keyframes flagIn { from { opacity: 0; } }
   .co__form :global(.mini) { display: flex; gap: 8px; margin: 0 auto; }
   .co__form :global(.mini i) { width: 10px; height: 10px; border-radius: 50%; background: rgba(0, 0, 0, 0.35); transition: background 0.08s, box-shadow 0.08s; }
   .co__form :global(.mini i.on) { background: #fff; box-shadow: 0 0 10px #fff; }
