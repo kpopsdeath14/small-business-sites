@@ -21,12 +21,12 @@ import { url } from "../lib/site";
           <div><dt>Монтаж и настройка</dt><dd>по запросу</dd></div>
         </dl>
         <div class="sum__total"><span class="tag">Итого</span><strong data-total>0 ₽</strong></div>
-        <p class="sum__hint" data-hint></p>
+        <div data-track></div>
         <a class="btn btn--block" href={url("checkout/")}>Оформить заказ <Icon name="arrow" class="btn__ar" /></a>
         <a class="ulink" href={url("catalog/")}>Продолжить покупки</a>
       </aside>
       <div class="empty" data-empty hidden>
-        <p class="d3">В корзине пока пусто</p>
+        <p class="d3">В боксах пока пусто</p>
         <p class="lead">Начните с кокпита — к нему подберём руль, педали и стойку.</p>
         <a class="btn" href={url("catalog/cockpits/")}>Смотреть кокпиты <Icon name="arrow" class="btn__ar" /></a>
       </div>
@@ -35,8 +35,7 @@ import { url } from "../lib/site";
 </Base>
 
 <script>
-  import { cart, lineHTML, bindLines, rub } from "../scripts/cart";
-  const FREE = 200000;
+  import { cart, lineHTML, bindLines, rub, afterRender, trackHTML, FREE } from "../scripts/cart";
   const $ = <T extends Element = HTMLElement>(s: string) => document.querySelector<T>(s)!;
   const list = $("[data-list]");
   bindLines(list);
@@ -47,11 +46,12 @@ import { url } from "../lib/site";
     $("[data-sum]").hidden = ls.length === 0;
     list.hidden = ls.length === 0;
     list.innerHTML = ls.map((l) => lineHTML(l)).join("");
+    afterRender(list);
     $("[data-n]").textContent = String(cart.count());
     $("[data-sub]").textContent = rub(sub);
     $("[data-del]").textContent = sub >= FREE ? "Бесплатно" : "Рассчитает менеджер";
     $("[data-total]").textContent = rub(sub);
-    $("[data-hint]").textContent = sub >= FREE ? "Доставка по России — бесплатно." : `До бесплатной доставки — ${rub(FREE - sub)}.`;
+    $("[data-track]").innerHTML = trackHTML(sub);
   }
   document.addEventListener("cart:change", render);
   render();

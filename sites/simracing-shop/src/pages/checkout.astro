@@ -14,6 +14,14 @@ import { url, contacts } from "../lib/site";
 
     <section class="wrap co" data-form-wrap>
       <form class="co__form" novalidate data-form>
+        <div class="sect" aria-hidden="true">
+          <div class="sect__row">
+            <span data-sec="1"><i></i><b>S1</b> Контакты</span>
+            <span data-sec="2"><i></i><b>S2</b> Получение</span>
+            <span data-sec="3"><i></i><b>S3</b> Оплата</span>
+          </div>
+          <p class="tag sect__lap">Время оформления · <span class="num" data-olap>0:00.000</span></p>
+        </div>
         <fieldset>
           <legend><span class="tag tag--red num">01</span><span class="d3">Контакты</span></legend>
           <div class="field"><label class="tag" for="f-name">Имя *</label><input class="input" id="f-name" name="name" autocomplete="name" required /></div>
@@ -65,6 +73,7 @@ import { url, contacts } from "../lib/site";
         </div>
         <p class="tag">Финиш · заказ <span class="num" data-oid></span></p>
         <h2 class="d2">Заказ <b>принят</b></h2>
+        <p class="tag done__lap">Время круга оформления · <span class="num" data-flap></span></p>
         <p class="lead">Отправьте его менеджеру одним нажатием — так он попадёт в работу сразу. Мы подтвердим наличие, сроки и пришлём ссылку на оплату.</p>
         <div class="done__ctas">
           <a class="btn" data-send-wa target="_blank" rel="noopener">Отправить в WhatsApp <Icon name="wa" class="btn__ar" /></a>
@@ -105,6 +114,29 @@ import { url, contacts } from "../lib/site";
     ($("#f-addr") as HTMLInputElement).required = !addr.hidden;
   }
   form.addEventListener("change", render);
+
+  // timing sectors: green when a sector is clean, purple across the board when all three are
+  const fmt = (ms: number) => `${Math.floor(ms / 60000)}:${String(Math.floor((ms % 60000) / 1000)).padStart(2, "0")}.${String(ms % 1000).padStart(3, "0")}`;
+  let t0 = 0, raf = 0, stopped = false;
+  const olap = $("[data-olap]");
+  const tick = () => { olap.textContent = fmt(Date.now() - t0); if (!stopped) raf = requestAnimationFrame(tick); };
+  form.addEventListener("focusin", () => { if (!t0) { t0 = Date.now(); tick(); } });
+  const val = (id: string) => ($("#" + id) as HTMLInputElement).value.trim();
+  function sectors() {
+    const s1 = val("f-name").length > 1 && val("f-phone").replace(/\D/g, "").length === 11;
+    const ship = (form.elements.namedItem("ship") as RadioNodeList).value;
+    const s2 = s1 && (ship.startsWith("Самовывоз") || val("f-addr").length > 4);
+    const s3 = s2 && ($<HTMLInputElement>("[name=agree]")).checked;
+    [s1, s2, s3].forEach((ok, i) => {
+      const el = $(`[data-sec="${i + 1}"]`);
+      const was = el.classList.contains("ok");
+      el.classList.toggle("ok", ok);
+      if (ok && !was) el.animate([{ filter: "brightness(2)" }, { filter: "none" }], { duration: 500, delay: i * 140, fill: "backwards" });
+    });
+    $(".sect").classList.toggle("best", s3);
+  }
+  form.addEventListener("input", sectors);
+  form.addEventListener("change", sectors);
   document.addEventListener("cart:change", render);
   render();
 
@@ -151,6 +183,9 @@ import { url, contacts } from "../lib/site";
     ].filter((x) => x !== null).join("\n");
 
     $("[data-oid]").textContent = oid;
+    stopped = true;
+    cancelAnimationFrame(raf);
+    $("[data-flap]").textContent = t0 ? fmt(Date.now() - t0) : "—";
     $("[data-pre]").textContent = text;
     $<HTMLAnchorElement>("[data-send-wa]").href = `https://wa.me/${WA}?text=${encodeURIComponent(text)}`;
     $<HTMLAnchorElement>("[data-send-mail]").href = `mailto:${MAIL}?subject=${encodeURIComponent(`Заказ ${oid}`)}&body=${encodeURIComponent(text)}`;
@@ -206,6 +241,17 @@ import { url, contacts } from "../lib/site";
   .co__form :global(.mini i) { width: 10px; height: 10px; border-radius: 50%; background: rgba(0, 0, 0, 0.35); transition: background 0.08s, box-shadow 0.08s; }
   .co__form :global(.mini i.on) { background: #fff; box-shadow: 0 0 10px #fff; }
   .co__form button[disabled] { opacity: 1; justify-content: center; }
+  .sect { display: grid; gap: 10px; padding: 14px; background: var(--panel); border: 1px solid var(--line); }
+  .sect__row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .sect__row span { display: grid; gap: 7px; font-size: 11.5px; color: var(--mute); }
+  .sect__row b { font-family: var(--mono); font-weight: 400; color: var(--text); margin-right: 4px; }
+  .sect__row i { height: 4px; background: rgba(236, 240, 245, 0.08); transition: background 0.4s, box-shadow 0.4s; }
+  .sect__row span.ok i { background: #3ddc84; box-shadow: 0 0 10px rgba(61, 220, 132, 0.6); }
+  .sect.best .sect__row i { background: #b14cff; box-shadow: 0 0 12px rgba(177, 76, 255, 0.7); }
+  .sect.best .sect__lap .num { color: #c98bff; }
+  .sect__lap { color: var(--dim); }
+  .sect__lap .num { color: var(--text); }
+  .done__lap .num { color: #c98bff; }
   .done__ico { width: 52px; height: 52px; display: grid; place-content: center; background: var(--red); color: #fff; animation: pop 0.8s var(--ease); }
   .done__ico :global(svg) { width: 26px; height: 26px; stroke-dasharray: 30; stroke-dashoffset: 30; animation: draw 0.7s 0.3s var(--ease) forwards; }
   @keyframes pop { from { transform: scale(0.4); opacity: 0; } }

@@ -65,7 +65,7 @@ const desc = `${p.name} — ${p.sub || catTitle(p.cat)}. Цена ${rub(p.from)}
           <div class="qty" role="group" aria-label="Количество">
             <button type="button" data-q="-1" aria-label="Меньше">−</button><output data-qv>1</output><button type="button" data-q="1" aria-label="Больше">+</button>
           </div>
-          <button class="btn buy__add" type="button" data-add={v.id} data-mode="drawer">В корзину <Icon name="cart" class="btn__ar" /></button>
+          <button class="btn buy__add" type="button" data-add={v.id}>В корзину <Icon name="cart" class="btn__ar" /></button>
         </div>
         <a class="btn btn--ghost btn--block buy__one" data-one href={wa(buyText(multi ? v.labelRu : ""))} target="_blank" rel="noopener">Купить в один клик <Icon name="wa" class="btn__ar" /></a>
 
@@ -136,14 +136,15 @@ const desc = `${p.name} — ${p.sub || catTitle(p.cat)}. Цена ${rub(p.from)}
         <p class="sbar__n">{p.name}</p>
         <p class="sbar__p" data-price>{rub(v.price)}</p>
       </div>
-      <button class="btn" type="button" data-add={v.id} data-mode="drawer">В корзину</button>
+      <button class="btn" type="button" data-add={v.id}>В корзину</button>
     </div>
     <script is:inline type="application/json" id="pdata" set:html={JSON.stringify({ name: p.name, multi, v: vdata, wa: contacts.whatsapp })} />
   </main>
 </Base>
 
 <script>
-  import { rollPrice } from "../../scripts/cart";
+  import { rollPrice, cart, gear } from "../../scripts/cart";
+  import { syncButtons, streak } from "../../scripts/app";
   const D = JSON.parse(document.getElementById("pdata")!.textContent!) as { name: string; multi: boolean; wa: string; v: { id: string; n: string; p: number; st: string; img: string[] }[] };
   const base = (document.querySelector('link[rel="icon"]') as HTMLLinkElement).getAttribute("href")!.replace(/\/favicon\.svg$/, "");
   const pimg = (id: string, w = 600) => `${base}/p/${id}-${w}.webp`;
@@ -172,11 +173,27 @@ const desc = `${p.name} — ${p.sub || catTitle(p.cat)}. Цена ${rub(p.from)}
   let q = 1;
   const qv = $("[data-qv]");
   const adds = $$<HTMLElement>("[data-add]").filter((b) => b.closest(".pp") && !b.closest(".card"));
+  const curId = () => adds[0].dataset.add!;
+  const inCartQ = () => cart.lines().find((l) => l.id === curId())?.q;
   $$("[data-q]").forEach((b) => b.addEventListener("click", () => {
-    q = Math.max(1, Math.min(99, q + Number(b.dataset.q)));
+    const d = Number(b.dataset.q);
+    const cq = inCartQ();
+    // already in the cart: the stepper drives the cart itself
+    if (cq !== undefined) { cart.set(curId(), Math.max(1, Math.min(99, cq + d))); return; }
+    const nq = Math.max(1, Math.min(99, q + d));
+    if (nq === q) return;
+    q = nq;
     qv.textContent = String(q);
+    gear(qv, d);
     adds.forEach((a) => (a.dataset.qty = String(q)));
   }));
+  const showQ = () => {
+    const shown = Number(qv.textContent);
+    const want = inCartQ() ?? q;
+    if (want !== shown) { qv.textContent = String(want); gear(qv, want > shown ? 1 : -1); }
+  };
+  document.addEventListener("cart:sync", showQ);
+  showQ();
 
   // variants
   const one = $<HTMLAnchorElement>("[data-one]");
@@ -191,6 +208,8 @@ const desc = `${p.name} — ${p.sub || catTitle(p.cat)}. Цена ${rub(p.from)}
     st.textContent = v.st === "in" ? "В наличии" : "Предзаказ · 2–3 недели";
     st.classList.toggle("stock--pre", v.st !== "in");
     adds.forEach((a) => (a.dataset.add = v.id));
+    syncButtons();
+    if (push) streak($(".gal"));
     one.href = `https://wa.me/${D.wa}?text=${encodeURIComponent(`Здравствуйте! Хочу купить ${D.name}${D.multi ? `, ${v.n.toLowerCase()}` : ""}.`)}`;
     n = v.img.length;
     track.animate([{ opacity: 1 }, { opacity: 0.2 }], { duration: 160, fill: "forwards" }).onfinish = () => {
@@ -208,7 +227,11 @@ const desc = `${p.name} — ${p.sub || catTitle(p.cat)}. Цена ${rub(p.from)}
 
   // sticky bar appears when the main buy box scrolls away (phones)
   const sbar = $("[data-sbar]");
-  new IntersectionObserver(([e]) => sbar.classList.toggle("on", !e.isIntersecting && e.boundingClientRect.top < 0)).observe($("[data-buybox]"));
+  new IntersectionObserver(([e]) => {
+    const on = !e.isIntersecting && e.boundingClientRect.top < 0;
+    sbar.classList.toggle("on", on);
+    document.body.classList.toggle("has-sbar", on && innerWidth < 1000);
+  }).observe($("[data-buybox]"));
 </script>
 
 <style>
@@ -266,6 +289,7 @@ const desc = `${p.name} — ${p.sub || catTitle(p.cat)}. Цена ${rub(p.from)}
   .sbar__n { font-size: 12px; color: var(--mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .sbar__p { font-weight: 600; font-variant-numeric: tabular-nums; }
   .sbar .btn { min-height: 46px; flex: none; }
+  .sbar .btn :global(.btn__go) { display: none; }
 
   @media (min-width: 640px) {
     .feats { grid-template-columns: repeat(4, 1fr); }

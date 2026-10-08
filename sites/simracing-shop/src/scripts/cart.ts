@@ -69,6 +69,7 @@ export function lineHTML(l: Line, opts: { compact?: boolean } = {}) {
 }
 
 /** Wire +/−/remove buttons inside a container of .line-item rows. */
+let lastQ: { id: string; dir: number } | null = null;
 export function bindLines(root: HTMLElement) {
   root.addEventListener("click", (e) => {
     const t = e.target as HTMLElement;
@@ -77,10 +78,38 @@ export function bindLines(root: HTMLElement) {
     const id = row.dataset.line!;
     const l = cart.lines().find((x) => x.id === id);
     if (!l) return;
-    if (t.closest("[data-inc]")) cart.set(id, l.q + 1);
-    else if (t.closest("[data-dec]")) cart.set(id, l.q - 1);
-    else if (t.closest("[data-rm]")) cart.remove(id);
+    const drop = () => {
+      // retire the row like a car peeling into the pit lane, then remove it
+      row.style.overflow = "hidden";
+      row.animate(
+        [{ opacity: 1, transform: "none", height: `${row.offsetHeight}px` }, { opacity: 0, transform: "translateX(-40px)", height: `${row.offsetHeight}px`, offset: 0.6 }, { opacity: 0, transform: "translateX(-40px)", height: "0px", paddingTop: "0px", paddingBottom: "0px" }],
+        { duration: 420, easing: "cubic-bezier(.7,0,.2,1)" },
+      ).onfinish = () => cart.remove(id);
+    };
+    if (t.closest("[data-inc]")) { lastQ = { id, dir: 1 }; cart.set(id, l.q + 1); }
+    else if (t.closest("[data-dec]")) { if (l.q <= 1) drop(); else { lastQ = { id, dir: -1 }; cart.set(id, l.q - 1); } }
+    else if (t.closest("[data-rm]")) drop();
   });
+}
+/** After re-rendering rows, roll the changed quantity like a gear indicator. */
+export function afterRender(root: HTMLElement) {
+  if (!lastQ) return;
+  const o = root.querySelector(`[data-line="${lastQ.id}"] output`);
+  if (o) gear(o as HTMLElement, lastQ.dir);
+}
+export function gear(el: HTMLElement, dir: number) {
+  el.animate([{ transform: `translateY(${dir * 70}%)`, opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 300, easing: "cubic-bezier(.16,1,.3,1)" });
+}
+
+/** Free-delivery "track": a car runs towards the chequered line as the order grows. */
+export const FREE = 200000;
+export function trackHTML(sub: number) {
+  const p = Math.min(1, sub / FREE);
+  const done = p >= 1;
+  return `<div class="track${done ? " track--done" : ""}" style="--p:${(p * 100).toFixed(1)}%">
+    <div class="track__bar"><i></i><span class="track__car"></span><span class="track__flag"></span></div>
+    <p class="tag track__t">${done ? "Финиш · доставка бесплатно" : `До бесплатной доставки · ${rub(FREE - sub)}`}</p>
+  </div>`;
 }
 
 /** Timing-screen style: digits run from the current value to the new one. */

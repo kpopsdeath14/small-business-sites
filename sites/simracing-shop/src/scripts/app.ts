@@ -1,4 +1,4 @@
-import { cart, items, rub, lineHTML, bindLines } from "./cart";
+import { cart, items, rub, lineHTML, bindLines, afterRender, trackHTML } from "./cart";
 
 const root = document.documentElement;
 const $ = <T extends Element = HTMLElement>(s: string, el: ParentNode = document) => el.querySelector<T>(s);
@@ -40,11 +40,14 @@ const setMenu = (open: boolean) => {
 burger.addEventListener("click", () => setMenu(!root.classList.contains("menu-open")));
 $$("a", menu).forEach((a) => a.addEventListener("click", () => setMenu(false)));
 
-/* ---------- cart drawer ---------- */
+/* ---------- cart drawer (opens only on purpose: the header icon) ---------- */
 const drawer = $(".drawer")!;
 const list = $("[data-cart-list]", drawer)!;
+const BASE = (document.querySelector('link[rel="icon"]') as HTMLLinkElement).getAttribute("href")!.replace(/\/favicon\.svg$/, "");
+const CART_URL = `${BASE}/cart/`;
 export const openCart = () => {
   setMenu(false);
+  hidePit();
   root.classList.add("drawer-open");
   drawer.setAttribute("aria-hidden", "false");
 };
@@ -70,12 +73,15 @@ function renderCart() {
   const ls = cart.lines();
   list.innerHTML = ls.length
     ? ls.map((l) => lineHTML(l, { compact: true })).join("")
-    : `<p class="lead" style="padding:28px 0">Корзина пуста. Загляните в каталог — начните с кокпита.</p>`;
+    : `<p class="lead" style="padding:28px 0">В боксах пока пусто. Загляните в каталог — начните с кокпита.</p>`;
+  afterRender(list);
+  const tr = $("[data-track]", drawer);
+  if (tr) tr.innerHTML = ls.length ? trackHTML(cart.total()) : "";
   $$(".drawer__foot .btn", drawer).forEach((b) => b.toggleAttribute("hidden", !ls.length));
+  syncButtons();
   lastCount = n;
 }
 document.addEventListener("cart:change", renderCart);
-renderCart();
 
 /* ---------- toast ---------- */
 const toastEl = $(".toast")!;
@@ -87,29 +93,107 @@ export function toast(msg: string) {
   toastT = window.setTimeout(() => toastEl.classList.remove("on"), 2400);
 }
 
-/* ---------- add to cart (any [data-add]) ---------- */
+/* ---------- buttons remember what is already in the cart ---------- */
+const CHECK = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg>';
+export function syncButtons() {
+  const ids = new Map(cart.lines().map((l) => [l.id, l.q]));
+  $$("[data-add]").forEach((b) => {
+    if (!b.dataset.html) b.dataset.html = b.innerHTML;
+    const q = ids.get(b.dataset.add!);
+    const inCart = q !== undefined;
+    if (inCart === b.classList.contains("in-cart") && b.dataset.q === String(q ?? "")) return;
+    b.classList.toggle("in-cart", inCart);
+    b.dataset.q = String(q ?? "");
+    if (!inCart) { b.innerHTML = b.dataset.html; return; }
+    b.innerHTML = b.classList.contains("btn")
+      ? `<span class="lamp"></span><span>В корзине${q! > 1 ? ` · ${q}` : ""}</span><span class="btn__go">Оформить →</span>`
+      : CHECK;
+  });
+  document.dispatchEvent(new CustomEvent("cart:sync"));
+}
+
+/* ---------- add to cart: pit board, green flash on the shift lights, a tiny buzz ---------- */
 document.addEventListener("click", (e) => {
   const b = (e.target as HTMLElement).closest<HTMLElement>("[data-add]");
   if (!b) return;
   e.preventDefault();
+  if (b.classList.contains("in-cart")) {
+    if (b.classList.contains("btn")) location.href = CART_URL;
+    else openCart();
+    return;
+  }
   const id = b.dataset.add!;
   const q = Number(b.dataset.qty || 1);
   if (!items[id]) return;
   cart.add(id, q);
-  pitStop(b);
-  if (b.dataset.mode === "drawer") setTimeout(openCart, 420);
-  else toast(`В корзине · ${items[id].n}`);
+  try { navigator.vibrate?.(14); } catch {}
+  rpmFlash();
+  pitBoard(id, q);
 });
 
-/* "pit stop": the button lights a green lamp for a moment */
-const CHECK = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg>';
-function pitStop(b: HTMLElement) {
-  if (b.classList.contains("is-added")) return;
-  const html = b.innerHTML;
-  b.classList.add("is-added");
-  b.innerHTML = b.classList.contains("btn") ? '<span class="lamp"></span><span>В корзине</span>' : CHECK;
-  setTimeout(() => { b.innerHTML = html; b.classList.remove("is-added"); }, 1500);
+const pit = $(".pit")!;
+let pitT = 0, pitRaf = 0;
+function hidePit() { pit.classList.remove("on"); clearTimeout(pitT); }
+function pitBoard(id: string, q: number) {
+  const it = items[id];
+  $<HTMLImageElement>(".pit__img img", pit)!.src = `${BASE}/p/${it.i}-600.webp`;
+  $(".pit__n", pit)!.textContent = it.n;
+  $(".pit__v", pit)!.textContent = [it.v, q > 1 ? `${q} шт.` : ""].filter(Boolean).join(" · ");
+  const time = $(".pit__time", pit)!;
+  const target = 1.9 + Math.random() * 0.8; // a decent stop is ~2 s
+  time.classList.remove("best");
+  pit.classList.remove("on"); void pit.offsetWidth; pit.classList.add("on");
+  cancelAnimationFrame(pitRaf);
+  const t0 = performance.now();
+  const run = (t: number) => {
+    const v = Math.min(target, ((t - t0) / 900) * target);
+    time.textContent = v.toFixed(2);
+    if (v < target) pitRaf = requestAnimationFrame(run);
+    else if (target < 2.25) time.classList.add("best");
+  };
+  pitRaf = requestAnimationFrame(run);
+  clearTimeout(pitT);
+  pitT = window.setTimeout(hidePit, 4200);
 }
+pit.addEventListener("mouseenter", () => clearTimeout(pitT));
+pit.addEventListener("mouseleave", () => (pitT = window.setTimeout(hidePit, 1600)));
+$(".pit__x", pit)!.addEventListener("click", hidePit);
+
+function rpmFlash() {
+  const r = $(".rpm");
+  if (!r) return;
+  r.classList.remove("pit"); void r.offsetWidth; r.classList.add("pit");
+  setTimeout(() => r.classList.remove("pit"), 900);
+}
+
+/* ---------- timing beam: a light sweeps across on every page change ---------- */
+document.addEventListener("click", (e) => {
+  const a = (e.target as HTMLElement).closest<HTMLAnchorElement>("a[href]");
+  if (!a || a.target || e.metaKey || e.ctrlKey) return;
+  const u = new URL(a.href, location.href);
+  if (u.origin !== location.origin || (u.pathname === location.pathname && u.hash)) return;
+  try { sessionStorage.setItem("rseat-beam", "1"); } catch {}
+});
+try {
+  if (sessionStorage.getItem("rseat-beam")) {
+    sessionStorage.removeItem("rseat-beam");
+    if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      root.classList.add("beam-go");
+      setTimeout(() => root.classList.remove("beam-go"), 1100);
+    }
+  }
+} catch {}
+
+/** A red light streak passes over an image stage — used when a colour changes. */
+export function streak(el: HTMLElement) {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const s = document.createElement("span");
+  s.className = "streak";
+  el.appendChild(s);
+  s.addEventListener("animationend", () => s.remove());
+}
+
+renderCart();
 
 /* ---------- shift lights: scroll progress as an F1 wheel rev bar ---------- */
 const rpm = $(".rpm");

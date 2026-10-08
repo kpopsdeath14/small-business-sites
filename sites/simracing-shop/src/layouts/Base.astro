@@ -115,12 +115,26 @@ const links = [
       </div>
       <div class="drawer__list" data-cart-list></div>
       <div class="drawer__foot">
+        <div data-track></div>
         <div class="drawer__sum"><span class="tag">Итого</span><strong data-cart-total>0 ₽</strong></div>
         <a class="btn btn--block" href={url("checkout/")}>Оформить заказ <Icon name="arrow" class="btn__ar" /></a>
         <a class="btn btn--ghost btn--block" href={url("cart/")}>Открыть корзину <Icon name="arrow" class="btn__ar" /></a>
       </div>
     </aside>
     <div class="toast" role="status" aria-live="polite"></div>
+    <div class="pit" role="status" aria-live="polite">
+      <span class="pit__img studio"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" alt="" /></span>
+      <div class="pit__body">
+        <p class="tag pit__t"><span class="pit__dot"></span>Пит-стоп · <span class="pit__time num">0.00</span> с</p>
+        <p class="pit__n"></p>
+        <p class="pit__v"></p>
+      </div>
+      <div class="pit__act">
+        <a class="pit__go" href={url("cart/")}>Оформить</a>
+        <button type="button" class="pit__x" aria-label="Скрыть">✕</button>
+      </div>
+    </div>
+    <div class="beam" aria-hidden="true"></div>
 
     <script is:inline type="application/json" id="cart-index" set:html={JSON.stringify({ base: BASE, items: cartIndex })} />
     <script>

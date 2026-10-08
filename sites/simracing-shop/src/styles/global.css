@@ -449,12 +449,90 @@ textarea.input { min-height: 104px; resize: vertical; }
 .rpm.limit i { background: #4c7dff; box-shadow: 0 0 10px rgba(76, 125, 255, 0.9); animation: limiter 0.14s steps(1) 6 alternate; }
 @keyframes limiter { 50% { background: rgba(236, 240, 245, 0.06); box-shadow: none; } }
 
-/* ---------- "pit stop" add-to-cart state ---------- */
-.btn.is-added { background: var(--panel-2); color: var(--text); box-shadow: inset 0 0 0 1px rgba(61, 220, 132, 0.45); justify-content: flex-start; gap: 12px; pointer-events: none; }
-.btn.is-added::before { transform: translateY(101%); }
-.lamp { width: 9px; height: 9px; flex: none; border-radius: 50%; background: var(--ok); box-shadow: 0 0 10px var(--ok), 0 0 26px rgba(61, 220, 132, 0.5); animation: lamp 0.5s var(--ease); }
-@keyframes lamp { from { transform: scale(0); } }
-.card__plus.is-added { background: #1f9d57 !important; pointer-events: none; }
+/* ---------- in-cart state (persistent) ---------- */
+.btn.in-cart { background: var(--panel-2); color: var(--text); box-shadow: inset 0 0 0 1px rgba(61, 220, 132, 0.45); justify-content: flex-start; gap: 12px; }
+.btn.in-cart::before { background: var(--text); }
+@media (hover: hover) { .btn.in-cart:hover { color: #000; } }
+.btn__go { margin-left: auto; font-size: 11.5px; letter-spacing: 0.08em; opacity: 0.75; }
+.lamp { width: 9px; height: 9px; flex: none; border-radius: 50%; background: var(--ok); box-shadow: 0 0 10px var(--ok), 0 0 26px rgba(61, 220, 132, 0.5); animation: lamp 0.6s var(--ease); }
+@keyframes lamp { 0% { transform: scale(0); } 60% { transform: scale(1.6); } }
+.card__plus.in-cart { background: #1f9d57 !important; }
+.card__plus.in-cart svg { animation: lamp 0.5s var(--ease); }
+
+/* ---------- shift lights: green flash on a pit stop ---------- */
+.rpm.pit i { animation: pitflash 0.9s steps(1) both; }
+@keyframes pitflash { 0%, 40% { background: #3ddc84; box-shadow: 0 0 10px rgba(61, 220, 132, 0.9); } 20%, 60% { background: rgba(236, 240, 245, 0.06); box-shadow: none; } 80% { background: #3ddc84; box-shadow: 0 0 10px rgba(61, 220, 132, 0.9); } }
+
+/* ---------- pit board ---------- */
+.pit {
+  position: fixed;
+  left: 10px;
+  right: 10px;
+  bottom: calc(10px + env(safe-area-inset-bottom));
+  z-index: 130;
+  display: grid;
+  grid-template-columns: 58px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 10px 10px 10px;
+  background: rgba(16, 17, 20, 0.92);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  border: 1px solid var(--line-2);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+  transform: translateY(calc(100% + 30px));
+  visibility: hidden;
+  transition: transform 0.65s var(--ease), visibility 0.65s, bottom 0.4s var(--ease);
+}
+.pit::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--red); }
+.pit.on { transform: none; visibility: visible; }
+.has-sbar .pit { bottom: calc(80px + env(safe-area-inset-bottom)); }
+.pit__img { width: 58px; height: 58px; display: block; }
+.pit__img img { width: 100%; height: 100%; object-fit: contain; }
+.pit__body { min-width: 0; display: grid; gap: 2px; }
+.pit__t { display: flex; align-items: center; gap: 7px; color: var(--mute); font-size: 9.5px; }
+.pit__dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 8px var(--ok); }
+.pit__time { color: var(--text); font-size: 11px; transition: color 0.3s; }
+.pit__time.best { color: #c98bff; }
+.pit__n { font-size: 13.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pit__v { font-size: 12px; color: var(--mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pit__v:empty { display: none; }
+.pit__act { display: grid; gap: 4px; justify-items: end; }
+.pit__go { display: inline-flex; align-items: center; height: 38px; padding: 0 14px; background: var(--red); color: #fff; font-size: 11.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+.pit__x { font-size: 11px; color: var(--dim); padding: 2px 4px; }
+.pit.on .pit__img img { animation: pitIn 0.7s var(--ease) both; }
+@keyframes pitIn { from { transform: translateX(-30px) scale(0.9); opacity: 0; } }
+@media (min-width: 640px) { .pit { left: auto; right: 20px; bottom: 20px; width: 420px; } }
+
+/* ---------- timing beam on page change ---------- */
+.beam { position: fixed; top: 0; bottom: 0; left: 0; width: 2px; z-index: 400; pointer-events: none; opacity: 0; background: var(--red); box-shadow: 0 0 14px 2px rgba(255, 45, 32, 0.8), -60px 0 80px 10px rgba(255, 45, 32, 0.08); }
+.beam::after { content: ""; position: absolute; right: 2px; top: 0; bottom: 0; width: 34vw; background: linear-gradient(90deg, transparent, rgba(255, 45, 32, 0.09)); }
+.beam-go .beam { animation: beam 0.9s cubic-bezier(0.55, 0, 0.25, 1) both; }
+@keyframes beam { 0% { transform: translateX(-2vw); opacity: 0; } 12% { opacity: 1; } 85% { opacity: 1; } 100% { transform: translateX(102vw); opacity: 0; } }
+
+/* ---------- light streak over an image stage (colour change) ---------- */
+.streak { position: absolute; top: 0; bottom: 0; left: 0; width: 55%; z-index: 4; pointer-events: none; background: linear-gradient(90deg, transparent 0%, rgba(255, 45, 32, 0) 20%, rgba(255, 45, 32, 0.22) 70%, rgba(255, 255, 255, 0.75) 96%, transparent 100%); filter: blur(1px); transform: translateX(-110%) skewX(-18deg); animation: streak 0.75s cubic-bezier(0.55, 0, 0.25, 1) forwards; mix-blend-mode: multiply; }
+.streak::after { content: ""; position: absolute; right: 3%; top: 0; bottom: 0; width: 2px; background: var(--red); box-shadow: 0 0 12px var(--red); }
+@keyframes streak { to { transform: translateX(240%) skewX(-18deg); } }
+
+/* ---------- free-delivery track ---------- */
+.track { display: grid; gap: 8px; }
+.track__bar { position: relative; height: 14px; }
+.track__bar::before { content: ""; position: absolute; left: 0; right: 16px; top: 6px; height: 2px; background: repeating-linear-gradient(90deg, rgba(236, 240, 245, 0.16) 0 10px, transparent 10px 16px); }
+.track__bar i { position: absolute; left: 0; top: 6px; height: 2px; width: calc((100% - 16px) * var(--p) / 100%); width: calc(var(--p) * 0.92); background: linear-gradient(90deg, rgba(255, 45, 32, 0.2), var(--red)); transition: width 0.9s var(--ease); }
+.track__car { position: absolute; top: 3px; left: calc(var(--p) * 0.92); width: 8px; height: 8px; margin-left: -4px; border-radius: 50%; background: var(--red); box-shadow: 0 0 10px var(--red), -10px 0 14px rgba(255, 45, 32, 0.4); transition: left 0.9s var(--ease); }
+.track__flag { position: absolute; right: 0; top: 0; width: 14px; height: 14px; background: conic-gradient(#eceff2 25%, #0b0c0e 0 50%, #eceff2 0 75%, #0b0c0e 0) 0 0 / 7px 7px; opacity: 0.5; }
+.track--done .track__bar i { background: linear-gradient(90deg, rgba(61, 220, 132, 0.2), #3ddc84); }
+.track--done .track__car { background: #3ddc84; box-shadow: 0 0 10px #3ddc84; }
+.track--done .track__flag { opacity: 1; animation: flagPop 0.6s var(--ease); }
+.track--done .track__t { color: #3ddc84; }
+@keyframes flagPop { 40% { transform: scale(1.5) rotate(-8deg); } }
+
+/* ---------- starting grid positions (catalog sort) ---------- */
+.gridpos { position: absolute; right: 0; top: 0; z-index: 3; display: grid; place-content: center; min-width: 44px; height: 30px; padding: 0 8px; background: #060708; color: #fff; font-family: var(--mono); font-size: 12px; animation: gridIn 0.55s var(--ease) both; }
+.gridpos b { font-weight: 400; }
+.card:nth-child(1) .gridpos { background: var(--red); }
+@keyframes gridIn { from { transform: translateY(-100%); opacity: 0; } }
 
 /* lap timer */
 .lap .num { color: var(--text); }
