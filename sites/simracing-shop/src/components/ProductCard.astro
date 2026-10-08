@@ -1,0 +1,58 @@
+---
+import type { Product } from "../lib/site";
+import { pimg, url, rub, catTitle } from "../lib/site";
+import Icon from "./Icon.astro";
+
+interface Props { p: Product; d?: number; eager?: boolean }
+const { p, d = 0, eager = false } = Astro.props;
+const v = p.variants[0];
+const multi = p.variants.length > 1;
+const priceVaries = p.variants.some((x) => x.price !== p.from);
+const anyIn = p.variants.some((x) => x.stock === "in");
+---
+<article class="card" data-in style={`--d:${d}s`} data-price={p.from} data-name={p.name}>
+  <div class="card__media studio ticks">
+    <img src={pimg(v.img[0])} alt={p.name} loading={eager ? "eager" : "lazy"} decoding="async" />
+    {v.img[1] && <img src={pimg(v.img[1])} alt="" loading="lazy" decoding="async" />}
+    <span class:list={["stock card__stock", { "stock--pre": !anyIn }]}>{anyIn ? "В наличии" : "Предзаказ"}</span>
+    {!multi && (
+      <button class="card__plus" type="button" data-add={v.id} aria-label={`Добавить ${p.name} в корзину`}>
+        <Icon name="plus" />
+      </button>
+    )}
+  </div>
+  <div class="card__body">
+    <p class="tag card__cat">{catTitle(p.cat)}{multi && ` · ${p.variants.length} исп.`}</p>
+    <h3 class="card__name"><a class="card__link" href={url(`product/${p.slug}/`)}>{p.name}</a></h3>
+    {p.sub && <p class="card__sub">{p.sub}</p>}
+    <div class="card__foot">
+      <p class="card__price">{priceVaries && <small>от </small>}{rub(p.from)}</p>
+      {multi && (
+        <span class="card__dots" aria-hidden="true">
+          {p.variants.slice(0, 5).map((x) => (
+            <i style={x.swatch.length > 1 ? `background:linear-gradient(135deg, ${x.swatch[0]} 50%, ${x.swatch[1]} 50%)` : `background:${x.swatch[0]}`}></i>
+          ))}
+        </span>
+      )}
+    </div>
+  </div>
+</article>
+
+<style>
+  .card__plus {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: 4;
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-content: center;
+    background: #060708;
+    color: #fff;
+    transition: background 0.4s;
+  }
+  .card__plus :global(svg) { width: 18px; height: 18px; transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+  .card__plus:hover { background: #ff2d20; }
+  .card__plus:hover :global(svg) { transform: rotate(90deg); }
+</style>

@@ -1,0 +1,81 @@
+---
+import Base from "../layouts/Base.astro";
+import Icon from "../components/Icon.astro";
+import { url, wa } from "../lib/site";
+const blocks = [
+  {
+    id: "delivery", n: "01", t: "Доставка",
+    rows: [
+      ["От 200 000 ₽", "Бесплатно на любое оборудование"],
+      ["Fanatec", "Бесплатная доставка по России"],
+      ["Москва и МО", "Транспортной компанией, обычно 500–1 500 ₽. Отправка в течение 24 часов после оплаты"],
+      ["Регионы", "«Деловые линии», СДЭК или Почта России"],
+      ["Со склада", "Если кокпит в наличии в Москве — привезём в течение рабочих суток"],
+    ],
+  },
+  {
+    id: "payment", n: "02", t: "Оплата",
+    rows: [
+      ["Картой онлайн", "Ссылка на оплату после подтверждения наличия"],
+      ["Безналичный расчёт", "Счёт на компанию"],
+      ["Предзаказ", "2–3 недели. Обсудите детали с менеджером — часто доступны выгодные условия"],
+    ],
+  },
+  {
+    id: "warranty", n: "03", t: "Гарантия",
+    rows: [
+      ["RSEAT", "2 года на шасси, сиденья и аксессуары. До 5 лет — на кокпиты A1 PRO и P1"],
+      ["Рули, педали, КПП", "1 год. Товар надлежащего качества можно вернуть в течение 14 дней"],
+      ["Обслуживание", "По чеку или иному документу о покупке. Ремонт, замена или возврат по закону РФ"],
+      ["Не покрывается", "Расходные материалы и кабели"],
+    ],
+  },
+];
+---
+<Base title="Доставка, оплата и гарантия — RSEAT Russia" nav="service">
+  <main>
+    <section class="ph">
+      <div class="wrap">
+        <nav class="crumbs tag" aria-label="Навигация"><a href={url()}>Главная</a><span>/</span><span>Сервис</span></nav>
+        <div class="sv-head">
+          <h1 class="d1" data-in>Сервис <b>без компромиссов</b></h1>
+          <p class="lead" data-in>Консультируем по любым техническим и спортивным вопросам, привозим, монтируем, настраиваем и обучаем.</p>
+        </div>
+      </div>
+    </section>
+    <section class="wrap sv">
+      {blocks.map((b) => (
+        <div class="sv__b" id={b.id}>
+          <div class="sv__h" data-in><span class="tag tag--red num">{b.n}</span><h2 class="d2">{b.t}</h2></div>
+          <dl class="sv__rows">
+            {b.rows.map(([k, v], i) => <div data-in style={`--d:${i * 0.05}s`}><dt>{k}</dt><dd>{v}</dd></div>)}
+          </dl>
+        </div>
+      ))}
+      <div class="sv__cta ticks" data-in>
+        <p class="d3">Остались вопросы?</p>
+        <p class="lead">Подберём комплект под ваш бюджет и пространство.</p>
+        <a class="btn" href={wa("Здравствуйте! Нужна консультация по оборудованию RSEAT.")} target="_blank" rel="noopener">Написать менеджеру <Icon name="wa" class="btn__ar" /></a>
+      </div>
+    </section>
+  </main>
+</Base>
+
+<style>
+  .sv-head { display: grid; gap: 16px; }
+  .sv { display: grid; gap: 72px; margin-top: 24px; }
+  .sv__b { display: grid; gap: 20px; }
+  .sv__h { display: grid; gap: 10px; }
+  .sv__rows { border-top: 1px solid var(--line); }
+  .sv__rows div { display: grid; gap: 4px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+  .sv__rows dt { font-weight: 600; font-size: 15px; }
+  .sv__rows dd { color: var(--mute); font-size: 14.5px; }
+  .sv__cta { display: grid; gap: 14px; justify-items: start; padding: 26px 18px; background: var(--panel); border: 1px solid var(--line); }
+  @media (min-width: 1000px) {
+    .sv-head { grid-template-columns: 1.3fr 1fr; align-items: end; gap: 60px; }
+    .sv { gap: 110px; margin-top: 40px; }
+    .sv__b { grid-template-columns: 1fr 1.6fr; gap: 60px; }
+    .sv__rows div { grid-template-columns: 220px 1fr; gap: 24px; }
+    .sv__cta { padding: 44px; }
+  }
+</style>

@@ -1,0 +1,461 @@
+---
+import Base from "../layouts/Base.astro";
+import ProductCard from "../components/ProductCard.astro";
+import Icon from "../components/Icon.astro";
+import { products, categories, bySlug, url, img, srcset, pimg, rub, contacts, wa } from "../lib/site";
+
+const flagship = bySlug("a1-pro-formula");
+const motion = bySlug("rs-formula-m4a-full-motion");
+const popular = ["a1-pro-gt", "rs-formula-v2", "p1", "s1", "fanatec-dd2-professional", "fanatec-clubsport-pedals-v3", "rs-stand-t3xl", "buttkicker-gamer-2"].map(bySlug);
+const catCover: Record<string, string> = { cockpits: "p1", solutions: "rs-formula-turnkey", motion: "rs-formula-m4a-full-motion", wheels: "fanatec-podium-steering-wheel-porsche-911-gt3-r", pedals: "fanatec-clubsport-pedals-v3", shifters: "fanatec-clubsport-shifter-sq-v1-5", stands: "rs-stand-t3xl", accessories: "buttkicker-gamer-2" };
+const catCount = (id: string) => products.filter((p) => p.cat === id).length;
+const specs = [
+  ["Рама", "Алюминий 6063-T6"],
+  ["Стенка профиля", "3,3 мм"],
+  ["Рост пилота", "127–210 см"],
+  ["Предсборка", "95 %"],
+  ["Гарантия", "5 лет"],
+  ["Производство", "Евросоюз"],
+];
+const steps = [
+  ["Подбор", "Разбираем задачи, пространство и платформу — PC, PlayStation или Xbox. Собираем комплект под вас."],
+  ["Тест-драйв", "20–30 минут на любом симуляторе в шоуруме. Бесплатно."],
+  ["Доставка и монтаж", "Привозим, собираем и подключаем. Со склада в Москве — в течение рабочих суток."],
+  ["Настройка", "Эргономика под ваш рост, софт, калибровка руля и педалей. Обучаем пилотированию."],
+];
+const installs = [5, 8, 27, 10, 4, 11, 12, 19, 3];
+---
+<Base nav="home">
+  <main>
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero__media" data-power>
+        <picture>
+          <source media="(min-width: 900px)" srcset={srcset("hero-wide", [1600, 2400])} sizes="100vw" />
+          <img src={img("hero-tall", 1150)} srcset={srcset("hero-tall", [800, 1150])} sizes="100vw" alt="Гоночный кокпит RSEAT C1 с рулевой базой в тёмной студии" fetchpriority="high" />
+        </picture>
+        <span class="hero__scan" aria-hidden="true"></span>
+        <span class="hero__frame" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      </div>
+      <div class="wrap hero__body">
+        <p class="tag hero__k" data-in style="--d:.9s"><span class="live"></span>Эксклюзивный дистрибьютор RSEAT · с 2014</p>
+        <h1 class="d1 hero__t">
+          <span class="ln"><span>Точность</span></span>
+          <span class="ln"><span><b>гоночного</b></span></span>
+          <span class="ln"><span><b>болида</b> — дома</span></span>
+        </h1>
+        <p class="lead hero__lead" data-in style="--d:1.25s">Кокпиты RSEAT, motion-платформы D‑BOX и рули Fanatec. Подбор, доставка, монтаж и настройка под ключ.</p>
+        <div class="hero__ctas" data-in style="--d:1.4s">
+          <a class="btn" href={url("catalog/")}>Каталог <Icon name="arrow" class="btn__ar" /></a>
+          <a class="btn btn--ghost" href={url("showroom/")}>Тест-драйв <Icon name="arrow" class="btn__ar" /></a>
+        </div>
+      </div>
+      <dl class="hero__hud wrap" data-in style="--d:1.55s">
+        <div><dt class="tag">Производство</dt><dd>Евросоюз</dd></div>
+        <div><dt class="tag">География</dt><dd><span class="num" data-count="90">90</span> стран</dd></div>
+        <div><dt class="tag">Гарантия</dt><dd>до <span class="num" data-count="5">5</span> лет</dd></div>
+      </dl>
+    </section>
+
+    <!-- CATEGORIES -->
+    <section class="sec">
+      <div class="wrap">
+        <div class="sh">
+          <div class="sh__top"><span class="tag">[01]</span><span class="tag">Каталог</span></div>
+          <div class="sh__row">
+            <h2 class="d2" data-in>Всё для <b>пилота</b></h2>
+            <p class="lead" data-in>Шасси, кресла и motion-платформы RSEAT. Рули, педали и коробки передач Fanatec и Thrustmaster. Стойки под один или три экрана.</p>
+          </div>
+        </div>
+        <div class="cats">
+          {categories.map((c, i) => {
+            const cover = bySlug(catCover[c.id]);
+            return (
+              <a class:list={["cat", { "cat--hero": i === 0, "cat--wide": i === categories.length - 1 }]} href={url(`catalog/${c.id}/`)} data-in style={`--d:${(i % 4) * 0.06}s`}>
+                <span class="cat__media studio ticks">
+                  <img src={pimg(cover.variants[0].img[0], i === 0 ? 1200 : 600)} alt="" loading="lazy" decoding="async" />
+                </span>
+                <span class="cat__body">
+                  <span class="tag">{String(i + 1).padStart(2, "0")} · {catCount(c.id)} поз.</span>
+                  <span class="cat__t">{c.title}</span>
+                  <span class="cat__n">{c.note}</span>
+                </span>
+                <Icon name="arrow" class="cat__ar" />
+              </a>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+
+    <!-- FLAGSHIP CONFIGURATOR -->
+    <section class="sec sec--flag" id="flagship">
+      <div class="wrap">
+        <div class="sh">
+          <div class="sh__top"><span class="tag">[02]</span><span class="tag">Флагман</span></div>
+        </div>
+        <div class="cfg">
+          <div class="cfg__stage studio ticks" data-wipe>
+            {flagship.variants.map((v, i) => (
+              <img class:list={["cfg__img", { on: i === 0 }]} data-v={v.id} src={pimg(v.img[0], 1200)} srcset={`${pimg(v.img[0], 600)} 600w, ${pimg(v.img[0], 1200)} 1200w`} sizes="(min-width: 1000px) 58vw, 100vw" alt={`RSEAT A1 PRO Formula — ${v.labelRu.toLowerCase()}`} loading="lazy" decoding="async" />
+            ))}
+            <span class="cfg__badge tag">A1 · PRO · F</span>
+          </div>
+          <div class="cfg__info">
+            <h2 class="d2" data-in>A1 PRO <b>Formula</b></h2>
+            <p class="lead" data-in>Формульная посадка на экструдированном алюминии. Нулевой прогиб при максимальной нагрузке, готовность к D‑BOX G5.</p>
+            <dl class="specs" data-in>
+              {specs.map(([k, v]) => <div><dt class="tag">{k}</dt><dd>{v}</dd></div>)}
+            </dl>
+            <div class="cfg__pick" data-in>
+              <p class="tag">Цвет рамы — <span class="cfg__name">{flagship.variants[0].labelRu}</span></p>
+              <div class="sw" role="radiogroup" aria-label="Цвет рамы">
+                {flagship.variants.map((v, i) => (
+                  <button type="button" role="radio" aria-checked={i === 0 ? "true" : "false"} aria-label={v.labelRu} data-v={v.id} data-name={v.labelRu} style={`--c:${v.swatch[0]}`}></button>
+                ))}
+              </div>
+            </div>
+            <div class="cfg__buy" data-in>
+              <p class="cfg__price">{rub(flagship.variants[0].price)}</p>
+              <button class="btn" type="button" data-add={flagship.variants[0].id} data-mode="drawer">В корзину <Icon name="cart" class="btn__ar" /></button>
+              <a class="ulink" href={url(`product/${flagship.slug}/`)}>Все характеристики</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- POPULAR -->
+    <section class="sec">
+      <div class="wrap">
+        <div class="sh">
+          <div class="sh__top"><span class="tag">[03]</span><span class="tag">Выбор пилотов</span></div>
+          <div class="sh__row">
+            <h2 class="d2" data-in>Популярное</h2>
+            <a class="ulink sh__more" href={url("catalog/")} data-in>Весь каталог <Icon name="arrow" class="btn__ar" /></a>
+          </div>
+        </div>
+      </div>
+      <div class="rail">
+        {popular.map((p, i) => <ProductCard p={p} d={Math.min(i, 3) * 0.06} />)}
+      </div>
+    </section>
+
+    <!-- MOTION -->
+    <section class="motion">
+      <div class="motion__media" data-wipe>
+        <img src={img("p1-dark", 1150)} srcset={srcset("p1-dark", [900, 1150])} sizes="(min-width: 1000px) 62vw, 100vw" alt="Кокпит RSEAT в тёмной студии" loading="lazy" decoding="async" data-par />
+      </div>
+      <div class="wrap motion__body">
+        <div class="sh__top"><span class="tag">[04]</span><span class="tag">Motion · D‑BOX</span></div>
+        <h2 class="d2" data-in>Каждый поребрик — <b>в кресле</b></h2>
+        <p class="lead" data-in>Платформа D‑BOX 4250i на четырёх актуаторах передаёт крен, торможение, удары и вибрацию дороги. Любой RS1 можно развить до флагмана с системой движения.</p>
+        <div class="motion__row" data-in>
+          <div><p class="tag">{motion.name}</p><p class="motion__p">{rub(motion.from)}</p></div>
+        </div>
+        <div class="motion__ctas" data-in>
+          <a class="btn btn--light" href={url(`product/${motion.slug}/`)}>Смотреть систему <Icon name="arrow" class="btn__ar" /></a>
+          <a class="btn btn--ghost" href={wa("Здравствуйте! Хочу обсудить motion-симулятор D‑BOX.")} target="_blank" rel="noopener">Консультация <Icon name="wa" class="btn__ar" /></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- TURNKEY -->
+    <section class="sec">
+      <div class="wrap">
+        <div class="sh">
+          <div class="sh__top"><span class="tag">[05]</span><span class="tag">Под ключ</span></div>
+          <div class="sh__row">
+            <h2 class="d2" data-in>От звонка <b>до первого круга</b></h2>
+            <p class="lead" data-in>Мы не просто продаём оборудование: консультируем по технике и спорту, монтируем, настраиваем и обучаем. Среди клиентов — первые лица, крупные компании и звёзды шоу-бизнеса.</p>
+          </div>
+        </div>
+        <ol class="steps">
+          {steps.map(([t, d], i) => (
+            <li class="ticks" data-in style={`--d:${i * 0.08}s`}>
+              <span class="steps__n num">0{i + 1}<i></i></span>
+              <h3 class="d3">{t}</h3>
+              <p>{d}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+
+    <!-- INSTALLS -->
+    <section class="sec sec--tight">
+      <div class="wrap">
+        <div class="sh">
+          <div class="sh__top"><span class="tag">[06]</span><span class="tag">Инсталляции</span></div>
+          <div class="sh__row">
+            <h2 class="d2" data-in>Собрано <b>у клиентов</b></h2>
+            <p class="lead" data-in>Кабинеты, офисы и клубы. Реализованные комплекты — от&nbsp;254&nbsp;920 до&nbsp;956&nbsp;069&nbsp;₽.</p>
+          </div>
+        </div>
+      </div>
+      <div class="rail film">
+        {installs.map((n) => (
+          <figure class="film__i" data-wipe>
+            <img src={img(`inst-${n}`, 960)} alt="Гоночный симулятор RSEAT у клиента" loading="lazy" decoding="async" />
+          </figure>
+        ))}
+      </div>
+    </section>
+
+    <!-- SHOWROOM CTA -->
+    <section class="sec">
+      <div class="wrap">
+        <div class="show ticks">
+          <div class="show__media" data-wipe>
+            <img src={img("showroom", 1250)} srcset={srcset("showroom", [1000, 1250])} sizes="(min-width: 1000px) 50vw, 100vw" alt="Кокпит RSEAT B1 в шоуруме" loading="lazy" decoding="async" />
+          </div>
+          <div class="show__body">
+            <div class="sh__top"><span class="tag">[07]</span><span class="tag">Шоурум</span></div>
+            <h2 class="d2" data-in>Сядьте <b>за руль</b></h2>
+            <p class="lead" data-in>Бесплатный тест-драйв 20–30 минут на любом симуляторе. Покажем качество вживую и подберём комплектацию.</p>
+            <ul class="show__loc" data-in>
+              {contacts.locations.map((l) => <li><span class="tag">{l.kind}</span><span>{l.city}, {l.address}</span></li>)}
+            </ul>
+            <div class="show__ctas" data-in>
+              <a class="btn" href={wa("Здравствуйте! Хочу записаться на тест-драйв в шоуруме RSEAT.")} target="_blank" rel="noopener">Записаться <Icon name="wa" class="btn__ar" /></a>
+              <a class="btn btn--ghost" href={contacts.phoneHref}>{contacts.phone} <Icon name="phone" class="btn__ar" /></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</Base>
+
+<script>
+  import { items } from "../scripts/cart";
+  const $$ = <T extends Element = HTMLElement>(s: string, el: ParentNode = document) => [...el.querySelectorAll<T>(s)];
+  const rub = (n: number) => n.toLocaleString("ru-RU").replace(/\s/g, " ") + " ₽";
+
+  // hero power-on once fonts/image are ready
+  const hero = document.querySelector(".hero")!;
+  const go = () => requestAnimationFrame(() => hero.classList.add("on"));
+  const im = hero.querySelector("img")!;
+  im.complete ? go() : (im.addEventListener("load", go, { once: true }), setTimeout(go, 1200));
+
+  // counters
+  const cio = new IntersectionObserver((es) => es.forEach((e) => {
+    if (!e.isIntersecting) return;
+    cio.unobserve(e.target);
+    const el = e.target as HTMLElement, to = Number(el.dataset.count), t0 = performance.now();
+    const tick = (t: number) => { const k = Math.min(1, (t - t0) / 1400); el.textContent = String(Math.round(to * (1 - Math.pow(1 - k, 4)))); if (k < 1) requestAnimationFrame(tick); };
+    requestAnimationFrame(tick);
+  }));
+  $$("[data-count]").forEach((el) => cio.observe(el));
+
+  // configurator
+  const cfg = document.querySelector("#flagship")!;
+  const imgs = $$<HTMLImageElement>(".cfg__img", cfg);
+  const name = cfg.querySelector(".cfg__name")!;
+  const price = cfg.querySelector(".cfg__price")!;
+  const add = cfg.querySelector<HTMLElement>("[data-add]")!;
+  const sws = $$<HTMLButtonElement>(".sw button", cfg);
+  new IntersectionObserver((es, o) => { if (es[0].isIntersecting) { imgs.forEach((i) => (i.loading = "eager")); o.disconnect(); } }, { rootMargin: "800px" }).observe(cfg);
+  const pick = (b: HTMLButtonElement) => {
+    const id = b.dataset.v!;
+    sws.forEach((s) => s.setAttribute("aria-checked", String(s === b)));
+    imgs.forEach((i) => i.classList.toggle("on", i.dataset.v === id));
+    name.textContent = b.dataset.name!;
+    price.textContent = rub(items[id].p);
+    add.dataset.add = id;
+  };
+  sws.forEach((s, i) => {
+    s.addEventListener("click", () => pick(s));
+    s.addEventListener("keydown", (e) => {
+      const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+      if (!d) return;
+      e.preventDefault();
+      const n = sws[(i + d + sws.length) % sws.length]; n.focus(); pick(n);
+    });
+  });
+
+  // gentle parallax on the motion image
+  const par = document.querySelector<HTMLElement>("[data-par]");
+  if (par && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    let tick = false;
+    const upd = () => {
+      tick = false;
+      const r = par.parentElement!.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > innerHeight) return;
+      par.style.transform = `translate3d(0, ${((r.top + r.height / 2 - innerHeight / 2) * -0.08).toFixed(1)}px, 0) scale(1.12)`;
+    };
+    addEventListener("scroll", () => { if (!tick) { tick = true; requestAnimationFrame(upd); } }, { passive: true });
+    upd();
+  }
+</script>
+
+<style>
+  /* hero */
+  .hero { position: relative; min-height: 100svh; display: flex; flex-direction: column; justify-content: flex-end; padding-top: var(--hdr); overflow: hidden; isolation: isolate; }
+  .hero__media { position: absolute; inset: calc(var(--hdr) + env(safe-area-inset-top)) 0 auto; height: 60svh; z-index: -1; clip-path: inset(49.5% 0 49.5% 0); filter: brightness(2.2) saturate(0); transition: clip-path 1.25s var(--ease-io), filter 1.6s var(--ease); }
+  .hero.on .hero__media { clip-path: inset(0); filter: none; }
+  .hero__media img { width: 100%; height: 100%; object-fit: cover; object-position: 30% 55%; transform: scale(1.08); transition: transform 2.8s var(--ease); }
+  .hero.on .hero__media img { transform: none; }
+  .hero__media::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, var(--bg) 2%, rgba(6, 7, 8, 0) 45%); }
+  .hero__scan { position: absolute; left: 0; right: 0; top: 0; height: 1px; background: rgba(255, 255, 255, 0.7); box-shadow: 0 0 18px 2px rgba(255, 255, 255, 0.35); opacity: 0; z-index: 2; }
+  .hero.on .hero__scan { animation: scan 1.6s var(--ease-io) 0.5s both; }
+  @keyframes scan { 0% { top: 50%; opacity: 0; } 15% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
+  .hero__frame i { position: absolute; width: 14px; height: 14px; border: 0 solid rgba(255, 255, 255, 0.55); z-index: 2; opacity: 0; transition: opacity 0.6s 1.2s; }
+  .hero.on .hero__frame i { opacity: 1; }
+  .hero__frame i:nth-child(1) { top: 14px; left: var(--gut); border-width: 1px 0 0 1px; }
+  .hero__frame i:nth-child(2) { top: 14px; right: var(--gut); border-width: 1px 1px 0 0; }
+  .hero__frame i:nth-child(3) { bottom: 14px; left: var(--gut); border-width: 0 0 1px 1px; display: none; }
+  .hero__frame i:nth-child(4) { bottom: 14px; right: var(--gut); border-width: 0 1px 1px 0; display: none; }
+  .hero__body { position: relative; padding-bottom: 26px; }
+  .hero__k { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; color: var(--text); }
+  .live { width: 7px; height: 7px; border-radius: 50%; background: var(--red); box-shadow: 0 0 10px var(--red); animation: live 1.8s ease-in-out infinite; }
+  @keyframes live { 50% { opacity: 0.25; } }
+  .hero__t { margin-bottom: 18px; }
+  .ln { display: block; overflow: hidden; padding-bottom: 0.08em; margin-bottom: -0.08em; }
+  .ln > span { display: block; transform: translateY(110%); transition: transform 1.2s var(--ease); }
+  .ln:nth-child(1) > span { transition-delay: 0.85s; }
+  .ln:nth-child(2) > span { transition-delay: 0.95s; }
+  .ln:nth-child(3) > span { transition-delay: 1.05s; }
+  .hero.on .ln > span { transform: none; }
+  :global(html:not(.js)) .ln > span { transform: none; }
+  .hero__lead { margin-bottom: 24px; }
+  .hero__ctas { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .hero__hud { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); padding-top: 14px; padding-bottom: 20px; }
+  .hero__hud div { display: grid; gap: 4px; }
+  .hero__hud div + div { padding-left: 12px; border-left: 1px solid var(--line); }
+  .hero__hud dd { font-size: 14px; font-weight: 500; }
+  .hero__hud dt { font-size: 9.5px; color: var(--dim); }
+
+  .sec { padding: 88px 0 0; }
+  .sec--tight { padding-top: 72px; }
+
+  /* categories */
+  .cats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .cat { position: relative; display: flex; flex-direction: column; background: var(--panel); border: 1px solid var(--line); transition: border-color 0.4s; }
+  .cat--hero { grid-column: span 2; }
+  .cat--wide { grid-column: span 2; flex-direction: row; }
+  .cat--wide .cat__media { width: 46%; flex: none; }
+  .cat--wide .cat__body { align-content: center; padding-right: 40px; }
+  .cat__media { aspect-ratio: 1; }
+  .cat--hero .cat__media { aspect-ratio: 16 / 11; }
+  .cat__media img { width: 100%; height: 100%; object-fit: contain; transition: transform 1.2s var(--ease); }
+  .cat__body { display: grid; gap: 4px; padding: 14px 12px 16px; }
+  .cat__body .tag { color: var(--dim); font-size: 9.5px; }
+  .cat__t { font-family: var(--display); font-size: 15px; letter-spacing: -0.02em; }
+  .cat--hero .cat__t { font-size: 22px; }
+  .cat__n { color: var(--mute); font-size: 12.5px; line-height: 1.35; }
+  .cat :global(.cat__ar) { position: absolute; right: 12px; bottom: 16px; width: 16px; height: 16px; color: var(--dim); transition: transform 0.5s var(--ease), color 0.4s; }
+  @media (hover: hover) {
+    .cat:hover { border-color: var(--line-2); }
+    .cat:hover .cat__media img { transform: scale(1.06); }
+    .cat:hover .cat :global(.cat__ar) { transform: translateX(4px); color: var(--red); }
+  }
+
+  /* configurator */
+  .cfg { display: grid; gap: 28px; }
+  .cfg__stage { position: relative; aspect-ratio: 1 / 0.9; margin: 0 calc(var(--gut) * -1); }
+  .cfg__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; opacity: 0; transform: scale(1.03); transition: opacity 0.8s var(--ease-io), transform 1.3s var(--ease); }
+  .cfg__img.on { opacity: 1; transform: none; }
+  .cfg__badge { position: absolute; left: var(--gut); top: 16px; color: #555; z-index: 3; }
+  .cfg__info { display: grid; gap: 22px; align-content: start; }
+  .specs { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--line); }
+  .specs div { padding: 12px 0; border-bottom: 1px solid var(--line); display: grid; gap: 2px; }
+  .specs div:nth-child(odd) { padding-right: 10px; border-right: 1px solid var(--line); }
+  .specs div:nth-child(even) { padding-left: 14px; }
+  .specs dt { font-size: 9.5px; color: var(--dim); }
+  .specs dd { font-size: 14.5px; font-weight: 500; }
+  .cfg__pick { display: grid; gap: 14px; }
+  .cfg__name { color: var(--text); }
+  .sw { display: flex; flex-wrap: wrap; gap: 8px; }
+  .sw button { position: relative; width: 38px; height: 38px; background: var(--c); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18); transition: transform 0.4s var(--ease); }
+  .sw button::after { content: ""; position: absolute; inset: -5px; border: 1px solid var(--text); opacity: 0; transform: scale(0.85); transition: opacity 0.35s, transform 0.5s var(--ease); }
+  .sw button[aria-checked="true"]::after { opacity: 1; transform: none; }
+  .sw button:active { transform: scale(0.9); }
+  .cfg__buy { display: grid; gap: 14px; padding-top: 6px; }
+  .cfg__price { font-family: var(--display); font-weight: 300; font-size: 30px; letter-spacing: -0.03em; }
+  .cfg__buy .ulink { justify-self: start; }
+
+  .sh__more { justify-self: start; }
+  .sh__more :global(svg) { width: 16px; height: 16px; }
+
+  /* motion */
+  .motion { position: relative; margin-top: 96px; overflow: hidden; }
+  .motion__media { position: relative; aspect-ratio: 1 / 0.95; overflow: hidden; }
+  .motion__media img { width: 100%; height: 100%; object-fit: cover; object-position: 8% 50%; transform: scale(1.12); }
+  .motion__media::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, var(--bg) 3%, rgba(6, 7, 8, 0) 50%), linear-gradient(180deg, var(--bg) 0%, rgba(6, 7, 8, 0) 18%); }
+  .motion__body { position: relative; margin-top: -60px; display: grid; gap: 20px; }
+  .motion__row { padding: 16px 0; border-block: 1px solid var(--line); }
+  .motion__p { font-family: var(--display); font-weight: 300; font-size: 26px; letter-spacing: -0.03em; margin-top: 4px; }
+  .motion__ctas { display: grid; gap: 8px; }
+
+  /* steps */
+  .steps { display: grid; gap: 10px; }
+  .steps li { padding: 22px 18px 24px; background: var(--panel); border: 1px solid var(--line); display: grid; gap: 10px; }
+  .steps__n { display: flex; align-items: center; gap: 12px; color: var(--red); font-size: 12px; }
+  .steps__n i { flex: 1; height: 1px; background: linear-gradient(90deg, var(--red), transparent); }
+  .steps p { color: var(--mute); font-size: 14px; }
+
+  /* installs */
+  .film { grid-auto-columns: 72%; }
+  .film__i { aspect-ratio: 4 / 5; overflow: hidden; background: var(--panel); }
+  .film__i img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(0.35) contrast(1.05); transition: filter 0.8s, transform 1.2s var(--ease); }
+  @media (hover: hover) { .film__i:hover img { filter: none; transform: scale(1.04); } }
+
+  /* showroom */
+  .show { display: grid; background: var(--panel); border: 1px solid var(--line); }
+  .show__media { aspect-ratio: 4 / 3; overflow: hidden; }
+  .show__media img { width: 100%; height: 100%; object-fit: cover; }
+  .show__body { display: grid; gap: 18px; padding: 26px 18px 22px; }
+  .show__loc { display: grid; border-top: 1px solid var(--line); }
+  .show__loc li { display: grid; gap: 2px; padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 14.5px; }
+  .show__loc .tag { font-size: 9.5px; color: var(--dim); }
+  .show__ctas { display: grid; gap: 8px; }
+
+  @media (min-width: 640px) {
+    .cats { grid-template-columns: repeat(3, 1fr); }
+    .cat--hero { grid-column: span 2; grid-row: span 2; }
+    .cat--hero .cat__media { aspect-ratio: auto; flex: 1; }
+    .film { grid-auto-columns: 40%; }
+    .steps { grid-template-columns: 1fr 1fr; }
+    .motion__ctas, .show__ctas { display: flex; flex-wrap: wrap; }
+  }
+
+  @media (min-width: 1000px) {
+    .hero { justify-content: center; padding-top: 0; }
+    .hero__media { inset: 0; height: auto; }
+    .hero__media img { object-position: 0% 50%; }
+    .hero__media::after { background: linear-gradient(270deg, rgba(6, 7, 8, 0.92) 16%, rgba(6, 7, 8, 0) 60%), linear-gradient(0deg, rgba(6, 7, 8, 0.85) 0%, rgba(6, 7, 8, 0) 32%), linear-gradient(180deg, rgba(6, 7, 8, 0.6) 0%, rgba(6, 7, 8, 0) 22%); }
+    .hero__frame i:nth-child(1), .hero__frame i:nth-child(2) { top: calc(var(--hdr) + 24px); }
+    .hero__frame i:nth-child(3), .hero__frame i:nth-child(4) { display: block; bottom: 24px; }
+    .hero__body { display: flex; flex-direction: column; align-items: flex-end; text-align: right; padding-bottom: 0; }
+    .hero__k { flex-direction: row-reverse; }
+    .hero__lead { max-width: 27em; }
+    .hero__ctas { display: flex; }
+    .hero__hud { position: absolute; left: 0; right: 0; bottom: 48px; grid-template-columns: repeat(3, max-content); gap: 0; border: 0; }
+    .hero__hud div + div { padding-left: 28px; margin-left: 28px; }
+
+    .sec { padding-top: 150px; }
+    .sec--tight { padding-top: 120px; }
+    .cats { grid-template-columns: repeat(4, 1fr); gap: 14px; }
+
+    .cfg { grid-template-columns: 1.35fr 1fr; gap: 64px; align-items: center; }
+    .cfg__stage { margin: 0; aspect-ratio: 1 / 0.86; }
+    .cfg__badge { left: 20px; }
+    .cfg__buy { grid-template-columns: auto auto; justify-content: start; align-items: center; column-gap: 24px; }
+    .cfg__price { grid-column: 1 / -1; }
+
+    .motion { margin-top: 150px; min-height: 92vh; display: flex; align-items: center; }
+    .motion__media { position: absolute; inset: 0 auto 0 0; width: 64%; aspect-ratio: auto; }
+    .motion__media img { object-position: 20% 50%; }
+    .motion__media::after { background: linear-gradient(270deg, var(--bg) 0%, rgba(6, 7, 8, 0) 45%), linear-gradient(0deg, var(--bg) 0%, rgba(6, 7, 8, 0) 20%), linear-gradient(180deg, var(--bg) 0%, rgba(6, 7, 8, 0) 20%); }
+    .motion__body { margin-top: 0; grid-template-columns: min(520px, 100%); justify-content: end; padding-block: 120px; }
+
+    .steps { grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .steps li { min-height: 260px; align-content: start; }
+    .film { grid-auto-columns: 26%; }
+
+    .show { grid-template-columns: 1.1fr 1fr; }
+    .show__media { aspect-ratio: auto; }
+    .show__body { padding: 56px 48px; align-content: center; }
+  }
+</style>

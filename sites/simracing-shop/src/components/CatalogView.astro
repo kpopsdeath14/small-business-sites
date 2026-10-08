@@ -1,0 +1,99 @@
+---
+import Base from "../layouts/Base.astro";
+import ProductCard from "./ProductCard.astro";
+import { products, categories, url, catTitle } from "../lib/site";
+
+interface Props { cat?: string }
+const { cat } = Astro.props;
+const list = cat ? products.filter((p) => p.cat === cat) : products;
+const title = cat ? catTitle(cat) : "Каталог";
+const note = cat ? categories.find((c) => c.id === cat)!.note : "Кокпиты RSEAT, motion-платформы, рули, педали, стойки и аксессуары";
+const navKey = cat && ["cockpits", "motion", "wheels"].includes(cat) ? cat : "catalog";
+---
+<Base title={`${title} — RSEAT Russia`} description={`${title}: ${note}. Доставка, монтаж и настройка под ключ.`} nav={navKey}>
+  <main>
+    <section class="ph">
+      <div class="wrap">
+        <nav class="crumbs tag" aria-label="Навигация">
+          <a href={url()}>Главная</a><span>/</span>
+          {cat ? <><a href={url("catalog/")}>Каталог</a><span>/</span><span>{title}</span></> : <span>Каталог</span>}
+        </nav>
+        <div class="cat-head">
+          <h1 class="d1" data-in>{cat ? <b>{title}</b> : <>Каталог <b>RSEAT</b></>}</h1>
+          <p class="lead" data-in>{note}</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="bar">
+      <div class="wrap bar__in">
+        <nav class="chips" aria-label="Категории">
+          <a href={url("catalog/")} aria-current={!cat ? "page" : undefined}>Все<sup>{products.length}</sup></a>
+          {categories.map((c) => (
+            <a href={url(`catalog/${c.id}/`)} aria-current={cat === c.id ? "page" : undefined}>{c.title}<sup>{products.filter((p) => p.cat === c.id).length}</sup></a>
+          ))}
+        </nav>
+      </div>
+    </div>
+
+    <section class="wrap list">
+      <div class="list__meta">
+        <p class="tag"><span class="num">{String(list.length).padStart(2, "0")}</span> позиций</p>
+        <label class="sort tag">
+          <span>Сортировка</span>
+          <select data-sort aria-label="Сортировка">
+            <option value="pop">По умолчанию</option>
+            <option value="asc">Сначала доступнее</option>
+            <option value="desc">Сначала флагманы</option>
+          </select>
+        </label>
+      </div>
+      <div class="grid" data-grid>
+        {list.map((p, i) => <ProductCard p={p} d={(i % 4) * 0.05} eager={i < 4} />)}
+      </div>
+    </section>
+  </main>
+</Base>
+
+<script>
+  const grid = document.querySelector<HTMLElement>("[data-grid]")!;
+  const sel = document.querySelector<HTMLSelectElement>("[data-sort]")!;
+  const cards = [...grid.children] as HTMLElement[];
+  sel.addEventListener("change", () => {
+    const v = sel.value;
+    const sorted = v === "pop" ? cards : [...cards].sort((a, b) => (Number(a.dataset.price) - Number(b.dataset.price)) * (v === "asc" ? 1 : -1));
+    grid.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 180, fill: "forwards" }).onfinish = () => {
+      sorted.forEach((c) => grid.appendChild(c));
+      grid.animate([{ opacity: 0, transform: "translateY(10px)" }, { opacity: 1, transform: "none" }], { duration: 500, easing: "cubic-bezier(.16,1,.3,1)", fill: "forwards" });
+    };
+  });
+  // keep the active chip in view on phones
+  const chips = document.querySelector<HTMLElement>(".chips")!;
+  const act = chips.querySelector<HTMLElement>('[aria-current="page"]');
+  if (act) chips.scrollLeft = act.offsetLeft - (chips.clientWidth - act.offsetWidth) / 2;
+</script>
+
+<style>
+  .cat-head { display: grid; gap: 16px; }
+  .bar { position: sticky; top: calc(var(--hdr) + env(safe-area-inset-top)); z-index: 50; background: rgba(6, 7, 8, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-block: 1px solid var(--line); }
+  .bar__in { padding-inline: 0; }
+  .chips { display: flex; gap: 6px; overflow-x: auto; padding: 10px var(--gut); scrollbar-width: none; }
+  .chips::-webkit-scrollbar { display: none; }
+  .chips a { flex: none; display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; border: 1px solid var(--line); font-size: 13px; color: var(--mute); transition: color 0.3s, border-color 0.3s, background 0.3s; }
+  .chips a:hover { color: var(--text); border-color: var(--line-2); }
+  .chips a[aria-current] { color: #000; background: var(--text); border-color: var(--text); }
+  .chips sup { font-family: var(--mono); font-size: 9px; opacity: 0.6; vertical-align: top; }
+  .list { padding-top: 22px; }
+  .list__meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+  .sort { display: inline-flex; align-items: center; gap: 8px; }
+  .sort span { display: none; }
+  .sort select { -webkit-appearance: none; appearance: none; background: transparent; border: 0; border-bottom: 1px solid var(--line-2); padding: 6px 18px 6px 0; font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text); background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%); background-position: right 5px center, right 1px center; background-size: 4px 4px; background-repeat: no-repeat; border-radius: 0; }
+  .sort select option { background: #111; }
+  @media (min-width: 640px) { .sort span { display: inline; } }
+  @media (min-width: 1000px) {
+    .cat-head { grid-template-columns: 1.3fr 1fr; align-items: end; gap: 60px; }
+    .bar__in { padding-inline: var(--gut); }
+    .chips { padding-inline: 0; }
+    .list { padding-top: 34px; }
+  }
+</style>

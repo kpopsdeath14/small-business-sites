@@ -82,3 +82,8 @@ sites/len-i-hlopok/.astro/
 sites/berry-lab/node_modules/
 sites/berry-lab/dist/
 sites/berry-lab/.astro/
+
+!sites/simracing-shop/
+sites/simracing-shop/node_modules/
+sites/simracing-shop/dist/
+sites/simracing-shop/.astro/

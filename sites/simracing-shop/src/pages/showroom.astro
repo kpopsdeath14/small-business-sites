@@ -1,0 +1,117 @@
+---
+import Base from "../layouts/Base.astro";
+import Icon from "../components/Icon.astro";
+import { url, img, srcset, contacts, wa } from "../lib/site";
+const installs = [5, 3, 8, 27, 10, 4, 11, 12, 19, 13];
+---
+<Base title="Шоурум и тест-драйв — RSEAT Russia" description="Бесплатный тест-драйв гоночных симуляторов RSEAT в шоуруме в Москве. Симрейсинг-экскурсия и аренда симуляторов для мероприятий." nav="showroom">
+  <main>
+    <section class="sr-hero">
+      <div class="sr-hero__media" data-wipe>
+        <img src={img("interior", 1800)} srcset={srcset("interior", [1000, 1800, 2560])} sizes="100vw" alt="Кокпит RSEAT у панорамного окна" />
+      </div>
+      <div class="wrap sr-hero__body">
+        <nav class="crumbs tag" aria-label="Навигация"><a href={url()}>Главная</a><span>/</span><span>Шоурум</span></nav>
+        <h1 class="d1" data-in>Шоурум <b>RSEAT</b></h1>
+        <p class="lead" data-in>Сядьте в кокпит, почувствуйте руль с прямым приводом и тормоз с тензодатчиком. Покажем, прокатим и подберём комплектацию.</p>
+      </div>
+    </section>
+
+    <section class="wrap blocks">
+      <article class="blk ticks" data-in id="test-drive">
+        <p class="tag tag--red">01 · Бесплатно</p>
+        <h2 class="d3">Тест-драйв</h2>
+        <p class="blk__big">20–30 минут</p>
+        <p class="lead">На любом симуляторе в шоуруме. Продемонстрируем качество продукции самым наглядным способом и подробно расскажем об ассортименте.</p>
+        <a class="btn" href={wa("Здравствуйте! Хочу записаться на бесплатный тест-драйв в шоуруме RSEAT.")} target="_blank" rel="noopener">Записаться <Icon name="wa" class="btn__ar" /></a>
+      </article>
+      <article class="blk ticks" data-in style="--d:.08s" id="tour">
+        <p class="tag tag--red">02 · Впервые в России</p>
+        <h2 class="d3">Симрейсинг-экскурсия</h2>
+        <p class="blk__big">60–80 минут</p>
+        <ul class="blk__list">
+          <li>Гонки на разных автосимуляторах</li>
+          <li>Инструктор научит обходить соперников</li>
+          <li>Секретный VR-сюрприз</li>
+          <li>Кофе, чай и напитки</li>
+        </ul>
+        <a class="btn btn--ghost" href={wa("Здравствуйте! Хочу записаться на симрейсинг-экскурсию.")} target="_blank" rel="noopener">Записаться <Icon name="wa" class="btn__ar" /></a>
+      </article>
+      <article class="blk ticks" data-in style="--d:.16s" id="rent">
+        <p class="tag tag--red">03 · Для мероприятий</p>
+        <h2 class="d3">Аренда симуляторов</h2>
+        <p class="blk__big">Под событие</p>
+        <p class="lead">Корпоративы, презентации, дни рождения и юбилеи. Турниры, командные заезды и гонки за титул лидера «Формулы-1».</p>
+        <a class="btn btn--ghost" href={wa("Здравствуйте! Интересует аренда симуляторов для мероприятия.")} target="_blank" rel="noopener">Обсудить <Icon name="wa" class="btn__ar" /></a>
+      </article>
+    </section>
+
+    <section class="wrap locs">
+      <div class="sh"><div class="sh__top"><span class="tag">[◎]</span><span class="tag">Адреса</span></div></div>
+      <div class="locs__grid">
+        {contacts.locations.map((l, i) => (
+          <div class="loc" data-in style={`--d:${i * 0.08}s`}>
+            <p class="tag">{l.kind}</p>
+            <p class="d2">{l.city}</p>
+            <p class="loc__a">{l.address}</p>
+            <p class="tag loc__h">По предварительной записи</p>
+          </div>
+        ))}
+        <div class="loc" data-in style="--d:.16s">
+          <p class="tag">Ваш менеджер</p>
+          <p class="d3">{contacts.manager}</p>
+          <p class="loc__a">Работа с ключевыми клиентами</p>
+          <div class="loc__links">
+            <a href={contacts.phoneHref}>{contacts.phone}</a>
+            <a href={`mailto:${contacts.email}`}>{contacts.email}</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="inst">
+      <div class="wrap"><div class="sh"><div class="sh__top"><span class="tag">[▣]</span><span class="tag">Инсталляции клиентов</span></div></div></div>
+      <div class="rail inst__rail">
+        {installs.map((n) => <figure class="inst__i" data-wipe><img src={img(`inst-${n}`, 960)} alt="Гоночный симулятор RSEAT у клиента" loading="lazy" decoding="async" /></figure>)}
+      </div>
+    </section>
+  </main>
+</Base>
+
+<style>
+  .sr-hero { position: relative; padding-top: var(--hdr); }
+  .sr-hero__media { height: 62svh; min-height: 380px; overflow: hidden; position: relative; }
+  .sr-hero__media img { width: 100%; height: 100%; object-fit: cover; object-position: 62% 50%; }
+  .sr-hero__media::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, var(--bg) 0%, rgba(6, 7, 8, 0) 55%); }
+  .sr-hero__body { position: relative; margin-top: -120px; display: grid; gap: 16px; }
+  .blocks { display: grid; gap: 10px; margin-top: 64px; }
+  .blk { display: grid; gap: 14px; align-content: start; padding: 24px 18px; background: var(--panel); border: 1px solid var(--line); }
+  .blk__big { font-family: var(--display); font-weight: 300; font-size: 30px; letter-spacing: -0.03em; }
+  .blk .btn { justify-self: start; margin-top: 6px; }
+  .blk__list { display: grid; gap: 8px; color: var(--mute); font-size: 14.5px; }
+  .blk__list li { position: relative; padding-left: 18px; }
+  .blk__list li::before { content: ""; position: absolute; left: 0; top: 0.72em; width: 8px; height: 1px; background: var(--red); }
+  .locs { margin-top: 96px; }
+  .locs__grid { display: grid; border-top: 1px solid var(--line); }
+  .loc { display: grid; gap: 8px; padding: 24px 0; border-bottom: 1px solid var(--line); }
+  .loc__a { color: var(--mute); font-size: 15px; }
+  .loc__h { color: var(--dim); }
+  .loc__links { display: grid; gap: 4px; font-size: 15px; }
+  .inst { margin-top: 96px; }
+  .inst__rail { grid-auto-columns: 72%; }
+  .inst__i { aspect-ratio: 4 / 5; overflow: hidden; }
+  .inst__i img { width: 100%; height: 100%; object-fit: cover; }
+  @media (min-width: 640px) {
+    .blocks { grid-template-columns: repeat(3, 1fr); }
+    .locs__grid { grid-template-columns: repeat(3, 1fr); gap: 0 32px; }
+    .inst__rail { grid-auto-columns: 32%; }
+  }
+  @media (min-width: 1000px) {
+    .sr-hero__media { height: 78vh; }
+    .sr-hero__body { margin-top: -220px; grid-template-columns: 1.2fr 1fr; align-items: end; gap: 60px; }
+    .sr-hero__body .crumbs { grid-column: 1 / -1; }
+    .blk { padding: 32px 28px; }
+    .locs, .inst { margin-top: 140px; }
+    .inst__rail { grid-auto-columns: 24%; }
+  }
+</style>
