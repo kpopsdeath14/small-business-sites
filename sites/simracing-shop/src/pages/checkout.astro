@@ -87,7 +87,8 @@ import { url, contacts } from "../lib/site";
           <a class="btn" data-send-wa target="_blank" rel="noopener">Отправить в WhatsApp <Icon name="wa" class="btn__ar" /></a>
           <a class="btn btn--ghost" data-send-mail>Отправить на email <Icon name="arrow" class="btn__ar" /></a>
         </div>
-        <pre class="done__pre" data-pre></pre>
+        <div class="pass ticks" data-pass></div>
+        <button class="btn btn--ghost pass__save" type="button" data-save-pass>Сохранить паспорт заказа <Icon name="arrow" class="btn__ar" /></button>
         <a class="ulink" href={url("catalog/")}>Вернуться в каталог</a>
       </div>
     </section>
@@ -97,6 +98,7 @@ import { url, contacts } from "../lib/site";
 <script>
   import { cart, items, rub, esc, pimg } from "../scripts/cart";
   import { radio, radioLater } from "../scripts/app";
+  import { passportHTML, savePassport } from "../scripts/passport";
   const FREE = 200000;
   const WA = "79265578210";
   const MAIL = "Info@Simracing-shop.ru";
@@ -211,7 +213,13 @@ import { url, contacts } from "../lib/site";
     stopped = true;
     cancelAnimationFrame(raf);
     $("[data-flap]").textContent = t0 ? fmt(Date.now() - t0) : "—";
-    $("[data-pre]").textContent = text;
+    const pass = { oid, date: d, name: String(fd.get("name")), ship: String(fd.get("ship")), pay: String(fd.get("pay")), lap: t0 ? fmt(Date.now() - t0) : "—", lines: ls, total: cart.total() };
+    $("[data-pass]").innerHTML = passportHTML(pass);
+    $("[data-save-pass]").onclick = async (ev) => {
+      const b = ev.currentTarget as HTMLButtonElement;
+      b.disabled = true;
+      try { await savePassport(pass); } finally { b.disabled = false; }
+    };
     $<HTMLAnchorElement>("[data-send-wa]").href = `https://wa.me/${WA}?text=${encodeURIComponent(text)}`;
     $<HTMLAnchorElement>("[data-send-mail]").href = `mailto:${MAIL}?subject=${encodeURIComponent(`Заказ ${oid}`)}&body=${encodeURIComponent(text)}`;
     // a tiny start sequence on the button, then the chequered flag
@@ -268,6 +276,29 @@ import { url, contacts } from "../lib/site";
   .co__total strong { font-family: var(--display); font-weight: 300; font-size: 26px; letter-spacing: -0.03em; }
 
   .done[hidden] { display: none; }
+  .pass { position: relative; width: 100%; display: grid; gap: 18px; padding: 22px 18px 34px; background: radial-gradient(80% 60% at 90% 0%, rgba(255, 45, 32, 0.1), transparent), var(--bg); border: 1px solid var(--line); overflow: hidden; }
+  .pass :global(.pass__head) { display: flex; justify-content: space-between; align-items: center; }
+  .pass :global(.pass__brand) { font-family: var(--display); font-weight: 500; letter-spacing: 0.18em; font-size: 14px; }
+  .pass :global(.pass__brand em) { font-style: normal; color: var(--dim); font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; margin-left: 6px; }
+  .pass :global(.pass__oid) { font-family: var(--display); font-weight: 300; font-size: clamp(26px, 7vw, 40px); letter-spacing: -0.02em; }
+  .pass :global(.pass__meta) { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 18px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+  .pass :global(.pass__meta dt) { color: var(--dim); font-size: 9.5px; }
+  .pass :global(.pass__meta dd) { font-size: 14px; margin-top: 2px; }
+  .pass :global(.pass__list) { display: grid; gap: 10px; }
+  .pass :global(.pass__item) { display: grid; grid-template-columns: 48px 1fr auto; gap: 4px 12px; align-items: center; font-size: 13.5px; }
+  .pass :global(.pass__img) { width: 48px; height: 48px; display: block; grid-row: span 2; }
+  .pass :global(.pass__img img) { width: 100%; height: 100%; object-fit: contain; }
+  .pass :global(.pass__nm b) { display: block; font-weight: 600; }
+  .pass :global(.pass__nm small) { color: var(--mute); font-size: 12px; }
+  .pass :global(.pass__q) { color: var(--mute); font-size: 12px; grid-column: 2; }
+  .pass :global(.pass__p) { grid-column: 3; grid-row: 1 / span 2; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .pass :global(.pass__foot) { display: flex; justify-content: space-between; align-items: end; gap: 12px; padding-top: 14px; border-top: 1px solid var(--line); }
+  .pass :global(.pass__foot > div) { display: grid; gap: 4px; }
+  .pass :global(.pass__foot strong) { font-family: var(--display); font-weight: 300; font-size: 26px; letter-spacing: -0.02em; }
+  .pass :global(.pass__lap) { text-align: right; }
+  .pass :global(.pass__lap b) { font-family: var(--mono); font-weight: 400; color: #c98bff; }
+  .pass :global(.pass__cheq) { position: absolute; left: 0; right: 0; bottom: 0; height: 16px; background: conic-gradient(#eceff2 25%, #0b0c0e 0 50%, #eceff2 0 75%, #0b0c0e 0) 0 0 / 16px 16px; opacity: 0.9; }
+  .pass__save { width: 100%; }
   .done__box { display: grid; gap: 18px; justify-items: start; padding: 28px 18px; background: var(--panel); border: 1px solid var(--line); max-width: 760px; }
   .co__form :global(.mini) { display: flex; gap: 8px; margin: 0 auto; }
   .co__form :global(.mini i) { width: 10px; height: 10px; border-radius: 50%; background: rgba(0, 0, 0, 0.35); transition: background 0.08s, box-shadow 0.08s; }
@@ -285,7 +316,6 @@ import { url, contacts } from "../lib/site";
   .sect__lap .num { color: var(--text); }
   .done__lap .num { color: #c98bff; }
   .done__ctas { display: grid; gap: 8px; width: 100%; }
-  .done__pre { width: 100%; margin: 0; padding: 16px; background: var(--bg); border: 1px solid var(--line); font-family: var(--mono); font-size: 11.5px; line-height: 1.6; color: var(--mute); white-space: pre-wrap; }
 
   @media (min-width: 1000px) {
     .co { grid-template-columns: 1fr 420px; gap: 64px; align-items: start; }
@@ -294,5 +324,7 @@ import { url, contacts } from "../lib/site";
     .co__chev, .co__mini { display: none; }
     .done__box { padding: 48px; }
     .done__ctas { display: flex; width: auto; }
+    .pass { padding: 32px 32px 44px; }
+    .pass__save { width: auto; }
   }
 </style>
