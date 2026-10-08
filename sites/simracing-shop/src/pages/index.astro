@@ -52,19 +52,19 @@ const installs = [5, 8, 27, 10, 4, 11, 12, 19, 3];
         <span class="hero__frame" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
       </div>
       <div class="wrap hero__body">
-        <p class="tag hero__k" data-in style="--d:.9s"><span class="live"></span>Эксклюзивный дистрибьютор RSEAT · с 2014</p>
+        <p class="tag hero__k" data-in style="--d:.35s"><span class="live"></span>Эксклюзивный дистрибьютор RSEAT · с 2014</p>
         <h1 class="d1 hero__t">
           <span class="ln"><span>Точность</span></span>
           <span class="ln"><span><b>гоночного</b></span></span>
           <span class="ln"><span><b>болида</b> — дома</span></span>
         </h1>
-        <p class="lead hero__lead" data-in style="--d:1.25s">Кокпиты RSEAT, motion-платформы D‑BOX и рули Fanatec. Подбор, доставка, монтаж и настройка под ключ.</p>
-        <div class="hero__ctas" data-in style="--d:1.4s">
+        <p class="lead hero__lead" data-in style="--d:.6s">Кокпиты RSEAT, motion-платформы D‑BOX и рули Fanatec. Подбор, доставка, монтаж и настройка под ключ.</p>
+        <div class="hero__ctas" data-in style="--d:.7s">
           <a class="btn" href={url("catalog/")}>Каталог <Icon name="arrow" class="btn__ar" /></a>
           <a class="btn btn--ghost" href={url("showroom/")}>Тест-драйв <Icon name="arrow" class="btn__ar" /></a>
         </div>
       </div>
-      <dl class="hero__hud wrap" data-in style="--d:1.55s">
+      <dl class="hero__hud wrap" data-in style="--d:.8s">
         <div><dt class="tag">Производство</dt><dd>Евросоюз</dd></div>
         <div><dt class="tag">География</dt><dd><span class="num" data-count="90">90</span> стран</dd></div>
         <div><dt class="tag">Гарантия</dt><dd>до <span class="num" data-count="5">5</span> лет</dd></div>
@@ -357,15 +357,15 @@ const installs = [5, 8, 27, 10, 4, 11, 12, 19, 3];
 <style>
   /* hero */
   .hero { position: relative; min-height: 100svh; display: flex; flex-direction: column; justify-content: flex-end; padding-top: var(--hdr); overflow: hidden; isolation: isolate; }
-  .hero__media { position: absolute; inset: calc(var(--hdr) + env(safe-area-inset-top)) 0 auto; height: 60svh; z-index: -1; clip-path: inset(49.5% 0 49.5% 0); filter: brightness(2.2) saturate(0); transition: clip-path 1.25s var(--ease-io), filter 1.6s var(--ease); }
+  .hero__media { position: absolute; inset: calc(var(--hdr) + env(safe-area-inset-top)) 0 auto; height: 60svh; z-index: -1; clip-path: inset(49.5% 0 49.5% 0); filter: brightness(2.2) saturate(0); transition: clip-path 0.8s var(--ease-io), filter 1s var(--ease); }
   .hero.on .hero__media { clip-path: inset(0); filter: none; }
   .hero__media img { width: 100%; height: 100%; object-fit: cover; object-position: 30% 55%; transform: scale(1.08); transition: transform 2.8s var(--ease); }
   .hero.on .hero__media img { transform: none; }
   .hero__media::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, var(--bg) 2%, rgba(6, 7, 8, 0) 45%); }
   .hero__scan { position: absolute; left: 0; right: 0; top: 0; height: 1px; background: rgba(255, 255, 255, 0.7); box-shadow: 0 0 18px 2px rgba(255, 255, 255, 0.35); opacity: 0; z-index: 2; }
-  .hero.on .hero__scan { animation: scan 1.6s var(--ease-io) 0.5s both; }
+  .hero.on .hero__scan { animation: scan 0.9s var(--ease-io) 0.15s both; }
   @keyframes scan { 0% { top: 50%; opacity: 0; } 15% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
-  .hero__frame i { position: absolute; width: 14px; height: 14px; border: 0 solid rgba(255, 255, 255, 0.55); z-index: 2; opacity: 0; transition: opacity 0.6s 1.2s; }
+  .hero__frame i { position: absolute; width: 14px; height: 14px; border: 0 solid rgba(255, 255, 255, 0.55); z-index: 2; opacity: 0; transition: opacity 0.6s 0.6s; }
   .hero.on .hero__frame i { opacity: 1; }
   .hero__frame i:nth-child(1) { top: 14px; left: var(--gut); border-width: 1px 0 0 1px; }
   .hero__frame i:nth-child(2) { top: 14px; right: var(--gut); border-width: 1px 1px 0 0; }
@@ -377,10 +377,10 @@ const installs = [5, 8, 27, 10, 4, 11, 12, 19, 3];
   @keyframes live { 50% { opacity: 0.25; } }
   .hero__t { margin-bottom: 18px; }
   .ln { display: block; overflow: hidden; padding-bottom: 0.08em; margin-bottom: -0.08em; }
-  .ln > span { display: block; transform: translateY(110%); transition: transform 1.2s var(--ease); }
-  .ln:nth-child(1) > span { transition-delay: 0.85s; }
-  .ln:nth-child(2) > span { transition-delay: 0.95s; }
-  .ln:nth-child(3) > span { transition-delay: 1.05s; }
+  .ln > span { display: block; transform: translateY(110%); transition: transform 0.9s var(--ease); }
+  .ln:nth-child(1) > span { transition-delay: 0.3s; }
+  .ln:nth-child(2) > span { transition-delay: 0.38s; }
+  .ln:nth-child(3) > span { transition-delay: 0.46s; }
   .hero.on .ln > span { transform: none; }
   :global(html:not(.js)) .ln > span { transform: none; }
   .hero__lead { margin-bottom: 24px; }

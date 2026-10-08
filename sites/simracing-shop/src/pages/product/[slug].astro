@@ -58,7 +58,7 @@ const desc = `${p.name} — ${p.sub || catTitle(p.cat)}. Цена ${rub(p.from)}
 
         <div class="buy__price-row">
           <p class="buy__price" data-price>{rub(v.price)}</p>
-          <span class:list={["stock", { "stock--pre": v.stock !== "in" }]} data-stock>{v.stock === "in" ? "В наличии" : "Предзаказ · 2–3 недели"}</span>
+          <span class:list={["stock", { "stock--pre": v.stock !== "in" }]} data-stock>{v.stock === "in" ? "В наличии" : "Под заказ · 2–3 нед."}</span>
         </div>
 
         {multi && (
@@ -74,7 +74,7 @@ const desc = `${p.name} — ${p.sub || catTitle(p.cat)}. Цена ${rub(p.from)}
 
         <div class="buy__act" data-buybox>
           <div class="qty" role="group" aria-label="Количество">
-            <button type="button" data-q="-1" aria-label="Меньше">−</button><output data-qv>1</output><button type="button" data-q="1" aria-label="Больше">+</button>
+            <button type="button" data-q="-1" aria-label="Меньше">−</button><output data-qv></output><button type="button" data-q="1" aria-label="Больше">+</button>
           </div>
           <button class="btn buy__add" type="button" data-add={v.id}>В корзину <Icon name="cart" class="btn__ar" /></button>
         </div>
@@ -181,28 +181,25 @@ const desc = `${p.name} — ${p.sub || catTitle(p.cat)}. Цена ${rub(p.from)}
     if (b) track.scrollTo({ left: Number(b.dataset.i) * track.clientWidth, behavior: "smooth" });
   });
 
-  // quantity
-  let q = 1;
+  // quantity: the stepper only exists once the item is in the cart, and it edits the cart directly
   const qv = $("[data-qv]");
+  const act = $("[data-buybox]");
   const adds = $$<HTMLElement>("[data-add]").filter((b) => b.closest(".pp") && !b.closest(".card"));
   const curId = () => adds[0].dataset.add!;
   const inCartQ = () => cart.lines().find((l) => l.id === curId())?.q;
   $$("[data-q]").forEach((b) => b.addEventListener("click", () => {
-    const d = Number(b.dataset.q);
     const cq = inCartQ();
-    // already in the cart: the stepper drives the cart itself
-    if (cq !== undefined) { cart.set(curId(), Math.max(1, Math.min(99, cq + d))); return; }
-    const nq = Math.max(1, Math.min(99, q + d));
-    if (nq === q) return;
-    q = nq;
-    qv.textContent = String(q);
-    gear(qv, d);
-    adds.forEach((a) => (a.dataset.qty = String(q)));
+    if (cq === undefined) return;
+    const nq = cq + Number(b.dataset.q);
+    if (nq < 1) cart.remove(curId());
+    else cart.set(curId(), Math.min(99, nq));
   }));
   const showQ = () => {
+    const cq = inCartQ();
+    act.classList.toggle("has-qty", cq !== undefined);
+    if (cq === undefined) return;
     const shown = Number(qv.textContent);
-    const want = inCartQ() ?? q;
-    if (want !== shown) { qv.textContent = String(want); gear(qv, want > shown ? 1 : -1); }
+    if (cq !== shown) { qv.textContent = String(cq); if (shown) gear(qv, cq > shown ? 1 : -1); }
   };
   document.addEventListener("cart:sync", showQ);
   showQ();
@@ -216,7 +213,7 @@ const desc = `${p.name} — ${p.sub || catTitle(p.cat)}. Цена ${rub(p.from)}
     $$("[data-vname]").forEach((nm) => (nm.textContent = v.n));
     $$("[data-price]").forEach((el) => rollPrice(el, v.p));
     const st = $("[data-stock]");
-    st.textContent = v.st === "in" ? "В наличии" : "Предзаказ · 2–3 недели";
+    st.textContent = v.st === "in" ? "В наличии" : "Под заказ · 2–3 нед.";
     st.classList.toggle("stock--pre", v.st !== "in");
     adds.forEach((a) => (a.dataset.add = v.id));
     syncButtons();
@@ -286,16 +283,19 @@ const desc = `${p.name} — ${p.sub || catTitle(p.cat)}. Цена ${rub(p.from)}
   .buy__sub { color: var(--mute); font-size: 15px; margin-top: -4px; }
   .buy__price-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 0; border-block: 1px solid var(--line); }
   .buy__price { font-family: var(--display); font-weight: 300; font-size: 30px; letter-spacing: -0.03em; }
-  .buy__price-row .stock { background: var(--panel-2); color: var(--text); }
-  .vpick { display: grid; gap: 12px; }
+  .buy__price-row .stock { background: var(--panel-2); color: var(--text); white-space: nowrap; flex: none; }
+  .vpick { gap: 12px; }
   .vpick__name { color: var(--text); }
   .vpick__sw { display: flex; flex-wrap: wrap; gap: 8px; }
   .vpick__sw button { position: relative; width: 38px; height: 38px; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2); transition: transform 0.4s var(--ease); }
   .vpick__sw button::after { content: ""; position: absolute; inset: -5px; border: 1px solid var(--text); opacity: 0; transform: scale(0.85); transition: opacity 0.35s, transform 0.5s var(--ease); }
   .vpick__sw button[aria-checked="true"]::after { opacity: 1; transform: none; }
   .vpick__sw button:active { transform: scale(0.9); }
-  .buy__act { display: grid; grid-template-columns: auto 1fr; gap: 8px; margin-top: 4px; }
-  .buy__act .qty { height: 54px; grid-template-columns: 36px 34px 36px; }
+  .buy__act { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 4px; }
+  .buy__act .qty { display: none; height: 54px; grid-template-columns: 36px 34px 36px; }
+  .buy__act.has-qty { grid-template-columns: auto 1fr; }
+  .buy__act.has-qty .qty { display: inline-grid; animation: qtyIn 0.45s var(--ease); }
+  @keyframes qtyIn { from { opacity: 0; transform: translateX(-8px); } }
   .perks { display: grid; border-top: 1px solid var(--line); margin-top: 6px; }
   .perks li { display: grid; grid-template-columns: 92px 1fr; gap: 12px; padding: 13px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; color: var(--mute); }
   .perks .tag { color: var(--dim); font-size: 9.5px; padding-top: 3px; }

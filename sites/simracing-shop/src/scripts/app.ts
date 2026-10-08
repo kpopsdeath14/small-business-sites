@@ -7,7 +7,7 @@ const $$ = <T extends Element = HTMLElement>(s: string, el: ParentNode = documen
 /* ---------- reveal on scroll ---------- */
 const io = new IntersectionObserver(
   (es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }),
-  { rootMargin: "0px 0px -6% 0px", threshold: 0.08 },
+  { rootMargin: "0px 0px 8% 0px", threshold: 0 },
 );
 // clip-path hides a [data-wipe] element from IntersectionObserver, so watch its parent instead
 const wipes = new Map<Element, Element[]>();
@@ -17,7 +17,7 @@ const wio = new IntersectionObserver(
     wipes.get(e.target)?.forEach((w, i) => { (w as HTMLElement).style.transitionDelay ||= `${Math.min(i, 4) * 0.08}s`; w.classList.add("in"); });
     wio.unobserve(e.target);
   }),
-  { rootMargin: "0px 0px -8% 0px", threshold: 0.05 },
+  { rootMargin: "0px 0px 6% 0px", threshold: 0 },
 );
 export const observe = (el: ParentNode = document) => {
   $$("[data-in]", el).forEach((n) => io.observe(n));
@@ -44,7 +44,7 @@ $$("a", menu).forEach((a) => a.addEventListener("click", () => setMenu(false)));
 const drawer = $(".drawer")!;
 const list = $("[data-cart-list]", drawer)!;
 const BASE = (document.querySelector('link[rel="icon"]') as HTMLLinkElement).getAttribute("href")!.replace(/\/favicon\.svg$/, "");
-const CART_URL = `${BASE}/cart/`;
+const CHECKOUT_URL = `${BASE}/checkout/`;
 export const openCart = () => {
   setMenu(false);
   hidePit();
@@ -107,7 +107,15 @@ export function radioLater(key: string, delay: number) {
   const seq = radioSeq;
   setTimeout(() => { if (seq === radioSeq) radio(key); }, delay);
 }
+const ONCE = new Set(["remove", "free", "focus"]);
 export function radio(key: string | Line) {
+  if (typeof key === "string" && ONCE.has(key)) {
+    try {
+      const k = `rseat-radio-${key}`;
+      if (sessionStorage.getItem(k)) return;
+      sessionStorage.setItem(k, "1");
+    } catch {}
+  }
   radioSeq++;
   const l = typeof key === "string" ? RADIO[key] : key;
   if (!l) return;
@@ -133,7 +141,7 @@ export function syncButtons() {
     b.dataset.q = String(q ?? "");
     if (!inCart) { b.innerHTML = b.dataset.html; return; }
     b.innerHTML = b.classList.contains("btn")
-      ? `<span class="lamp"></span><span>В корзине${q! > 1 ? ` · ${q}` : ""}</span><span class="btn__go">Оформить →</span>`
+      ? `<span class="lamp"></span><span>В корзине</span><span class="btn__go">Оформить →</span>`
       : CHECK;
   });
   document.dispatchEvent(new CustomEvent("cart:sync"));
@@ -145,7 +153,7 @@ document.addEventListener("click", (e) => {
   if (!b) return;
   e.preventDefault();
   if (b.classList.contains("in-cart")) {
-    if (b.classList.contains("btn")) location.href = CART_URL;
+    if (b.classList.contains("btn")) location.href = CHECKOUT_URL;
     else openCart();
     return;
   }
