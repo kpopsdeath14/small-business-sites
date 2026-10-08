@@ -243,8 +243,8 @@ const desc = `${p.name} — ${p.sub || catTitle(p.cat)}. Цена ${rub(p.from)}
   .gal { position: relative; margin: 0 calc(var(--gut) * -1); }
   .gal__track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; aspect-ratio: 1; }
   .gal__track::-webkit-scrollbar { display: none; }
-  .gal__slide { flex: 0 0 100%; scroll-snap-align: center; display: grid; place-items: center; }
-  .gal__slide img { width: 100%; height: 100%; object-fit: contain; }
+  .gal :global(.gal__slide) { flex: 0 0 100%; scroll-snap-align: center; display: grid; place-items: center; }
+  .gal :global(.gal__slide img) { width: 100%; height: 100%; object-fit: contain; }
   .gal__count { position: absolute; left: var(--gut); bottom: 14px; color: #333; }
   .gal__frame i { position: absolute; width: 12px; height: 12px; border: 0 solid rgba(0, 0, 0, 0.35); }
   .gal__frame i:nth-child(1) { left: 12px; top: 12px; border-width: 1px 0 0 1px; }
@@ -301,10 +301,10 @@ const desc = `${p.name} — ${p.sub || catTitle(p.cat)}. Цена ${rub(p.from)}
     .gal__frame i:nth-child(3) { display: block; }
     .gal__count { left: 20px; bottom: 18px; }
     .gal__thumbs { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-top: 8px; }
-    .gal__thumbs button { aspect-ratio: 1; opacity: 0.55; transition: opacity 0.3s; outline: 1px solid transparent; outline-offset: -1px; }
-    .gal__thumbs button.on, .gal__thumbs button:hover { opacity: 1; }
-    .gal__thumbs button.on { outline-color: var(--red); }
-    .gal__thumbs img { width: 100%; height: 100%; object-fit: contain; }
+    .gal__thumbs :global(button) { aspect-ratio: 1; opacity: 0.55; transition: opacity 0.3s; outline: 1px solid transparent; outline-offset: -1px; }
+    .gal__thumbs :global(button.on), .gal__thumbs :global(button:hover) { opacity: 1; }
+    .gal__thumbs :global(button.on) { outline-color: var(--red); }
+    .gal__thumbs :global(img) { width: 100%; height: 100%; object-fit: contain; }
     .buy { padding-top: 8px; }
     .info { grid-template-columns: 1fr 1fr; gap: 64px; margin-top: 110px; align-items: start; }
     .info > div:only-child { grid-column: 1 / -1; max-width: 900px; }
