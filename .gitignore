@@ -92,3 +92,8 @@ sites/simracing-shop/.astro/
 sites/kaminline/node_modules/
 sites/kaminline/dist/
 sites/kaminline/.astro/
+
+!sites/bacchus/
+sites/bacchus/node_modules/
+sites/bacchus/dist/
+sites/bacchus/.astro/

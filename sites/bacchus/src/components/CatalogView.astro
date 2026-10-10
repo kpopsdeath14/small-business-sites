@@ -1,0 +1,190 @@
+---
+import Base from "../layouts/Base.astro";
+import ProductCard from "./ProductCard.astro";
+import { products, categories, url, catTitle, plural } from "../lib/site";
+
+interface Props { cat?: string }
+const { cat } = Astro.props;
+const list = cat ? products.filter((p) => p.cat === cat) : products;
+const title = cat ? catTitle(cat) : "Каталог";
+const note = cat ? categories.find((c) => c.id === cat)!.note : "Винные шкафы, климат для погребов, стеллажи, диспенсеры и шкафы для сигар";
+const navKey = cat === "shkafy" ? "shkafy" : cat === "klimat" ? "climate" : "catalog";
+// filters only where they mean something: cabinets carry bottles and zones
+const filters = !cat || cat === "shkafy";
+const installs = [...new Set(list.map((p) => (/встра/i.test(p.install) ? "built" : /отдельно/i.test(p.install) ? "free" : "")).filter(Boolean))];
+---
+<Base title={`${title} — Подвалы Бахуса`} description={`${title}: ${note}. Доставка по Москве и России, монтаж и сервис.`} nav={navKey}>
+  <main>
+    <section class="ph">
+      <div class="wrap">
+        <nav class="crumbs tag" aria-label="Навигация">
+          <a href={url()}>Главная</a><span>/</span>
+          {cat ? <><a href={url("catalog/")}>Каталог</a><span>/</span><span>{title}</span></> : <span>Каталог</span>}
+        </nav>
+        <div class="cat-head">
+          <h1 class="d1" data-in>{cat ? <b>{title}</b> : <>Каталог <b>погреба</b></>}</h1>
+          <p class="lead" data-in>{note}</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="bar">
+      <div class="wrap bar__in">
+        <nav class="chips" aria-label="Категории">
+          <a href={url("catalog/")} aria-current={!cat ? "page" : undefined}>Все<sup>{products.length}</sup></a>
+          {categories.map((c) => (
+            <a href={url(`catalog/${c.id}/`)} aria-current={cat === c.id ? "page" : undefined}>{c.title}<sup>{products.filter((p) => p.cat === c.id).length}</sup></a>
+          ))}
+        </nav>
+      </div>
+    </div>
+
+    <section class="wrap list">
+      {filters && (
+        <form class="flt" data-flt>
+          <fieldset>
+            <legend class="tag">Зоны</legend>
+            {[["", "Любые"], ["1", "Одна"], ["2", "Две"], ["3", "Три"]].map(([v, l], i) => <label><input type="radio" name="zones" value={v} checked={i === 0} /><span>{l}</span></label>)}
+          </fieldset>
+          <fieldset>
+            <legend class="tag">Бутылок</legend>
+            {[["", "Любое"], ["0-30", "до 30"], ["31-80", "31–80"], ["81-150", "81–150"], ["151-999", "150+"]].map(([v, l], i) => <label><input type="radio" name="cap" value={v} checked={i === 0} /><span>{l}</span></label>)}
+          </fieldset>
+          {installs.length > 1 && (
+            <fieldset>
+              <legend class="tag">Установка</legend>
+              {[["", "Любая"], ["built", "Встраиваемые"], ["free", "Отдельностоящие"]].map(([v, l], i) => <label><input type="radio" name="inst" value={v} checked={i === 0} /><span>{l}</span></label>)}
+            </fieldset>
+          )}
+        </form>
+      )}
+      <div class="list__meta">
+        <p class="tag"><span class="num" data-n>{list.length}</span> <span data-nw>{plural(list.length, "позиция", "позиции", "позиций")}</span></p>
+        <label class="sort tag">
+          <span>Сортировка</span>
+          <select data-sort aria-label="Сортировка">
+            <option value="pop">По умолчанию</option>
+            <option value="asc">Цена: по возрастанию</option>
+            <option value="desc">Цена: по убыванию</option>
+            {filters && <option value="cap">Вместимость</option>}
+          </select>
+        </label>
+      </div>
+      <div class="grid" data-grid>
+        {list.map((p, i) => <ProductCard p={p} d={(i % 4) * 0.05} eager={i < 4} />)}
+      </div>
+      <p class="empty lead" data-empty hidden>Таких шкафов в каталоге нет. Попробуйте другую вместимость — или <a class="ulink" href={url("podbor/")}>подберём вместе</a>.</p>
+    </section>
+  </main>
+</Base>
+
+<script>
+  const grid = document.querySelector<HTMLElement>("[data-grid]")!;
+  const sel = document.querySelector<HTMLSelectElement>("[data-sort]")!;
+  const flt = document.querySelector<HTMLFormElement>("[data-flt]");
+  const cards = [...grid.children] as HTMLElement[];
+  const nEl = document.querySelector("[data-n]")!, nw = document.querySelector("[data-nw]")!;
+  const empty = document.querySelector<HTMLElement>("[data-empty]")!;
+  const plural = (n: number) => { const a = n % 10, b = n % 100; return a === 1 && b !== 11 ? "позиция" : a >= 2 && a <= 4 && (b < 12 || b > 14) ? "позиции" : "позиций"; };
+
+  // sorting: cards settle into rack bins A1, A2… like bottles laid down in order
+  const order = () => {
+    const v = sel.value;
+    if (v === "pop") return cards;
+    if (v === "cap") return [...cards].sort((a, b) => (Number(b.dataset.cap) || 0) - (Number(a.dataset.cap) || 0));
+    return [...cards].sort((a, b) => (Number(a.dataset.price) - Number(b.dataset.price)) * (v === "asc" ? 1 : -1));
+  };
+  const visible = (c: HTMLElement) => {
+    if (!flt) return true;
+    const f = new FormData(flt);
+    const z = String(f.get("zones") || ""), cap = String(f.get("cap") || ""), inst = String(f.get("inst") || "");
+    if (z && c.dataset.zones !== z) return false;
+    if (cap) { const [lo, hi] = cap.split("-").map(Number); const n = Number(c.dataset.cap); if (!n || n < lo || n > hi) return false; }
+    if (inst === "built" && !/встра/i.test(c.dataset.install!)) return false;
+    if (inst === "free" && !/отдельно/i.test(c.dataset.install!)) return false;
+    return true;
+  };
+  const apply = (bins: boolean) => {
+    const sorted = order();
+    grid.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, fill: "forwards" }).onfinish = () => {
+      let k = 0;
+      sorted.forEach((c) => {
+        grid.appendChild(c);
+        const on = visible(c);
+        c.hidden = !on;
+        c.querySelector(".bin")?.remove();
+        if (!on) return;
+        if (bins && sel.value !== "pop") {
+          const g = document.createElement("span");
+          g.className = "bin";
+          g.textContent = `${String.fromCharCode(65 + Math.floor(k / 4))}${(k % 4) + 1}`;
+          g.style.animationDelay = `${Math.min(k, 16) * 0.05 + 0.25}s`;
+          c.querySelector(".card__media")!.appendChild(g);
+        }
+        c.animate([{ opacity: 0, transform: `translateY(${k % 2 ? 40 : 24}px)` }, { opacity: 1, transform: "none" }], { duration: 650, delay: Math.min(k, 16) * 40, easing: "cubic-bezier(.16,1,.3,1)", fill: "backwards" });
+        k++;
+      });
+      nEl.textContent = String(k); nw.textContent = plural(k);
+      empty.hidden = k > 0;
+      grid.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200, fill: "forwards" });
+    };
+  };
+  sel.addEventListener("change", () => apply(true));
+  flt?.addEventListener("change", () => {
+    apply(false);
+    const f = new FormData(flt), q = new URLSearchParams();
+    for (const [k, v] of f) if (v) q.set(k, String(v));
+    history.replaceState(null, "", q.size ? `?${q}` : location.pathname);
+  });
+  // filters from the address (the thermostat links to ?zones=2)
+  if (flt) {
+    const q = new URLSearchParams(location.search);
+    let any = false;
+    for (const k of ["zones", "cap", "inst"]) { const v = q.get(k); const r = v && flt.querySelector<HTMLInputElement>(`input[name="${k}"][value="${v}"]`); if (r) { r.checked = true; any = true; } }
+    if (any) apply(false);
+  }
+  // keep the active chip in view on phones
+  const chips = document.querySelector<HTMLElement>(".chips")!;
+  const act = chips.querySelector<HTMLElement>('[aria-current="page"]');
+  if (act) chips.scrollLeft = act.offsetLeft - (chips.clientWidth - act.offsetWidth) / 2;
+</script>
+
+<style>
+  .cat-head { display: grid; gap: 16px; }
+  .bar { position: sticky; top: calc(var(--hdr) + env(safe-area-inset-top)); z-index: 50; background: rgba(11, 9, 8, 0.86); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-block: 1px solid var(--line); }
+  .bar__in { padding-inline: 0; }
+  .chips { display: flex; gap: 6px; overflow-x: auto; padding: 10px var(--gut); scrollbar-width: none; }
+  .chips::-webkit-scrollbar { display: none; }
+  .chips a { flex: none; display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; border: 1px solid var(--line); font-size: 13px; color: var(--mute); transition: color 0.3s, border-color 0.3s, background 0.3s; }
+  .chips a:hover { color: var(--text); border-color: var(--line-2); }
+  .chips a[aria-current] { color: var(--ink); background: var(--paper); border-color: var(--paper); }
+  .chips sup { font-family: var(--mono); font-size: 9px; opacity: 0.6; vertical-align: top; }
+  .list { padding-top: 22px; }
+
+  .flt { display: grid; gap: 14px; margin-bottom: 26px; padding-bottom: 22px; border-bottom: 1px solid var(--line); }
+  .flt fieldset { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0; padding: 0; border: 0; min-width: 0; }
+  .flt legend { float: left; width: 84px; padding: 0; color: var(--dim); }
+  .flt label { position: relative; cursor: pointer; }
+  .flt input { position: absolute; opacity: 0; pointer-events: none; }
+  .flt span { display: inline-flex; align-items: center; height: 34px; padding: 0 12px; border: 1px solid var(--line); font-size: 12.5px; color: var(--mute); transition: color 0.3s, border-color 0.3s, background 0.3s; }
+  .flt input:checked + span { color: var(--text); border-color: var(--wine-2); background: rgba(158, 31, 54, 0.18); }
+  .flt input:focus-visible + span { outline: 1px solid var(--straw); outline-offset: 2px; }
+
+  .list__meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+  .sort { display: inline-flex; align-items: center; gap: 8px; }
+  .sort span { display: none; }
+  .sort select { -webkit-appearance: none; appearance: none; background: transparent; border: 0; border-bottom: 1px solid var(--line-2); padding: 6px 18px 6px 0; font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text); background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%); background-position: right 5px center, right 1px center; background-size: 4px 4px; background-repeat: no-repeat; border-radius: 0; }
+  .sort select option { background: #111; }
+  .empty { padding: 30px 0; }
+  .grid :global(.bin) { position: absolute; right: 0; bottom: 0; z-index: 3; display: grid; place-content: center; min-width: 40px; height: 28px; padding: 0 8px; background: var(--bg); color: var(--straw); font-family: var(--mono); font-size: 12px; animation: binIn 0.55s var(--ease) both; }
+  @keyframes binIn { from { transform: translateY(100%); opacity: 0; } }
+  @media (min-width: 640px) { .sort span { display: inline; } }
+  @media (min-width: 1000px) {
+    .cat-head { grid-template-columns: 1.3fr 1fr; align-items: end; gap: 60px; }
+    .bar__in { padding-inline: var(--gut); }
+    .chips { padding-inline: 0; }
+    .list { padding-top: 34px; }
+    .flt { grid-template-columns: auto auto auto; justify-content: start; gap: 14px 40px; }
+    .flt legend { width: auto; margin-right: 10px; }
+  }
+</style>

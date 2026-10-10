@@ -1,0 +1,61 @@
+---
+/**
+ * Back label, like the one on a bottle: the cabinet's passport set in label typography.
+ * A highlight passes over the paper once when it scrolls into view.
+ */
+import type { Product } from "../lib/site";
+
+interface Props { p: Product }
+const { p } = Astro.props;
+const spec = (re: RegExp) => { for (const g of p.specs) for (const [k, v] of g.rows) if (re.test(k)) return v; return ""; };
+const rows: [string, string][] = [
+  ["Вместимость", p.cap ? `${p.cap} бут. 0,75 л` : ""],
+  ["Зоны", p.ranges.length ? p.ranges.map((r) => `${r} °C`).join(" · ") : p.zones ? String(p.zones) : ""],
+  ["Установка", p.install],
+  ["Шум", p.noise ? `${p.noise} дБ` : ""],
+  ["Климат. класс", spec(/Климатический класс/i).replace(/\s*\(.*\)/, "")],
+  ["Дверь", spec(/Тип двери/i)],
+  ["Гарантия", spec(/^Гарантия/i) ? `${spec(/^Гарантия/i)} мес.` : ""],
+].filter(([, v]) => v) as [string, string][];
+// a barcode drawn from the product id: decoration, but every label has one
+const bars = [...p.id].flatMap((c) => { const n = parseInt(c, 16); return [1 + (n & 3), 1 + ((n >> 2) & 1), 1 + ((n >> 1) & 2)]; });
+let x = 0;
+const rects = bars.map((w, i) => { const r = { x, w, on: i % 2 === 0 }; x += w; return r; }).filter((r) => r.on);
+---
+<div class="bl" data-in aria-label={`Паспорт: ${p.brand} ${p.name}`}>
+  <div class="bl__head">
+    <span class="bl__brand">{p.brand || "Подвалы Бахуса"}</span>
+    <span class="bl__mono">{p.zones ? `${p.zones} ${p.zones === 1 ? "зона" : "зоны"}` : ""}</span>
+  </div>
+  <p class="bl__model">{p.name}</p>
+  <p class="bl__kind">{p.kind}</p>
+  <dl class="bl__rows">{rows.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
+  <div class="bl__foot">
+    <svg class="bl__code" viewBox={`0 0 ${x} 20`} preserveAspectRatio="none" aria-hidden="true">{rects.map((r) => <rect x={r.x} y="0" width={r.w} height="20" />)}</svg>
+    <span class="bl__mono">Хранить при 12 °C · 70 %</span>
+  </div>
+  <i class="bl__stain" aria-hidden="true"></i>
+  <span class="bl__shine" aria-hidden="true"></span>
+</div>
+
+<style>
+  .bl { position: relative; overflow: hidden; display: grid; gap: 4px; padding: 20px 22px 16px; color: var(--ink); background: radial-gradient(120% 90% at 30% 20%, #f8f2e8, var(--paper) 60%, var(--paper-2)); box-shadow: 0 18px 40px -20px rgba(0, 0, 0, 0.7); }
+  .bl::before { content: ""; position: absolute; inset: 6px; border: 1px solid rgba(28, 21, 18, 0.28); pointer-events: none; }
+  .bl::after { content: ""; position: absolute; inset: 9px; border: 1px solid rgba(28, 21, 18, 0.12); pointer-events: none; }
+  .bl__head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+  .bl__brand { font-family: var(--mono); font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase; color: #7d1a2c; }
+  .bl__mono { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.12em; text-transform: uppercase; color: #6d5f53; }
+  .bl__model { font-family: var(--display); font-size: 34px; line-height: 1; margin-top: 6px; overflow-wrap: anywhere; }
+  .bl__kind { font-size: 12.5px; color: #5e5046; }
+  .bl__rows { display: grid; margin-top: 10px; border-top: 1px solid rgba(28, 21, 18, 0.2); }
+  .bl__rows div { display: flex; justify-content: space-between; gap: 14px; padding: 6px 0; border-bottom: 1px dotted rgba(28, 21, 18, 0.25); font-size: 12.5px; }
+  .bl__rows dt { color: #6d5f53; }
+  .bl__rows dd { text-align: right; font-weight: 500; }
+  .bl__foot { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-top: 12px; }
+  .bl__code { width: 96px; height: 22px; fill: var(--ink); opacity: 0.85; }
+  /* a ring left by a glass of red on the label */
+  .bl__stain { position: absolute; right: -30px; top: 34%; width: 130px; aspect-ratio: 1; border-radius: 50%; pointer-events: none; transform: rotate(-20deg); background: radial-gradient(circle, rgba(125, 22, 42, 0) 56%, rgba(125, 22, 42, 0.2) 59%, rgba(125, 22, 42, 0.06) 61.5%, rgba(125, 22, 42, 0.13) 64%, rgba(125, 22, 42, 0) 67%); -webkit-mask-image: conic-gradient(from 40deg, #000 0 62%, rgba(0, 0, 0, 0.35) 70%, #000 82%, rgba(0, 0, 0, 0.6) 100%); mask-image: conic-gradient(from 40deg, #000 0 62%, rgba(0, 0, 0, 0.35) 70%, #000 82%, rgba(0, 0, 0, 0.6) 100%); }
+  .bl__shine { position: absolute; inset: 0; background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, 0.55) 50%, transparent 65%); transform: translateX(-120%); pointer-events: none; }
+  .bl:global(.in) .bl__shine { animation: shine 1.6s var(--ease-io) 0.3s both; }
+  @keyframes shine { to { transform: translateX(120%); } }
+</style>

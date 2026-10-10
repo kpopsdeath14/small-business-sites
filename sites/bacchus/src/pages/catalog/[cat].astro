@@ -1,0 +1,10 @@
+---
+import CatalogView from "../../components/CatalogView.astro";
+import { categories } from "../../lib/site";
+
+export function getStaticPaths() {
+  return categories.map((c) => ({ params: { cat: c.id } }));
+}
+const { cat } = Astro.params;
+---
+<CatalogView cat={cat} />

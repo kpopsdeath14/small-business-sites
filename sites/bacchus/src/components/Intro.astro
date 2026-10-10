@@ -1,0 +1,81 @@
+---
+/**
+ * Once per visit: the cellar controller brings the room to temperature (22,4 → 12,0 °C, 41 → 70 %),
+ * then the cellar doors part on the hero. Tap anywhere to skip.
+ */
+---
+<script is:inline>
+  try {
+    if (!sessionStorage.getItem("bacchus-intro") && !matchMedia("(prefers-reduced-motion: reduce)").matches)
+      document.documentElement.classList.add("intro");
+  } catch (e) {}
+</script>
+<div class="ctl" aria-hidden="true">
+  <i class="ctl__door ctl__door--l"></i><i class="ctl__door ctl__door--r"></i>
+  <div class="ctl__panel">
+    <p class="tag ctl__h"><span class="ctl__led"></span>Погреб · зона 1</p>
+    <p class="ctl__t num"><span data-ct>22,4</span><sup>°C</sup></p>
+    <div class="ctl__row num"><span>Влажность</span><span><span data-ch>41</span> %</span></div>
+    <div class="ctl__bar"><i data-cb></i></div>
+    <p class="tag ctl__s" data-cs>Охлаждение</p>
+  </div>
+  <p class="tag ctl__skip">Коснитесь, чтобы войти</p>
+</div>
+
+<script>
+  const html = document.documentElement;
+  if (html.classList.contains("intro")) {
+    const el = document.querySelector<HTMLElement>(".ctl")!;
+    const t = el.querySelector("[data-ct]")!, h = el.querySelector("[data-ch]")!, bar = el.querySelector<HTMLElement>("[data-cb]")!, s = el.querySelector("[data-cs]")!;
+    const T0 = 22.4, T1 = 12, H0 = 41, H1 = 70, DUR = 1700;
+    let raf = 0, done = false;
+    const t0 = performance.now() + 250;
+    const tick = (now: number) => {
+      const k = Math.max(0, Math.min(1, (now - t0) / DUR)), e = 1 - Math.pow(1 - k, 3);
+      t.textContent = (T0 + (T1 - T0) * e).toFixed(1).replace(".", ",");
+      h.textContent = String(Math.round(H0 + (H1 - H0) * e));
+      bar.style.transform = `scaleX(${e})`;
+      if (k < 1) raf = requestAnimationFrame(tick);
+      else { s.textContent = "Погреб готов"; el.classList.add("ready"); setTimeout(open, 520); }
+    };
+    raf = requestAnimationFrame(tick);
+    function open() {
+      if (done) return;
+      done = true;
+      cancelAnimationFrame(raf);
+      try { sessionStorage.setItem("bacchus-intro", "1"); } catch {}
+      html.classList.add("intro-out");
+      document.dispatchEvent(new CustomEvent("intro:done"));
+      setTimeout(() => html.classList.remove("intro", "intro-out"), 1300);
+    }
+    el.addEventListener("click", open);
+    addEventListener("keydown", open, { once: true });
+  }
+</script>
+
+<style is:global>
+  .ctl { display: none; }
+  html.intro { overflow: hidden; }
+  html.intro .ctl { position: fixed; inset: 0; z-index: 300; display: grid; place-content: center; cursor: pointer; }
+  .ctl__door { position: absolute; top: 0; bottom: 0; width: 50.5%; background: var(--bg); transition: transform 1.1s var(--ease-io); }
+  .ctl__door--l { left: 0; border-right: 1px solid var(--line); }
+  .ctl__door--r { right: 0; border-left: 1px solid var(--line); }
+  html.intro-out .ctl__door--l { transform: translateX(-101%); }
+  html.intro-out .ctl__door--r { transform: translateX(101%); }
+  .ctl__panel { position: relative; width: min(300px, 78vw); display: grid; gap: 12px; padding: 22px 22px 18px; background: #0f0c0b; border: 1px solid var(--line-2); box-shadow: inset 0 0 0 5px #0f0c0b, inset 0 0 0 6px var(--line); transition: opacity 0.4s, transform 0.6s var(--ease); }
+  html.intro-out .ctl__panel { opacity: 0; transform: scale(0.96); }
+  .ctl__h { display: flex; align-items: center; gap: 8px; color: var(--mute); }
+  .ctl__led { width: 6px; height: 6px; border-radius: 50%; background: var(--wine-2); box-shadow: 0 0 8px var(--wine-2); }
+  .ctl.ready .ctl__led { background: var(--straw); box-shadow: 0 0 10px var(--straw); }
+  .ctl__t { font-size: 64px; line-height: 1; letter-spacing: -0.04em; color: var(--text); }
+  .ctl__t sup { font-size: 0.28em; vertical-align: top; margin-left: 4px; color: var(--wine-2); letter-spacing: 0; }
+  .ctl__row { display: flex; justify-content: space-between; font-size: 12px; color: var(--mute); padding-top: 10px; border-top: 1px solid var(--line); }
+  .ctl__bar { height: 1px; background: var(--line); overflow: hidden; }
+  .ctl__bar i { display: block; height: 100%; background: var(--wine-2); transform-origin: left; transform: scaleX(0); }
+  .ctl.ready .ctl__bar i { background: var(--straw); }
+  .ctl__s { color: var(--dim); }
+  .ctl.ready .ctl__s { color: var(--straw); }
+  .ctl__skip { position: fixed; left: 0; right: 0; bottom: calc(24px + env(safe-area-inset-bottom)); text-align: center; color: var(--dim); transition: opacity 0.4s; }
+  html.intro-out .ctl__skip { opacity: 0; }
+  html.intro-out .ctl { pointer-events: none; }
+</style>

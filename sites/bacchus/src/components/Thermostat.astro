@@ -1,0 +1,116 @@
+---
+/**
+ * Cellar thermostat: drag the scale and see which wines are served at that temperature
+ * and whether it is right for long storage. Serving temperatures are the usual sommelier ranges.
+ */
+import { url } from "../lib/site";
+import Icon from "./Icon.astro";
+
+const WINES = [
+  { n: "Игристое", lo: 6, hi: 8, c: "z-white" },
+  { n: "Белое лёгкое", lo: 8, hi: 10, c: "z-white" },
+  { n: "Розовое", lo: 8, hi: 12, c: "z-white" },
+  { n: "Белое выдержанное", lo: 10, hi: 13, c: "z-white" },
+  { n: "Красное лёгкое", lo: 12, hi: 14, c: "z-red" },
+  { n: "Красное полнотелое", lo: 16, hi: 18, c: "z-red" },
+];
+const MIN = 4, MAX = 20;
+const ticks = Array.from({ length: (MAX - MIN) * 2 + 1 }, (_, i) => MIN + i / 2);
+---
+<div class="th" data-th>
+  <div class="th__read">
+    <p class="th__deg num"><span data-th-v>12,0</span><sup>°C</sup></p>
+    <p class="th__state tag" data-th-state>Хранение · идеально</p>
+  </div>
+
+  <div class="th__scale">
+    <div class="th__band" style={`--a:${((10 - MIN) / (MAX - MIN)) * 100}%;--b:${((14 - MIN) / (MAX - MIN)) * 100}%`}><span class="tag">хранение 10–14 °C</span></div>
+    <div class="th__ticks" aria-hidden="true">
+      {ticks.map((t) => <i class:list={{ big: t % 2 === 0 }}>{t % 2 === 0 && <span>{t}</span>}</i>)}
+    </div>
+    <input class="th__in" type="range" min={MIN} max={MAX} step="0.5" value="12" aria-label="Температура, °C" data-th-in />
+    <span class="th__knob" aria-hidden="true" data-th-knob></span>
+  </div>
+
+  <ul class="th__wines">
+    {WINES.map((w) => (
+      <li data-lo={w.lo} data-hi={w.hi}><i class={w.c}></i><span>{w.n}</span><span class="num">{w.lo}–{w.hi} °C</span></li>
+    ))}
+  </ul>
+
+  <div class="th__out">
+    <p class="th__rec" data-th-rec>При 12 °C вино хранится годами. Подавать при этой температуре — лёгкое красное и выдержанное белое.</p>
+    <a class="ulink" href={url("catalog/shkafy/?zones=2")}>Двухзонные шкафы <Icon name="arrow" class="btn__ar" /></a>
+  </div>
+</div>
+
+<script>
+  const root = document.querySelector<HTMLElement>("[data-th]")!;
+  const input = root.querySelector<HTMLInputElement>("[data-th-in]")!;
+  const v = root.querySelector("[data-th-v]")!;
+  const state = root.querySelector("[data-th-state]")!;
+  const rec = root.querySelector("[data-th-rec]")!;
+  const knob = root.querySelector<HTMLElement>("[data-th-knob]")!;
+  const rows = [...root.querySelectorAll<HTMLElement>("[data-lo]")];
+  const MIN = Number(input.min), MAX = Number(input.max);
+  const fmt = (t: number) => t.toFixed(1).replace(".", ",");
+  const names = (t: number) => rows.filter((r) => t >= Number(r.dataset.lo) && t <= Number(r.dataset.hi)).map((r) => r.querySelector("span")!.textContent!.toLowerCase());
+  const list = (a: string[]) => (a.length > 1 ? `${a.slice(0, -1).join(", ")} и ${a[a.length - 1]}` : a[0]);
+  let last = -1;
+  const set = () => {
+    const t = Number(input.value);
+    v.textContent = fmt(t);
+    knob.style.left = `${((t - MIN) / (MAX - MIN)) * 100}%`;
+    rows.forEach((r) => r.classList.toggle("on", t >= Number(r.dataset.lo) && t <= Number(r.dataset.hi)));
+    const store = t >= 10 && t <= 14;
+    root.classList.toggle("warm", t > 14);
+    root.classList.toggle("cold", t < 10);
+    state.textContent = store ? "Хранение · идеально" : t > 14 ? "Хранение · слишком тепло" : "Хранение · слишком холодно";
+    const serve = names(t);
+    const head = store ? `При ${fmt(t)} °C вино хранится годами.` : t > 14 ? `При ${fmt(t)} °C вино стареет быстрее, чем должно, — для хранения слишком тепло.` : `При ${fmt(t)} °C развитие вина почти замирает — для хранения холодно.`;
+    rec.textContent = `${head} ${serve.length ? `Подавать при этой температуре — ${list(serve)}.` : "Подавать при этой температуре нечего."}`;
+    // a light tick on whole degrees while dragging
+    const whole = Math.round(t);
+    if (whole !== last && last !== -1 && Number.isInteger(t) && typeof navigator.vibrate === "function") { try { navigator.vibrate(4); } catch {} }
+    last = whole;
+  };
+  input.addEventListener("input", set);
+  set();
+</script>
+
+<style>
+  .th { display: grid; gap: 26px; }
+  .th__read { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .th__deg { font-size: clamp(72px, 22vw, 150px); line-height: 0.85; letter-spacing: -0.04em; font-weight: 400; transition: color 0.5s; }
+  .th__deg sup { font-size: 0.24em; vertical-align: top; margin-left: 6px; color: var(--wine-2); letter-spacing: 0; }
+  .th.warm .th__deg { color: #e9a78f; }
+  .th.cold .th__deg { color: #a9c3d2; }
+  .th__state { color: var(--straw); }
+  .th.warm .th__state, .th.cold .th__state { color: var(--mute); }
+
+  .th__scale { position: relative; height: 92px; touch-action: pan-y; }
+  .th__band { position: absolute; top: 0; left: var(--a); width: calc(var(--b) - var(--a)); height: 54px; background: linear-gradient(180deg, rgba(158, 31, 54, 0.32), rgba(158, 31, 54, 0.06)); border-top: 1px solid var(--wine-2); }
+  .th__band .tag { position: absolute; left: 0; top: -22px; white-space: nowrap; color: var(--wine-2); font-size: 9.5px; }
+  .th__ticks { position: absolute; inset: 0 0 auto; height: 54px; display: flex; justify-content: space-between; align-items: flex-end; }
+  .th__ticks i { position: relative; width: 1px; height: 12px; background: var(--line-2); }
+  .th__ticks i.big { height: 26px; background: rgba(241, 231, 216, 0.4); }
+  .th__ticks span { position: absolute; top: calc(100% + 10px); left: 50%; transform: translateX(-50%); font-family: var(--mono); font-size: 10px; color: var(--dim); }
+  .th__in { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: ew-resize; z-index: 2; }
+  .th__knob { position: absolute; top: -6px; width: 1px; height: 66px; background: var(--text); pointer-events: none; transform: translateX(-0.5px); transition: left 0.08s linear; }
+  .th__knob::after { content: ""; position: absolute; left: 50%; bottom: -7px; width: 13px; height: 13px; margin-left: -6.5px; border-radius: 50%; background: var(--wine-2); box-shadow: 0 0 0 4px rgba(199, 58, 82, 0.2), 0 0 18px rgba(199, 58, 82, 0.6); }
+
+  .th__wines { display: grid; border-top: 1px solid var(--line); }
+  .th__wines li { display: grid; grid-template-columns: 10px 1fr auto; gap: 12px; align-items: center; padding: 11px 0; border-bottom: 1px solid var(--line); font-size: 14px; color: var(--dim); transition: color 0.4s; }
+  .th__wines li i { width: 8px; height: 8px; border-radius: 50%; opacity: 0.25; transition: opacity 0.4s, box-shadow 0.4s; }
+  .th__wines li .num { font-size: 12px; }
+  .th__wines li.on { color: var(--text); }
+  .th__wines li.on i { opacity: 1; box-shadow: 0 0 10px currentColor; }
+  .th__out { display: grid; gap: 14px; justify-items: start; }
+  .th__rec { font-size: 15.5px; color: var(--text); max-width: 34em; min-height: 3.2em; }
+
+  @media (min-width: 1000px) {
+    .th { grid-template-columns: 1fr 1fr; gap: 40px 80px; align-items: start; }
+    .th__read, .th__scale { grid-column: 1 / -1; }
+    .th__scale { height: 100px; }
+  }
+</style>

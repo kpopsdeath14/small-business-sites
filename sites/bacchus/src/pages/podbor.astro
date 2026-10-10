@@ -1,0 +1,155 @@
+---
+import Base from "../layouts/Base.astro";
+import Icon from "../components/Icon.astro";
+import { products, url, pimg, rub, contacts } from "../lib/site";
+
+// minimal client data for the picker: cabinets with known capacity
+const cabs = products.filter((p) => p.cat === "shkafy" && p.cap).map((p) => ({ s: p.slug, n: p.name, b: p.brand, c: p.cap, z: p.zones ?? 1, r: p.ranges, i: p.img[0], p: p.price, t: /встра.*стол/i.test(p.install) ? "under" : /колонн|интегр/i.test(p.install) ? "column" : /встра/i.test(p.install) ? "under column free" : "free", id: p.id }));
+---
+<Base title="Подбор винного шкафа — Подвалы Бахуса" description="Подберите винный шкаф по коллекции: сколько бутылок, какие вина и где он будет стоять. Лист сомелье с температурами и подходящими моделями." nav="podbor">
+  <main>
+    <section class="ph">
+      <div class="wrap">
+        <nav class="crumbs tag" aria-label="Навигация"><a href={url()}>Главная</a><span>/</span><span>Подбор шкафа</span></nav>
+        <div class="pb-head">
+          <h1 class="d1" data-in>Подбор <b>шкафа</b></h1>
+          <p class="lead" data-in>Три вопроса о коллекции — и лист сомелье: сколько зон, какие температуры и какие модели из каталога подходят.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="wrap pb">
+      <form class="pb__q" data-pb>
+        <fieldset>
+          <legend><span class="tag tag--wine num">01</span><span class="d3">Сколько бутылок?</span></legend>
+          <p class="pb__n"><span class="num" data-cv>60</span><small> бутылок с запасом</small></p>
+          <input class="pb__range" type="range" name="cap" min="6" max="320" step="2" value="60" aria-label="Количество бутылок" />
+          <div class="pb__scale tag"><span>6</span><span>100</span><span>200</span><span>320</span></div>
+        </fieldset>
+        <fieldset>
+          <legend><span class="tag tag--wine num">02</span><span class="d3">Что вы пьёте?</span></legend>
+          <div class="pb__chips">
+            <label><input type="checkbox" name="w" value="red" checked /><span><i class="z-red"></i>Красное</span></label>
+            <label><input type="checkbox" name="w" value="white" /><span><i class="z-white"></i>Белое и розовое</span></label>
+            <label><input type="checkbox" name="w" value="spark" /><span><i class="z-white"></i>Игристое</span></label>
+          </div>
+          <label class="check"><input type="checkbox" name="age" /><span>Храню вино на выдержку, годами</span></label>
+        </fieldset>
+        <fieldset>
+          <legend><span class="tag tag--wine num">03</span><span class="d3">Где будет стоять?</span></legend>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="place" value="free" checked /><span class="opt__dot"></span><span><span class="opt__t">Отдельно</span><span class="opt__d">Гостиная, кабинет, ресторанный зал</span></span></label>
+            <label class="opt"><input type="radio" name="place" value="under" /><span class="opt__dot"></span><span><span class="opt__t">Под столешницу</span><span class="opt__d">Кухня или бар, высота около 82 см</span></span></label>
+            <label class="opt"><input type="radio" name="place" value="column" /><span class="opt__dot"></span><span><span class="opt__t">В колонну</span><span class="opt__d">Встроить в кухонный гарнитур в рост</span></span></label>
+          </div>
+        </fieldset>
+      </form>
+
+      <aside class="sheet filet" aria-live="polite">
+        <div class="sheet__head"><span class="tag">Лист сомелье</span><span class="tag num" data-sid></span></div>
+        <dl class="sheet__rows">
+          <div><dt class="tag">Коллекция</dt><dd data-r-cap></dd></div>
+          <div><dt class="tag">Зоны</dt><dd data-r-zones></dd></div>
+          <div><dt class="tag">Температуры</dt><dd data-r-temp></dd></div>
+          <div><dt class="tag">Установка</dt><dd data-r-place></dd></div>
+        </dl>
+        <p class="sheet__tip" data-r-tip></p>
+        <p class="tag">Подходят из каталога</p>
+        <div class="sheet__list" data-r-list></div>
+        <a class="btn btn--ghost btn--block" href={contacts.phoneHref}>Обсудить с сомелье <Icon name="phone" class="btn__ar" /></a>
+      </aside>
+    </div>
+    <script is:inline type="application/json" id="cabs" set:html={JSON.stringify({ base: url(), cabs })} />
+  </main>
+</Base>
+
+<script>
+  type Cab = { s: string; n: string; b: string; c: number; z: number; r: string[]; i: string; p: number; t: string; id: string };
+  const D = JSON.parse(document.getElementById("cabs")!.textContent!) as { base: string; cabs: Cab[] };
+  const $ = <T extends Element = HTMLElement>(s: string) => document.querySelector<T>(s)!;
+  const form = $<HTMLFormElement>("[data-pb]");
+  const rub = (n: number) => n.toLocaleString("ru-RU").replace(/\s/g, " ") + " ₽";
+  const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
+  const PLACE: Record<string, string> = { free: "Отдельностоящий", under: "Под столешницу", column: "В колонну" };
+  $("[data-sid]").textContent = `№ ${String(new Date().getDate()).padStart(2, "0")}${String(new Date().getMonth() + 1).padStart(2, "0")}`;
+
+  function render() {
+    const f = new FormData(form);
+    const cap = Number(f.get("cap"));
+    const w = f.getAll("w").map(String);
+    const age = !!f.get("age");
+    const place = String(f.get("place"));
+    // zones: storing for years needs a cellar zone; serving reds and whites at once needs two
+    const serveTemps: string[] = [];
+    if (w.includes("spark")) serveTemps.push("игристое 6–8 °C");
+    if (w.includes("white")) serveTemps.push("белое 8–12 °C");
+    if (w.includes("red")) serveTemps.push("красное 14–18 °C");
+    const kinds = w.length;
+    const zones = kinds >= 2 || (age && kinds >= 1 && !w.every((x) => x === "red")) ? (kinds >= 3 || (age && kinds >= 2) ? 3 : 2) : 1;
+    $("[data-cv]").textContent = String(cap);
+    $("[data-r-cap]").textContent = `${cap} бутылок`;
+    $("[data-r-zones]").textContent = zones === 1 ? "Одна" : zones === 2 ? "Две" : "Три";
+    $("[data-r-temp]").textContent = [age ? "хранение 12 °C" : "", ...serveTemps].filter(Boolean).join(" · ") || "—";
+    $("[data-r-place]").textContent = PLACE[place];
+    $("[data-r-tip]").textContent = zones === 1
+      ? (age ? "Одна зона на 12 °C — классический погреб в шкафу: вино зреет спокойно, к столу его достают заранее." : "Одна зона, настроенная под ваше вино: просто и тихо.")
+      : zones === 2 ? "Две зоны: верхняя прохладнее — для белого и игристого к столу, нижняя — для красного." : "Три зоны: для подачи белого, для подачи красного и отдельная — для долгого хранения.";
+    if (cap > 260) $("[data-r-tip]").textContent += " От 300 бутылок выгоднее погреб под ключ — посчитаем.";
+    // models: matching placement and at least the needed zones, closest capacity at or above the collection
+    const fits = (c: Cab) => (place === "free" ? /free/.test(c.t) : c.t.includes(place)) && c.z >= Math.min(zones, 2);
+    let list = D.cabs.filter((c) => fits(c) && c.c >= cap * 0.9).sort((a, b) => a.c - b.c || a.p - b.p).slice(0, 4);
+    if (!list.length) list = D.cabs.filter(fits).sort((a, b) => Math.abs(a.c - cap) - Math.abs(b.c - cap)).slice(0, 4);
+    $("[data-r-list]").innerHTML = list.length ? list.map((c) => `<a class="mini" href="${D.base}product/${c.s}/">
+      <span class="mini__img paper"><img src="${D.base}p/${c.i}-480.webp" alt="" loading="lazy"></span>
+      <span class="mini__t"><span class="tag">${esc(c.b)}</span><b>${esc(c.n)}</b><small>${c.c} бут. · ${c.z} ${c.z === 1 ? "зона" : "зоны"}</small></span>
+      <span class="mini__p">${rub(c.p)}</span></a>`).join("") : `<p class="lead">Под такие условия лучше подобрать вместе — позвоните, сомелье подскажет.</p>`;
+  }
+  form.addEventListener("input", render);
+  render();
+</script>
+
+<style>
+  .pb-head { display: grid; gap: 16px; }
+  .pb { display: grid; gap: 40px; }
+  .pb__q { display: grid; gap: 40px; }
+  fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: 16px; min-width: 0; }
+  legend { display: flex; align-items: baseline; gap: 12px; padding: 0 0 8px; }
+  .pb__n { font-family: var(--display); font-size: 72px; line-height: 0.9; }
+  .pb__n .num { font-family: var(--display); }
+  .pb__n small { font-family: var(--sans); font-size: 14px; color: var(--mute); }
+  .pb__range { -webkit-appearance: none; appearance: none; width: 100%; height: 34px; background: transparent; margin: 0; }
+  .pb__range::-webkit-slider-runnable-track { height: 1px; background: var(--line-2); }
+  .pb__range::-moz-range-track { height: 1px; background: var(--line-2); }
+  .pb__range::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; margin-top: -11px; border-radius: 50%; background: var(--wine-2); box-shadow: 0 0 0 5px rgba(199, 58, 82, 0.2); }
+  .pb__range::-moz-range-thumb { width: 22px; height: 22px; border: 0; border-radius: 50%; background: var(--wine-2); }
+  .pb__scale { display: flex; justify-content: space-between; color: var(--dim); }
+  .pb__chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pb__chips label { position: relative; cursor: pointer; }
+  .pb__chips input { position: absolute; opacity: 0; pointer-events: none; }
+  .pb__chips span { display: inline-flex; align-items: center; gap: 10px; height: 46px; padding: 0 16px; border: 1px solid var(--line); background: var(--panel); font-size: 14px; color: var(--mute); transition: all 0.3s; }
+  .pb__chips span i { width: 8px; height: 8px; border-radius: 50%; }
+  .pb__chips input:checked + span { color: var(--text); border-color: var(--text); background: var(--panel-2); }
+  .pb__chips input:focus-visible + span { outline: 1px solid var(--straw); outline-offset: 2px; }
+
+  .sheet { display: grid; gap: 16px; padding: 22px 18px; background: var(--panel); border: 1px solid var(--line); align-self: start; }
+  .sheet__head { display: flex; justify-content: space-between; }
+  .sheet__head .tag:first-child { color: var(--wine-2); }
+  .sheet__rows { display: grid; border-top: 1px solid var(--line); }
+  .sheet__rows div { display: grid; grid-template-columns: 110px 1fr; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--line); font-size: 14.5px; }
+  .sheet__rows dt { color: var(--dim); font-size: 9.5px; padding-top: 3px; }
+  .sheet__tip { font-family: var(--display); font-size: 22px; line-height: 1.2; }
+  .sheet__list { display: grid; }
+  .sheet__list :global(.mini) { display: grid; grid-template-columns: 52px 1fr auto; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .sheet__list :global(.mini__img) { display: block; aspect-ratio: 4 / 5; }
+  .sheet__list :global(.mini__img img) { width: 100%; height: 100%; object-fit: contain; padding: 3px; }
+  .sheet__list :global(.mini__t) { display: grid; gap: 1px; min-width: 0; }
+  .sheet__list :global(.mini__t .tag) { font-size: 9px; color: var(--dim); }
+  .sheet__list :global(.mini__t b) { font-family: var(--display); font-weight: 400; font-size: 20px; line-height: 1.1; overflow-wrap: anywhere; }
+  .sheet__list :global(.mini__t small) { color: var(--mute); font-size: 12px; }
+  .sheet__list :global(.mini__p) { font-size: 13px; font-weight: 600; white-space: nowrap; }
+  @media (min-width: 1000px) {
+    .pb-head { grid-template-columns: 1.3fr 1fr; align-items: end; gap: 60px; }
+    .pb { grid-template-columns: 1fr 440px; gap: 80px; align-items: start; }
+    .sheet { position: sticky; top: calc(var(--hdr) + 24px); padding: 28px; }
+  }
+</style>

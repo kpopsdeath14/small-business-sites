@@ -1,0 +1,219 @@
+---
+import Base from "../layouts/Base.astro";
+import Icon from "../components/Icon.astro";
+import { products, url, img, srcset, rub, contacts } from "../lib/site";
+
+// climate systems with a stated cellar volume, smallest first — the calculator picks from these
+const units = products.filter((p) => p.cat === "klimat" && p.vol).sort((a, b) => a.vol! - b.vol!).map((p) => ({ s: p.slug, n: `${p.brand} ${p.name}`, k: p.kind, v: p.vol, w: p.watts, p: p.price }));
+const projects = [
+  ["barvikha-a", "Барвиха", "Стеллажи из массива, коньяк и вино в одном погребе"],
+  ["barvikha-b", "Барвиха", "Ромбовидные ячейки на всю стену"],
+  ["spiral", "Горки-6", "Спиральный погреб под стеклянным полом"],
+  ["stairs", "Иваньковское шоссе", "Погреб с лестницей из гостиной"],
+  ["hatch", "Иваньковское шоссе", "Вход через люк в полу"],
+  ["kazan", "Казань", "Своды из кирпича, каменные ячейки"],
+  ["fominskoe", "Фоминское", "Дерево в отделке и стеллажах"],
+  ["gorki", "Горки-2", "Светлый погреб с дегустационным столом"],
+  ["razdory", "Раздоры", "Белые каменные ячейки, минимализм"],
+  ["brick", "Салтыковка", "Традиционный погреб под сводом"],
+];
+const steps = [
+  ["Замер и проект", "Приезжаем, оцениваем стены, пол и вентиляцию. Считаем теплопритоки и делаем 3D-визуализацию."],
+  ["Изоляция", "Утепление и пароизоляция — без них ни один кондиционер не удержит 12 °C."],
+  ["Климат", "Сплит-система или моноблок: охлаждение, обогрев и увлажнение до 70 %."],
+  ["Стеллажи и свет", "Дерево, камень или металл. Ячейки под 0,75 л, магнумы и ящики. Холодный свет без ультрафиолета."],
+  ["Запуск и сервис", "Выводим погреб на режим и обслуживаем оборудование дальше — своя сервисная служба."],
+];
+---
+<Base title="Винный погреб под ключ — Подвалы Бахуса" description="Винные погреба под ключ с 2004 года: проект, изоляция, климатическое оборудование Friax и Vinosafe, стеллажи, свет, монтаж и сервис. Калькулятор климата по объёму погреба." nav="pogreb">
+  <main>
+    <section class="ph pg-hero">
+      <div class="pg-hero__img" data-wipe>
+        <img src={img("barvikha-b", 1100)} srcset={srcset("barvikha-b", [600, 1100])} sizes="(min-width: 1000px) 55vw, 100vw" alt="Винный погреб в Барвихе" />
+      </div>
+      <div class="wrap pg-hero__body">
+        <nav class="crumbs tag" aria-label="Навигация"><a href={url()}>Главная</a><span>/</span><span>Погреб под ключ</span></nav>
+        <h1 class="d1" data-in>Погреб <b>под ключ</b></h1>
+        <p class="lead" data-in>Более 400 погребов с 2004 года — от компактного хранилища под лестницей до винной комнаты на тысячи бутылок. Можно заказать всё целиком или только климат к вашему погребу.</p>
+        <a class="btn" href="#calc" data-in>Рассчитать климат <Icon name="arrow" class="btn__ar" /></a>
+      </div>
+    </section>
+
+    <!-- CALCULATOR -->
+    <section class="wrap sec" id="calc">
+      <div class="sh">
+        <div class="sh__top"><span class="tag">[C1]</span><span class="tag">Калькулятор</span></div>
+        <div class="sh__row">
+          <h2 class="d2" data-in>Какой климат нужен <b>вашему погребу</b></h2>
+          <p class="lead" data-in>Введите размеры помещения. Подберём систему по объёму из каталога и прикинем, сколько бутылок поместится вдоль стен.</p>
+        </div>
+      </div>
+      <div class="calc">
+        <form class="calc__in" data-calc>
+          {[["l", "Длина, м", "4"], ["w", "Ширина, м", "3"], ["h", "Высота, м", "2,5"]].map(([k, l, v]) => (
+            <label class="field"><span class="tag">{l}</span><input class="input num" name={k} inputmode="decimal" value={v} autocomplete="off" /></label>
+          ))}
+        </form>
+        <div class="calc__out filet">
+          <div class="calc__nums">
+            <div><p class="tag">Объём</p><p class="calc__v"><span class="num" data-vol>30</span><small> м³</small></p></div>
+            <div><p class="tag">Вдоль стен ≈</p><p class="calc__v"><span class="num" data-bot>0</span><small> бут.</small></p></div>
+          </div>
+          <div class="calc__pick" data-pick></div>
+          <p class="tag calc__note">Расчёт ориентировочный: точную мощность определяет утепление, этаж и соседние помещения — проверим на замере.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEPS -->
+    <section class="wrap sec">
+      <div class="sh">
+        <div class="sh__top"><span class="tag">[C2]</span><span class="tag">Как мы работаем</span></div>
+        <h2 class="d2" data-in>Пять шагов <b>до 12 °C</b></h2>
+      </div>
+      <ol class="pg-steps">
+        {steps.map(([t, d], i) => (
+          <li data-in style={`--d:${i * 0.06}s`}><span class="num">0{i + 1}</span><h3 class="d3">{t}</h3><p>{d}</p></li>
+        ))}
+      </ol>
+    </section>
+
+    <!-- PROJECTS -->
+    <section class="sec" id="projects">
+      <div class="wrap">
+        <div class="sh">
+          <div class="sh__top"><span class="tag">[C3]</span><span class="tag">Проекты</span></div>
+          <h2 class="d2" data-in>Погреба, <b>которые мы построили</b></h2>
+        </div>
+      </div>
+      <div class="pg-grid wrap">
+        {projects.map(([im, t, d], i) => (
+          <figure class:list={["pg-p", { "pg-p--big": i === 0 }]} data-wipe>
+            <span class="pg-p__img"><img src={img(im, 600)} alt={`Винный погреб, ${t}`} loading="lazy" decoding="async" /></span>
+            <figcaption><span class="tag">{t}</span><span>{d}</span></figcaption>
+          </figure>
+        ))}
+      </div>
+    </section>
+
+    <!-- REQUEST -->
+    <section class="wrap sec">
+      <div class="req filet">
+        <div>
+          <div class="sh__top"><span class="tag">[C4]</span><span class="tag">Заявка</span></div>
+          <h2 class="d2" data-in>Расскажите <b>о погребе</b></h2>
+          <p class="lead" data-in>Позвоните или оставьте параметры — инженер перезвонит в рабочее время ({contacts.hours}) и договорится о замере.</p>
+          <a class="btn" href={contacts.phoneHref}>{contacts.phone} <Icon name="phone" class="btn__ar" /></a>
+        </div>
+        <form class="req__f" data-req novalidate>
+          <div class="field"><label class="tag" for="r-name">Имя</label><input class="input" id="r-name" name="name" autocomplete="name" /></div>
+          <div class="field"><label class="tag" for="r-phone">Телефон</label><input class="input" id="r-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7" /></div>
+          <div class="field"><label class="tag" for="r-city">Где погреб</label><input class="input" id="r-city" name="city" placeholder="Посёлок или город" /></div>
+          <div class="field"><label class="tag" for="r-com">Что важно</label><textarea class="input" id="r-com" name="comment" placeholder="Размеры, сколько бутылок, стиль" data-com></textarea></div>
+          <button class="btn btn--light btn--block" type="submit">Скопировать заявку <Icon name="check" class="btn__ar" /></button>
+          <p class="tag req__ok" data-ok hidden>Заявка скопирована — отправьте её нам или продиктуйте по телефону.</p>
+        </form>
+      </div>
+    </section>
+    <script is:inline type="application/json" id="units" set:html={JSON.stringify({ base: url(), units })} />
+  </main>
+</Base>
+
+<script>
+  type U = { s: string; n: string; k: string; v: number; w: number | null; p: number };
+  const D = JSON.parse(document.getElementById("units")!.textContent!) as { base: string; units: U[] };
+  const $ = <T extends Element = HTMLElement>(s: string) => document.querySelector<T>(s)!;
+  const rub = (n: number) => n.toLocaleString("ru-RU").replace(/\s/g, " ") + " ₽";
+  const f = $<HTMLFormElement>("[data-calc]");
+  const num = (k: string) => Number(String((f.elements.namedItem(k) as HTMLInputElement).value).replace(",", ".")) || 0;
+  let last = "";
+  function calc() {
+    const l = num("l"), w = num("w"), h = num("h");
+    const vol = Math.round(l * w * h * 10) / 10;
+    // racks along the walls: ~100 bottles per m² of wall, minus a doorway and the top 40 cm
+    const wall = Math.max(0, (2 * (l + w) - 0.9) * Math.max(0, h - 0.4));
+    const bottles = Math.round((wall * 100) / 10) * 10;
+    $("[data-vol]").textContent = String(vol).replace(".", ",");
+    $("[data-bot]").textContent = bottles.toLocaleString("ru-RU");
+    const fit = D.units.filter((u) => u.v >= vol);
+    const pick = [...new Map(fit.map((u) => [u.v, u])).values()].slice(0, 2);
+    const html = !vol ? "" : pick.length ? `<p class="tag">Подойдёт</p>${pick.map((u) => `<a class="unit" href="${D.base}product/${u.s}/"><span><b>${u.n}</b><small>${u.k} · до ${u.v} м³${u.w ? ` · ${u.w} Вт` : ""}</small></span><span class="unit__p">${rub(u.p)}</span></a>`).join("")}`
+      : `<p class="calc__big">Для погреба больше ${D.units[D.units.length - 1].v} м³ ставим несколько систем — рассчитаем на замере.</p>`;
+    if (html !== last) { $("[data-pick]").innerHTML = html; last = html; }
+    const com = $<HTMLTextAreaElement>("[data-com]");
+    if (!com.dataset.touched) com.value = vol ? `Погреб ${String(l).replace(".", ",")} × ${String(w).replace(".", ",")} × ${String(h).replace(".", ",")} м (${String(vol).replace(".", ",")} м³), около ${bottles} бутылок.` : "";
+  }
+  f.addEventListener("input", calc);
+  $("[data-com]").addEventListener("input", (e) => ((e.target as HTMLElement).dataset.touched = "1"));
+  calc();
+
+  const req = $<HTMLFormElement>("[data-req]");
+  req.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const fd = new FormData(req);
+    const text = ["Заявка на винный погреб с сайта «Подвалы Бахуса»", `Имя: ${fd.get("name") || "—"}`, `Телефон: ${fd.get("phone") || "—"}`, `Где: ${fd.get("city") || "—"}`, `${fd.get("comment") || ""}`].join("\n");
+    try { await navigator.clipboard.writeText(text); } catch {}
+    $("[data-ok]").hidden = false;
+  });
+</script>
+
+<style>
+  .pg-hero { position: relative; padding-bottom: 0; }
+  .pg-hero__img { aspect-ratio: 4 / 3.4; overflow: hidden; margin-top: -32px; }
+  .pg-hero__img img { width: 100%; height: 100%; object-fit: cover; }
+  .pg-hero__body { position: relative; display: grid; gap: 18px; justify-items: start; margin-top: -40px; }
+  .sec { padding-top: 92px; }
+
+  .calc { display: grid; gap: 22px; }
+  .calc__in { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .calc__in .tag { font-size: 9.5px; color: var(--dim); }
+  .calc__out { display: grid; gap: 18px; padding: 22px 18px; background: var(--panel); border: 1px solid var(--line); }
+  .calc__nums { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .calc__v { font-family: var(--display); font-size: 56px; line-height: 1; }
+  .calc__v .num { font-family: var(--display); }
+  .calc__v small { font-family: var(--sans); font-size: 14px; color: var(--mute); }
+  .calc__pick { display: grid; gap: 8px; }
+  .calc__pick :global(.unit) { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px; border: 1px solid var(--line-2); transition: border-color 0.3s; }
+  .calc__pick :global(.unit:hover) { border-color: var(--wine-2); }
+  .calc__pick :global(.unit b) { display: block; font-family: var(--display); font-weight: 400; font-size: 22px; line-height: 1.1; }
+  .calc__pick :global(.unit small) { color: var(--mute); font-size: 12.5px; }
+  .calc__pick :global(.unit__p) { font-weight: 600; white-space: nowrap; }
+  .calc__pick :global(.calc__big) { font-size: 15px; }
+  .calc__note { color: var(--dim); text-transform: none; letter-spacing: 0.02em; font-size: 11px; line-height: 1.6; }
+
+  .pg-steps { display: grid; border-top: 1px solid var(--line); }
+  .pg-steps li { display: grid; grid-template-columns: 40px 1fr; gap: 6px 12px; padding: 18px 0; border-bottom: 1px solid var(--line); }
+  .pg-steps .num { grid-row: span 2; color: var(--wine-2); font-size: 12px; padding-top: 8px; }
+  .pg-steps p { color: var(--mute); font-size: 14px; }
+
+  .pg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .pg-p { display: grid; gap: 8px; }
+  .pg-p--big { grid-column: span 2; }
+  .pg-p__img { aspect-ratio: 1; overflow: hidden; background: var(--panel); }
+  .pg-p--big .pg-p__img { aspect-ratio: 16 / 11; }
+  .pg-p__img img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--ease); }
+  @media (hover: hover) { .pg-p:hover img { transform: scale(1.04); } }
+  .pg-p figcaption { display: grid; gap: 2px; font-size: 12.5px; color: var(--mute); }
+  .pg-p figcaption .tag { color: var(--text); }
+
+  .req { display: grid; gap: 28px; padding: 26px 18px; background: var(--panel); border: 1px solid var(--line); }
+  .req > div { display: grid; gap: 18px; justify-items: start; align-content: start; }
+  .req__f { display: grid; gap: 12px; }
+  .req__ok { color: var(--straw); text-transform: none; letter-spacing: 0.02em; }
+  @media (min-width: 1000px) {
+    .pg-hero { display: grid; grid-template-columns: 1fr 1fr; align-items: end; min-height: 86vh; padding-top: var(--hdr); }
+    .pg-hero__img { position: absolute; inset: 0 0 0 45%; margin: 0; aspect-ratio: auto; }
+    .pg-hero__img::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, var(--bg), rgba(11, 9, 8, 0) 40%); }
+    .pg-hero__body { grid-column: 1; margin: 0; padding-bottom: 80px; max-width: 640px; }
+    .sec { padding-top: 150px; }
+    .calc { grid-template-columns: 1fr 1.2fr; gap: 64px; align-items: start; }
+    .calc__out { padding: 32px; }
+    .pg-steps { grid-template-columns: repeat(5, 1fr); gap: 14px; border: 0; }
+    .pg-steps li { grid-template-columns: 1fr; align-content: start; padding: 22px 18px; background: var(--panel); border: 1px solid var(--line); min-height: 240px; }
+    .pg-steps .num { grid-row: auto; padding: 0; }
+    .pg-grid { grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .pg-p--big { grid-column: span 2; grid-row: span 2; }
+    .pg-p--big .pg-p__img { aspect-ratio: auto; height: 100%; }
+    .req { grid-template-columns: 1fr 1fr; gap: 80px; padding: 56px 48px; }
+  }
+</style>

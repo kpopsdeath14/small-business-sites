@@ -1,0 +1,470 @@
+---
+import Base from "../layouts/Base.astro";
+import ProductCard from "../components/ProductCard.astro";
+import Icon from "../components/Icon.astro";
+import Intro from "../components/Intro.astro";
+import Thermostat from "../components/Thermostat.astro";
+import Descent from "../components/Descent.astro";
+import Aging from "../components/Aging.astro";
+import { products, categories, bySlug, url, img, srcset, pimg, contacts, plural } from "../lib/site";
+import catalog from "../data/catalog.json";
+
+const featured = (catalog.featured as string[]).map(bySlug);
+const count = (id: string) => products.filter((p) => p.cat === id).length;
+const cover = (id: string) => (catalog.covers as Record<string, string>)[id] ?? products.find((p) => p.cat === id)!.img[0];
+const cabinets = products.filter((p) => p.cat === "shkafy");
+const capMin = Math.min(...cabinets.map((p) => p.cap ?? Infinity));
+const capMax = Math.max(...cabinets.map((p) => p.cap ?? 0));
+// the four enemies of wine, and how many cabinets in the catalogue guard against each
+const has = (re: RegExp) => cabinets.filter((p) => p.specs.some((g) => g.rows.some(([k, v]) => re.test(`${k}: ${v}`)))).length;
+const enemies = [
+  ["Тепло", "Компрессор держит заданную температуру круглый год, а режим «Зима» подогревает шкаф в холодном помещении.", `${has(/Система охлаждения: Компрессор/i)} ${plural(has(/Система охлаждения: Компрессор/i), "модель", "модели", "моделей")} с компрессором`],
+  ["Свет", "Ультрафиолет разрушает танины и ароматы за недели. Стеклопакет с УФ-фильтром, тонированное или глухое стекло.", `${has(/УФ/i)} ${plural(has(/УФ/i), "модель", "модели", "моделей")} с УФ-защитой`],
+  ["Вибрация", "Встряска мешает осадку и ускоряет старение. Антивибрационные опоры и бесшумные компрессоры.", `${has(/антивибрац/i)} ${plural(has(/антивибрац/i), "модель", "модели", "моделей")} с антивибрацией`],
+  ["Сухость", "При влажности ниже 50 % пробка пересыхает и пропускает воздух. «Плачущая» стенка держит 50–80 %.", `${has(/Поддержание влажности: Есть/i)} ${plural(has(/Поддержание влажности: Есть/i), "модель", "модели", "моделей")} держат влажность`],
+];
+const projects = [
+  ["barvikha-b", "Барвиха", "Стеллажи из массива, ромбовидные ячейки, подсветка"],
+  ["spiral", "Горки-6", "Спиральный погреб под стеклянным полом"],
+  ["vault", "Казань", "Кирпичный свод, каменные стеллажи"],
+  ["fominskoe", "Фоминское", "Дерево в отделке и стеллажах"],
+  ["stairs", "Иваньковское шоссе", "Погреб с лестницей из гостиной"],
+  ["razdory", "Раздоры", "Минимализм: белые каменные ячейки"],
+  ["brick", "Салтыковка", "Традиционный погреб под сводом"],
+];
+const steps = [
+  ["Проект", "Замер, расчёт теплопритоков и 3D-визуализация. Планируем вместимость, зоны и свет."],
+  ["Климат", "Подбираем сплит-систему или моноблок под объём погреба, утепление и пароизоляцию."],
+  ["Стеллажи", "Дерево, камень или металл — по эскизу. Ячейки под 0,75 л, магнумы и ящики."],
+  ["Монтаж и сервис", "Собираем, запускаем, выводим на 12 °C и 70 %. Обслуживаем оборудование и после."],
+];
+---
+<Base nav="home">
+  <Intro />
+  <main>
+    <!-- HERO -->
+    <section class="hero" data-hero>
+      <div class="hero__media">
+        <picture>
+          <source media="(min-width: 1000px)" srcset={srcset("hero", [800, 1344])} sizes="60vw" />
+          <img src={img("hero-tall", 900)} srcset={`${img("hero-tall", 600)} 600w, ${img("hero-tall", 900)} 900w`} sizes="100vw" alt="Винный погреб в Барвихе: стеллажи из массива, декантер на дегустационной полке" fetchpriority="high" />
+        </picture>
+      </div>
+      <div class="wrap hero__body">
+        <p class="clim hero__k" data-in style="--d:.3s"><i></i><span>Погреб · <span data-live>12,0</span> °C · 70 %</span></p>
+        <h1 class="d1 hero__t">
+          <span class="ln"><span>Вино, которое</span></span>
+          <span class="ln"><span><b>становится</b></span></span>
+          <span class="ln"><span><b>лучше</b></span></span>
+        </h1>
+        <p class="lead hero__lead" data-in style="--d:.55s">Винные шкафы на {capMin}–{capMax} бутылок и погреба под ключ: проект, климатическое оборудование, стеллажи, монтаж и сервис.</p>
+        <div class="hero__ctas" data-in style="--d:.65s">
+          <a class="btn" href={url("catalog/shkafy/")}>Винные шкафы <Icon name="arrow" class="btn__ar" /></a>
+          <a class="btn btn--ghost" href={url("pogreb/")}>Погреб под ключ <Icon name="arrow" class="btn__ar" /></a>
+        </div>
+      </div>
+      <dl class="hero__hud wrap" data-in style="--d:.75s">
+        <div><dt class="tag">С</dt><dd class="num">2004</dd></div>
+        <div><dt class="tag">Погребов</dt><dd class="num"><span data-count="400">400</span>+</dd></div>
+        <div><dt class="tag">Моделей</dt><dd class="num"><span data-count={products.length}>{products.length}</span></dd></div>
+      </dl>
+    </section>
+
+    <!-- CATALOGUE -->
+    <section class="sec">
+      <div class="wrap">
+        <div class="sh">
+          <div class="sh__top"><span class="tag">[A1]</span><span class="tag">Каталог</span></div>
+          <div class="sh__row">
+            <h2 class="d2" data-in>Всё для <b>хранения вина</b></h2>
+            <p class="lead" data-in>Винные шкафы LaSommeliere, Climadiff, Avintage и Vinosafe. Климатические системы для погребов, стеллажи, диспенсеры для розлива и шкафы для сигар.</p>
+          </div>
+        </div>
+        <div class="cats">
+          {categories.map((c, i) => (
+            <a class:list={["cat", { "cat--hero": i === 0 }]} href={url(`catalog/${c.id}/`)} data-in style={`--d:${(i % 4) * 0.06}s`}>
+              <span class="cat__media paper"><img src={pimg(cover(c.id), i === 0 ? 960 : 480)} alt="" loading="lazy" decoding="async" /></span>
+              <span class="cat__body">
+                <span class="tag">B{i + 1} · {count(c.id)} {plural(count(c.id), "модель", "модели", "моделей")}</span>
+                <span class="cat__t">{c.title}</span>
+                <span class="cat__n">{c.note}</span>
+              </span>
+              <Icon name="arrow" class="cat__ar" />
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- THERMOSTAT -->
+    <section class="sec sec--th" id="climate">
+      <div class="wrap">
+        <div class="sh">
+          <div class="sh__top"><span class="tag">[A2]</span><span class="tag">Термостат</span></div>
+          <div class="sh__row">
+            <h2 class="d2" data-in>Сколько <b>градусов</b> нужно вашему вину</h2>
+            <p class="lead" data-in>Потяните шкалу. Хранят любое вино при 10–14 °C, а подают каждое при своей температуре — поэтому шкафы бывают с одной, двумя и тремя зонами.</p>
+          </div>
+        </div>
+        <Thermostat />
+      </div>
+    </section>
+
+    <!-- DESCENT -->
+    <Descent />
+
+    <!-- POPULAR -->
+    <section class="sec">
+      <div class="wrap">
+        <div class="sh">
+          <div class="sh__top"><span class="tag">[A4]</span><span class="tag">Выбор сомелье</span></div>
+          <div class="sh__row">
+            <h2 class="d2" data-in>Популярные <b>шкафы</b></h2>
+            <a class="ulink sh__more" href={url("catalog/shkafy/")} data-in>Все винные шкафы <Icon name="arrow" class="btn__ar" /></a>
+          </div>
+        </div>
+      </div>
+      <div class="rail">{featured.map((p, i) => <ProductCard p={p} d={Math.min(i, 3) * 0.06} />)}</div>
+    </section>
+
+    <!-- ENEMIES -->
+    <section class="sec">
+      <div class="wrap">
+        <div class="sh">
+          <div class="sh__top"><span class="tag">[A5]</span><span class="tag">Защита</span></div>
+          <div class="sh__row">
+            <h2 class="d2" data-in>Четыре врага <b>вина</b></h2>
+            <p class="lead" data-in>Погреб и винный шкаф решают одну задачу: убрать всё, что заставляет вино стареть раньше времени.</p>
+          </div>
+        </div>
+        <ol class="foes">
+          {enemies.map(([t, d, n], i) => (
+            <li class="filet" data-in style={`--d:${i * 0.08}s`}>
+              <span class="foes__n num">0{i + 1}</span>
+              <h3 class="d3">{t}</h3>
+              <p>{d}</p>
+              <p class="tag foes__k">{n}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+
+    <!-- AGING -->
+    <section class="sec">
+      <div class="wrap">
+        <div class="sh">
+          <div class="sh__top"><span class="tag">[A6]</span><span class="tag">Выдержка</span></div>
+          <div class="sh__row">
+            <h2 class="d2" data-in>Вино стареет <b>красиво</b></h2>
+            <p class="lead" data-in>Сомелье наклоняет бокал над белой скатертью и по краю вина угадывает возраст. Потяните ползунок — так меняется цвет красного за тридцать лет.</p>
+          </div>
+        </div>
+        <Aging />
+      </div>
+    </section>
+
+    <!-- CELLAR -->
+    <section class="cellar">
+      <div class="cellar__media" data-wipe data-lantern>
+        <img src={img("vault", 1400)} srcset={srcset("vault", [800, 1400])} sizes="(min-width: 1000px) 62vw, 100vw" alt="Винный погреб под кирпичным сводом, Казань" loading="lazy" decoding="async" data-par />
+        <span class="lantern" aria-hidden="true"></span>
+        <p class="tag lantern__hint">Посветите — коснитесь свода</p>
+        <button type="button" class="lantern__btn" data-light aria-pressed="false"><i></i><span>Включить свет</span></button>
+      </div>
+      <div class="wrap cellar__body">
+        <div class="sh__top"><span class="tag">[A7]</span><span class="tag">Погреб под ключ</span></div>
+        <h2 class="d2" data-in>Погреб, который <b>держит 12 °C</b></h2>
+        <p class="lead" data-in>Более 400 погребов для частных домов и ресторанов. Делаем всё — от проекта до сервиса — или только климат к вашему погребу.</p>
+        <ol class="csteps">
+          {steps.map(([t, d], i) => (
+            <li data-in style={`--d:${i * 0.06}s`}><span class="num">0{i + 1}</span><div><h3>{t}</h3><p>{d}</p></div></li>
+          ))}
+        </ol>
+        <div class="cellar__ctas" data-in>
+          <a class="btn btn--light" href={url("pogreb/")}>Рассчитать погреб <Icon name="arrow" class="btn__ar" /></a>
+          <a class="btn btn--ghost" href={contacts.phoneHref}>{contacts.phone} <Icon name="phone" class="btn__ar" /></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section class="sec" id="projects">
+      <div class="wrap">
+        <div class="sh">
+          <div class="sh__top"><span class="tag">[A8]</span><span class="tag">Проекты</span></div>
+          <div class="sh__row">
+            <h2 class="d2" data-in>Погреба <b>наших клиентов</b></h2>
+            <p class="lead" data-in>Подмосковье и регионы: от компактного погреба под лестницей до хранилища на тысячи бутылок.</p>
+          </div>
+        </div>
+      </div>
+      <div class="rail film">
+        {projects.map(([im, t, d]) => (
+          <figure class="film__i" data-wipe>
+            <span class="film__img"><img src={img(im, 600)} alt={`Винный погреб, ${t}`} loading="lazy" decoding="async" /></span>
+            <figcaption><span class="tag">{t}</span><span>{d}</span></figcaption>
+          </figure>
+        ))}
+      </div>
+    </section>
+
+    <!-- CLIENTS -->
+    <section class="sec sec--tight wall" style={`--brick:url(${img("brick", 1600)})`}>
+      <div class="wrap clients">
+        <p class="tag">Работаем с ресторанами</p>
+        <ul>{contacts.clients.map((c) => <li data-in>{c}</li>)}</ul>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section class="sec">
+      <div class="wrap">
+        <div class="show filet">
+          <div class="show__media" data-wipe>
+            <img src={img("controller", 970)} srcset={srcset("controller", [600, 970])} sizes="(min-width: 1000px) 50vw, 100vw" alt="Пульт климатической системы погреба" loading="lazy" decoding="async" />
+          </div>
+          <div class="show__body">
+            <div class="sh__top"><span class="tag">[A9]</span><span class="tag">Консультация</span></div>
+            <h2 class="d2" data-in>Поговорим <b>о вашем вине</b></h2>
+            <p class="lead" data-in>Подберём шкаф под коллекцию и место или рассчитаем климат для погреба. {contacts.hours}.</p>
+            <ul class="show__loc" data-in>
+              <li><span class="tag">Офис</span><span>{contacts.city}, {contacts.address}</span></li>
+              <li><span class="tag">Телефоны</span><span>{contacts.phone} · {contacts.phone2}</span></li>
+            </ul>
+            <div class="show__ctas" data-in>
+              <a class="btn" href={contacts.phoneHref}>Позвонить <Icon name="phone" class="btn__ar" /></a>
+              <a class="btn btn--ghost" href={url("podbor/")}>Подобрать шкаф <Icon name="arrow" class="btn__ar" /></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</Base>
+
+<script>
+  const hero = document.querySelector<HTMLElement>("[data-hero]")!;
+  const html = document.documentElement;
+  const im = hero.querySelector("img")!;
+  // lights on in the cellar: after the intro, or once the photo is ready
+  const go = () => requestAnimationFrame(() => hero.classList.add("on"));
+  if (html.classList.contains("intro")) document.addEventListener("intro:done", () => setTimeout(go, 250), { once: true });
+  else im.complete ? go() : (im.addEventListener("load", go, { once: true }), setTimeout(go, 1200));
+
+  // a live read-out: the controller nudges the cellar between 11,9 and 12,1 °C
+  const live = document.querySelector("[data-live]")!;
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!reduced) setInterval(() => { if (!document.hidden) live.textContent = (11.9 + Math.round(Math.random() * 2) / 10).toFixed(1).replace(".", ","); }, 3200);
+
+  // counters
+  const cio = new IntersectionObserver((es) => es.forEach((e) => {
+    if (!e.isIntersecting) return;
+    cio.unobserve(e.target);
+    const el = e.target as HTMLElement, to = Number(el.dataset.count), t0 = performance.now();
+    const tick = (t: number) => { const k = Math.min(1, (t - t0) / 1400); el.textContent = String(Math.round(to * (1 - Math.pow(1 - k, 4)))); if (k < 1) requestAnimationFrame(tick); };
+    requestAnimationFrame(tick);
+  }));
+  document.querySelectorAll("[data-count]").forEach((el) => cio.observe(el));
+
+  // lantern: the vault is dark; a pool of warm light follows the cursor or the last touch, and wanders when left alone
+  {
+    const box = document.querySelector<HTMLElement>("[data-lantern]")!;
+    const btn = box.querySelector<HTMLButtonElement>("[data-light]")!;
+    let tx = 0.5, ty = 0.45, x = 0.5, y = 0.45, idle = 0, vis = false, raf = 0;
+    const step = (t: number) => {
+      raf = 0;
+      if (!vis || box.classList.contains("lit")) return;
+      if (performance.now() - idle > 2600) { tx = 0.5 + Math.sin(t / 2300) * 0.3; ty = 0.42 + Math.sin(t / 1700) * 0.18; }
+      x += (tx - x) * 0.06; y += (ty - y) * 0.06;
+      box.style.setProperty("--lx", `${(x * 100).toFixed(2)}%`);
+      box.style.setProperty("--ly", `${(y * 100).toFixed(2)}%`);
+      raf = requestAnimationFrame(step);
+    };
+    const go = () => { if (!raf) raf = requestAnimationFrame(step); };
+    const aim = (e: PointerEvent) => {
+      const r = box.getBoundingClientRect();
+      tx = (e.clientX - r.left) / r.width; ty = (e.clientY - r.top) / r.height; idle = performance.now();
+      box.classList.add("held"); go();
+    };
+    box.addEventListener("pointermove", (e) => { if (e.pointerType === "mouse") aim(e); });
+    box.addEventListener("pointerdown", (e) => { if (!(e.target as Element).closest("[data-light]")) aim(e); });
+    new IntersectionObserver(([e]) => { vis = e.isIntersecting; if (vis) go(); }).observe(box.parentElement!);
+    btn.addEventListener("click", () => {
+      const lit = box.classList.toggle("lit");
+      btn.setAttribute("aria-pressed", String(lit));
+      btn.querySelector("span")!.textContent = lit ? "Погасить" : "Включить свет";
+      if (!lit) go();
+    });
+    if (reduced) box.classList.add("lit");
+  }
+
+  // gentle parallax on the cellar photo
+  const par = document.querySelector<HTMLElement>("[data-par]");
+  if (par && !reduced) {
+    let tick = false;
+    const upd = () => {
+      tick = false;
+      const r = par.parentElement!.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > innerHeight) return;
+      par.style.transform = `translate3d(0, ${((r.top + r.height / 2 - innerHeight / 2) * -0.08).toFixed(1)}px, 0) scale(1.12)`;
+    };
+    addEventListener("scroll", () => { if (!tick) { tick = true; requestAnimationFrame(upd); } }, { passive: true });
+    upd();
+  }
+</script>
+
+<style is:global>
+  .js .hero:not(.on) [data-in].in { opacity: 0; transform: translateY(22px); }
+</style>
+
+<style>
+  /* hero */
+  .hero { position: relative; display: flex; flex-direction: column; padding-top: calc(var(--hdr) + env(safe-area-inset-top)); overflow: hidden; isolation: isolate; }
+  .hero__media { position: relative; height: 50svh; min-height: 320px; z-index: -1; overflow: hidden; }
+  .hero__media img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; filter: brightness(0.06) saturate(0.4); transform: scale(1.06); transition: filter 2.2s var(--ease-io), transform 3s var(--ease); }
+  /* lights on: the ceiling spots come up and the light falls down the racks */
+  .hero.on .hero__media img { filter: none; transform: none; }
+  .hero__media::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, transparent 0%, var(--bg) 0%); transition: transform 1.8s var(--ease-io); transform-origin: bottom; }
+  .hero.on .hero__media::before { transform: scaleY(0); }
+  .hero__media::after { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(0deg, var(--bg) 2%, rgba(11, 9, 8, 0) 45%); }
+  .hero__body { position: relative; margin-top: -54px; padding-bottom: 24px; }
+  .hero__k { margin-bottom: 18px; }
+  .hero__t { margin-bottom: 18px; }
+  .ln { display: block; overflow: hidden; padding-bottom: 0.06em; margin-bottom: -0.06em; }
+  .ln > span { display: block; transform: translateY(110%); transition: transform 1s var(--ease); }
+  .ln:nth-child(1) > span { transition-delay: 0.35s; }
+  .ln:nth-child(2) > span { transition-delay: 0.45s; }
+  .ln:nth-child(3) > span { transition-delay: 0.55s; }
+  .hero.on .ln > span { transform: none; }
+  :global(html:not(.js)) .ln > span { transform: none; }
+  .hero__lead { margin-bottom: 24px; }
+  .hero__ctas { display: grid; gap: 8px; }
+  .hero__hud { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); padding-top: 14px; padding-bottom: 20px; }
+  .hero__hud div { display: grid; gap: 4px; }
+  .hero__hud div + div { padding-left: 12px; border-left: 1px solid var(--line); }
+  .hero__hud dd { font-size: 15px; }
+  .hero__hud dt { font-size: 9.5px; color: var(--dim); }
+
+  .sec { padding: 92px 0 0; }
+  .sec--tight { padding-top: 72px; }
+  .sh__more { justify-self: start; }
+
+  /* catalogue tiles */
+  .cats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .cat { position: relative; display: flex; flex-direction: column; background: var(--panel); border: 1px solid var(--line); transition: border-color 0.4s; }
+  .cat--hero { grid-column: span 2; }
+  .cat__media { aspect-ratio: 1; }
+  .cat--hero .cat__media { aspect-ratio: 16 / 11; }
+  .cat__media img { width: 100%; height: 100%; object-fit: contain; padding: 10%; transition: transform 1.2s var(--ease); }
+  .cat__body { display: grid; gap: 4px; padding: 14px 12px 16px; }
+  .cat__body .tag { color: var(--dim); font-size: 9.5px; }
+  .cat__t { font-family: var(--display); font-size: 22px; line-height: 1.05; }
+  .cat--hero .cat__t { font-size: 32px; }
+  .cat__n { color: var(--mute); font-size: 12.5px; line-height: 1.35; }
+  .cat :global(.cat__ar) { position: absolute; right: 12px; bottom: 16px; width: 16px; height: 16px; color: var(--dim); transition: transform 0.5s var(--ease), color 0.4s; }
+  @media (hover: hover) {
+    .cat:hover { border-color: var(--line-2); }
+    .cat:hover .cat__media img { transform: scale(1.05); }
+    .cat:hover :global(.cat__ar) { transform: translateX(4px); color: var(--wine-2); }
+  }
+
+  /* enemies */
+  .foes { display: grid; gap: 10px; }
+  .foes li { display: grid; gap: 10px; padding: 22px 20px 20px; background: var(--panel); border: 1px solid var(--line); }
+  .foes__n { color: var(--wine-2); font-size: 12px; }
+  .foes p { color: var(--mute); font-size: 14px; }
+  .foes .foes__k { color: var(--straw); margin-top: 4px; }
+
+  /* cellar */
+  .cellar { position: relative; margin-top: 100px; overflow: hidden; }
+  .cellar__media { position: relative; aspect-ratio: 1 / 0.9; overflow: hidden; }
+  .cellar__media img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.12); }
+  .cellar__media::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, var(--bg) 3%, rgba(11, 9, 8, 0) 50%), linear-gradient(180deg, var(--bg) 0%, rgba(11, 9, 8, 0) 18%); }
+  .cellar__body { position: relative; margin-top: -60px; display: grid; gap: 20px; }
+  /* lantern: darkness everywhere but a warm pool of light */
+  .lantern { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: radial-gradient(circle min(34vw, 230px) at var(--lx, 50%) var(--ly, 45%), rgba(11, 9, 8, 0) 0%, rgba(11, 9, 8, 0.25) 40%, rgba(11, 9, 8, 0.94) 100%); transition: opacity 1.4s var(--ease-io); }
+  .lantern::after { content: ""; position: absolute; inset: 0; background: radial-gradient(circle min(22vw, 150px) at var(--lx, 50%) var(--ly, 45%), rgba(255, 176, 102, 0.16), rgba(255, 176, 102, 0) 100%); mix-blend-mode: soft-light; }
+  .lit .lantern { opacity: 0; }
+  .lantern__hint { position: absolute; left: var(--gut); top: 18px; z-index: 3; color: var(--mute); transition: opacity 0.6s; }
+  .held .lantern__hint, .lit .lantern__hint { opacity: 0; }
+  .lantern__btn { position: absolute; right: var(--gut); top: 10px; z-index: 3; display: inline-flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 14px; background: rgba(11, 9, 8, 0.7); border: 1px solid var(--line-2); font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+  .lantern__btn i { width: 8px; height: 8px; border-radius: 50%; background: var(--dim); transition: background 0.4s, box-shadow 0.4s; }
+  .lit .lantern__btn i { background: var(--straw); box-shadow: 0 0 10px var(--straw); }
+  .cellar__media { cursor: crosshair; }
+  .csteps { display: grid; border-top: 1px solid var(--line); }
+  .csteps li { display: grid; grid-template-columns: 34px 1fr; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+  .csteps .num { color: var(--wine-2); font-size: 12px; padding-top: 3px; }
+  .csteps h3 { font-size: 15px; font-weight: 600; }
+  .csteps p { color: var(--mute); font-size: 13.5px; margin-top: 2px; }
+  .cellar__ctas { display: grid; gap: 8px; }
+
+  /* projects */
+  .film { grid-auto-columns: 74%; }
+  .film__i { display: grid; gap: 12px; }
+  .film__img { aspect-ratio: 4 / 5.2; overflow: hidden; background: var(--panel); clip-path: inset(0 round 999px 999px 0 0); }
+  .film__img img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--ease); }
+  @media (hover: hover) { .film__i:hover img { transform: scale(1.04); } }
+  .film__i figcaption { display: grid; gap: 4px; font-size: 13.5px; color: var(--mute); }
+  .film__i figcaption .tag { color: var(--text); }
+
+  /* clients: names on a cellar brick wall under a wall-washer */
+  .wall { position: relative; margin-top: 100px; padding: 90px 0 100px; isolation: isolate; }
+  .wall::before { content: ""; position: absolute; inset: 0; z-index: -1; background: radial-gradient(70% 90% at 50% 0%, rgba(255, 190, 120, 0.16), rgba(11, 9, 8, 0) 70%), linear-gradient(180deg, var(--bg) 0%, rgba(11, 9, 8, 0.35) 22%, rgba(11, 9, 8, 0.35) 78%, var(--bg) 100%), var(--brick) center / cover; }
+  .wall .clients li { color: rgba(241, 231, 216, 0.55); text-shadow: 0 1px 0 rgba(0, 0, 0, 0.6); }
+  .wall .clients li:nth-child(even) { color: var(--text); }
+  /* clients */
+  .clients { display: grid; gap: 18px; }
+  .clients ul { display: flex; flex-wrap: wrap; gap: 6px 28px; }
+  .clients li { font-family: var(--display); font-size: clamp(30px, 8vw, 64px); line-height: 1.1; color: var(--mute); }
+  .clients li:nth-child(even) { color: var(--text); }
+
+  /* contact */
+  .show { display: grid; background: var(--panel); border: 1px solid var(--line); }
+  .show__media { aspect-ratio: 4 / 3; overflow: hidden; }
+  .show__media img { width: 100%; height: 100%; object-fit: cover; }
+  .show__body { display: grid; gap: 18px; padding: 26px 18px 22px; }
+  .show__loc { display: grid; border-top: 1px solid var(--line); }
+  .show__loc li { display: grid; gap: 2px; padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 14.5px; }
+  .show__loc .tag { font-size: 9.5px; color: var(--dim); }
+  .show__ctas { display: grid; gap: 8px; }
+
+  @media (min-width: 640px) {
+    .cats { grid-template-columns: repeat(3, 1fr); }
+    .cat--hero { grid-column: span 2; grid-row: span 2; }
+    .cat--hero .cat__media { aspect-ratio: auto; flex: 1; }
+    .foes { grid-template-columns: 1fr 1fr; }
+    .film { grid-auto-columns: 40%; }
+    .hero__ctas, .cellar__ctas, .show__ctas { display: flex; flex-wrap: wrap; }
+  }
+  @media (min-width: 1000px) {
+    .hero { min-height: 100vh; justify-content: center; padding-top: 0; }
+    .hero__media { position: absolute; inset: 0 0 0 auto; width: 58%; height: auto; }
+    .hero__body { margin-top: 0; padding-bottom: 120px; }
+    .hero__media img { object-position: 50% 50%; }
+    .hero__media::after { background: linear-gradient(90deg, var(--bg) 0%, rgba(11, 9, 8, 0.6) 22%, rgba(11, 9, 8, 0) 50%), linear-gradient(0deg, var(--bg) 0%, rgba(11, 9, 8, 0) 24%); }
+    .hero__body { max-width: var(--max); padding-top: calc(var(--hdr) + 40px); }
+    .hero__t { max-width: 7.5em; }
+    .hero__lead { max-width: 27em; }
+    .hero__hud { position: absolute; left: 0; right: 0; bottom: 44px; grid-template-columns: repeat(3, max-content); gap: 0; border: 0; }
+    .hero__hud div + div { padding-left: 28px; margin-left: 28px; }
+
+    .sec { padding-top: 150px; }
+    .sec--tight { padding-top: 120px; }
+    .wall { margin-top: 150px; padding: 140px 0 150px; }
+    .cats { grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .foes { grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .foes li { min-height: 300px; align-content: start; padding: 26px 22px; }
+
+    .cellar { margin-top: 150px; min-height: 92vh; display: flex; align-items: center; }
+    .cellar__media { position: absolute; inset: 0 auto 0 0; width: 62%; aspect-ratio: auto; }
+    .cellar__media::after { background: linear-gradient(270deg, var(--bg) 0%, rgba(11, 9, 8, 0) 45%), linear-gradient(0deg, var(--bg) 0%, rgba(11, 9, 8, 0) 20%), linear-gradient(180deg, var(--bg) 0%, rgba(11, 9, 8, 0) 20%); }
+    .cellar__body { margin-top: 0; grid-template-columns: min(520px, 100%); justify-content: end; padding-block: 120px; pointer-events: none; }
+    .cellar__body > * { pointer-events: auto; }
+
+    .film { grid-auto-columns: 26%; }
+    .show { grid-template-columns: 1.1fr 1fr; }
+    .show__media { aspect-ratio: auto; }
+    .show__body { padding: 56px 48px; align-content: center; }
+  }
+</style>

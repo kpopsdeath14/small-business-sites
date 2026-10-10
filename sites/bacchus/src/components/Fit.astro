@@ -1,0 +1,99 @@
+---
+/**
+ * Will it fit? Enter the niche (or the spot by the wall) and compare with the real cabinet.
+ * Next to it, the noise level on a scale of everyday sounds.
+ */
+import type { Product } from "../lib/site";
+
+interface Props { p: Product }
+const { p } = Astro.props;
+const d = p.dims!;
+const fmt = (n: number) => String(n).replace(".", ",");
+const built = /встра/i.test(p.install);
+const REF = [[20, "лес ночью"], [30, "шёпот"], [40, "тихая комната"], [50, "тихий офис"], [60, "разговор"]] as const;
+const pos = (db: number) => ((Math.min(62, Math.max(18, db)) - 18) / 44) * 100;
+---
+<div class="fit">
+  <form class="fit__form" data-fit data-w={d.w} data-h={d.h} data-d={d.d}>
+    <p class="tag">{built ? "Размеры ниши, см" : "Место у стены, см"}</p>
+    <div class="fit__in">
+      {[["w", "Ширина", d.w], ["h", "Высота", d.h], ["d", "Глубина", d.d]].map(([k, l, v]) => (
+        <label class="field"><span class="tag">{l}</span><input class="input num" name={k as string} inputmode="decimal" placeholder={fmt(Math.ceil(Number(v)))} autocomplete="off" /></label>
+      ))}
+    </div>
+    <div class="fit__out" data-fit-out aria-live="polite">
+      <p class="fit__v" data-fit-v>Шкаф: {fmt(d.w)} × {fmt(d.h)} × {fmt(d.d)} см</p>
+      <p class="fit__t" data-fit-t>Введите размеры — сравним с габаритами шкафа.</p>
+    </div>
+    <p class="tag fit__note">{built ? "Встраиваемым моделям нужен зазор для вентиляции — точную схему ниши пришлём по инструкции производителя." : "Отдельностоящему шкафу нужен воздух сзади и по бокам — точные зазоры уточним по инструкции модели."}</p>
+  </form>
+
+  {p.noise && (
+    <div class="db">
+      <p class="tag">Уровень шума</p>
+      <p class="db__v"><span class="num">{p.noise}</span> дБ</p>
+      <div class="db__scale">
+        <i class="db__fill" style={`--p:${pos(p.noise)}%`}></i>
+        {REF.map(([v, n]) => <span class="db__ref" style={`--p:${pos(v)}%`}><b class="num">{v}</b>{n}</span>)}
+        <span class="db__me" style={`--p:${pos(p.noise)}%`}></span>
+      </div>
+      <p class="db__t">{p.noise <= 35 ? "Тише шёпота — подходит для спальни и кабинета." : p.noise <= 40 ? "Как тихая комната — спокойно для гостиной и кухни." : "Как тихий офис — лучше для кухни, бара или ресторана."}</p>
+    </div>
+  )}
+</div>
+
+<script>
+  document.querySelectorAll<HTMLFormElement>("[data-fit]").forEach((f) => {
+    const W = Number(f.dataset.w), H = Number(f.dataset.h), D = Number(f.dataset.d);
+    const v = f.querySelector("[data-fit-v]")!, t = f.querySelector("[data-fit-t]")!, out = f.querySelector<HTMLElement>("[data-fit-out]")!;
+    const fmt = (n: number) => String(Math.round(n * 10) / 10).replace(".", ",");
+    const read = (n: string) => Number(String((f.elements.namedItem(n) as HTMLInputElement).value).replace(",", "."));
+    f.addEventListener("submit", (e) => e.preventDefault());
+    f.addEventListener("input", () => {
+      const w = read("w"), h = read("h"), d = read("d");
+      const have = [[w, W, "ширине"], [h, H, "высоте"], [d, D, "глубине"]].filter(([x]) => (x as number) > 0) as [number, number, string][];
+      out.classList.remove("ok", "no");
+      if (!have.length) { t.textContent = "Введите размеры — сравним с габаритами шкафа."; return; }
+      const short = have.filter(([x, need]) => x < need);
+      if (short.length) {
+        out.classList.add("no");
+        t.textContent = `Не встанет: не хватает ${short.map(([x, need, n]) => `${fmt(need - x)} см по ${n}`).join(", ")}.`;
+      } else {
+        out.classList.add("ok");
+        t.textContent = `Встанет${have.length < 3 ? " по введённым размерам" : ""}. Запас: ${have.map(([x, need, n]) => `${fmt(x - need)} см по ${n}`).join(", ")}.`;
+      }
+    });
+  });
+</script>
+
+<style>
+  .fit { display: grid; gap: 40px; }
+  .fit__form { display: grid; gap: 14px; }
+  .fit__in { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .fit__in .field { gap: 6px; }
+  .fit__in .tag { font-size: 9.5px; color: var(--dim); }
+  .fit__in .input { padding: 12px; min-height: 48px; font-size: 16px; }
+  .fit__out { padding: 16px; border: 1px solid var(--line); background: var(--panel); transition: border-color 0.4s, background 0.4s; }
+  .fit__out.ok { border-color: rgba(226, 201, 138, 0.6); background: rgba(226, 201, 138, 0.07); }
+  .fit__out.no { border-color: var(--wine-2); background: rgba(158, 31, 54, 0.12); }
+  .fit__v { font-family: var(--mono); font-size: 12px; color: var(--mute); }
+  .fit__t { margin-top: 6px; font-size: 15px; }
+  .fit__out.ok .fit__t { color: var(--straw); }
+  .fit__note { color: var(--dim); line-height: 1.6; text-transform: none; letter-spacing: 0.02em; font-size: 11px; }
+
+  .db { display: grid; gap: 12px; align-content: start; }
+  .db__v { font-family: var(--display); font-size: 56px; line-height: 0.9; }
+  .db__v .num { font-family: var(--display); }
+  .db__scale { position: relative; height: 70px; margin-top: 8px; border-top: 1px solid var(--line-2); }
+  .db__fill { position: absolute; left: 0; top: -1px; height: 1px; width: var(--p); background: var(--wine-2); }
+  .db__ref { position: absolute; left: var(--p); top: 0; display: grid; gap: 2px; padding-top: 10px; transform: translateX(-50%); font-size: 10.5px; color: var(--dim); text-align: center; white-space: nowrap; }
+  .db__ref::before { content: ""; position: absolute; left: 50%; top: -4px; width: 1px; height: 8px; background: var(--line-2); }
+  .db__ref:first-of-type { transform: none; text-align: left; }
+  .db__ref:first-of-type::before { left: 0; }
+  .db__ref:last-of-type { transform: translateX(-100%); text-align: right; }
+  .db__ref:last-of-type::before { left: auto; right: 0; }
+  .db__ref b { font-weight: 400; color: var(--mute); }
+  .db__me { position: absolute; left: var(--p); top: -6px; width: 11px; height: 11px; margin-left: -5.5px; border-radius: 50%; background: var(--wine-2); box-shadow: 0 0 0 4px rgba(199, 58, 82, 0.2), 0 0 14px rgba(199, 58, 82, 0.6); }
+  .db__t { color: var(--mute); font-size: 14px; }
+  @media (min-width: 1000px) { .fit { grid-template-columns: 1.1fr 1fr; gap: 80px; } }
+</style>

@@ -1,0 +1,298 @@
+---
+import Base from "../layouts/Base.astro";
+import Icon from "../components/Icon.astro";
+import Finale from "../components/Finale.astro";
+import { url, contacts } from "../lib/site";
+---
+<Base title="Оформление заказа — Подвалы Бахуса" nav="cart">
+  <main>
+    <section class="ph">
+      <div class="wrap">
+        <nav class="crumbs tag" aria-label="Навигация"><a href={url()}>Главная</a><span>/</span><a href={url("cart/")}>Корзина</a><span>/</span><span>Оформление</span></nav>
+        <h1 class="d1" data-in>Оформление <b>заказа</b></h1>
+      </div>
+    </section>
+
+    <section class="wrap co" data-form-wrap>
+      <form class="co__form" novalidate data-form>
+        <div class="steps" aria-hidden="true">
+          <div class="steps__row">
+            <span data-st="1"><i><b></b></i>I · Контакты</span>
+            <span data-st="2"><i><b></b></i>II · Доставка</span>
+            <span data-st="3"><i><b></b></i>III · Оплата</span>
+          </div>
+        </div>
+        <fieldset>
+          <legend><span class="tag tag--wine num">I</span><span class="d3">Контакты</span></legend>
+          <div class="field"><label class="tag" for="f-name">Имя *</label><input class="input" id="f-name" name="name" autocomplete="name" required /></div>
+          <div class="field"><label class="tag" for="f-phone">Телефон *</label><input class="input" id="f-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7" required /></div>
+          <div class="field"><label class="tag" for="f-email">Email</label><input class="input" id="f-email" name="email" type="email" inputmode="email" autocomplete="email" /></div>
+        </fieldset>
+
+        <fieldset>
+          <legend><span class="tag tag--wine num">II</span><span class="d3">Доставка</span></legend>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="ship" value="Доставка по Москве и МО" checked /><span class="opt__dot"></span><span><span class="opt__t">По Москве и области</span><span class="opt__d">Привезём и занесём — стоимость назовёт менеджер</span></span></label>
+            <label class="opt"><input type="radio" name="ship" value="Доставка по России" /><span class="opt__dot"></span><span><span class="opt__t">В другой город</span><span class="opt__d">Транспортной компанией, в жёсткой упаковке</span></span></label>
+          </div>
+          <div class="field"><label class="tag" for="f-addr">Адрес доставки *</label><input class="input" id="f-addr" name="addr" autocomplete="street-address" placeholder="Город, улица, дом" required /></div>
+          <label class="check"><input type="checkbox" name="install" value="1" /><span>Нужна установка — встроим шкаф в нишу, подключим и проверим</span></label>
+        </fieldset>
+
+        <fieldset>
+          <legend><span class="tag tag--wine num">III</span><span class="d3">Оплата</span></legend>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="pay" value="Картой по ссылке" checked /><span class="opt__dot"></span><span><span class="opt__t">Картой по ссылке</span><span class="opt__d">Пришлём ссылку после подтверждения наличия</span></span></label>
+            <label class="opt"><input type="radio" name="pay" value="Безналичный расчёт" /><span class="opt__dot"></span><span><span class="opt__t">Безналичный расчёт</span><span class="opt__d">Выставим счёт на компанию или ресторан</span></span></label>
+          </div>
+          <div class="field"><label class="tag" for="f-com">Комментарий</label><textarea class="input" id="f-com" name="comment" placeholder="Этаж и лифт, размеры ниши, удобное время звонка…"></textarea></div>
+        </fieldset>
+
+        <label class="check"><input type="checkbox" name="agree" required checked /><span>Согласен на обработку персональных данных для оформления заказа</span></label>
+        <p class="flag" data-err hidden>Проверьте отмеченные поля</p>
+        <button class="btn btn--block" type="submit">Подтвердить заказ <Icon name="arrow" class="btn__ar" /></button>
+        <p class="co__note">Менеджер подтвердит наличие и сроки доставки. Оплата — только после подтверждения.</p>
+      </form>
+
+      <aside class="co__sum filet">
+        <details class="co__det" data-det>
+          <summary class="co__sumhead">
+            <span class="tag">Заказ · <span data-n>0</span> поз.</span>
+            <span class="co__mini" data-mini>0 ₽</span>
+            <i class="co__chev" aria-hidden="true"></i>
+          </summary>
+          <div class="co__body">
+            <div class="co__lines" data-lines></div>
+            <dl class="co__rows">
+              <div><dt>Товары</dt><dd data-sub>0 ₽</dd></div>
+              <div data-brow hidden><dt>Вместимость</dt><dd data-bot>0 бут.</dd></div>
+              <div><dt>Доставка</dt><dd>рассчитает менеджер</dd></div>
+            </dl>
+            <div class="co__total"><span class="tag">Итого</span><strong data-total>0 ₽</strong></div>
+            <a class="tag co__edit" href={url("cart/")}>Изменить состав</a>
+          </div>
+        </details>
+      </aside>
+    </section>
+
+    <section class="wrap done" data-done hidden>
+      <div class="done__box filet">
+        <Finale />
+        <p class="tag">Заказ <span class="num" data-oid></span></p>
+        <h2 class="d2">Заказ <b>принят</b></h2>
+        <p class="lead">Позвоните нам и назовите номер заказа — или скопируйте его и отправьте любым удобным способом. Подтвердим наличие, сроки и стоимость доставки.</p>
+        <div class="done__ctas">
+          <a class="btn" href={contacts.phoneHref}>Позвонить · {contacts.phone} <Icon name="phone" class="btn__ar" /></a>
+          <button class="btn btn--ghost" type="button" data-copy>Скопировать заказ <Icon name="check" class="btn__ar" /></button>
+        </div>
+        <div class="pass" data-pass></div>
+        <button class="btn btn--ghost pass__save" type="button" data-save-pass>Сохранить паспорт погреба <Icon name="arrow" class="btn__ar" /></button>
+        <a class="ulink" href={url("catalog/")}>Вернуться в каталог</a>
+      </div>
+    </section>
+  </main>
+</Base>
+
+<script>
+  import { cart, items, rub, esc, pimg } from "../scripts/cart";
+  import { note, noteLater } from "../scripts/app";
+  import { passportHTML, savePassport } from "../scripts/passport";
+  const $ = <T extends Element = HTMLElement>(s: string) => document.querySelector<T>(s)!;
+  const $$ = <T extends Element = HTMLElement>(s: string) => [...document.querySelectorAll<T>(s)];
+  const form = $<HTMLFormElement>("[data-form]");
+
+  function render() {
+    const ls = cart.lines();
+    if (!ls.length && $("[data-done]").hidden) { location.replace(form.baseURI.replace(/checkout\/?.*$/, "cart/")); return; }
+    $("[data-n]").textContent = String(cart.count());
+    const html = ls.map((l) => {
+      const it = items[l.id];
+      return `<div class="co__line"><span class="paper"><img src="${pimg(it.i)}" alt=""></span><span><b>${esc(it.n)}</b><small>${esc(it.v)}</small><small>${l.q} шт.</small></span><span class="co__lp">${rub(it.p * l.q)}</span></div>`;
+    }).join("");
+    const box = $("[data-lines]");
+    if (box.dataset.h !== html) { box.innerHTML = html; box.dataset.h = html; }
+    const sub = cart.total();
+    $("[data-sub]").textContent = rub(sub);
+    $("[data-total]").textContent = rub(sub);
+    $("[data-mini]").textContent = rub(sub);
+    $("[data-brow]").hidden = !cart.bottles();
+    $("[data-bot]").textContent = `${cart.bottles()} бут.`;
+  }
+  // desktop: the summary is a sticky side panel, always open; phones: collapsed to one line
+  const det = $<HTMLDetailsElement>("[data-det]");
+  const wide = matchMedia("(min-width: 1000px)");
+  const syncDet = () => { if (wide.matches) det.open = true; };
+  wide.addEventListener("change", syncDet); syncDet();
+
+  // three glasses fill as each part of the form is done; on submit they turn golden
+  const val = (id: string) => ($("#" + id) as HTMLInputElement).value.trim();
+  const fs = [...form.querySelectorAll("fieldset")];
+  let reached = [false, false, false], finished = false;
+  form.addEventListener("focusin", (e) => { fs.forEach((f, i) => { if (f.contains(e.target as Node)) reached[i] = true; }); steps(); });
+  form.addEventListener("focusin", () => noteLater("focus", 500), { once: true });
+  function steps() {
+    const s1 = val("f-name").length > 1 && val("f-phone").replace(/\D/g, "").length === 11;
+    const s2 = s1 && reached[1] && val("f-addr").length > 4;
+    const s3 = s2 && (reached[2] || finished);
+    [s1, s2, s3].forEach((ok, i) => $(`[data-st="${i + 1}"]`).classList.toggle("ok", ok));
+    $(".steps").classList.toggle("best", s3 && finished);
+  }
+  form.addEventListener("input", steps);
+  form.addEventListener("change", steps);
+  document.addEventListener("cart:change", render);
+  render();
+
+  // light phone mask: +7 (XXX) XXX-XX-XX
+  const phone = $<HTMLInputElement>("#f-phone");
+  phone.addEventListener("input", () => {
+    let d = phone.value.replace(/\D/g, "");
+    if (d.startsWith("8")) d = "7" + d.slice(1);
+    if (!d.startsWith("7")) d = "7" + d;
+    d = d.slice(0, 11);
+    const p = [d.slice(1, 4), d.slice(4, 7), d.slice(7, 9), d.slice(9, 11)];
+    phone.value = "+7" + (p[0] ? ` (${p[0]}` : "") + (p[0].length === 3 ? ")" : "") + (p[1] ? ` ${p[1]}` : "") + (p[2] ? `-${p[2]}` : "") + (p[3] ? `-${p[3]}` : "");
+  });
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const fd = new FormData(form);
+    const bad: HTMLElement[] = [];
+    $$<HTMLInputElement>("[required]").forEach((el) => {
+      const ok = el.type === "checkbox" ? el.checked : el.id === "f-phone" ? el.value.replace(/\D/g, "").length === 11 : el.value.trim().length > 1;
+      el.classList.toggle("err", !ok);
+      if (!ok) bad.push(el);
+    });
+    $("[data-err]").hidden = !bad.length;
+    if (bad.length) { note("flag"); bad[0].focus(); return; }
+
+    const d = new Date();
+    const oid = `ПБ-${String(d.getFullYear()).slice(2)}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
+    const ls = cart.lines();
+    const bottles = cart.bottles();
+    const text = [
+      `Заказ ${oid} с сайта «Подвалы Бахуса»`,
+      "",
+      ...ls.map((l, i) => { const it = items[l.id]; return `${i + 1}. ${it.n} (${it.v}) × ${l.q} — ${rub(it.p * l.q)}`; }),
+      "",
+      `Итого: ${rub(cart.total())}`,
+      bottles ? `Вместимость: ${bottles} бутылок` : null,
+      `Доставка: ${fd.get("ship")}, ${fd.get("addr")}`,
+      fd.get("install") ? "Нужна установка" : null,
+      `Оплата: ${fd.get("pay")}`,
+      "",
+      `Имя: ${fd.get("name")}`,
+      `Телефон: ${fd.get("phone")}`,
+      fd.get("email") ? `Email: ${fd.get("email")}` : null,
+      fd.get("comment") ? `Комментарий: ${fd.get("comment")}` : null,
+    ].filter((x) => x !== null).join("\n");
+
+    $("[data-oid]").textContent = oid;
+    const pass = { oid, date: d, name: String(fd.get("name")), ship: String(fd.get("ship")), pay: String(fd.get("pay")), lines: ls, total: cart.total(), bottles };
+    $("[data-pass]").innerHTML = passportHTML(pass);
+    $("[data-save-pass]").onclick = async (ev) => {
+      const b = ev.currentTarget as HTMLButtonElement;
+      b.disabled = true;
+      try { await savePassport(pass); } finally { b.disabled = false; }
+    };
+    const copyBtn = $<HTMLButtonElement>("[data-copy]");
+    copyBtn.onclick = async () => {
+      try { await navigator.clipboard.writeText(text); copyBtn.firstChild!.textContent = "Скопировано "; }
+      catch { copyBtn.firstChild!.textContent = "Не удалось скопировать "; }
+    };
+    finished = true; steps();
+    const btn = form.querySelector<HTMLButtonElement>("button[type=submit]")!;
+    btn.disabled = true;
+    setTimeout(() => {
+      $("[data-form-wrap]").hidden = true;
+      $("[data-done]").hidden = false;
+      requestAnimationFrame(() => document.dispatchEvent(new CustomEvent("finale:go")));
+      cart.clear();
+      scrollTo({ top: 0, behavior: "smooth" });
+    }, 700);
+  });
+</script>
+
+<style>
+  .co { display: grid; gap: 32px; }
+  .co[hidden] { display: none; }
+  .co__form { display: grid; gap: 34px; }
+  fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: 14px; min-width: 0; }
+  legend { display: flex; align-items: baseline; gap: 12px; padding: 0 0 6px; }
+  .flag { padding: 12px 14px; background: rgba(158, 31, 54, 0.14); border-left: 3px solid var(--wine-2); color: #f0b9c3; font-size: 13px; margin-bottom: -18px; }
+  .flag[hidden] { display: none; }
+  .co__note { color: var(--dim); font-size: 12.5px; margin-top: -18px; }
+
+  .steps { padding: 14px; background: var(--panel); border: 1px solid var(--line); }
+  .steps__row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .steps__row span { display: grid; gap: 8px; font-size: 11.5px; color: var(--mute); }
+  .steps__row i { position: relative; display: block; height: 6px; background: rgba(241, 231, 216, 0.07); overflow: hidden; }
+  .steps__row b { position: absolute; inset: 0; background: linear-gradient(90deg, #6d1224, var(--wine-2)); transform: scaleX(0); transform-origin: left; transition: transform 0.9s var(--ease); }
+  .steps__row span.ok { color: var(--text); }
+  .steps__row span.ok b { transform: none; }
+  .steps.best b { background: linear-gradient(90deg, #b8964f, var(--straw)); }
+
+  .co__sum { display: block; padding: 16px; background: var(--panel); border: 1px solid var(--line); align-self: start; order: -1; }
+  .co__det { display: contents; }
+  .co__sumhead { display: flex; align-items: center; gap: 12px; list-style: none; cursor: pointer; }
+  .co__sumhead::-webkit-details-marker { display: none; }
+  .co__mini { margin-left: auto; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .co__chev { width: 9px; height: 9px; border-right: 1.5px solid var(--mute); border-bottom: 1.5px solid var(--mute); transform: rotate(45deg) translateY(-3px); transition: transform 0.4s var(--ease); }
+  .co__det[open] .co__chev { transform: rotate(-135deg) translateY(-1px); }
+  .co__body { display: grid; gap: 14px; padding-top: 14px; }
+  .co__edit { justify-self: start; color: var(--mute); text-decoration: underline; text-underline-offset: 3px; }
+  .co__lines { display: grid; }
+  .co__lines :global(.co__line) { display: grid; grid-template-columns: 48px 1fr auto; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
+  .co__lines :global(.co__line .paper) { aspect-ratio: 4 / 5; display: block; }
+  .co__lines :global(.co__line img) { width: 100%; height: 100%; object-fit: contain; padding: 3px; }
+  .co__lines :global(.co__line b) { display: block; font-weight: 600; }
+  .co__lines :global(.co__line small) { display: block; color: var(--mute); font-size: 12px; }
+  .co__lines :global(.co__lp) { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .co__rows { display: grid; }
+  .co__rows div { display: flex; justify-content: space-between; padding: 8px 0; font-size: 14px; }
+  .co__rows div[hidden] { display: none; }
+  .co__rows dt { color: var(--mute); }
+  .co__total { display: flex; justify-content: space-between; align-items: baseline; padding-top: 12px; border-top: 1px solid var(--line); }
+  .co__total strong { font-family: var(--display); font-weight: 400; font-size: 32px; }
+
+  .done[hidden] { display: none; }
+  .done__box { display: grid; gap: 18px; justify-items: start; padding: 28px 18px; background: var(--panel); border: 1px solid var(--line); max-width: 760px; }
+  .done__ctas { display: grid; gap: 8px; width: 100%; }
+  .done__ctas .btn { white-space: normal; }
+
+  /* the order as a wine label */
+  .pass { position: relative; width: 100%; display: grid; gap: 14px; padding: 26px 22px 22px; color: var(--ink); background: radial-gradient(120% 90% at 30% 20%, #f8f2e8, var(--paper) 60%, var(--paper-2)); }
+  .pass::before { content: ""; position: absolute; inset: 7px; border: 1px solid rgba(28, 21, 18, 0.3); pointer-events: none; }
+  .pass::after { content: ""; position: absolute; inset: 11px; border: 1px solid rgba(28, 21, 18, 0.12); pointer-events: none; }
+  .pass :global(.pass__head) { display: flex; justify-content: space-between; gap: 10px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; }
+  .pass :global(.pass__brand) { color: #7d1a2c; }
+  .pass :global(.pass__k) { color: #6d5f53; }
+  .pass :global(.pass__oid) { font-family: var(--display); font-size: clamp(36px, 10vw, 56px); line-height: 1; }
+  .pass :global(.pass__b) { font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; color: #7d1a2c; }
+  .pass :global(.pass__meta) { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 18px; padding: 12px 0; border-block: 1px solid rgba(28, 21, 18, 0.2); }
+  .pass :global(.pass__meta dt) { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase; color: #6d5f53; }
+  .pass :global(.pass__meta dd) { font-size: 14px; margin-top: 2px; }
+  .pass :global(.pass__list) { display: grid; gap: 10px; }
+  .pass :global(.pass__item) { display: grid; grid-template-columns: 44px 1fr auto; gap: 2px 12px; align-items: center; font-size: 13.5px; }
+  .pass :global(.pass__img) { width: 44px; height: 55px; display: block; grid-row: span 2; background: #fff; }
+  .pass :global(.pass__img img) { width: 100%; height: 100%; object-fit: contain; }
+  .pass :global(.pass__nm b) { display: block; font-family: var(--display); font-weight: 400; font-size: 20px; line-height: 1.1; }
+  .pass :global(.pass__nm small) { color: #6d5f53; font-size: 12px; }
+  .pass :global(.pass__q) { color: #6d5f53; font-size: 12px; grid-column: 2; }
+  .pass :global(.pass__p) { grid-column: 3; grid-row: 1 / span 2; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .pass :global(.pass__foot) { display: flex; justify-content: space-between; align-items: baseline; padding-top: 12px; border-top: 1px solid rgba(28, 21, 18, 0.2); font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: #6d5f53; }
+  .pass :global(.pass__foot strong) { font-family: var(--display); font-weight: 400; font-size: 32px; letter-spacing: 0; color: var(--ink); text-transform: none; }
+  .pass :global(.pass__stain) { position: absolute; right: -24px; top: 70px; width: 150px; aspect-ratio: 1; border-radius: 50%; pointer-events: none; transform: rotate(30deg); background: radial-gradient(circle, rgba(125, 22, 42, 0) 56%, rgba(125, 22, 42, 0.2) 59%, rgba(125, 22, 42, 0.06) 61.5%, rgba(125, 22, 42, 0.13) 64%, rgba(125, 22, 42, 0) 67%); -webkit-mask-image: conic-gradient(from 40deg, #000 0 62%, rgba(0, 0, 0, 0.35) 70%, #000 82%, rgba(0, 0, 0, 0.6) 100%); mask-image: conic-gradient(from 40deg, #000 0 62%, rgba(0, 0, 0, 0.35) 70%, #000 82%, rgba(0, 0, 0, 0.6) 100%); }
+  .pass { overflow: hidden; }
+  .pass__save { width: 100%; }
+
+  @media (min-width: 1000px) {
+    .co { grid-template-columns: 1fr 420px; gap: 64px; align-items: start; }
+    .co__sum { order: 0; position: sticky; top: calc(var(--hdr) + 24px); padding: 26px; }
+    .co__sumhead { pointer-events: none; }
+    .co__chev, .co__mini { display: none; }
+    .done__box { padding: 48px; }
+    .done__ctas { display: flex; width: auto; }
+    .pass { padding: 34px 32px 28px; }
+    .pass__save { width: auto; }
+  }
+</style>

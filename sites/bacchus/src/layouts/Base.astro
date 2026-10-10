@@ -1,0 +1,149 @@
+---
+import "@fontsource/oranienbaum/400.css";
+import "@fontsource-variable/golos-text";
+import "@fontsource/ibm-plex-mono/400.css";
+import "@fontsource/ibm-plex-mono/500.css";
+import "../styles/global.css";
+import Icon from "../components/Icon.astro";
+import { url, contacts, categories, cartIndex, BASE, img } from "../lib/site";
+
+interface Props { title?: string; description?: string; nav?: string }
+const {
+  title = "Подвалы Бахуса — винные шкафы и погреба под ключ",
+  description = "Винные шкафы LaSommeliere, Climadiff, Avintage, Vinosafe: от 6 до 315 бутылок, одна, две и три температурные зоны. Винные погреба под ключ с 2004 года: проект, климатическое оборудование, стеллажи, монтаж и сервис.",
+  nav = "",
+} = Astro.props;
+const year = new Date().getFullYear();
+const links = [
+  ["catalog", "Каталог", url("catalog/")],
+  ["shkafy", "Винные шкафы", url("catalog/shkafy/")],
+  ["podbor", "Подбор шкафа", url("podbor/")],
+  ["pogreb", "Погреб под ключ", url("pogreb/")],
+  ["climate", "Климат", url("catalog/klimat/")],
+];
+---
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0b0908" />
+    <link rel="icon" type="image/svg+xml" href={`${BASE}/favicon.svg`} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(img("hero", 1344), Astro.site).href} />
+    <script is:inline>document.documentElement.classList.add("js");</script>
+    <slot name="head" />
+  </head>
+  <body>
+    <header class="hdr">
+      <div class="wrap hdr__in">
+        <a href={url()} class="logo" aria-label="Подвалы Бахуса — на главную">
+          <!-- a bottle seen end-on in a rack: glass ring, the punt, a drop of wine -->
+          <svg class="logo__mark" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11.25" fill="none" stroke="currentColor" stroke-opacity=".35" stroke-width="1" /><circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" stroke-opacity=".6" stroke-width="1" /><circle cx="12" cy="12" r="3.4" fill="#9e1f36" /></svg>
+          <span class="logo__word">Подвалы Бахуса</span>
+          <span class="logo__sub">с 2004</span>
+        </a>
+        <nav class="nav" aria-label="Основное меню">
+          {links.map(([id, label, href]) => <a href={href} aria-current={nav === id ? "page" : undefined}>{label}</a>)}
+        </nav>
+        <a href={contacts.phoneHref} class="hdr__btn" aria-label="Позвонить"><Icon name="phone" /></a>
+        <a href={url("cart/")} class="hdr__btn" data-open-cart aria-label="Корзина">
+          <Icon name="cart" />
+          <span class="cart-count" data-cart-count>0</span>
+        </a>
+        <button class="hdr__btn burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="menu"><span></span><span></span></button>
+      </div>
+      <div class="rack" aria-hidden="true">{Array.from({ length: 16 }, () => <i></i>)}</div>
+    </header>
+
+    <div class="menu" id="menu" aria-hidden="true">
+      <nav class="menu__nav" aria-label="Меню">
+        {links.map(([, label, href], i) => <a href={href} style={`--i:${i}`}>{label}<span class="tag">A{i + 1}</span></a>)}
+        <a href={url("cart/")} style={`--i:${links.length}`}>Корзина<span class="tag" data-cart-count-text>0</span></a>
+      </nav>
+      <div class="menu__foot">
+        <a href={contacts.phoneHref} class="menu__phone">{contacts.phone}</a>
+        <p class="tag">{contacts.hours} · {contacts.city}, {contacts.address}</p>
+      </div>
+    </div>
+
+    <slot />
+
+    <footer class="ftr" style={`--brick:url(${img("brick", 1600)})`}>
+      <div class="wrap">
+        <div class="ftr__grid">
+          <div class="ftr__col">
+            <p class="tag tag--wine">Подвалы Бахуса</p>
+            <p class="ftr__big">Винные шкафы и погреба под ключ с 2004 года</p>
+          </div>
+          <div class="ftr__col">
+            <p class="tag">Каталог</p>
+            {categories.map((c) => <a href={url(`catalog/${c.id}/`)}>{c.title}</a>)}
+          </div>
+          <div class="ftr__col">
+            <p class="tag">Клиентам</p>
+            <a href={url("podbor/")}>Подбор винного шкафа</a>
+            <a href={url("pogreb/")}>Винный погреб под ключ</a>
+            <a href={url("pogreb/#projects")}>Проекты</a>
+            <a href={url("cart/")}>Корзина</a>
+          </div>
+          <div class="ftr__col">
+            <p class="tag">Связь</p>
+            <a href={contacts.phoneHref}>{contacts.phone}</a>
+            <a href={contacts.phone2Href}>{contacts.phone2}</a>
+            <span>{contacts.hours}</span>
+            <span>{contacts.city}, {contacts.address}</span>
+          </div>
+        </div>
+        <div class="ftr__base">
+          <p class="tag">© 2004–{year} ООО «Бест Климат Системс»</p>
+          <p class="tag">Москва · доставка по России</p>
+        </div>
+      </div>
+    </footer>
+
+    <div class="scrim" data-close-cart></div>
+    <aside class="drawer" aria-label="Корзина" aria-hidden="true">
+      <div class="drawer__head">
+        <p class="tag">Корзина · <span data-cart-count-text>0</span> <span data-cart-bottles style="color:var(--straw)"></span></p>
+        <button class="close" type="button" data-close-cart aria-label="Закрыть"><Icon name="close" /></button>
+      </div>
+      <div class="drawer__list" data-cart-list></div>
+      <div class="drawer__foot">
+        <div class="drawer__sum"><span class="tag">Итого</span><strong data-cart-total>0 ₽</strong></div>
+        <a class="btn btn--block" href={url("checkout/")}>Оформить заказ <Icon name="arrow" class="btn__ar" /></a>
+        <a class="ulink drawer__all" href={url("cart/")}>Перейти в корзину</a>
+      </div>
+    </aside>
+
+    <div class="note" role="status" aria-live="polite">
+      <span class="note__mk" aria-hidden="true">“</span>
+      <div>
+        <p class="note__h">Заметка сомелье</p>
+        <p class="note__q"></p>
+        <p class="note__t"></p>
+      </div>
+    </div>
+    <div class="cc" role="status" aria-live="polite">
+      <span class="cc__img paper"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" alt="" /></span>
+      <div class="cc__body">
+        <p class="tag cc__t">Добавлено в корзину</p>
+        <p class="cc__n"></p>
+        <p class="cc__b"></p>
+      </div>
+      <div class="cc__act">
+        <a class="cc__go" href={url("checkout/")}>Оформить</a>
+        <button type="button" class="cc__x" aria-label="Скрыть">✕</button>
+      </div>
+    </div>
+
+    <script is:inline type="application/json" id="cart-index" set:html={JSON.stringify({ base: BASE, items: cartIndex })} />
+    <script>
+      import "../scripts/app.ts";
+    </script>
+  </body>
+</html>

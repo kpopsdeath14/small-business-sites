@@ -1,0 +1,109 @@
+---
+/**
+ * «Спуск в погреб»: a pinned chapter. Scrolling takes you from the living room through the hatch,
+ * down the stairs and into the cellar — depth, temperature and humidity read out as you go.
+ * Photos are the client's own projects (Иваньковское шоссе, Барвиха).
+ */
+import { img } from "../lib/site";
+
+const frames = [
+  ["hatch", 970, "Люк в полу гостиной ведёт в погреб"],
+  ["stairs", 970, "Лестница в погреб"],
+  ["barvikha-a", 1100, "Погреб: стеллажи из массива"],
+];
+const stages = [
+  ["Гостиная", "Наверху вино стареет быстрее, чем должно: тепло, сухо и светло."],
+  ["Лестница", "Каждый метр вниз — прохладнее. Земля держит температуру ровной круглый год."],
+  ["Погреб", "Остальное доводит климатическая система: 12 °C и 70 % влажности, в тишине и темноте."],
+];
+---
+<section class="dsc" data-dsc>
+  <div class="dsc__pin">
+    <div class="wrap dsc__hud">
+      <div class="sh__top"><span class="tag">[A3]</span><span class="tag">Спуск</span></div>
+      <h2 class="d2 dsc__t">Спуститесь <b>в погреб</b></h2>
+      <div class="dsc__view">
+        {frames.map(([n, w, alt], i) => (
+          <img class:list={["dsc__img", { on: i === 0 }]} data-f src={img(n as string, w as number)} srcset={`${img(n as string, 600)} 600w, ${img(n as string, w as number)} ${w}w`} sizes="(min-width: 1000px) 58vw, 100vw" alt={alt as string} loading="lazy" decoding="async" />
+        ))}
+        <span class="dsc__shade" aria-hidden="true"></span>
+      </div>
+      <dl class="dsc__read">
+        <div><dt class="tag">Глубина</dt><dd class="num"><span data-d>0,0</span><small> м</small></dd></div>
+        <div><dt class="tag">Воздух</dt><dd class="num"><span data-t>22,0</span><small> °C</small></dd></div>
+        <div><dt class="tag">Влажность</dt><dd class="num"><span data-h>40</span><small> %</small></dd></div>
+      </dl>
+      <ol class="dsc__st">
+        {stages.map(([t, d], i) => <li class:list={{ on: i === 0 }} data-s><p class="dsc__k">{t}</p><p class="dsc__p">{d}</p></li>)}
+      </ol>
+      <div class="dsc__bar" aria-hidden="true"><i data-bar></i></div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const sec = document.querySelector<HTMLElement>("[data-dsc]")!;
+  const fr = [...sec.querySelectorAll<HTMLElement>("[data-f]")];
+  const st = [...sec.querySelectorAll<HTMLElement>("[data-s]")];
+  const d = sec.querySelector("[data-d]")!, t = sec.querySelector("[data-t]")!, h = sec.querySelector("[data-h]")!;
+  const bar = sec.querySelector<HTMLElement>("[data-bar]")!;
+  const fmt = (n: number) => n.toFixed(1).replace(".", ",");
+  let on = false, tick = false, cur = -1;
+  const frame = () => {
+    tick = false;
+    const r = sec.getBoundingClientRect();
+    const p = Math.min(1, Math.max(0, -r.top / (r.height - innerHeight)));
+    const k = Math.min(2, Math.floor(p * 3));
+    const local = p * 3 - k; // progress inside the current room
+    // the earth cools fast at first, then the climate unit finishes the job
+    const ease = 1 - Math.pow(1 - p, 1.6);
+    d.textContent = p < 0.02 ? "0,0" : `−${fmt(3.2 * ease)}`;
+    t.textContent = fmt(22 - 10 * ease);
+    h.textContent = String(Math.round(40 + 30 * ease));
+    bar.style.transform = `scaleX(${p})`;
+    // walking forward: each photo slowly comes closer
+    fr[k].style.transform = `scale(${1.04 + local * 0.12})`;
+    if (k !== cur) {
+      cur = k;
+      fr.forEach((f, i) => f.classList.toggle("on", i === k));
+      st.forEach((s, i) => s.classList.toggle("on", i === k));
+    }
+    sec.style.setProperty("--dark", String(0.15 + p * 0.35));
+  };
+  new IntersectionObserver(([e]) => { on = e.isIntersecting; if (on) { fr.forEach((f) => (f.loading = "eager")); frame(); } }, { rootMargin: "300px" }).observe(sec);
+  addEventListener("scroll", () => { if (on && !tick) { tick = true; requestAnimationFrame(frame); } }, { passive: true });
+</script>
+
+<style>
+  .dsc { position: relative; height: 380svh; margin-top: 100px; }
+  .dsc__pin { position: sticky; top: 0; height: 100svh; overflow: hidden; }
+  .dsc__hud { height: 100%; display: grid; grid-template-rows: auto auto auto auto 1fr auto; gap: 0; padding-top: calc(var(--hdr) + 22px); padding-bottom: 22px; }
+  .dsc__t { margin: 12px 0 0; }
+  .dsc__view { position: relative; height: min(64vw, 36svh); margin: 18px calc(-1 * var(--gut)) 0; overflow: hidden; background: #000; }
+  .dsc__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.9s var(--ease-io); will-change: transform, opacity; }
+  .dsc__img.on { opacity: 1; }
+  /* the deeper you go, the darker the edges: a cellar has no windows */
+  .dsc__shade { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 55%, rgba(11, 9, 8, 0) 40%, rgba(11, 9, 8, var(--dark, 0.2)) 75%, rgba(11, 9, 8, 0.95) 100%), linear-gradient(0deg, var(--bg) 0%, rgba(11, 9, 8, 0) 22%); }
+  .dsc__read { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 18px; border-top: 1px solid var(--line); }
+  .dsc__read div { padding: 12px 0 0; display: grid; gap: 2px; }
+  .dsc__read div + div { padding-left: 12px; border-left: 1px solid var(--line); }
+  .dsc__read dt { font-size: 9.5px; color: var(--dim); }
+  .dsc__read dd { font-size: clamp(26px, 8vw, 44px); line-height: 1; letter-spacing: -0.03em; white-space: nowrap; }
+  .dsc__read small { font-size: 0.4em; color: var(--mute); letter-spacing: 0; }
+  .dsc__read div:nth-child(2) dd { color: var(--straw); }
+  .dsc__st { display: grid; align-self: end; min-height: 104px; }
+  .dsc__st li { grid-area: 1 / 1; display: grid; gap: 4px; align-content: end; opacity: 0; transform: translateY(12px); transition: opacity 0.6s var(--ease), transform 0.8s var(--ease); }
+  .dsc__st li.on { opacity: 1; transform: none; }
+  .dsc__k { font-family: var(--display); font-size: 30px; line-height: 1; }
+  .dsc__p { color: var(--mute); font-size: 14px; max-width: 30em; }
+  .dsc__bar { height: 1px; margin-top: 16px; background: var(--line); }
+  .dsc__bar i { display: block; height: 100%; background: var(--wine-2); transform-origin: left; transform: scaleX(0); }
+  @media (min-width: 1000px) {
+    .dsc { height: 360vh; margin-top: 150px; }
+    .dsc__hud { grid-template-columns: minmax(0, 480px); grid-template-rows: auto auto 1fr auto auto auto; padding-top: calc(var(--hdr) + 60px); padding-bottom: 60px; }
+    .dsc__view { position: absolute; inset: 0 0 0 40%; height: auto; margin: 0; }
+    .dsc__shade { background: radial-gradient(ellipse at 60% 50%, rgba(11, 9, 8, 0) 35%, rgba(11, 9, 8, var(--dark, 0.2)) 70%, rgba(11, 9, 8, 0.9) 100%), linear-gradient(90deg, var(--bg) 0%, rgba(11, 9, 8, 0) 30%); }
+    .dsc__read { grid-row: 4; }
+    .dsc__st { grid-row: 3; align-self: end; margin-bottom: 30px; }
+  }
+</style>

@@ -1,0 +1,320 @@
+---
+import Base from "../../layouts/Base.astro";
+import ProductCard from "../../components/ProductCard.astro";
+import Icon from "../../components/Icon.astro";
+import BackLabel from "../../components/BackLabel.astro";
+import RackView from "../../components/RackView.astro";
+import Fit from "../../components/Fit.astro";
+import { products, bySlug, url, pimg, rub, catTitle, contacts, plural } from "../../lib/site";
+
+export function getStaticPaths() {
+  return products.map((p) => ({ params: { slug: p.slug } }));
+}
+const p = bySlug(Astro.params.slug!);
+const cabinet = p.cat === "shkafy";
+// similar first: same category, closest capacity (or price), then the rest of the cellar
+const near = (x: typeof p) => (p.cap && x.cap ? Math.abs(x.cap - p.cap) : Math.abs(x.price - p.price) / 1000);
+const related = products.filter((x) => x.cat === p.cat && x.slug !== p.slug).sort((a, b) => near(a) - near(b)).slice(0, 8);
+const cm = p.climate.match(/(\d+)\D+?(\d+)/);
+const climRange = cm ? `${cm[1]}–${cm[2]}` : "";
+const facts = [
+  p.cap ? [`${p.cap}`, plural(p.cap, "бутылка", "бутылки", "бутылок")] : null,
+  p.zones ? [`${p.zones}`, plural(p.zones, "зона", "зоны", "зон")] : null,
+  p.ranges.length ? [p.ranges.join(" / "), "°C"] : climRange ? [climRange, "°C"] : null,
+  p.vol ? [`до ${p.vol}`, "м³ погреба"] : null,
+  p.watts ? [`${p.watts}`, "Вт холода"] : null,
+  p.noise ? [`${p.noise}`, "дБ"] : null,
+].filter(Boolean).slice(0, 3) as [string, string][];
+const desc = `${p.brand} ${p.name} — ${(p.kind || catTitle(p.cat)).toLowerCase()}${p.cap ? ` на ${p.cap} бутылок` : ""}. Цена ${rub(p.price)}. Доставка, установка и сервис от «Подвалов Бахуса».`;
+---
+<Base title={`${p.brand} ${p.name} — ${p.kind || catTitle(p.cat)} · Подвалы Бахуса`} description={desc} nav={p.cat === "shkafy" ? "shkafy" : p.cat === "klimat" ? "climate" : "catalog"}>
+  <main class="pp">
+    <div class="wrap pp__crumbs">
+      <nav class="crumbs tag" aria-label="Навигация">
+        <a href={url()}>Главная</a><span>/</span><a href={url("catalog/")}>Каталог</a><span>/</span><a href={url(`catalog/${p.cat}/`)}>{catTitle(p.cat)}</a>
+      </nav>
+    </div>
+
+    <div class="wrap pp__grid">
+      <!-- gallery -->
+      <section class="gal" aria-label="Фотографии">
+        <span class="loupe" data-loupe aria-hidden="true"></span>
+        <div class="gal__track paper" data-track>
+          {p.img.map((id, i) => (
+            <figure class="gal__slide"><img src={pimg(id, 960)} srcset={`${pimg(id)} 480w, ${pimg(id, 960)} 960w`} sizes="(min-width: 1000px) 50vw, 100vw" alt={`${p.brand} ${p.name}, фото ${i + 1}`} loading={i === 0 ? "eager" : "lazy"} decoding="async" /></figure>
+          ))}
+        </div>
+        <p class="gal__count tag num" data-count>01 / {String(p.img.length).padStart(2, "0")}</p>
+        <div class="gal__dots" data-dots aria-hidden="true">{p.img.map((_, i) => <i class:list={{ on: i === 0 }}></i>)}</div>
+        {p.img.length > 1 && (
+          <div class="gal__thumbs" data-thumbs>
+            {p.img.map((id, i) => <button type="button" class:list={["paper", { on: i === 0 }]} data-i={i} aria-label={`Фото ${i + 1}`}><img src={pimg(id)} alt="" loading="lazy" /></button>)}
+          </div>
+        )}
+      </section>
+
+      <!-- buy box -->
+      <section class="buy">
+        <p class="tag buy__brand">{p.brand}</p>
+        <h1 class="d2 buy__t">{p.name}</h1>
+        {p.kind && <p class="buy__sub">{p.kind}{p.install && ` · ${p.install.toLowerCase()}`}</p>}
+
+        {facts.length > 0 && (
+          <dl class="buy__facts">{facts.map(([v, l]) => <div><dt class="num">{v}</dt><dd class="tag">{l}</dd></div>)}</dl>
+        )}
+
+        <div class="buy__price-row">
+          <p class="buy__price" data-price>{rub(p.price)}</p>
+          <span class="tag buy__note">Цена дистрибьютора</span>
+        </div>
+
+        <div class="buy__act" data-buybox>
+          <div class="qty" role="group" aria-label="Количество">
+            <button type="button" data-q="-1" aria-label="Меньше">−</button><output data-qv></output><button type="button" data-q="1" aria-label="Больше">+</button>
+          </div>
+          <button class="btn buy__add" type="button" data-add={p.id}>В корзину <Icon name="cart" class="btn__ar" /></button>
+        </div>
+        <a class="btn btn--ghost btn--block" href={contacts.phoneHref}>Консультация сомелье · {contacts.phone} <Icon name="phone" class="btn__ar" /></a>
+
+        <ul class="perks">
+          <li><span class="tag">Доставка</span><span>По Москве и в любой регион России</span></li>
+          <li><span class="tag">Сервис</span><span>Установка, обслуживание и ремонт — своя сервисная служба</span></li>
+          {cabinet && <li><span class="tag">Аренда</span><span>Винный шкаф можно взять в аренду — для ресторана или события</span></li>}
+          {p.cat === "klimat" && <li><span class="tag">Проект</span><span>Подберём систему по объёму и утеплению погреба — <a href={url("pogreb/")}>расчёт погреба</a></span></li>}
+        </ul>
+        {(cabinet || p.cat === "sigary") && <BackLabel p={p} />}
+      </section>
+    </div>
+
+    {cabinet && p.cap && (
+      <section class="wrap blk">
+        <div class="sh">
+          <div class="sh__top"><span class="tag">[◎]</span><span class="tag">Вместимость</span></div>
+          <div class="sh__row">
+            <h2 class="d2" data-in>{p.cap} {plural(p.cap, "бутылка", "бутылки", "бутылок")} <b>в масштабе</b></h2>
+            <p class="lead" data-in>Шкаф в разрезе: каждая точка — бутылка 0,75 л, уложенная на полку донышком к вам. Цвет — температурная зона.</p>
+          </div>
+        </div>
+        <RackView p={p} />
+      </section>
+    )}
+
+    {p.dims && (cabinet || p.cat === "sigary" || p.cat === "dispensery") && (
+      <section class="wrap blk">
+        <div class="sh">
+          <div class="sh__top"><span class="tag">[▭]</span><span class="tag">Габариты</span></div>
+          <div class="sh__row">
+            <h2 class="d2" data-in>Встанет <b>на своё место?</b></h2>
+            <p class="lead" data-in>Сравните с нишей или местом у стены. {p.noise ? "И проверьте, насколько он тихий." : ""}</p>
+          </div>
+        </div>
+        <Fit p={p} />
+      </section>
+    )}
+
+    {(p.desc.length > 0 || p.specs.length > 0) && (
+      <section class="wrap info">
+        {p.desc.length > 0 && (
+          <div class="info__desc">
+            <div class="sh__top"><span class="tag">[i]</span><span class="tag">О модели</span></div>
+            {p.desc.map((d, i) => <p class:list={[{ "info__first": i === 0 }]} data-in>{d}</p>)}
+          </div>
+        )}
+        {p.specs.length > 0 && (
+          <div>
+            <div class="sh__top"><span class="tag">[≡]</span><span class="tag">Характеристики</span></div>
+            <div class="acc">
+              {p.specs.map((g, i) => (
+                <details open={i === 0}>
+                  <summary>{g.g}<i></i></summary>
+                  <dl class="spec">{g.rows.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
+                </details>
+              ))}
+            </div>
+          </div>
+        )}
+      </section>
+    )}
+
+    {related.length > 0 && (
+      <section class="rel">
+        <div class="wrap">
+          <div class="sh">
+            <div class="sh__top"><span class="tag">[+]</span><span class="tag">Рядом в каталоге</span></div>
+            <h2 class="d2" data-in>Похожие <b>модели</b></h2>
+          </div>
+        </div>
+        <div class="rail">{related.map((x, i) => <ProductCard p={x} d={Math.min(i, 3) * 0.06} />)}</div>
+      </section>
+    )}
+
+    <!-- mobile sticky buy bar -->
+    <div class="sbar" data-sbar>
+      <div>
+        <p class="sbar__n">{p.brand} {p.name}</p>
+        <p class="sbar__p">{rub(p.price)}</p>
+      </div>
+      <button class="btn" type="button" data-add={p.id}>В корзину</button>
+    </div>
+  </main>
+</Base>
+
+<script>
+  import { cart, gear } from "../../scripts/cart";
+  const $ = <T extends Element = HTMLElement>(s: string) => document.querySelector<T>(s)!;
+  const $$ = <T extends Element = HTMLElement>(s: string) => [...document.querySelectorAll<T>(s)];
+
+  const track = $("[data-track]");
+  const count = $("[data-count]");
+  const n = track.children.length;
+
+  // gallery: swipe on phones, thumbnails on desktop
+  const cur = () => Math.round(track.scrollLeft / track.clientWidth);
+  const setCount = (i: number) => {
+    count.textContent = `${String(i + 1).padStart(2, "0")} / ${String(n).padStart(2, "0")}`;
+    $$(".gal__thumbs button").forEach((b, j) => b.classList.toggle("on", j === i));
+    $$("[data-dots] i").forEach((d, j) => d.classList.toggle("on", j === i));
+  };
+  track.addEventListener("scroll", () => requestAnimationFrame(() => setCount(cur())), { passive: true });
+  document.querySelector("[data-thumbs]")?.addEventListener("click", (e) => {
+    const b = (e.target as HTMLElement).closest<HTMLElement>("[data-i]");
+    if (b) track.scrollTo({ left: Number(b.dataset.i) * track.clientWidth, behavior: "smooth" });
+  });
+
+  // quantity: the stepper only exists once the item is in the cart, and it edits the cart directly
+  const qv = $("[data-qv]");
+  const act = $("[data-buybox]");
+  const id = $<HTMLElement>(".buy [data-add]").dataset.add!;
+  const inCartQ = () => cart.lines().find((l) => l.id === id)?.q;
+  $$("[data-q]").forEach((b) => b.addEventListener("click", () => {
+    const cq = inCartQ();
+    if (cq === undefined) return;
+    const nq = cq + Number(b.dataset.q);
+    if (nq < 1) cart.remove(id); else cart.set(id, Math.min(99, nq));
+  }));
+  const showQ = () => {
+    const cq = inCartQ();
+    act.classList.toggle("has-qty", cq !== undefined);
+    if (cq === undefined) return;
+    const shown = Number(qv.textContent);
+    if (cq !== shown) { qv.textContent = String(cq); if (shown) gear(qv, cq > shown ? 1 : -1); }
+  };
+  document.addEventListener("cart:sync", showQ);
+  showQ();
+
+  // loupe (mouse only): a magnified circle of the 960px photo follows the cursor
+  const loupe = $("[data-loupe]");
+  if (matchMedia("(hover: hover) and (pointer: fine)").matches) {
+    const Z = 2.2;
+    let raf = 0;
+    track.addEventListener("pointermove", (e) => {
+      const im = (e.target as HTMLElement).closest(".gal__slide")?.querySelector("img");
+      if (!im) return;
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const r = im.getBoundingClientRect(), g = track.getBoundingClientRect();
+        const x = e.clientX - r.left, y = e.clientY - r.top;
+        const src = (im.currentSrc || im.src).replace("-480.webp", "-960.webp");
+        if (loupe.dataset.src !== src) { loupe.style.backgroundImage = `url("${src}")`; loupe.dataset.src = src; }
+        loupe.style.backgroundSize = `${r.width * Z}px ${r.height * Z}px`;
+        loupe.style.backgroundPosition = `${-(x * Z - 90)}px ${-(y * Z - 90)}px`;
+        loupe.style.transform = `translate3d(${e.clientX - g.left - 90}px, ${e.clientY - g.top - 90}px, 0)`;
+        loupe.classList.add("on");
+      });
+    });
+    track.addEventListener("pointerleave", () => { cancelAnimationFrame(raf); loupe.classList.remove("on"); });
+  }
+
+  // sticky bar appears when the main buy box scrolls away (phones)
+  const sbar = $("[data-sbar]");
+  new IntersectionObserver(([e]) => {
+    const on = !e.isIntersecting && e.boundingClientRect.top < 0;
+    sbar.classList.toggle("on", on);
+    document.body.classList.toggle("has-sbar", on && innerWidth < 1000);
+  }).observe(act);
+</script>
+
+<style>
+  .pp { padding-top: calc(var(--hdr) + 14px); }
+  .pp__crumbs { padding-top: 6px; }
+  .pp__crumbs .crumbs { margin-bottom: 14px; }
+  .pp__grid { display: grid; gap: 26px; }
+
+  .gal { position: relative; margin: 0 calc(var(--gut) * -1); }
+  .gal__track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; aspect-ratio: 4 / 4.4; -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y; overscroll-behavior-x: contain; }
+  .gal__track::-webkit-scrollbar { display: none; }
+  .gal :global(.gal__slide) { flex: 0 0 100%; scroll-snap-align: center; display: grid; place-items: center; }
+  .gal :global(.gal__slide img) { width: 100%; height: 100%; object-fit: contain; }
+  .gal__count { position: absolute; left: var(--gut); bottom: 14px; color: #6d5f53; pointer-events: none; }
+  .gal__dots { position: absolute; right: var(--gut); bottom: 18px; display: flex; gap: 5px; pointer-events: none; }
+  .gal__dots :global(i) { width: 14px; height: 2px; background: rgba(28, 21, 18, 0.2); transition: background 0.3s, width 0.4s var(--ease); }
+  .gal__dots :global(i.on) { width: 26px; background: var(--wine); }
+  .gal__thumbs { display: none; }
+  .loupe { position: absolute; left: 0; top: 0; z-index: 5; width: 180px; height: 180px; border-radius: 50%; pointer-events: none; background-color: #fff; background-repeat: no-repeat; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12), 0 18px 40px rgba(0, 0, 0, 0.35), inset 0 0 0 4px rgba(255, 255, 255, 0.9); opacity: 0; transition: opacity 0.25s; display: none; }
+  .loupe.on { opacity: 1; }
+  @media (hover: hover) and (pointer: fine) { .loupe { display: block; } .gal__track { cursor: zoom-in; } }
+
+  .buy { display: grid; gap: 14px; align-content: start; }
+  .buy__brand { color: var(--wine-2); }
+  .buy__t { font-size: clamp(40px, 11vw, 72px); overflow-wrap: anywhere; }
+  .buy__sub { color: var(--mute); font-size: 15px; margin-top: -2px; }
+  .buy__facts { display: grid; grid-template-columns: repeat(3, 1fr); border-block: 1px solid var(--line); margin-top: 4px; }
+  .buy__facts div { display: grid; gap: 2px; padding: 12px 0; }
+  .buy__facts div + div { padding-left: 12px; border-left: 1px solid var(--line); }
+  .buy__facts dt { font-size: 18px; color: var(--text); }
+  .buy__facts dd { font-size: 9.5px; color: var(--dim); }
+  .buy__price-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 8px 0 4px; }
+  .buy__price { font-family: var(--display); font-size: 40px; line-height: 1; }
+  .buy__note { color: var(--dim); }
+  .buy__act { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 4px; }
+  .buy__act .qty { display: none; height: 54px; grid-template-columns: 36px 34px 36px; }
+  .buy__act.has-qty { grid-template-columns: auto 1fr; }
+  .buy__act.has-qty .qty { display: inline-grid; animation: qtyIn 0.45s var(--ease); }
+  @keyframes qtyIn { from { opacity: 0; transform: translateX(-8px); } }
+  .buy .btn--ghost { white-space: normal; text-align: left; }
+  .perks { display: grid; border-top: 1px solid var(--line); margin-top: 6px; }
+  .perks li { display: grid; grid-template-columns: 82px 1fr; gap: 12px; padding: 13px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; color: var(--mute); }
+  .perks .tag { color: var(--dim); font-size: 9.5px; padding-top: 3px; }
+  .perks a { color: var(--text); text-decoration: underline; text-underline-offset: 3px; }
+  .buy :global(.bl) { margin-top: 12px; }
+
+  .blk { margin-top: 88px; }
+  .info { display: grid; gap: 48px; margin-top: 80px; }
+  .info .sh__top { margin-bottom: 14px; }
+  .info__desc { display: grid; gap: 14px; align-content: start; }
+  .info__desc p { color: var(--mute); font-size: 15px; line-height: 1.7; }
+  .info__desc .info__first { font-family: var(--display); font-size: 26px; line-height: 1.25; color: var(--text); }
+  .spec { display: grid; padding-bottom: 14px; }
+  .spec div { display: flex; justify-content: space-between; gap: 16px; padding: 9px 0; border-bottom: 1px dashed var(--line); font-size: 14px; }
+  .spec div:last-child { border-bottom: 0; }
+  .spec dt { color: var(--mute); }
+  .spec dd { text-align: right; }
+  .rel { margin-top: 96px; }
+
+  .sbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 90; display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 10px var(--gut) calc(10px + env(safe-area-inset-bottom)); background: rgba(17, 13, 12, 0.9); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border-top: 1px solid var(--line); transform: translateY(105%); transition: transform 0.6s var(--ease); }
+  .sbar.on { transform: none; }
+  .sbar > div { min-width: 0; }
+  .sbar__n { font-size: 12px; color: var(--mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sbar__p { font-weight: 600; font-variant-numeric: tabular-nums; }
+  .sbar .btn { min-height: 46px; flex: none; }
+  .sbar .btn :global(.btn__go) { display: none; }
+
+  @media (min-width: 1000px) {
+    .pp { padding-top: calc(var(--hdr) + 28px); }
+    .pp__grid { grid-template-columns: 1.15fr 1fr; gap: 72px; align-items: start; }
+    .gal { margin: 0; position: sticky; top: calc(var(--hdr) + 24px); }
+    .gal__track { aspect-ratio: 4 / 4.2; }
+    .gal__count { left: 20px; bottom: 18px; }
+    .gal__dots { display: none; }
+    .gal__thumbs { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-top: 8px; }
+    .gal__thumbs :global(button) { aspect-ratio: 4 / 5; opacity: 0.55; transition: opacity 0.3s; outline: 1px solid transparent; outline-offset: -1px; }
+    .gal__thumbs :global(button.on), .gal__thumbs :global(button:hover) { opacity: 1; }
+    .gal__thumbs :global(button.on) { outline-color: var(--wine); }
+    .gal__thumbs :global(img) { width: 100%; height: 100%; object-fit: contain; }
+    .buy { padding-top: 8px; }
+    .blk { margin-top: 140px; }
+    .info { grid-template-columns: 1fr 1fr; gap: 80px; margin-top: 130px; align-items: start; }
+    .rel { margin-top: 140px; }
+    .sbar { display: none; }
+  }
+</style>

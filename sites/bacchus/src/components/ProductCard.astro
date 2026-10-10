@@ -1,0 +1,27 @@
+---
+import type { Product } from "../lib/site";
+import { pimg, url, rub, catTitle } from "../lib/site";
+import Icon from "./Icon.astro";
+
+interface Props { p: Product; d?: number; eager?: boolean }
+const { p, d = 0, eager = false } = Astro.props;
+const ZONE = ["z-white", "z-red", "z-cool"];
+---
+<article class="card" data-in style={`--d:${d}s`} data-price={p.price} data-cap={p.cap ?? ""} data-zones={p.zones ?? ""} data-install={p.install}>
+  <div class="card__media paper">
+    <img src={pimg(p.img[0])} srcset={`${pimg(p.img[0])} 480w, ${pimg(p.img[0], 960)} 960w`} sizes="(min-width: 1000px) 24vw, (min-width: 640px) 32vw, 48vw" alt={p.name} loading={eager ? "eager" : "lazy"} decoding="async" />
+    {p.cap && <span class="card__cap"><b>{p.cap}</b> бут.</span>}
+    {p.zones && p.zones > 1 && (
+      <span class="card__zones" aria-label={`${p.zones} температурные зоны`}>{Array.from({ length: p.zones }, (_, i) => <i class={ZONE[i]}></i>)}</span>
+    )}
+  </div>
+  <div class="card__body">
+    <p class="card__cat tag">{p.brand || catTitle(p.cat)}</p>
+    <h3 class="card__name"><a class="card__link" href={url(`product/${p.slug}/`)}>{p.name}</a></h3>
+    <p class="card__sub">{p.kind}</p>
+    <div class="card__foot">
+      <p class="card__price">{rub(p.price)}{p.old && <s>{rub(p.old)}</s>}</p>
+      <button class="card__plus" type="button" data-add={p.id} aria-label={`Добавить «${p.name}» в корзину`}><Icon name="plus" /></button>
+    </div>
+  </div>
+</article>

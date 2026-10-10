@@ -1,0 +1,97 @@
+---
+/**
+ * The cabinet drawn with its real number of bottles, seen end-on as they lie on the shelves.
+ * Columns follow the real width (a 0,75 l bottle is ~7,5 cm across); zones are coloured.
+ * When it scrolls into view, the bottles are laid in from the bottom shelf up.
+ */
+import type { Product } from "../lib/site";
+import { plural } from "../lib/site";
+
+interface Props { p: Product }
+const { p } = Astro.props;
+const cap = p.cap!;
+const w = p.dims?.w ?? 60;
+const cols = Math.max(4, Math.min(12, Math.round(w / 7.5)));
+const rows = Math.ceil(cap / cols);
+const zones = Math.max(1, Math.min(3, p.zones ?? 1));
+const ranges = p.ranges.length === zones ? p.ranges : Array(zones).fill("");
+// rows per zone: an even split (the real partition differs by model)
+const zoneOf = (r: number) => Math.min(zones - 1, Math.floor((r / rows) * zones));
+const ZC = zones === 1 ? ["red"] : zones === 2 ? ["white", "red"] : ["white", "cool", "red"];
+const WINES = [
+  ["игристое", 6, 8], ["белое", 8, 12], ["розовое", 8, 12], ["лёгкое красное", 12, 14], ["полнотелое красное", 16, 18],
+] as const;
+const suits = (r: string) => {
+  const [lo, hi] = r.split("–").map(Number);
+  if (!lo && !hi) return "";
+  const list = WINES.filter(([, a, b]) => a <= hi && b >= lo).map(([n]) => n);
+  const store = lo <= 14 && hi >= 10;
+  return `${store ? "хранение · " : ""}${list.length ? `подача: ${list.join(", ")}` : "долгое хранение"}`;
+};
+const cells = Array.from({ length: rows * cols }, (_, i) => {
+  const r = Math.floor(i / cols);
+  return { r, z: zoneOf(r), on: i < cap };
+});
+---
+<figure class="rv" data-rv style={`--cols:${cols};--rows:${rows}`}>
+  <div class="rv__cab">
+    <div class="rv__grid" aria-hidden="true">
+      {cells.map((c) => <i class:list={[`z${c.z}`, ZC[c.z], { off: !c.on }]} style={`--r:${rows - 1 - c.r}`}></i>)}
+    </div>
+  </div>
+  <figcaption class="rv__cap">
+    <p class="rv__n"><span class="num" data-rv-n>0</span><small> бутылок 0,75 л</small></p>
+    <ul class="rv__z">
+      {ranges.map((r, i) => (
+        <li><i class={ZC[i]}></i><span class="tag">{zones > 1 ? `Зона ${i + 1}` : "Камера"}{r && ` · ${r} °C`}</span><span>{suits(r)}</span></li>
+      ))}
+    </ul>
+    <p class="tag rv__note">{cols} в ряд · {rows} {plural(rows, "ряд", "ряда", "рядов")}{zones > 1 ? " · деление на зоны условное" : ""}</p>
+  </figcaption>
+</figure>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-rv]").forEach((el) => {
+    const n = el.querySelector("[data-rv-n]")!;
+    const total = el.querySelectorAll(".rv__grid i:not(.off)").length;
+    new IntersectionObserver(([e], o) => {
+      if (!e.isIntersecting) return;
+      o.disconnect();
+      el.classList.add("in");
+      const t0 = performance.now(), dur = 1200;
+      const run = (t: number) => { const k = Math.min(1, (t - t0) / dur); n.textContent = String(Math.round(total * k)); if (k < 1) requestAnimationFrame(run); };
+      requestAnimationFrame(run);
+    }, { threshold: 0.25 }).observe(el);
+  });
+</script>
+
+<style>
+  .rv { display: grid; gap: 26px; }
+  .rv__cab { justify-self: center; width: min(100%, calc(var(--cols) * 24px + 28px)); padding: 14px; background: linear-gradient(180deg, #151110, #0e0b0a); border: 1px solid var(--line-2); box-shadow: inset 0 0 0 4px #0e0b0a, inset 0 0 0 5px var(--line), 0 30px 60px -30px rgba(0, 0, 0, 0.9); }
+  .rv__grid { display: grid; grid-template-columns: repeat(var(--cols), 1fr); gap: 3px; }
+  .rv__grid i { aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, #1a0b0e 0 28%, var(--c) 30% 58%, color-mix(in srgb, var(--c) 55%, #000) 62% 100%); opacity: 0; transform: scale(0.4); }
+  .rv__grid i.off { visibility: hidden; }
+  .rv__grid .red { --c: #8f1d33; }
+  .rv__grid .white { --c: #c9a957; }
+  .rv__grid .cool { --c: #6f8ea2; }
+  /* bottles are laid from the bottom shelf up */
+  .rv:global(.in) .rv__grid i { animation: lay 0.5s var(--ease) both; animation-delay: calc(var(--r) * 45ms); }
+  @keyframes lay { from { opacity: 0; transform: translateY(-6px) scale(0.4); } to { opacity: 1; transform: none; } }
+  .rv__cap { display: grid; gap: 14px; }
+  .rv__n { font-family: var(--display); font-size: 64px; line-height: 0.9; }
+  .rv__n .num { font-family: var(--display); }
+  .rv__n small { font-family: var(--sans); font-size: 14px; color: var(--mute); }
+  .rv__z { display: grid; border-top: 1px solid var(--line); }
+  .rv__z li { display: grid; grid-template-columns: 10px 1fr; gap: 4px 12px; padding: 11px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; color: var(--mute); }
+  .rv__z li i { grid-row: span 2; width: 9px; height: 9px; margin-top: 4px; border-radius: 50%; }
+  .rv__z .red { background: #8f1d33; }
+  .rv__z .white { background: #c9a957; }
+  .rv__z .cool { background: #6f8ea2; }
+  .rv__z .tag { color: var(--text); }
+  .rv__note { color: var(--dim); }
+  @media (prefers-reduced-motion: reduce) { .rv__grid i { opacity: 1; transform: none; } }
+  @media (min-width: 1000px) {
+    .rv { grid-template-columns: auto 1fr; gap: 64px; align-items: center; }
+    .rv__cab { width: calc(var(--cols) * 26px + 28px); }
+  }
+</style>

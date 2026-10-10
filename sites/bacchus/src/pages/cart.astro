@@ -1,0 +1,89 @@
+---
+import Base from "../layouts/Base.astro";
+import Icon from "../components/Icon.astro";
+import { url } from "../lib/site";
+---
+<Base title="Корзина — Подвалы Бахуса" nav="cart">
+  <main>
+    <section class="ph">
+      <div class="wrap">
+        <nav class="crumbs tag" aria-label="Навигация"><a href={url()}>Главная</a><span>/</span><span>Корзина</span></nav>
+        <h1 class="d1" data-in>Корзина</h1>
+      </div>
+    </section>
+    <section class="wrap cartp">
+      <div class="cartp__list" data-list></div>
+      <aside class="sum filet" data-sum>
+        <p class="tag">Ваш заказ</p>
+        <div class="sum__cellar" data-cellar hidden>
+          <p class="sum__b"><span class="num" data-b>0</span><small> бутылок</small></p>
+          <p class="tag">поместится в выбранных шкафах</p>
+        </div>
+        <dl class="sum__rows">
+          <div><dt>Товары · <span data-n>0</span></dt><dd data-sub>0 ₽</dd></div>
+          <div><dt>Доставка</dt><dd>рассчитает менеджер</dd></div>
+          <div><dt>Установка</dt><dd>по запросу</dd></div>
+        </dl>
+        <div class="sum__total"><span class="tag">Итого</span><strong data-total>0 ₽</strong></div>
+        <a class="btn btn--block" href={url("checkout/")}>Оформить заказ <Icon name="arrow" class="btn__ar" /></a>
+        <a class="ulink" href={url("catalog/")}>Продолжить выбор</a>
+      </aside>
+      <div class="empty" data-empty hidden>
+        <p class="d3">Стеллаж пока пуст</p>
+        <p class="lead">Начните с винного шкафа — или расскажите о коллекции, и мы подберём его вместе.</p>
+        <div class="empty__ctas">
+          <a class="btn" href={url("catalog/shkafy/")}>Винные шкафы <Icon name="arrow" class="btn__ar" /></a>
+          <a class="btn btn--ghost" href={url("podbor/")}>Подбор шкафа <Icon name="arrow" class="btn__ar" /></a>
+        </div>
+      </div>
+    </section>
+  </main>
+</Base>
+
+<script>
+  import { cart, bindLines, renderLines, rollPrice } from "../scripts/cart";
+  const $ = <T extends Element = HTMLElement>(s: string) => document.querySelector<T>(s)!;
+  const list = $("[data-list]");
+  bindLines(list);
+  function render() {
+    const ls = cart.lines();
+    $("[data-empty]").hidden = ls.length > 0;
+    $("[data-sum]").hidden = ls.length === 0;
+    list.hidden = ls.length === 0;
+    renderLines(list);
+    $("[data-n]").textContent = String(cart.count());
+    rollPrice($("[data-sub]"), cart.total());
+    rollPrice($("[data-total]"), cart.total());
+    const b = cart.bottles();
+    $("[data-cellar]").hidden = !b;
+    $("[data-b]").textContent = String(b);
+  }
+  document.addEventListener("cart:change", render);
+  render();
+</script>
+
+<style>
+  .cartp { display: grid; gap: 28px; }
+  .cartp__list { border-top: 1px solid var(--line); }
+  .cartp__list :global(.line-item) { grid-template-columns: 96px 1fr; padding: 18px 0; }
+  .sum { display: grid; gap: 16px; padding: 22px 18px; background: var(--panel); border: 1px solid var(--line); align-self: start; }
+  .sum[hidden] { display: none; }
+  .sum__cellar { display: grid; gap: 2px; padding: 14px 0; border-top: 1px solid var(--line); }
+  .sum__b { font-family: var(--display); font-size: 52px; line-height: 1; color: var(--straw); }
+  .sum__b .num { font-family: var(--display); }
+  .sum__b small { font-family: var(--sans); font-size: 14px; color: var(--mute); }
+  .sum__rows { display: grid; border-top: 1px solid var(--line); }
+  .sum__rows div { display: flex; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+  .sum__rows dt { color: var(--mute); }
+  .sum__rows dd { font-variant-numeric: tabular-nums; text-align: right; }
+  .sum__total { display: flex; justify-content: space-between; align-items: baseline; }
+  .sum__total strong { font-family: var(--display); font-weight: 400; font-size: 34px; }
+  .sum .ulink { justify-self: center; color: var(--mute); }
+  .empty { display: grid; gap: 16px; justify-items: start; padding: 40px 0; grid-column: 1 / -1; }
+  .empty[hidden] { display: none; }
+  .empty__ctas { display: flex; flex-wrap: wrap; gap: 8px; }
+  @media (min-width: 1000px) {
+    .cartp { grid-template-columns: 1fr 400px; gap: 56px; align-items: start; }
+    .sum { position: sticky; top: calc(var(--hdr) + 24px); padding: 28px; }
+  }
+</style>
