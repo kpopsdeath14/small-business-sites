@@ -1,0 +1,11 @@
+---
+/** Chapter opener: a roman numeral (CSS counter, so chapters renumber themselves), a hairline that draws on reveal, the chapter name, then the title. */
+interface Props { k: string; tag?: "h1" | "h2" }
+const { k, tag: Tag = "h2" } = Astro.props;
+const more = Astro.slots.has("more");
+---
+<header class:list={["chap", { "chap--row": more }]} data-in>
+  <div class="chap__rule" aria-hidden="true"><span class="chap__n"></span><i></i><span class="chap__k">{k}</span></div>
+  <Tag class="h2"><slot /></Tag>
+  {more && <div class="chap__more"><slot name="more" /></div>}
+</header>

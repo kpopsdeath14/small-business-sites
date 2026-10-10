@@ -2,7 +2,8 @@
 import Base from "../../layouts/Base.astro";
 import ProductCard from "../../components/ProductCard.astro";
 import Icon from "../../components/Icon.astro";
-import { products, bySlug, url, pimg, rub, catTitle, area } from "../../lib/site";
+import Chapter from "../../components/Chapter.astro";
+import { products, bySlug, url, pimg, rub, catTitle, area, lot } from "../../lib/site";
 
 export function getStaticPaths() {
   return products.map((p) => ({ params: { slug: p.slug } }));
@@ -39,7 +40,7 @@ const desc = `${p.name}${p.sub ? ` — ${p.sub.toLowerCase()}` : ""}. Цена $
       </section>
 
       <section class="buy">
-        <p class="eyebrow">{catTitle(p.cat)}{p.country && ` · ${p.country}`}</p>
+        <p class="eyebrow"><span class="lot">{lot(p)}</span> {catTitle(p.cat)}{p.country && ` · ${p.country}`}</p>
         <h1 class="h2 buy__t">{p.name}</h1>
         {p.sub && <p class="lead buy__sub">{p.sub}</p>}
 
@@ -109,7 +110,7 @@ const desc = `${p.name}${p.sub ? ` — ${p.sub.toLowerCase()}` : ""}. Цена $
     )}
 
     <section class="rel">
-      <div class="wrap"><div class="sh"><p class="eyebrow">Коллекция</p><h2 class="h2">Вам может <em>понравиться</em></h2></div></div>
+      <div class="wrap"><Chapter k="Коллекция">Вам может <em>понравиться</em></Chapter></div>
       <div class="rail">{related.map((x, i) => <ProductCard p={x} d={Math.min(i, 3) * 0.06} />)}</div>
     </section>
 

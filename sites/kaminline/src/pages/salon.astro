@@ -1,6 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
 import Icon from "../components/Icon.astro";
+import Chapter from "../components/Chapter.astro";
 import { url, img, contacts } from "../lib/site";
 const zamer = [
   "Выезд специалиста с измерительным оборудованием",
@@ -33,8 +34,7 @@ const zamer = [
 
     <section class="wrap book" id="visit">
       <div class="book__head">
-        <p class="eyebrow" data-in>Запись</p>
-        <h2 class="h2" data-in>Визит или <em>выезд замерщика</em></h2>
+        <Chapter k="Запись">Визит или <em>выезд замерщика</em></Chapter>
         <p class="lead" data-in>Заявка уйдёт менеджеру одним сообщением — он подтвердит время.</p>
       </div>
       <form class="book__form" data-book novalidate id="zamer">
@@ -70,8 +70,7 @@ const zamer = [
         <img src={img("palace", 900)} srcset={`${img("palace", 480)} 480w, ${img("palace", 900)} 900w`} sizes="(min-width: 1000px) 34vw, 100vw" alt="Изразцовый камин в светлой гостиной" loading="lazy" />
       </div>
       <div class="zm__text">
-        <p class="eyebrow" data-in>Замер</p>
-        <h2 class="h2" data-in>Что входит <em>в замер</em></h2>
+        <Chapter k="Замер">Что входит <em>в замер</em></Chapter>
         <ol class="zm__list">
           {zamer.map((z, i) => <li data-in style={`--d:${i * 0.06}s`}><span>0{i + 1}</span>{z}</li>)}
         </ol>

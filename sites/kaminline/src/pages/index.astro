@@ -3,6 +3,7 @@ import Base from "../layouts/Base.astro";
 import ProductCard from "../components/ProductCard.astro";
 import Icon from "../components/Icon.astro";
 import Podbor from "../components/Podbor.astro";
+import Chapter from "../components/Chapter.astro";
 import { products, categories, bySlug, url, img, pimg, contacts, BRANDS, CAT_NOTE } from "../lib/site";
 
 const catCover: Record<string, string> = {};
@@ -56,13 +57,14 @@ const steps = [
         <div class="hero__count" aria-hidden="true"><span data-idx>01</span><i><b data-bar></b></i><span>03</span></div>
       </div>
       <div class="hero__text wrap">
-        <p class="eyebrow hero__k">Камины и печи под ключ</p>
+        <p class="eyebrow hero__k" data-greet>Камины и печи под ключ</p>
         <h1 class="h1 hero__t"><span class="ln"><span>Тепло, вокруг</span></span> <span class="ln"><span>которого</span></span> <span class="ln"><span><em>собирается&nbsp;дом</em></span></span></h1>
         <p class="lead hero__lead">Камины, топки и печи лучших европейских мастерских. Порталы из мрамора и камня собственного производства. Монтаж за три–пять дней.</p>
         <div class="hero__ctas">
           <a class="btn" href={url("catalog/")}>Коллекция <Icon name="arrow" /></a>
           <a class="ulink" href={url("salon/#zamer")}>Записаться на замер</a>
         </div>
+        <a class="open" href={url("salon/#visit")} data-open hidden><i></i><span></span></a>
       </div>
     </section>
 
@@ -81,13 +83,9 @@ const steps = [
     <!-- COLLECTIONS -->
     <section class="sec">
       <div class="wrap">
-        <div class="sh sh--row">
-          <div class="sh">
-            <p class="eyebrow" data-in>Коллекции</p>
-            <h2 class="h2" data-in>Выберите <em>свой огонь</em></h2>
-          </div>
-          <a class="ulink" href={url("catalog/")} data-in>Весь каталог <Icon name="arrow" /></a>
-        </div>
+        <Chapter k="Коллекции">Выберите <em>свой огонь</em>
+          <a slot="more" class="ulink" href={url("catalog/")}>Весь каталог <Icon name="arrow" /></a>
+        </Chapter>
       </div>
       <div class="rail cats">
         {categories.map((c, i) => (
@@ -113,35 +111,26 @@ const steps = [
       </div>
     </section>
 
-    <!-- PODBOR -->
-    <section class="sec sec--night night" id="podbor">
-      <div class="wrap">
-        <div class="sh">
-          <p class="eyebrow" data-in>Подбор по комнате</p>
-          <h2 class="h2" data-in>Сколько тепла <em>нужно вашему дому</em></h2>
-        </div>
-        <Podbor compact />
-      </div>
-    </section>
-
     <!-- SELECTION -->
     <section class="sec">
       <div class="wrap">
-        <div class="sh">
-          <p class="eyebrow" data-in>Избранное</p>
-          <h2 class="h2" data-in>Модели, <em>к которым возвращаются</em></h2>
-        </div>
+        <Chapter k="Избранное">Модели, к которым <em>возвращаются</em></Chapter>
       </div>
       <div class="rail">{hits.map((p, i) => <ProductCard p={p} d={Math.min(i, 3) * 0.08} />)}</div>
+    </section>
+
+    <!-- PODBOR -->
+    <section class="sec sec--night night" id="podbor">
+      <div class="wrap">
+        <Chapter k="Подбор по комнате">Сколько тепла <em>нужно вашему дому</em></Chapter>
+        <Podbor compact />
+      </div>
     </section>
 
     <!-- WORKS -->
     <section class="sec" id="works">
       <div class="wrap">
-        <div class="sh">
-          <p class="eyebrow" data-in>Проекты</p>
-          <h2 class="h2" data-in>Интерьеры, <em>в которых живёт огонь</em></h2>
-        </div>
+        <Chapter k="Проекты">Интерьеры, в которых <em>живёт огонь</em></Chapter>
       </div>
       <div class="rail works">
         {works.map(([im, t, slug, note], i) => (
@@ -154,13 +143,29 @@ const steps = [
       </div>
     </section>
 
+    <!-- PRODUCTION -->
+    <section class="sec">
+      <div class="wrap prod">
+        <div class="prod__img arch" data-kindle>
+          <img src={img("versailles", 900)} srcset={`${img("versailles", 480)} 480w, ${img("versailles", 900)} 900w`} sizes="(min-width: 1000px) 40vw, 100vw" alt="Каминный портал «Версаль» из белого мрамора" loading="lazy" decoding="async" />
+        </div>
+        <div class="prod__text">
+          <Chapter k="Мастерская">Порталы из мрамора и <em>натурального камня</em></Chapter>
+          <p class="lead" data-in>Облицовку делаем по вашему эскизу или проекту дизайнера: классика, современная геометрия, минимализм. Каждый портал рождается под конкретную топку и конкретную стену.</p>
+          <ul class="prod__list" data-in>
+            <li>3D-визуализация камина в вашем интерьере</li>
+            <li>Мрамор, гранит, оникс, искусственный камень</li>
+            <li>Особые условия для дизайнеров и архитекторов</li>
+          </ul>
+          <a class="btn btn--ghost" href={url("salon/#zamer")} data-in>Обсудить проект <Icon name="arrow" /></a>
+        </div>
+      </div>
+    </section>
+
     <!-- PROCESS -->
     <section class="sec">
       <div class="wrap">
-        <div class="sh">
-          <p class="eyebrow" data-in>Под ключ</p>
-          <h2 class="h2" data-in>От замера <em>до первого огня</em></h2>
-        </div>
+        <Chapter k="Под ключ">От замера до <em>первого огня</em></Chapter>
         <ol class="steps">
           {steps.map(([n, t, d], i) => (
             <li class="step" data-in style={`--d:${i * 0.1}s`}>
@@ -170,26 +175,6 @@ const steps = [
             </li>
           ))}
         </ol>
-      </div>
-    </section>
-
-    <!-- PRODUCTION -->
-    <section class="sec">
-      <div class="wrap prod">
-        <div class="prod__img arch" data-kindle>
-          <img src={img("versailles", 900)} srcset={`${img("versailles", 480)} 480w, ${img("versailles", 900)} 900w`} sizes="(min-width: 1000px) 40vw, 100vw" alt="Каминный портал «Версаль» из белого мрамора" loading="lazy" decoding="async" />
-        </div>
-        <div class="prod__text">
-          <p class="eyebrow" data-in>Мастерская</p>
-          <h2 class="h2" data-in>Порталы из мрамора <em>и натурального камня</em></h2>
-          <p class="lead" data-in>Облицовку делаем по вашему эскизу или проекту дизайнера: классика, современная геометрия, минимализм. Каждый портал рождается под конкретную топку и конкретную стену.</p>
-          <ul class="prod__list" data-in>
-            <li>3D-визуализация камина в вашем интерьере</li>
-            <li>Мрамор, гранит, оникс, искусственный камень</li>
-            <li>Особые условия для дизайнеров и архитекторов</li>
-          </ul>
-          <a class="btn btn--ghost" href={url("salon/#zamer")} data-in>Обсудить проект <Icon name="arrow" /></a>
-        </div>
       </div>
     </section>
 
@@ -203,8 +188,7 @@ const steps = [
         <img src={img("diamond", 900)} srcset={`${img("diamond", 480)} 480w, ${img("diamond", 900)} 900w`} sizes="(min-width: 1000px) 50vw, 100vw" alt="Камин «Чёрный бриллиант»" loading="lazy" decoding="async" />
       </div>
       <div class="salon__text">
-        <p class="eyebrow" data-in>Салон</p>
-        <h2 class="h2" data-in>Увидеть пламя <em>вживую</em></h2>
+        <Chapter k="Салон">Увидеть пламя <em>вживую</em></Chapter>
         <p class="lead" data-in>Работающие образцы в центре дизайна «Экспострой на Нахимовском». {contacts.address}, {contacts.metro}.</p>
         <p class="salon__hours" data-in>{contacts.hours}</p>
         <div class="salon__ctas" data-in>
@@ -217,6 +201,21 @@ const steps = [
 </Base>
 
 <script>
+  /* greeting by the visitor's hour, salon status by Moscow time */
+  {
+    const h = new Date().getHours();
+    const greet = h < 5 ? "Доброй ночи" : h < 12 ? "Доброе утро" : h < 17 ? "Добрый день" : "Добрый вечер";
+    const tail = h >= 17 || h < 5 ? "время для огня" : "камины и печи под ключ";
+    document.querySelector("[data-greet]")!.textContent = `${greet} — ${tail}`;
+    const msk = new Date(new Date().toLocaleString("en-US", { timeZone: "Europe/Moscow" }));
+    const day = msk.getDay(), m = msk.getHours() * 60 + msk.getMinutes();
+    const close = day === 0 ? 19 : 20;
+    const open = m >= 600 && m < close * 60;
+    const el = document.querySelector<HTMLElement>("[data-open]")!;
+    el.classList.toggle("on", open);
+    el.querySelector("span")!.textContent = open ? `Салон открыт до ${close}:00 — в нём горит огонь` : m < 600 ? "Салон откроется сегодня в 10:00" : "Салон откроется завтра в 10:00";
+    el.hidden = false;
+  }
   const html = document.documentElement;
   const hero = document.querySelector<HTMLElement>("[data-hero]")!;
   const slides = [...hero.querySelectorAll<HTMLElement>("[data-slide]")];
@@ -279,8 +278,6 @@ const steps = [
 <style>
   .sec { padding: 96px 0 0; position: relative; }
   .sec--night { padding: 96px 0; margin-top: 96px; }
-  .sh--row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 20px; }
-  .sh--row > .sh { margin: 0; }
 
   /* hero */
   .hero { position: relative; display: flex; flex-direction: column; overflow: hidden; isolation: isolate; padding-top: calc(var(--hdr) + env(safe-area-inset-top)); }
@@ -312,6 +309,12 @@ const steps = [
   .hero__lead { max-width: 30em; }
   .hero__ctas { display: flex; flex-wrap: wrap; align-items: center; gap: 18px 30px; }
   .hero__ctas .ulink { color: var(--cream); }
+  .open { display: inline-flex; align-items: center; gap: 12px; font-size: 12.5px; color: var(--cream-2); opacity: 0; transition: opacity 1.2s var(--ease) 1.3s; }
+  .hero.lit .open { opacity: 1; }
+  .open i { position: relative; width: 7px; height: 7px; border-radius: 50%; background: var(--smoke); flex: none; }
+  .open.on i { background: var(--bronze-2); }
+  .open.on i::after { content: ""; position: absolute; inset: -4px; border-radius: 50%; border: 1px solid var(--bronze-2); animation: breathe 3.2s var(--ease-io) infinite; }
+  @keyframes breathe { 0%, 100% { opacity: 0; transform: scale(0.6); } 50% { opacity: 0.7; transform: scale(1); } }
 
   /* statement */
   .statement__t { font-family: var(--serif); font-weight: 300; font-size: clamp(28px, 6.8vw, 54px); line-height: 1.22; max-width: 22em; }
@@ -359,6 +362,7 @@ const steps = [
   .prod__img { aspect-ratio: 4 / 5; overflow: hidden; background: var(--stone); }
   .prod__img img { width: 100%; height: 100%; object-fit: cover; }
   .prod__text { display: grid; gap: 22px; align-content: center; justify-items: start; }
+  .prod__text :global(.chap), .salon__text :global(.chap) { width: 100%; margin-bottom: 0; }
   .prod__list { display: grid; border-top: 1px solid var(--line); width: 100%; }
   .prod__list li { padding: 14px 0; border-bottom: 1px solid var(--line); color: var(--ink-2); font-size: 15px; }
 

@@ -52,8 +52,23 @@ input[type="range"]:focus-visible { outline: none; }
 .h1 { font-size: clamp(46px, 12.4vw, 128px); }
 .h2 { font-size: clamp(38px, 9.4vw, 84px); }
 .h3 { font-size: clamp(26px, 6vw, 36px); line-height: 1.1; font-weight: 400; }
-.h1 em, .h2 em, .h3 em { font-style: normal; color: var(--bronze); }
-.night .h1 em, .night .h2 em, .night .h3 em { color: var(--bronze-2); }
+.h1 em, .h2 em, .h3 em { font-style: italic; letter-spacing: -0.01em; }
+
+/* chapter opener — numbered like a book: numeral, a hairline that draws itself, the chapter name */
+.chap { display: grid; gap: 22px; margin-bottom: 44px; }
+main { counter-reset: chap; }
+.chap__n::before { counter-increment: chap; content: counter(chap, upper-roman); }
+.chap__rule { display: flex; align-items: center; gap: 16px; }
+.chap__n { font-family: var(--serif); font-style: italic; font-weight: 300; font-size: 44px; line-height: 0.8; color: var(--bronze); min-width: 0.6em; }
+.night .chap__n { color: var(--bronze-2); }
+.chap__rule i { flex: 1; height: 1px; background: var(--line-2); transform-origin: left; }
+.night .chap__rule i { background: var(--nline); }
+.chap__k { font-size: 10.5px; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; color: var(--smoke); }
+.night .chap__k { color: var(--cream-2); }
+.js .chap__rule i { transform: scaleX(0); transition: transform 1.6s var(--ease-io) 0.15s; }
+.js .chap.in .chap__rule i { transform: none; }
+.chap__more { justify-self: start; }
+.lot { font-family: var(--serif); font-style: italic; font-size: 1.15em; letter-spacing: 0.02em; color: var(--bronze); text-transform: none; }
 .eyebrow { display: inline-flex; align-items: center; gap: 14px; font-size: 11px; font-weight: 500; letter-spacing: 0.26em; text-transform: uppercase; color: var(--smoke); }
 .eyebrow::before { content: ""; width: 28px; height: 1px; background: var(--bronze); }
 .night .eyebrow { color: var(--cream-2); }
@@ -261,6 +276,10 @@ textarea.input { min-height: 90px; resize: vertical; }
   .grid { grid-template-columns: repeat(4, 1fr); gap: 64px 24px; }
   .rail { grid-auto-columns: calc((min(100vw, var(--max)) - 2 * var(--gut) - 3 * 24px) / 4); gap: 24px; padding-inline: max(var(--gut), calc((100vw - var(--max)) / 2 + var(--gut))); scroll-padding-inline: max(var(--gut), calc((100vw - var(--max)) / 2 + var(--gut))); }
   .sh { margin-bottom: 64px; }
+  .chap { margin-bottom: 72px; gap: 28px; }
+  .chap__n { font-size: 64px; }
+  .chap--row { grid-template-columns: 1fr auto; align-items: end; }
+  .chap--row .chap__rule { grid-column: 1 / -1; }
   .ph { padding-top: calc(var(--hdr) + 60px); }
 }
 @media (prefers-reduced-motion: reduce) {

@@ -1,6 +1,6 @@
 ---
 import type { Product } from "../lib/site";
-import { pimg, url, rub, catTitle, area } from "../lib/site";
+import { pimg, url, rub, catTitle, area, lot } from "../lib/site";
 import Icon from "./Icon.astro";
 
 interface Props { p: Product; d?: number; eager?: boolean; showCat?: boolean }
@@ -20,7 +20,7 @@ const badge = v.old ? `−${Math.round((1 - v.price / v.old) * 100)}%` : p.kw ? 
     )}
   </div>
   <div class="card__body">
-    {showCat && <p class="card__cat">{catTitle(p.cat)}{multi && ` · ${p.variants.length} вар.`}</p>}
+    <p class="card__cat"><span class="lot">{lot(p)}</span>{showCat && <> · {catTitle(p.cat)}</>}{multi && ` · ${p.variants.length} вар.`}</p>
     <h3 class="card__name"><a class="card__link" href={url(`product/${p.slug}/`)}>{p.name}</a></h3>
     {p.sub && <p class="card__sub">{p.sub}</p>}
     <p class="card__price">{varies && <small>от </small>}{rub(p.from)}{v.old && !varies && <s>{rub(v.old)}</s>}</p>

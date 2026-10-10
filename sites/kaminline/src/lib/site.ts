@@ -11,6 +11,8 @@ export type Category = { id: string; title: string };
 
 export const products = catalog.products as Product[];
 export const categories = catalog.categories as Category[];
+/** Catalogue number, as in an auction or atelier catalogue: № 007 */
+export const lot = (p: Product) => "№\u00a0" + String(products.indexOf(p) + 1).padStart(3, "0");
 export const bySlug = (s: string) => products.find((p) => p.slug === s)!;
 export const catTitle = (id: string) => categories.find((c) => c.id === id)?.title ?? "";
 export const CAT_NOTE: Record<string, string> = {
