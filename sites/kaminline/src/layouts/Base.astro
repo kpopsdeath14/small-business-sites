@@ -49,6 +49,7 @@ const links = [
         <nav class="nav" aria-label="Основное меню">
           {links.map(([id, label, href]) => <a href={href} aria-current={nav === id ? "page" : undefined}>{label}</a>)}
         </nav>
+        <button type="button" class="icon-btn snd" data-sound aria-pressed="false" aria-label="Включить звук камина"><span class="snd__b" aria-hidden="true"><i></i><i></i><i></i><i></i></span></button>
         <a href={contacts.phoneHref} class="icon-btn" aria-label="Позвонить"><Icon name="phone" /></a>
         <a href={url("cart/")} class="icon-btn" data-open-cart aria-label="Корзина">
           <Icon name="bag" />
@@ -129,6 +130,7 @@ const links = [
     <script is:inline type="application/json" id="cart-index" set:html={JSON.stringify({ base: BASE, items: cartIndex })} />
     <script>
       import "../scripts/app.ts";
+      import "../scripts/hearth.ts";
     </script>
   </body>
 </html>

@@ -171,7 +171,10 @@ const steps = [
               </li>
             ))}
           </ol>
-          <div class="burn__bar" aria-hidden="true"><i data-burnbar></i></div>
+          <div class="burn__foot">
+            <div class="burn__bar" aria-hidden="true"><i data-burnbar></i></div>
+            <button type="button" class="burn__snd" data-sound aria-pressed="false"><span class="snd__b" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Звук огня</button>
+          </div>
         </div>
       </div>
     </section>
@@ -302,7 +305,7 @@ const steps = [
     const sts = [...sec.querySelectorAll<HTMLElement>("[data-st]")];
     const T = [20, 320, 850, 560, 280]; // °C at the stage boundaries
     const smooth = (t: number) => t * t * (3 - 2 * t);
-    let on = false, ticking = false, cur = -1;
+    let on = false, ticking = false, cur = -1, lastLv = -1;
     const frame = () => {
       ticking = false;
       const r = sec.getBoundingClientRect();
@@ -314,9 +317,14 @@ const steps = [
       sec.style.setProperty("--z", String(1.12 - p * 0.1));
       bar.style.transform = `scaleX(${p})`;
       if (k !== cur) { cur = k; sts.forEach((s, i) => s.classList.toggle("on", i === k)); }
+      const lv = Math.round(Number(deg.textContent) / 85) / 10; // the fire's sound follows its temperature
+      if (lv !== lastLv) { lastLv = lv; document.dispatchEvent(new CustomEvent("hearth", { detail: Math.max(0.15, lv) })); }
     };
     const onScroll = () => { if (on && !ticking) { ticking = true; requestAnimationFrame(frame); } };
-    new IntersectionObserver(([e]) => { on = e.isIntersecting; if (on) frame(); }).observe(sec);
+    new IntersectionObserver(([e]) => {
+      on = e.isIntersecting;
+      if (on) frame(); else { lastLv = -1; document.dispatchEvent(new CustomEvent("hearth", { detail: 0.55 })); }
+    }).observe(sec);
     addEventListener("scroll", onScroll, { passive: true });
   }
 
@@ -515,6 +523,11 @@ const steps = [
   .burn__deg { font-family: var(--serif); font-weight: 300; font-size: min(22vw, 11.5svh, 200px); line-height: 0.8; font-variant-numeric: lining-nums tabular-nums; letter-spacing: -0.02em; }
   .burn__deg sup { font-size: 0.26em; vertical-align: top; margin-left: 6px; color: var(--bronze-2); letter-spacing: 0.04em; }
   .burn__at { font-size: 10.5px; letter-spacing: 0.26em; text-transform: uppercase; color: var(--cream-2); }
+  .burn__foot { display: flex; align-items: center; gap: 18px; margin-top: 10px; }
+  .burn__foot .burn__bar { flex: 1; margin: 0; }
+  .burn__snd { flex: none; display: inline-flex; align-items: center; gap: 10px; min-height: 44px; font-size: 10.5px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--cream-2); transition: color 0.3s; }
+  .burn__snd:hover, .burn__snd[aria-pressed="true"] { color: var(--bronze-2); }
+  .burn__snd .snd__b { height: 12px; }
   .burn__stages { display: grid; min-height: 118px; }
   .burn__st { grid-area: 1 / 1; display: grid; grid-template-columns: 34px 1fr; gap: 4px 12px; align-content: start; opacity: 0; transform: translateY(14px); transition: opacity 0.7s var(--ease), transform 0.9s var(--ease); }
   .burn__st.on { opacity: 1; transform: none; }
