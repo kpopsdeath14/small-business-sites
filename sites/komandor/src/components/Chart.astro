@@ -1,0 +1,75 @@
+---
+/**
+ * The salon on a nautical-chart style sketch: depth contours, the river, a coordinate grid,
+ * a compass rose and a pulsing mark. A diagram, not a map — the route button opens a real map.
+ */
+import { contacts } from "../lib/site";
+import Icon from "./Icon.astro";
+const route = `https://yandex.ru/maps/?text=${encodeURIComponent("Жуковский, Речной проезд, 21с6")}`;
+---
+<figure class="chart" data-in>
+  <svg viewBox="0 0 600 420" role="img" aria-label="Схема: салон Командор в Жуковском у Москвы-реки">
+    <rect width="600" height="420" class="chart__land" />
+    <!-- the river and its depth contours -->
+    <path class="chart__water" d="M-20 300 C 80 250 150 320 250 270 S 420 160 520 190 S 640 120 640 120 L640 420 L-20 420 Z" />
+    <path class="chart__iso" d="M-20 330 C 90 280 160 350 260 300 S 430 190 530 220 S 640 160 640 160" />
+    <path class="chart__iso" d="M-20 360 C 100 310 170 380 270 330 S 440 220 540 250 S 640 200 640 200" />
+    <path class="chart__iso chart__iso--deep" d="M-20 392 C 110 342 180 410 280 362 S 450 252 550 282 S 640 236 640 236" />
+    <g class="chart__depth">
+      <text x="120" y="352">2,4</text><text x="330" y="300">4,1</text><text x="470" y="268">3,6</text><text x="210" y="398">5,8</text>
+    </g>
+    <!-- grid -->
+    <g class="chart__grid">
+      <path d="M0 105H600M0 210H600M0 315H600M150 0V420M300 0V420M450 0V420" />
+    </g>
+    <g class="chart__lbl">
+      <text x="6" y="100">55°37′</text><text x="6" y="205">55°36′</text><text x="6" y="310">55°35′</text>
+      <text x="154" y="414">38°05′</text><text x="304" y="414">38°07′</text><text x="454" y="414">38°09′</text>
+    </g>
+    <text class="chart__name" x="80" y="150">ЖУКОВСКИЙ</text>
+    <text class="chart__river" x="360" y="236" transform="rotate(-14 360 236)">р. Москва</text>
+    <!-- compass rose -->
+    <g class="chart__rose" transform="translate(520 70)">
+      <circle r="34" /><circle r="26" />
+      <path d="M0 -34 L5 0 L0 34 L-5 0 Z" /><path d="M-34 0 L0 -5 L34 0 L0 5 Z" class="chart__rose-w" />
+      <text y="-40" text-anchor="middle">N</text>
+    </g>
+    <!-- the salon -->
+    <g class="chart__pin" transform="translate(292 238)">
+      <circle class="chart__pulse" r="10" />
+      <circle class="chart__dot" r="7" />
+      <path class="chart__lead" d="M8 -8 L60 -60 H170" />
+      <text x="66" y="-68" class="chart__pinT">КОМАНДОР</text>
+      <text x="66" y="-48" class="chart__pinS">Речной пр., 21 стр. 6</text>
+    </g>
+  </svg>
+  <figcaption>
+    <span class="mono">{contacts.lat} · {contacts.lon} · схема</span>
+    <a class="link" href={route} target="_blank" rel="noopener">Построить маршрут <Icon name="pin" /></a>
+  </figcaption>
+</figure>
+
+<style>
+  .chart { display: grid; gap: 12px; }
+  .chart svg { width: 100%; height: auto; border-radius: 26px; overflow: hidden; box-shadow: inset 0 0 0 1px var(--line); background: #f2efe4; }
+  .chart__land { fill: #f2efe4; }
+  .chart__water { fill: #cfe2ea; }
+  .chart__iso { fill: none; stroke: #8db6c9; stroke-width: 1; stroke-dasharray: 4 4; }
+  .chart__iso--deep { stroke: #5b93ae; stroke-dasharray: none; }
+  .chart__depth text { font-family: var(--mono); font-size: 11px; fill: #5b8399; font-style: italic; }
+  .chart__grid path { stroke: rgba(11, 34, 54, 0.12); stroke-width: 1; fill: none; }
+  .chart__lbl text { font-family: var(--mono); font-size: 10px; fill: var(--soft); }
+  .chart__name { font-family: var(--cond); font-weight: 600; font-size: 30px; letter-spacing: 0.2em; fill: rgba(11, 34, 54, 0.22); }
+  .chart__river { font-family: var(--sans); font-style: italic; font-size: 15px; fill: #3e7896; }
+  .chart__rose circle { fill: none; stroke: rgba(11, 34, 54, 0.35); }
+  .chart__rose path { fill: var(--navy); }
+  .chart__rose .chart__rose-w { fill: rgba(11, 34, 54, 0.4); }
+  .chart__rose text { font-family: var(--mono); font-size: 11px; fill: var(--signal); }
+  .chart__dot { fill: var(--signal); stroke: #fff; stroke-width: 3; }
+  .chart__pulse { fill: none; stroke: var(--signal); stroke-width: 2; transform-origin: center; transform-box: fill-box; animation: ping 2.4s var(--ease) infinite; }
+  @keyframes ping { 0% { transform: scale(0.8); opacity: 1; } 100% { transform: scale(4); opacity: 0; } }
+  .chart__lead { fill: none; stroke: var(--navy); stroke-width: 1.2; }
+  .chart__pinT { font-family: var(--cond); font-weight: 600; font-size: 22px; letter-spacing: 0.06em; fill: var(--navy); }
+  .chart__pinS { font-family: var(--mono); font-size: 11px; fill: var(--soft); }
+  .chart figcaption { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; }
+</style>

@@ -1,0 +1,275 @@
+---
+import Base from "../layouts/Base.astro";
+import Icon from "../components/Icon.astro";
+import Plotter from "../components/Plotter.astro";
+import Speed from "../components/Speed.astro";
+import Season from "../components/Season.astro";
+import Chart from "../components/Chart.astro";
+import { boats, motors, trailers, bySlug, url, pimg, rub, fmt, href, contacts, TAGS, plural } from "../lib/site";
+import catalog from "../data/catalog.json";
+
+const featured = (catalog.featured as string[]).map(bySlug);
+const fleet = boats.filter((b) => b.len).sort((a, b) => a.len! - b.len!);
+const bands = [
+  ["до 30", "Для лодок ПВХ, рыбалки и тихих заливов", (h: number) => h <= 30],
+  ["40–100", "Для катеров 4–5 метров и всей семьи", (h: number) => h >= 40 && h <= 100],
+  ["115–350", "Для больших катеров, скорости и волны", (h: number) => h > 100],
+] as const;
+const mhp = (m: (typeof motors)[number]) => m.hp?.[1] ?? 0;
+const ticker = [
+  `${contacts.lat} ${contacts.lon}`, "Салон в Жуковском", `${boats.length} катеров на сайте`, `${motors.length}+ моторов`, "Mercury · Suzuki · Marlin · Sea-Pro", "Сервисный центр и запчасти", "Без выходных 10:00–20:00", "Прицепы МЗСА под любой корпус",
+];
+---
+<Base nav="home">
+  <Plotter />
+
+  <!-- PIER: the boats themselves, full screen, swipe like walking along a pier -->
+  <section class="pier" data-pier aria-roledescription="карусель" aria-label="Катера в салоне">
+    <div class="pier__track" data-track>
+      {featured.map((b, i) => (
+        <article class="slip" aria-label={`${i + 1} из ${featured.length}: ${b.name}`}>
+          <div class="slip__img"><img src={pimg(b.img[0], 1280)} srcset={`${pimg(b.img[0])} 640w, ${pimg(b.img[0], 1280)} 1280w`} sizes="(min-width: 1000px) 64vw, 100vw" alt={b.name} loading={i === 0 ? "eager" : "lazy"} fetchpriority={i === 0 ? "high" : "auto"} /></div>
+          <div class="slip__body">
+            <p class="mono mono--sig">{b.brand} · {b.tags[0] ?? "Катер"}</p>
+            <h2 class="mark mark--l slip__t">{b.name.replace(/^Катер\s+/i, "")}</h2>
+            <dl class="slip__spec">
+              {b.len && <div><dt class="mono">Длина</dt><dd class="num">{fmt(b.len)} м</dd></div>}
+              {b.people && <div><dt class="mono">Мест</dt><dd class="num">{b.people}</dd></div>}
+              {b.hp && <div><dt class="mono">Мотор</dt><dd class="num">до {b.hp[1]} л. с.</dd></div>}
+            </dl>
+            <div class="slip__buy">
+              <p class="slip__p">{b.price ? rub(b.price) : "Цена по запросу"}</p>
+              <a class="btn" href={href(b)}>Смотреть катер <Icon name="arrow" /></a>
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+    <div class="pier__nav">
+      <p class="mono num"><span data-i>01</span> / {String(featured.length).padStart(2, "0")}</p>
+      <div class="pier__bars" aria-hidden="true">{featured.map((_, i) => <i class:list={{ on: i === 0 }}></i>)}</div>
+      <div class="pier__arr">
+        <button type="button" aria-label="Предыдущий катер" data-prev><Icon name="back" /></button>
+        <button type="button" aria-label="Следующий катер" data-next><Icon name="arrow" /></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- NMEA-like ticker: plain facts scrolling like a plotter data line -->
+  <div class="tick" aria-hidden="true"><div class="tick__run">{[0, 1].map(() => ticker.map((t) => <span>{t}<i>◆</i></span>))}</div></div>
+
+  <!-- FLEET TO SCALE -->
+  <section class="sec" id="fleet">
+    <div class="wrap">
+      <p class="bear mono" style="--b: 90deg">Флот в масштабе</p>
+      <div class="head2">
+        <h2 class="mark mark--m" data-in>От {fmt(fleet[0].len!)} до {fmt(fleet[fleet.length - 1].len!)} <em>метров</em></h2>
+        <p class="lede" data-in>Каждый катер показан в одном масштабе: ширина карточки — его настоящая длина. Листайте от лодки до каютного крейсера.</p>
+      </div>
+      <form class="seg" data-tags>
+        <label><input type="radio" name="t" value="" checked /><span>Все · {fleet.length}</span></label>
+        {TAGS.map((t) => { const n = fleet.filter((b) => b.tags.includes(t)).length; return n > 0 && <label><input type="radio" name="t" value={t} /><span>{t} · {n}</span></label>; })}
+      </form>
+    </div>
+    <div class="fleet" data-fleet>
+      {fleet.map((b) => (
+        <a class="hull" href={href(b)} style={`--len:${b.len}`} data-tags={b.tags.join("|")}>
+          <span class="hull__img" data-rise><img src={pimg(b.img[0])} alt="" loading="lazy" decoding="async" /></span>
+          <span class="hull__scale" aria-hidden="true"></span>
+          <span class="hull__len num">{fmt(b.len!)} м</span>
+          <span class="hull__n">{b.name.replace(/^(Катер|Лодка)\s+/i, "")}</span>
+          <span class="hull__p">{b.price ? rub(b.price) : "по запросу"}</span>
+        </a>
+      ))}
+    </div>
+    <div class="wrap"><a class="link" href={url("catalog/")}>Весь каталог катеров <Icon name="arrow" /></a></div>
+  </section>
+
+  <!-- SPEED -->
+  <section class="sec">
+    <div class="wrap">
+      <p class="bear mono" style="--b: 135deg">Сколько узлов</p>
+      <div class="head2">
+        <h2 class="mark mark--m" data-in>Катер + мотор = <em>скорость</em></h2>
+        <p class="lede" data-in>Выберите корпус и мощность — посчитаем, на что он способен с вашей компанией на борту.</p>
+      </div>
+      <Speed />
+    </div>
+  </section>
+
+  <!-- MOTORS -->
+  <section class="sec motors">
+    <div class="wrap">
+      <p class="bear mono" style="--b: 180deg">Лодочные моторы</p>
+      <div class="head2">
+        <h2 class="mark mark--m" data-in>Сердце <em>катера</em></h2>
+        <p class="lede" data-in>Mercury, Suzuki, Marlin, Sea-Pro — двух- и четырёхтактные, на транец и электрические. Подберём мотор под корпус и поставим на нашем сервисе.</p>
+      </div>
+      <div class="bands">
+        {bands.map(([t, d, f], i) => {
+          const list = motors.filter((m) => f(mhp(m)));
+          const pic = list.find((m) => m.img.length) ?? motors[0];
+          return (
+            <a class="band" href={url(`catalog/motors/?hp=${i}`)} data-in style={`--d:${i * 0.08}s`}>
+              <span class="band__img"><img src={pimg(pic.img[0])} alt="" loading="lazy" /></span>
+              <span class="band__t mark">{t}<small> л. с.</small></span>
+              <span class="band__d">{d}</span>
+              <span class="mono">{list.length} {plural(list.length, "модель", "модели", "моделей")} · от {rub(Math.min(...list.map((m) => m.price).filter(Boolean)))}</span>
+            </a>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <!-- SEASON -->
+  <section class="sec">
+    <div class="wrap">
+      <p class="bear mono" style="--b: 225deg">Сезон</p>
+      <div class="head2">
+        <h2 class="mark mark--m" data-in>Год <em>на воде</em></h2>
+        <p class="lede" data-in>Навигация короткая — важно встретить её готовым. Сервисный центр ведёт катер весь год: расконсервация, ТО, ремонт, хранение.</p>
+      </div>
+      <Season />
+    </div>
+  </section>
+
+  <!-- SALON -->
+  <section class="sec">
+    <div class="wrap salon">
+      <div class="salon__text">
+        <p class="bear mono" style="--b: 315deg">Салон</p>
+        <h2 class="mark mark--m" data-in>Приходите <em>на борт</em></h2>
+        <p class="lede" data-in>Катера в зале и на площадке — можно подняться, посидеть за штурвалом и сравнить моторы. {contacts.salon}, {contacts.hours}.</p>
+        <div class="salon__ctas" data-in>
+          <a class="btn btn--sig" href={contacts.salesHref}>{contacts.sales} <Icon name="phone" /></a>
+          <a class="btn btn--line" href={contacts.wa} target="_blank" rel="noopener">WhatsApp</a>
+        </div>
+        <p class="mono">Прицепы МЗСА в наличии: {trailers.length} {plural(trailers.length, "модель", "модели", "моделей")}</p>
+      </div>
+      <Chart />
+    </div>
+  </section>
+</Base>
+
+<script>
+  // pier: a snap carousel with bars, arrows and keys; the first boat drifts in after the fix
+  const pier = document.querySelector<HTMLElement>("[data-pier]")!;
+  const track = pier.querySelector<HTMLElement>("[data-track]")!;
+  const bars = [...pier.querySelectorAll<HTMLElement>(".pier__bars i")];
+  const idx = pier.querySelector("[data-i]")!;
+  const n = track.children.length;
+  const cur = () => Math.round(track.scrollLeft / track.clientWidth);
+  const go = (i: number) => track.scrollTo({ left: ((i + n) % n) * track.clientWidth, behavior: "smooth" });
+  let last = -1;
+  track.addEventListener("scroll", () => requestAnimationFrame(() => {
+    const i = cur();
+    if (i === last) return; last = i;
+    idx.textContent = String(i + 1).padStart(2, "0");
+    bars.forEach((b, j) => b.classList.toggle("on", j <= i));
+    [...track.children].forEach((s, j) => s.classList.toggle("here", j === i));
+  }), { passive: true });
+  pier.querySelector("[data-prev]")!.addEventListener("click", () => go(cur() - 1));
+  pier.querySelector("[data-next]")!.addEventListener("click", () => go(cur() + 1));
+  pier.addEventListener("keydown", (e) => { if (e.key === "ArrowRight") go(cur() + 1); if (e.key === "ArrowLeft") go(cur() - 1); });
+  const arrive = () => { pier.classList.add("in"); track.children[0].classList.add("here"); };
+  if (document.documentElement.classList.contains("fix")) document.addEventListener("fix:done", () => setTimeout(arrive, 200), { once: true });
+  else requestAnimationFrame(arrive);
+
+  // fleet: filter by purpose; the cards that stay slide together
+  const fleet = document.querySelector<HTMLElement>("[data-fleet]")!;
+  const tags = document.querySelector<HTMLFormElement>("[data-tags]")!;
+  tags.addEventListener("change", () => {
+    const t = String(new FormData(tags).get("t") || "");
+    [...fleet.children].forEach((c) => ((c as HTMLElement).hidden = !!t && !(c as HTMLElement).dataset.tags!.split("|").includes(t)));
+    fleet.scrollTo({ left: 0, behavior: "smooth" });
+    fleet.animate([{ opacity: 0.2, transform: "translateX(24px)" }, { opacity: 1, transform: "none" }], { duration: 500, easing: "cubic-bezier(.2,.9,.25,1)" });
+  });
+</script>
+
+<style>
+  /* pier */
+  .pier { position: relative; padding-top: calc(var(--top) + env(safe-area-inset-top)); }
+  .pier__track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; }
+  .pier__track::-webkit-scrollbar { display: none; }
+  .slip { flex: 0 0 100%; scroll-snap-align: start; display: flex; flex-direction: column; min-height: calc(100svh - var(--top) - var(--dock) - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 56px); }
+  .slip__img { position: relative; height: 48svh; min-height: 260px; overflow: hidden; background: var(--mist); }
+  .slip__img img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.08); transition: transform 2.4s var(--ease); }
+  .slip.here .slip__img img { transform: none; }
+  .slip__img::after { content: ""; position: absolute; inset: auto 0 0; height: 40%; background: linear-gradient(0deg, var(--hull), rgba(244, 245, 242, 0)); }
+  .slip__body { position: relative; display: grid; gap: 12px; padding: 0 var(--gut) 18px; margin-top: -0.9em; }
+  .slip__t { overflow-wrap: anywhere; transform: translateY(30px); opacity: 0; transition: transform 1s var(--ease), opacity 0.8s; }
+  .slip.here .slip__t { transform: none; opacity: 1; }
+  .slip__spec { display: grid; grid-template-columns: repeat(3, auto); justify-content: start; gap: 0 22px; }
+  .slip__spec dd { font-size: 17px; margin-top: 2px; }
+  .slip__buy { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 4px; }
+  .slip__p { font-family: var(--cond); font-weight: 600; font-size: 34px; line-height: 1; }
+  .pier__nav { display: flex; align-items: center; gap: 14px; padding: 0 var(--gut); height: 56px; }
+  .pier__bars { flex: 1; display: grid; grid-auto-flow: column; gap: 4px; }
+  .pier__bars i { height: 3px; border-radius: 2px; background: var(--mist-2); transition: background 0.4s; }
+  .pier__bars i.on { background: var(--navy); }
+  .pier__arr { display: none; gap: 6px; }
+  .pier__arr button { width: 46px; height: 46px; border-radius: 50%; display: grid; place-content: center; box-shadow: inset 0 0 0 1.5px var(--line-2); transition: background 0.3s, color 0.3s; }
+  .pier__arr button:hover { background: var(--navy); color: #fff; }
+  .pier__arr svg { width: 18px; height: 18px; }
+
+  /* ticker */
+  .tick { overflow: hidden; background: var(--navy); color: #cfe3ee; border-block: 1px solid var(--navy-2); }
+  .tick__run { display: flex; width: max-content; animation: run 60s linear infinite; }
+  .tick span { font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; padding: 12px 0; white-space: nowrap; }
+  .tick i { font-style: normal; color: var(--signal); margin: 0 18px; font-size: 8px; vertical-align: 2px; }
+  @keyframes run { to { transform: translateX(-50%); } }
+
+  .sec { padding-top: 96px; }
+  .head2 { display: grid; gap: 16px; margin-bottom: 30px; }
+
+  /* fleet to scale */
+  .seg { margin-bottom: 22px; }
+  .fleet { --m: 46px; display: flex; align-items: flex-end; gap: 14px; overflow-x: auto; padding: 4px var(--gut) 18px; scroll-snap-type: x proximity; scrollbar-width: thin; }
+  .hull { flex: none; width: calc(var(--len) * var(--m)); display: grid; gap: 6px; scroll-snap-align: start; }
+  .hull[hidden] { display: none; }
+  .hull__img { display: block; height: 170px; border-radius: 16px; overflow: hidden; background: var(--mist); }
+  .hull__img img { width: 100%; height: 100%; object-fit: cover; transition: transform 1s var(--ease); }
+  @media (hover: hover) { .hull:hover .hull__img img { transform: scale(1.05); } }
+  /* a metre scale under every hull: a tick each metre, so lengths compare at a glance */
+  .hull__scale { height: 10px; border-bottom: 1.5px solid var(--navy); background: repeating-linear-gradient(90deg, var(--navy) 0 1.5px, transparent 1.5px var(--m)); background-size: 100% 6px; background-repeat: repeat-x; background-position: 0 100%; }
+  .hull__len { font-size: 13px; }
+  .hull__n { font-weight: 700; font-size: 14px; line-height: 1.25; }
+  .hull__p { font-size: 13px; color: var(--soft); }
+  .sec .wrap > .link { margin-top: 8px; }
+
+  /* motors */
+  .bands { display: grid; gap: 12px; }
+  .band { position: relative; display: grid; gap: 6px; padding: 22px; border-radius: 26px; background: var(--foam); box-shadow: inset 0 0 0 1px var(--line); overflow: hidden; transition: box-shadow 0.3s; }
+  @media (hover: hover) { .band:hover { box-shadow: inset 0 0 0 1.5px var(--navy); } }
+  .band__img { position: absolute; right: -8px; top: 12px; width: 44%; aspect-ratio: 1; }
+  .band__img img { width: 100%; height: 100%; object-fit: contain; mix-blend-mode: multiply; }
+  .band__t { position: relative; font-size: 64px; line-height: 0.9; }
+  .band__t small { font-size: 22px; color: var(--soft); }
+  .band__d { position: relative; max-width: 58%; color: var(--soft); font-size: 14.5px; }
+
+  /* salon */
+  .salon { display: grid; gap: 30px; }
+  .salon__text { display: grid; gap: 16px; align-content: start; justify-items: start; }
+  .salon__ctas { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  @media (min-width: 1000px) {
+    .pier { padding-top: 0; }
+    .slip { position: relative; display: grid; grid-template-columns: 0.9fr 1.1fr; min-height: calc(100vh - 72px); }
+    .slip__img { grid-column: 2; grid-row: 1; height: auto; }
+    .slip__img::after { inset: 0 auto 0 0; width: 30%; height: auto; background: linear-gradient(90deg, var(--hull), rgba(244, 245, 242, 0)); }
+    .slip__body { grid-column: 1 / -1; grid-row: 1; align-self: end; z-index: 1; margin: 0; padding: 0 56px 56px; max-width: 760px; }
+    .slip__t { font-size: clamp(80px, 8.6vw, 150px); }
+    .pier__nav { height: 72px; padding: 0 56px; }
+    .pier__arr { display: flex; }
+    .sec { padding-top: 150px; }
+    .head2 { grid-template-columns: 1.2fr 1fr; align-items: end; gap: 60px; margin-bottom: 40px; }
+    .fleet { --m: 70px; padding-inline: max(var(--gut), calc((100vw - var(--rail) - 1360px) / 2 + var(--gut))); }
+    .hull__img { height: 240px; }
+    .bands { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .band { min-height: 320px; align-content: end; padding: 30px; }
+    .band__img { width: 56%; top: 18px; }
+    .band__t { font-size: 86px; }
+    .salon { grid-template-columns: 0.9fr 1.1fr; gap: 64px; align-items: center; }
+  }
+</style>

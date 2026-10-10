@@ -1,0 +1,87 @@
+---
+import Base from "../layouts/Base.astro";
+import Icon from "../components/Icon.astro";
+import Chart from "../components/Chart.astro";
+import { contacts } from "../lib/site";
+const ch = [
+  ["Продажа катеров и моторов", contacts.sales, contacts.salesHref],
+  ["Сервис и запчасти", contacts.service, contacts.serviceHref],
+];
+---
+<Base title="Связь — салон «Командор» в Жуковском" nav="contact">
+  <main class="ct wrap">
+    <p class="bear mono" style="--b: 270deg">Связь</p>
+    <h1 class="mark mark--l">На связи <span class="out">16-й канал</span></h1>
+    <p class="lede">Как на воде: всегда слушаем. Звоните, пишите или приезжайте в салон — {contacts.hours}.</p>
+
+    <div class="ct__grid">
+      <div class="ct__ch">
+        {ch.map(([t, p, h]) => <a class="chn" href={h}><span class="mono">{t}</span><b>{p}</b><Icon name="phone" /></a>)}
+        <div class="ct__msg">
+          <a class="btn btn--sig" href={contacts.wa} target="_blank" rel="noopener">WhatsApp</a>
+          <a class="btn btn--line" href={contacts.tg} target="_blank" rel="noopener">Telegram</a>
+          <a class="btn btn--line" href={`mailto:${contacts.email}`}>Почта</a>
+        </div>
+
+        <form class="visit" data-visit>
+          <p class="mono mono--sig">Записаться на просмотр</p>
+          <div class="visit__days" data-days role="radiogroup" aria-label="День"></div>
+          <div class="seg">
+            <label><input type="radio" name="t" value="до обеда" checked /><span>10–14</span></label>
+            <label><input type="radio" name="t" value="днём" /><span>14–17</span></label>
+            <label><input type="radio" name="t" value="вечером" /><span>17–20</span></label>
+          </div>
+          <label class="field"><span>Что хотите посмотреть</span><input class="input" name="what" placeholder="Например, Bossforr 580 и моторы на 150 л. с." /></label>
+          <button class="btn" type="submit">Записаться в WhatsApp <Icon name="arrow" /></button>
+        </form>
+      </div>
+      <div class="ct__map">
+        <Chart />
+        <p class="ct__addr"><Icon name="pin" />{contacts.salon}</p>
+      </div>
+    </div>
+  </main>
+</Base>
+
+<script>
+  const WA = "https://wa.me/79772984772";
+  const days = document.querySelector<HTMLElement>("[data-days]")!;
+  const d0 = new Date();
+  days.innerHTML = Array.from({ length: 10 }, (_, i) => {
+    const d = new Date(d0); d.setDate(d0.getDate() + i);
+    const wd = d.toLocaleDateString("ru-RU", { weekday: "short" }), dm = d.getDate(), m = d.toLocaleDateString("ru-RU", { month: "short" });
+    return `<label><input type="radio" name="d" value="${dm} ${m}" ${i === 1 ? "checked" : ""}><span><small>${i === 0 ? "сегодня" : i === 1 ? "завтра" : wd}</small><b>${dm}</b><small>${m}</small></span></label>`;
+  }).join("");
+  const f = document.querySelector<HTMLFormElement>("[data-visit]")!;
+  f.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const fd = new FormData(f);
+    const text = `Здравствуйте! Хочу приехать в салон ${fd.get("d")}, ${fd.get("t")}.${fd.get("what") ? ` Посмотреть: ${fd.get("what")}.` : ""}`;
+    window.open(`${WA}?text=${encodeURIComponent(text)}`, "_blank");
+  });
+</script>
+
+<style>
+  .ct { padding-top: calc(var(--top) + env(safe-area-inset-top) + 24px); display: grid; gap: 16px; }
+  .ct__grid { display: grid; gap: 36px; margin-top: 16px; }
+  .ct__ch { display: grid; gap: 10px; align-content: start; }
+  .chn { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 4px 12px; padding: 18px 20px; border-radius: 24px; background: var(--foam); box-shadow: inset 0 0 0 1px var(--line); }
+  .chn .mono { grid-column: 1; }
+  .chn b { grid-column: 1; font-family: var(--cond); font-weight: 600; font-size: 34px; line-height: 1; }
+  .chn svg { grid-column: 2; grid-row: 1 / span 2; width: 26px; height: 26px; color: var(--signal); }
+  .ct__msg { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 16px; }
+  .visit { display: grid; gap: 14px; padding: 20px; border-radius: 26px; background: var(--mist); }
+  .visit__days { display: grid; grid-auto-flow: column; grid-auto-columns: 64px; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+  .visit__days::-webkit-scrollbar { display: none; }
+  .visit__days :global(label) { position: relative; cursor: pointer; }
+  .visit__days :global(input) { position: absolute; opacity: 0; pointer-events: none; }
+  .visit__days :global(span) { display: grid; justify-items: center; padding: 8px 0; border-radius: 16px; background: var(--foam); transition: background 0.25s, color 0.25s; }
+  .visit__days :global(small) { font-size: 10.5px; color: var(--soft); }
+  .visit__days :global(b) { font-family: var(--cond); font-weight: 600; font-size: 26px; line-height: 1; }
+  .visit__days :global(input:checked + span) { background: var(--navy); color: #fff; }
+  .visit__days :global(input:checked + span small) { color: rgba(255, 255, 255, 0.65); }
+  .ct__map { display: grid; gap: 12px; align-content: start; }
+  .ct__addr { display: flex; align-items: center; gap: 8px; font-weight: 700; }
+  .ct__addr svg { color: var(--signal); }
+  @media (min-width: 1000px) { .ct { padding-top: 56px; } .ct__grid { grid-template-columns: 1fr 1.1fr; gap: 56px; } }
+</style>

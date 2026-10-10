@@ -1,0 +1,178 @@
+---
+import Base from "../layouts/Base.astro";
+import Icon from "./Icon.astro";
+import Plate from "./Plate.astro";
+import Speed from "./Speed.astro";
+import Mini from "./Mini.astro";
+import type { Item } from "../lib/site";
+import { boats, motors, trailers, url, pimg, rub, fmt, href, contacts } from "../lib/site";
+
+interface Props { it: Item }
+const { it } = Astro.props;
+const isBoat = it.cat === "boats", isMotor = it.cat === "motors";
+const title = it.name.replace(/^(Катер|Лодка|Лодочный мотор|Мотор)\s+/i, "");
+const kind = isBoat ? "Катер" : isMotor ? "Лодочный мотор" : "Прицеп";
+// matching by the numbers: motors the hull is rated for, hulls the motor suits, trailers that carry the hull
+const mhp = (m: Item) => m.hp?.[1] ?? 0;
+const fitMotors = isBoat && it.hp ? motors.filter((m) => mhp(m) >= it.hp![0] && mhp(m) <= it.hp![1]).sort((a, b) => mhp(b) - mhp(a)).slice(0, 10) : [];
+const gross = isBoat && it.weight ? Math.round(it.weight + (it.hp ? 0.95 * it.hp[1] + 60 : 0)) : 0;
+const fitTrailers = isBoat && gross ? trailers.filter((t) => t.load && t.load >= gross && t.len && it.len && t.len >= it.len - 0.3 && t.len <= it.len + 1.5).sort((a, b) => a.load! - b.load!).slice(0, 6) : [];
+const fitBoats = isMotor && mhp(it) ? boats.filter((b) => b.hp && mhp(it) >= b.hp[0] && mhp(it) <= b.hp[1]).slice(0, 10) : [];
+const wa = `${contacts.wa}?text=${encodeURIComponent(`Здравствуйте! Интересует ${it.name}.`)}`;
+const facts = [
+  it.len && [`${fmt(it.len)} м`, "длина"],
+  it.people && [`${it.people}`, "мест"],
+  isBoat && it.hp && [`${it.hp[0]}–${it.hp[1]}`, "л. с."],
+  isMotor && it.hp && [`${it.hp[1]}`, "л. с."],
+  it.weight && [`${it.weight} кг`, "масса"],
+  it.load && [`${it.load} кг`, "грузоподъёмность"],
+].filter(Boolean).slice(0, 3) as [string, string][];
+---
+<Base title={`${it.name} — купить в салоне «Командор»`} description={`${it.name}: ${facts.map(([v, l]) => `${l} ${v}`).join(", ")}. ${it.price ? `Цена ${rub(it.price)}.` : ""} Салон в Жуковском, сервис и подбор мотора.`} nav={isMotor ? "motors" : "boats"}>
+  <main class="ip">
+    <div class="ip__top">
+    <div class="ip__media">
+      {it.img.map((id, i) => (
+        <figure class:list={["ip__ph", { "ip__ph--first": i === 0 }]} data-rise={i > 0 ? "" : undefined}>
+          <img src={pimg(id, 1280)} srcset={`${pimg(id)} 640w, ${pimg(id, 1280)} 1280w`} sizes="(min-width: 1000px) 58vw, 100vw" alt={`${it.name}, фото ${i + 1}`} loading={i === 0 ? "eager" : "lazy"} decoding="async" />
+        </figure>
+      ))}
+      <div class="ip__over">
+        <a class="mono ip__back" href={url(isMotor ? "catalog/motors/" : isBoat ? "catalog/" : "catalog/trailers/")}><Icon name="back" /> {isMotor ? "Моторы" : isBoat ? "Катера" : "Прицепы"}</a>
+      </div>
+    </div>
+
+    <!-- the bridge: name, numbers and the controls, like a bottom sheet over the photo -->
+    <section class="bridge">
+      <p class="mono mono--sig">{it.brand ? `${it.brand} · ` : ""}{kind}</p>
+      <h1 class="mark mark--l bridge__t">{title}</h1>
+      {facts.length > 0 && <dl class="bridge__facts">{facts.map(([v, l]) => <div><dt class="num">{v}</dt><dd class="mono">{l}</dd></div>)}</dl>}
+      <div class="bridge__price">
+        <p class="bridge__p">{it.price ? rub(it.price) : "Цена по запросу"}</p>
+        <span class:list={["mono", "bridge__st", { on: it.stock }]}>{it.stock ? "В наличии в салоне" : "Под заказ"}</span>
+      </div>
+      <div class="bridge__act" data-buy>
+        <button class="btn btn--sig" type="button" data-add={it.id}>{isBoat ? "Поставить на стапель" : isMotor ? "Поставить на катер" : "Добавить к комплекту"} <Icon name="anchor" /></button>
+        <a class="btn btn--line" href={wa} target="_blank" rel="noopener">Спросить в WhatsApp</a>
+      </div>
+      <ul class="bridge__perks">
+        <li><Icon name="compass" /><span>Осмотр и пробный выход — в салоне в Жуковском, {contacts.hours}</span></li>
+        {isBoat && <li><Icon name="motor" /><span>Подберём мотор и установим на нашем сервисе</span></li>}
+        <li><Icon name="trailer" /><span>Доставка на прицепе по Москве и области</span></li>
+      </ul>
+      {isBoat && <Plate b={it} />}
+    </section>
+    </div>
+
+    {isBoat && it.weight && it.hp && (
+      <section class="blk wrap">
+        <p class="bear mono" style="--b: 120deg">Скорость</p>
+        <h2 class="mark mark--m" data-in>На что способен <em>{title}</em></h2>
+        <Speed slug={it.slug} />
+      </section>
+    )}
+
+    {fitMotors.length > 0 && (
+      <section class="blk">
+        <div class="wrap"><p class="bear mono" style="--b: 200deg">Мотор под корпус</p><h2 class="mark mark--m" data-in>Моторы от {it.hp![0]} до {it.hp![1]} <em>л. с.</em></h2></div>
+        <div class="row">{fitMotors.map((m) => <Mini i={m} />)}</div>
+      </section>
+    )}
+    {fitTrailers.length > 0 && (
+      <section class="blk">
+        <div class="wrap"><p class="bear mono" style="--b: 260deg">Прицеп</p><h2 class="mark mark--m" data-in>Увезёт <em>{gross} кг</em></h2><p class="lede">Катер с мотором весит около {gross} кг — эти прицепы МЗСА рассчитаны на такую нагрузку.</p></div>
+        <div class="row">{fitTrailers.map((t) => <Mini i={t} />)}</div>
+      </section>
+    )}
+    {fitBoats.length > 0 && (
+      <section class="blk">
+        <div class="wrap"><p class="bear mono" style="--b: 60deg">Подходит к катерам</p><h2 class="mark mark--m" data-in>Корпуса под <em>{mhp(it)} л. с.</em></h2></div>
+        <div class="row">{fitBoats.map((b) => <Mini i={b} />)}</div>
+      </section>
+    )}
+
+    {(it.specs.length > 0 || it.desc.length > 0) && (
+      <section class="blk wrap info">
+        {it.specs.length > 0 && (
+          <div>
+            <p class="bear mono" style="--b: 300deg">Характеристики</p>
+            <dl class="specs">{it.specs.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
+          </div>
+        )}
+        {it.desc.length > 0 && <div class="info__d">{it.desc.map((d) => <p>{d}</p>)}</div>}
+      </section>
+    )}
+
+    <div class="sbar" data-sbar>
+      <div><p class="sbar__n">{title}</p><p class="sbar__p">{it.price ? rub(it.price) : "по запросу"}</p></div>
+      <button class="btn btn--sig" type="button" data-add={it.id}>{isBoat ? "На стапель" : "В комплект"}</button>
+    </div>
+  </main>
+</Base>
+
+<script>
+  const sbar = document.querySelector<HTMLElement>("[data-sbar]")!;
+  new IntersectionObserver(([e]) => sbar.classList.toggle("on", !e.isIntersecting && e.boundingClientRect.top < 0)).observe(document.querySelector("[data-buy]")!);
+</script>
+
+<style>
+  .ip__media { position: relative; }
+  .ip__ph { overflow: hidden; background: var(--mist); }
+  .ip__ph img { width: 100%; height: 100%; object-fit: cover; }
+  .ip__ph--first { height: 62svh; min-height: 320px; }
+  .ip__ph:not(.ip__ph--first) { display: none; }
+  .ip__over { position: absolute; left: 0; right: 0; top: calc(var(--top) + env(safe-area-inset-top) + 12px); padding: 0 var(--gut); }
+  .ip__back { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px 0 8px; border-radius: 999px; background: rgba(251, 251, 249, 0.9); color: var(--navy); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+  .ip__back svg { width: 16px; height: 16px; }
+  .bridge { position: relative; z-index: 2; display: grid; gap: 14px; margin-top: -34px; padding: 26px var(--gut) 10px; border-radius: 28px 28px 0 0; background: var(--hull); }
+  .bridge::before { content: ""; justify-self: center; width: 44px; height: 4px; border-radius: 2px; background: var(--mist-2); margin: -12px 0 4px; }
+  .bridge__t { overflow-wrap: anywhere; }
+  .bridge__facts { display: grid; grid-template-columns: repeat(3, 1fr); border-block: 1px solid var(--line); }
+  .bridge__facts div { padding: 12px 0; display: grid; gap: 2px; }
+  .bridge__facts div + div { padding-left: 12px; border-left: 1px solid var(--line); }
+  .bridge__facts dt { font-size: 17px; }
+  .bridge__facts dd { font-size: 9.5px; }
+  .bridge__price { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  .bridge__p { font-family: var(--cond); font-weight: 600; font-size: 44px; line-height: 1; }
+  .bridge__st { display: inline-flex; align-items: center; gap: 6px; }
+  .bridge__st.on::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #22a06b; }
+  .bridge__act { display: grid; gap: 8px; }
+  .bridge__perks { display: grid; gap: 10px; padding: 14px 0; border-top: 1px solid var(--line); }
+  .bridge__perks li { display: grid; grid-template-columns: 22px 1fr; gap: 12px; font-size: 14px; color: var(--soft); }
+  .bridge__perks svg { width: 20px; height: 20px; color: var(--sea); }
+  .blk { margin-top: 80px; }
+  .blk h2 { margin-bottom: 24px; }
+  .blk .lede { margin: -10px 0 22px; }
+  .row { display: grid; grid-auto-flow: column; grid-auto-columns: 62%; gap: 12px; overflow-x: auto; padding: 0 var(--gut) 10px; scroll-snap-type: x mandatory; scrollbar-width: none; }
+  .row::-webkit-scrollbar { display: none; }
+  .row > * { scroll-snap-align: start; }
+  .info { display: grid; gap: 40px; }
+  .specs { display: grid; border-top: 1px solid var(--line); }
+  .specs div { display: flex; justify-content: space-between; gap: 16px; padding: 11px 0; border-bottom: 1px solid var(--line); font-size: 14.5px; }
+  .specs dt { color: var(--soft); }
+  .specs dd { font-weight: 600; text-align: right; }
+  .info__d { display: grid; gap: 12px; color: var(--soft); font-size: 15px; line-height: 1.7; }
+  .info__d p:first-child { font-size: 18px; color: var(--navy); }
+  .sbar { position: fixed; left: 10px; right: 10px; bottom: calc(var(--dock) + env(safe-area-inset-bottom) + 10px); z-index: 90; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 8px 8px 18px; border-radius: 999px; background: rgba(251, 251, 249, 0.95); box-shadow: 0 12px 30px rgba(11, 34, 54, 0.22), inset 0 0 0 1px var(--line); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); transform: translateY(140%); transition: transform 0.5s var(--ease); }
+  .sbar.on { transform: none; }
+  .sbar > div { min-width: 0; }
+  .sbar__n { font-size: 12px; color: var(--soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sbar__p { font-weight: 800; }
+  .sbar .btn { min-height: 44px; }
+  @media (min-width: 1000px) {
+    .ip__top { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); align-items: start; }
+    .ip__top > * { min-width: 0; }
+    .ip__media { grid-column: 1; grid-row: 1; display: grid; gap: 6px; }
+    .ip__ph--first { height: 86vh; }
+    .ip__ph:not(.ip__ph--first) { display: block; aspect-ratio: 3 / 2; }
+    .ip__over { top: 24px; padding: 0 28px; }
+    .bridge { grid-column: 2; grid-row: 1; align-self: start; position: sticky; top: 0; margin: 0; padding: 48px 48px 40px; border-radius: 0; max-height: 100vh; overflow-y: auto; scrollbar-width: none; }
+    .bridge::before { display: none; }
+    .bridge__t { font-size: clamp(56px, 5.2vw, 96px); }
+    .blk { margin-top: 120px; }
+    .blk > .wrap { max-width: 1360px; }
+    .row { grid-auto-columns: calc((min(100vw - var(--rail), 1360px) - 2 * var(--gut) - 3 * 16px) / 4); gap: 16px; padding: 0 max(var(--gut), calc((100vw - var(--rail) - 1360px) / 2 + var(--gut))) 10px; }
+    .info { grid-template-columns: 1fr 1fr; gap: 64px; }
+    .sbar { display: none; }
+  }
+</style>

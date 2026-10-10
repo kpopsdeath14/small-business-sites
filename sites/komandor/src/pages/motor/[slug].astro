@@ -1,0 +1,9 @@
+---
+import ItemPage from "../../components/ItemPage.astro";
+import { motors, bySlug } from "../../lib/site";
+
+export function getStaticPaths() {
+  return motors.map((i) => ({ params: { slug: i.slug } }));
+}
+---
+<ItemPage it={bySlug(Astro.params.slug!)} />

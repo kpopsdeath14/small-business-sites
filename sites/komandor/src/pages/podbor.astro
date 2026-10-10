@@ -1,0 +1,150 @@
+---
+import Base from "../layouts/Base.astro";
+import Icon from "../components/Icon.astro";
+import { boats, motors, trailers, url, contacts } from "../lib/site";
+
+// minimal data for the route planner
+const B = boats.map((b) => ({ id: b.id, s: b.slug, n: b.name.replace(/^(Катер|Лодка)\s+/i, ""), l: b.len, p: b.people ?? 0, h: b.hp, w: b.weight, t: b.tags, pr: b.price, i: b.img[0] }));
+const M = motors.filter((m) => m.hp && m.price).map((m) => ({ id: m.id, s: m.slug, n: m.name.replace(/^(Лодочный мотор|Мотор)\s+/i, ""), h: m.hp![1], pr: m.price, i: m.img[0] }));
+const T = trailers.filter((t) => t.load && t.len).map((t) => ({ id: t.id, s: t.slug, n: t.name.replace(/^Прицеп\s+/i, "Прицеп "), c: t.load, l: t.len, i: t.img[0] }));
+---
+<Base title="Подбор катера, мотора и прицепа — «Командор»" description="Проложите маршрут: где будете ходить, сколько человек на борту и для чего — подберём катер, мотор и прицеп из наличия салона." nav="podbor">
+  <main class="rt wrap">
+    <p class="bear mono" style="--b: 45deg">Подбор</p>
+    <h1 class="mark mark--l">Проложим <span class="out">курс</span></h1>
+    <p class="lede">Четыре путевые точки — и комплект на борт: катер, мотор под его корпус и прицеп, который его увезёт.</p>
+
+    <form class="rt__route" data-rt>
+      <fieldset class="wp">
+        <legend><span class="wp__n">WP1</span>Где будете ходить</legend>
+        <div class="seg">
+          <label><input type="radio" name="w" value="3.5" checked /><span>Река</span></label>
+          <label><input type="radio" name="w" value="4.5" /><span>Озеро, водохранилище</span></label>
+          <label><input type="radio" name="w" value="5.5" /><span>Большая вода</span></label>
+        </div>
+      </fieldset>
+      <fieldset class="wp">
+        <legend><span class="wp__n">WP2</span>Сколько на борту · <b data-pv>4</b></legend>
+        <input class="rt__r" type="range" name="p" min="1" max="8" value="4" />
+      </fieldset>
+      <fieldset class="wp">
+        <legend><span class="wp__n">WP3</span>Зачем</legend>
+        <div class="seg">
+          <label><input type="radio" name="g" value="Рыбалка" checked /><span>Рыбалка</span></label>
+          <label><input type="radio" name="g" value="Прогулки" /><span>Прогулки с семьёй</span></label>
+          <label><input type="radio" name="g" value="Каютные" /><span>С ночёвкой</span></label>
+        </div>
+      </fieldset>
+      <fieldset class="wp">
+        <legend><span class="wp__n">WP4</span>Бюджет на катер · <b data-bv>2,5 млн ₽</b></legend>
+        <input class="rt__r" type="range" name="b" min="300000" max="8000000" step="100000" value="2500000" />
+      </fieldset>
+    </form>
+
+    <section class="kit" aria-live="polite">
+      <p class="mono mono--sig">Комплект на борт</p>
+      <div class="kit__list" data-kit></div>
+      <div class="kit__sum"><span class="mono">Ориентир по комплекту</span><strong data-sum>—</strong></div>
+      <div class="kit__act">
+        <button class="btn btn--sig" type="button" data-kit>Собрать на стапеле</button>
+        <a class="btn btn--line" data-send target="_blank" rel="noopener">WhatsApp</a>
+        <a class="btn btn--line" href={contacts.salesHref}>{contacts.sales}</a>
+      </div>
+    </section>
+    <script is:inline type="application/json" id="rt" set:html={JSON.stringify({ base: url(), B, M, T, wa: contacts.wa })} />
+  </main>
+</Base>
+
+<script>
+  type Bt = { id: string; s: string; n: string; l: number; p: number; h: [number, number] | null; w: number | null; t: string[]; pr: number; i: string };
+  const D = JSON.parse(document.getElementById("rt")!.textContent!) as { base: string; B: Bt[]; M: { id: string; s: string; n: string; h: number; pr: number; i: string }[]; T: { id: string; s: string; n: string; c: number; l: number; i: string }[]; wa: string };
+  const f = document.querySelector<HTMLFormElement>("[data-rt]")!;
+  const kit = document.querySelector<HTMLElement>("[data-kit]")!;
+  const rub = (n: number) => n.toLocaleString("ru-RU").replace(/\s/g, " ") + " ₽";
+  const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
+  const row = (k: string, n: string, sub: string, pr: string, href: string, im: string) => `<a class="kr" href="${href}"><span class="kr__img"><img src="${D.base}p/${im}-640.webp" alt=""></span><span class="kr__b"><span class="mono">${k}</span><b>${esc(n)}</b><small>${sub}</small></span><span class="kr__p">${pr}</span></a>`;
+  let lastHtml = "";
+  function plan() {
+    const fd = new FormData(f);
+    const minL = Number(fd.get("w")), ppl = Number(fd.get("p")), goal = String(fd.get("g")), budget = Number(fd.get("b"));
+    document.querySelector("[data-pv]")!.textContent = String(ppl);
+    document.querySelector("[data-bv]")!.textContent = `${(budget / 1e6).toFixed(1).replace(".", ",")} млн ₽`;
+    // score every boat: fits the water and the crew, matches the goal, stays within budget
+    const scored = D.B.map((b) => {
+      let s = 0;
+      if (b.l >= minL) s += 3; else s -= (minL - b.l) * 4;
+      if (b.p >= ppl) s += 2; else if (b.p) s -= (ppl - b.p) * 2;
+      if (b.t.includes(goal)) s += 3;
+      if (b.pr) s += b.pr <= budget ? 2 - (budget - b.pr) / budget : -((b.pr - budget) / budget) * 6; else s -= 0.5;
+      return { b, s };
+    }).sort((a, b) => b.s - a.s);
+    const top = scored[0].b;
+    const mot = top.h ? D.M.filter((m) => m.h >= top.h![0] && m.h <= top.h![1]).sort((a, b) => b.h - a.h)[0] : undefined;
+    const gross = top.w ? top.w + (mot ? 0.95 * mot.h + 60 : 0) : 0;
+    const tr = gross ? D.T.filter((t) => t.c >= gross && t.l >= top.l - 0.3 && t.l <= top.l + 1.5).sort((a, b) => a.c - b.c)[0] : undefined;
+    const alt = scored.slice(1, 3).map((x) => x.b);
+    const html = [
+      row("Катер", top.n, `${String(top.l).replace(".", ",")} м · ${top.p || "—"} мест${top.h ? ` · до ${top.h[1]} л. с.` : ""}`, top.pr ? rub(top.pr) : "по запросу", `${D.base}boat/${top.s}/`, top.i),
+      mot ? row("Мотор", mot.n, `${mot.h} л. с. — в допуске корпуса`, rub(mot.pr), `${D.base}motor/${mot.s}/`, mot.i) : "",
+      tr ? row("Прицеп", tr.n, `грузоподъёмность ${tr.c} кг`, "по запросу", `${D.base}trailer/${tr.s}/`, tr.i) : "",
+      alt.length ? `<p class="mono kit__alt">Ещё варианты: ${alt.map((a) => `<a href="${D.base}boat/${a.s}/">${esc(a.n)}</a>`).join(" · ")}</p>` : "",
+    ].join("");
+    if (html !== lastHtml) {
+      kit.innerHTML = html; lastHtml = html;
+      kit.animate([{ opacity: 0.3, transform: "translateY(6px)" }, { opacity: 1, transform: "none" }], { duration: 400, easing: "cubic-bezier(.2,.9,.25,1)" });
+    }
+    pick = [top.id, mot?.id, tr?.id].filter(Boolean) as string[];
+    const sum = (top.pr || 0) + (mot?.pr || 0);
+    document.querySelector("[data-sum]")!.textContent = sum ? `${rub(sum)}${tr ? " + прицеп" : ""}` : "по запросу";
+    const text = `Здравствуйте! Подобрал на сайте комплект: ${top.n}${mot ? `, мотор ${mot.n}` : ""}${tr ? `, ${tr.n}` : ""}. Хожу: ${(f.querySelector<HTMLInputElement>('input[name="w"]:checked')!.nextElementSibling as HTMLElement).textContent}, на борту ${ppl}.`;
+    document.querySelector<HTMLAnchorElement>("[data-send]")!.href = `${D.wa}?text=${encodeURIComponent(text)}`;
+  }
+  let pick: string[] = [];
+  document.querySelector("[data-kit]")!.addEventListener("click", async () => {
+    const { kit } = await import("../scripts/app");
+    pick.forEach((id) => kit.put(id));
+    location.href = `${D.base}cart/`;
+  });
+  f.addEventListener("input", plan);
+  plan();
+</script>
+
+<style>
+  .rt { padding-top: calc(var(--top) + env(safe-area-inset-top) + 24px); display: grid; gap: 18px; }
+  .rt__route { position: relative; display: grid; gap: 26px; margin: 18px 0 10px; padding-left: 34px; }
+  /* the course line joining the waypoints */
+  .rt__route::before { content: ""; position: absolute; left: 11px; top: 8px; bottom: 8px; border-left: 2px dashed var(--sea); }
+  .wp { position: relative; border: 0; margin: 0; padding: 0; display: grid; gap: 12px; min-width: 0; }
+  .wp::before { content: ""; position: absolute; left: -31px; top: 4px; width: 16px; height: 16px; border-radius: 50%; background: var(--hull); border: 2px solid var(--navy); }
+  .wp:focus-within::before { background: var(--signal); border-color: var(--signal); }
+  .wp legend { display: flex; align-items: baseline; gap: 10px; padding: 0; font-weight: 700; font-size: 17px; }
+  .wp__n { font-family: var(--mono); font-size: 11px; color: var(--signal); font-weight: 400; }
+  .rt__r { -webkit-appearance: none; appearance: none; width: 100%; height: 34px; background: transparent; margin: 0; }
+  .rt__r::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: var(--mist-2); }
+  .rt__r::-moz-range-track { height: 4px; border-radius: 2px; background: var(--mist-2); }
+  .rt__r::-webkit-slider-thumb { -webkit-appearance: none; width: 24px; height: 24px; margin-top: -10px; border-radius: 50%; background: var(--navy); box-shadow: 0 0 0 4px rgba(11, 34, 54, 0.12); }
+  .rt__r::-moz-range-thumb { width: 24px; height: 24px; border: 0; border-radius: 50%; background: var(--navy); }
+  .kit { display: grid; gap: 14px; padding: 20px; border-radius: 28px; background: var(--navy); color: #fff; }
+  .kit .mono { color: rgba(255, 255, 255, 0.6); }
+  .kit .mono--sig { color: var(--signal); }
+  .kit__list { display: grid; gap: 8px; }
+  .kit__list :global(.kr) { display: grid; grid-template-columns: 84px 1fr auto; gap: 12px; align-items: center; padding: 8px; border-radius: 18px; background: rgba(255, 255, 255, 0.06); }
+  .kit__list :global(.kr__img) { aspect-ratio: 4 / 3; border-radius: 12px; overflow: hidden; background: #fff; }
+  .kit__list :global(.kr__img img) { width: 100%; height: 100%; object-fit: cover; }
+  .kit__list :global(.kr__b) { display: grid; gap: 2px; min-width: 0; }
+  .kit__list :global(.kr__b b) { font-size: 15px; line-height: 1.25; }
+  .kit__list :global(.kr__b small) { font-size: 12px; color: rgba(255, 255, 255, 0.65); }
+  .kit__list :global(.kr__p) { font-weight: 800; font-size: 13px; white-space: nowrap; }
+  .kit__list :global(.kit__alt a) { color: #fff; text-decoration: underline; text-underline-offset: 3px; }
+  .kit__sum { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, 0.15); }
+  .kit__sum strong { font-family: var(--cond); font-weight: 600; font-size: 34px; line-height: 1; text-align: right; }
+  .kit__act { display: grid; gap: 8px; }
+  .kit .btn--line { color: #fff; box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.5); }
+  @media (min-width: 1000px) {
+    .rt { padding-top: 56px; grid-template-columns: 1fr 460px; column-gap: 64px; align-items: start; }
+    .rt > .bear, .rt > h1, .rt > .lede { grid-column: 1; }
+    .rt__route { grid-column: 1; }
+    .kit { grid-column: 2; grid-row: 1 / span 4; position: sticky; top: 24px; padding: 28px; }
+    .kit__act { display: flex; flex-wrap: wrap; }
+  }
+</style>

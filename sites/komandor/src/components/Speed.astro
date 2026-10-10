@@ -1,0 +1,126 @@
+---
+/**
+ * «Сколько узлов?» — an estimate of top speed by Crouch's planing formula:
+ * mph = C / √(lb per hp), C = 150 for an average planing hull. Hull weight and the allowed
+ * motor power come from the catalogue; motor weight is estimated from its power.
+ */
+import { boats, fmt } from "../lib/site";
+
+interface Props { slug?: string; compact?: boolean }
+const { slug, compact = false } = Astro.props;
+const list = boats.filter((b) => b.weight && b.hp).map((b) => ({ s: b.slug, n: b.name, w: b.weight!, lo: b.hp![0], hi: b.hp![1], p: b.people ?? 4 }));
+const start = list.find((b) => b.s === slug) ?? list.find((b) => b.hi >= 90) ?? list[0];
+const ticks = Array.from({ length: 11 }, (_, i) => i * 10);
+---
+<div class:list={["spd", { "spd--compact": compact }]} data-spd data-list={JSON.stringify(list)}>
+  <div class="spd__gauge">
+    <svg viewBox="0 0 240 140" aria-hidden="true">
+      <path class="spd__arc" d="M20 120 A100 100 0 0 1 220 120" />
+      <path class="spd__fill" d="M20 120 A100 100 0 0 1 220 120" pathLength="100" data-fill />
+      {ticks.map((t) => {
+        const a = Math.PI * (1 - t / 100), x1 = 120 + Math.cos(a) * 92, y1 = 120 - Math.sin(a) * 92, x2 = 120 + Math.cos(a) * (t % 20 === 0 ? 80 : 86), y2 = 120 - Math.sin(a) * (t % 20 === 0 ? 80 : 86);
+        const tx = 120 + Math.cos(a) * 68, ty = 120 - Math.sin(a) * 68 + 4;
+        return <><line x1={x1} y1={y1} x2={x2} y2={y2} />{t % 20 === 0 && <text x={tx} y={ty}>{t}</text>}</>;
+      })}
+      <g data-needle><path class="spd__needle" d="M118 120 L120 34 L122 120 Z" /></g>
+      <circle cx="120" cy="120" r="6" class="spd__hub" />
+    </svg>
+    <p class="spd__v"><span class="num" data-kmh>0</span><small> км/ч</small></p>
+    <p class="spd__kn mono"><span data-kn>0</span> узлов · оценка</p>
+  </div>
+  <form class="spd__ctl" data-spd-f>
+    {!slug && (
+      <label class="field"><span>Катер</span>
+        <select class="input" name="boat">{list.map((b) => <option value={b.s} selected={b.s === start.s}>{b.n}</option>)}</select>
+      </label>
+    )}
+    {slug && <input type="hidden" name="boat" value={start.s} />}
+    <label class="field"><span>Мотор · <b data-hp>{start.hi}</b> л. с.</span>
+      <input class="spd__r" type="range" name="hp" min={start.lo} max={start.hi} step="5" value={start.hi} />
+      <span class="spd__lim mono"><span data-lo>{start.lo}</span><span data-hi>{start.hi} л. с. — максимум для корпуса</span></span>
+    </label>
+    <label class="field"><span>На борту · <b data-crew>2</b> чел.</span>
+      <input class="spd__r" type="range" name="crew" min="1" max={start.p} step="1" value="2" />
+    </label>
+    <p class="spd__note">Вес катера <span data-w>{fmt(start.w)}</span> кг + мотор, люди и топливо. Реальная скорость зависит от винта, загрузки и волны — точнее скажем на воде.</p>
+  </form>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-spd]").forEach((root) => {
+    type B = { s: string; n: string; w: number; lo: number; hi: number; p: number };
+    const list = JSON.parse(root.dataset.list!) as B[];
+    const f = root.querySelector<HTMLFormElement>("[data-spd-f]")!;
+    const hp = f.elements.namedItem("hp") as HTMLInputElement, crew = f.elements.namedItem("crew") as HTMLInputElement;
+    const q = (s: string) => root.querySelector<HTMLElement>(s)!;
+    const needle = q("[data-needle]"), fill = q("[data-fill]");
+    let shown = 0, raf = 0;
+    const motorKg = (h: number) => (h <= 30 ? 1.2 * h + 25 : 0.95 * h + 60);
+    const target = () => {
+      const b = list.find((x) => x.s === (f.elements.namedItem("boat") as HTMLInputElement).value)!;
+      const h = Number(hp.value), c = Number(crew.value);
+      const kg = b.w + motorKg(h) + c * 80 + 60;
+      const mph = 150 / Math.sqrt((kg * 2.2046) / h);
+      return { b, h, c, kmh: mph * 1.609 };
+    };
+    const draw = (v: number) => {
+      const k = Math.min(1, v / 100);
+      needle.setAttribute("transform", `rotate(${(-90 + 180 * k).toFixed(2)} 120 120)`);
+      fill.style.strokeDashoffset = String(100 - k * 100);
+      q("[data-kmh]").textContent = String(Math.round(v));
+      q("[data-kn]").textContent = String(Math.round(v / 1.852));
+    };
+    const update = () => {
+      const t = target();
+      q("[data-hp]").textContent = String(t.h); q("[data-crew]").textContent = String(t.c);
+      cancelAnimationFrame(raf);
+      const from = shown, t0 = performance.now();
+      // the needle swings like a real gauge: quick, then settles
+      const run = (now: number) => {
+        const k = Math.min(1, (now - t0) / 700), e = 1 - Math.pow(1 - k, 3);
+        shown = from + (t.kmh - from) * e; draw(shown);
+        if (k < 1) raf = requestAnimationFrame(run);
+      };
+      raf = requestAnimationFrame(run);
+    };
+    f.addEventListener("change", (e) => {
+      if ((e.target as HTMLElement).getAttribute("name") !== "boat") return;
+      const b = list.find((x) => x.s === (e.target as HTMLSelectElement).value)!;
+      hp.min = String(b.lo); hp.max = String(b.hi); hp.value = String(b.hi);
+      crew.max = String(b.p); if (Number(crew.value) > b.p) crew.value = String(b.p);
+      q("[data-lo]").textContent = String(b.lo); q("[data-hi]").textContent = `${b.hi} л. с. — максимум для корпуса`;
+      q("[data-w]").textContent = String(b.w).replace(".", ",");
+    });
+    f.addEventListener("input", update);
+    f.addEventListener("change", update);
+    // the engine starts when the gauge comes into view
+    new IntersectionObserver(([e], o) => { if (e.isIntersecting) { o.disconnect(); update(); } }, { threshold: 0.4 }).observe(root);
+  });
+</script>
+
+<style>
+  .spd { display: grid; gap: 28px; }
+  .spd__gauge { position: relative; display: grid; justify-items: center; padding: 20px 16px 22px; border-radius: 28px; background: var(--navy); color: #fff; }
+  .spd__gauge svg { width: 100%; max-width: 420px; overflow: visible; }
+  .spd__arc { fill: none; stroke: rgba(255, 255, 255, 0.12); stroke-width: 10; stroke-linecap: round; }
+  .spd__fill { fill: none; stroke: var(--signal); stroke-width: 10; stroke-linecap: round; stroke-dasharray: 100; stroke-dashoffset: 100; }
+  .spd__gauge line { stroke: rgba(255, 255, 255, 0.45); stroke-width: 1.2; }
+  .spd__gauge text { fill: rgba(255, 255, 255, 0.55); font-family: var(--mono); font-size: 9px; text-anchor: middle; }
+  .spd__needle { fill: #fff; }
+  .spd__hub { fill: var(--navy); stroke: #fff; stroke-width: 2; }
+  .spd__v { font-family: var(--cond); font-weight: 600; font-size: 76px; line-height: 0.9; margin-top: -26px; }
+  .spd__v .num { font-family: var(--cond); }
+  .spd__v small { font-size: 22px; color: rgba(255, 255, 255, 0.6); }
+  .spd__kn { color: rgba(255, 255, 255, 0.6); }
+  .spd__ctl { display: grid; gap: 20px; align-content: start; }
+  .spd__ctl .field > span b { color: var(--navy); font-weight: 500; }
+  .spd__r { -webkit-appearance: none; appearance: none; width: 100%; height: 34px; background: transparent; margin: 0; }
+  .spd__r::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: linear-gradient(90deg, var(--sea), var(--navy)); }
+  .spd__r::-moz-range-track { height: 4px; border-radius: 2px; background: linear-gradient(90deg, var(--sea), var(--navy)); }
+  .spd__r::-webkit-slider-thumb { -webkit-appearance: none; width: 24px; height: 24px; margin-top: -10px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 2px var(--navy), 0 4px 10px rgba(11, 34, 54, 0.25); }
+  .spd__r::-moz-range-thumb { width: 24px; height: 24px; border: 2px solid var(--navy); border-radius: 50%; background: #fff; }
+  .spd__lim { display: flex; justify-content: space-between; font-size: 10px; color: var(--dim); }
+  .spd__note { font-size: 13.5px; color: var(--soft); }
+  select.input { background-image: linear-gradient(45deg, transparent 50%, var(--navy) 50%), linear-gradient(135deg, var(--navy) 50%, transparent 50%); background-position: right 20px center, right 15px center; background-size: 5px 5px; background-repeat: no-repeat; padding-right: 40px; }
+  @media (min-width: 1000px) { .spd { grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; } .spd--compact { grid-template-columns: 1fr; } }
+</style>

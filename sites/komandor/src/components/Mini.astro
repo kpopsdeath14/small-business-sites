@@ -1,0 +1,23 @@
+---
+import type { Item } from "../lib/site";
+import { pimg, rub, fmt, href } from "../lib/site";
+interface Props { i: Item }
+const { i } = Astro.props;
+const fact = i.cat === "boats" ? (i.len ? `${fmt(i.len)} м${i.hp ? ` · до ${i.hp[1]} л. с.` : ""}` : "") : i.cat === "motors" ? (i.hp ? `${i.hp[1]} л. с.` : "") : i.load ? `до ${i.load} кг` : "";
+---
+<a class:list={["mini", `mini--${i.cat}`]} href={href(i)}>
+  <span class="mini__img"><img src={pimg(i.img[0])} alt="" loading="lazy" decoding="async" /></span>
+  <span class="mono">{fact}</span>
+  <span class="mini__n">{i.name.replace(/^(Катер|Лодка|Лодочный мотор|Мотор)\s+/i, "")}</span>
+  <span class="mini__p">{i.price ? rub(i.price) : "по запросу"}</span>
+</a>
+<style>
+  .mini { display: grid; gap: 6px; align-content: start; padding: 10px 10px 14px; border-radius: 22px; background: var(--foam); box-shadow: inset 0 0 0 1px var(--line); transition: box-shadow 0.3s; }
+  @media (hover: hover) { .mini:hover { box-shadow: inset 0 0 0 1.5px var(--navy); } }
+  .mini__img { display: block; aspect-ratio: 4 / 3; border-radius: 14px; overflow: hidden; background: #fff; margin-bottom: 4px; }
+  .mini__img img { width: 100%; height: 100%; object-fit: cover; }
+  .mini--motors .mini__img img, .mini--trailers .mini__img img { object-fit: contain; padding: 8px; }
+  .mini .mono { padding: 0 4px; }
+  .mini__n { padding: 0 4px; font-weight: 700; font-size: 14.5px; line-height: 1.25; }
+  .mini__p { padding: 0 4px; font-size: 14px; color: var(--soft); }
+</style>

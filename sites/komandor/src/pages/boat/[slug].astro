@@ -1,0 +1,9 @@
+---
+import ItemPage from "../../components/ItemPage.astro";
+import { boats, bySlug } from "../../lib/site";
+
+export function getStaticPaths() {
+  return boats.map((i) => ({ params: { slug: i.slug } }));
+}
+---
+<ItemPage it={bySlug(Astro.params.slug!)} />

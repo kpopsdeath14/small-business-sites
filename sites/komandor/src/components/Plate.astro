@@ -1,0 +1,71 @@
+---
+/**
+ * The builder's plate every boat carries by the helm (CE plate): maximum persons, load and engine power,
+ * with the pictograms used on real plates. Values come from the catalogue.
+ */
+import type { Item } from "../lib/site";
+import { fmt } from "../lib/site";
+
+interface Props { b: Item }
+const { b } = Astro.props;
+const spec = (re: RegExp) => b.specs.find(([k]) => re.test(k))?.[1] ?? "";
+const rows = [
+  ["Ширина", b.beam ? `${fmt(b.beam)} м` : ""],
+  ["Масса корпуса", b.weight ? `${b.weight} кг` : ""],
+  ["Корпус", b.hull],
+  ["Осадка", spec(/Осадка/i)],
+  ["Килеватость", spec(/Килеват/i)],
+  ["Транец", spec(/транц/i)],
+].filter(([, v]) => v);
+---
+<div class="plate" data-in>
+  <div class="plate__head">
+    <span class="plate__brand">{b.brand || "Командор"}</span>
+    <span class="plate__ce">CE</span>
+  </div>
+  <p class="plate__model">{b.name.replace(/^(Катер|Лодка)\s+/i, "")}</p>
+  <div class="plate__max">
+    {b.people && (
+      <div>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="2.6" /><path d="M8 22v-8H6V10a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3v4h-2v8z" /></svg>
+        <b class="num">{b.people}</b><span>человек</span>
+      </div>
+    )}
+    {b.hp && (
+      <div>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h8a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H7z" /><path d="M10 12v7l-3 2h9" fill="none" stroke="currentColor" stroke-width="2" /></svg>
+        <b class="num">{b.hp[1]}</b><span>л. с. макс.</span>
+      </div>
+    )}
+    {b.len && (
+      <div>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 14h20l-3 5H5z" /><path d="M2 8v3M22 8v3M2 9.5h20" fill="none" stroke="currentColor" stroke-width="1.5" /></svg>
+        <b class="num">{fmt(b.len)}</b><span>метра</span>
+      </div>
+    )}
+  </div>
+  <dl class="plate__rows">{rows.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
+  <i class="plate__screw"></i><i class="plate__screw"></i><i class="plate__screw"></i><i class="plate__screw"></i>
+</div>
+
+<style>
+  .plate { position: relative; display: grid; gap: 12px; padding: 22px 24px 18px; border-radius: 14px; color: #1d2a33; background: linear-gradient(135deg, #f1f3f2 0%, #d9dedf 45%, #eef0ef 55%, #cfd5d7 100%); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), inset 0 -1px 0 rgba(0, 0, 0, 0.12), 0 14px 30px -18px rgba(11, 34, 54, 0.6); }
+  .plate::before { content: ""; position: absolute; inset: 0; border-radius: inherit; background: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.08) 0 1px, rgba(0, 0, 0, 0.03) 1px 2px); pointer-events: none; }
+  .plate__head { display: flex; justify-content: space-between; align-items: center; }
+  .plate__brand { font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; }
+  .plate__ce { font-family: var(--cond); font-weight: 600; font-size: 26px; line-height: 1; }
+  .plate__model { font-family: var(--cond); font-weight: 600; font-size: 32px; line-height: 0.95; text-transform: uppercase; }
+  .plate__max { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 12px 0; border-block: 1.5px solid rgba(29, 42, 51, 0.5); }
+  .plate__max div { display: grid; justify-items: center; gap: 2px; text-align: center; }
+  .plate__max svg { width: 28px; height: 28px; fill: #1d2a33; }
+  .plate__max b { font-size: 22px; font-weight: 500; }
+  .plate__max span { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; }
+  .plate__rows { display: grid; }
+  .plate__rows div { display: flex; justify-content: space-between; gap: 12px; padding: 5px 0; border-bottom: 1px dotted rgba(29, 42, 51, 0.35); font-size: 13px; }
+  .plate__rows dt { color: #4b5a64; }
+  .plate__rows dd { font-weight: 600; text-align: right; }
+  .plate__fn { font-size: 10.5px; color: #5b6870; }
+  .plate__screw { position: absolute; width: 9px; height: 9px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff, #9aa4a8 60%, #6c777c); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2); }
+  .plate__screw::after { content: ""; position: absolute; left: 1px; right: 1px; top: 4px; height: 1px; background: rgba(0, 0, 0, 0.35); transform: rotate(35deg); }
+  .plate__screw:nth-of-type(1) { left: 8px; top: 8px; } .plate__screw:nth-of-type(2) { right: 8px; top: 8px; } .plate__screw:nth-of-type(3) { left: 8px; bottom: 8px; } .plate__screw:nth-of-type(4) { right: 8px; bottom: 8px; }
+</style>

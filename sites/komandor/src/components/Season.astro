@@ -1,0 +1,68 @@
+---
+/**
+ * The boating year in Moscow region as a ribbon of twelve months. Today's month is marked and
+ * the service centre suggests what a boat needs right now. Months are typical, not a calendar of the river.
+ */
+import { contacts } from "../lib/site";
+import Icon from "./Icon.astro";
+const M = ["Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"];
+// phase per month: 0 — winter storage, 1 — getting ready, 2 — on the water, 3 — laying up
+const PH = [0, 0, 0, 1, 2, 2, 2, 2, 2, 3, 3, 0];
+const PHASES = [
+  ["Зимнее хранение", "Катер на прицепе под тентом или в боксе. Время выбрать новый — к весне цены и наличие лучше всего."],
+  ["Подготовка", "Расконсервация мотора, замена масла и свечей, проверка винта и электрики перед спуском на воду."],
+  ["Навигация", "Сезон на воде: мотор в обкатке, ТО по моточасам. Сервис принимает без долгой очереди."],
+  ["Консервация", "Слить топливо, прогнать мотор на консервирующем масле, снять аккумулятор. Записаться на консервацию — сейчас."],
+];
+---
+<div class="ssn" data-ssn data-ph={JSON.stringify(PH)}>
+  <ol class="ssn__row">
+    {M.map((m, i) => <li class={`p${PH[i]}`} data-m={i}><span>{m}</span><i></i></li>)}
+  </ol>
+  <div class="ssn__legend mono">{PHASES.map(([t], i) => <span class={`p${i}`}><i></i>{t}</span>)}</div>
+  <div class="ssn__now">
+    <p class="mono mono--sig" data-ssn-k>Сейчас</p>
+    {PHASES.map(([t, d], i) => <div class="ssn__ph" data-ssn-ph={i} hidden><p class="mark mark--s">{t}</p><p class="lede">{d}</p></div>)}
+    <a class="btn" href={contacts.serviceHref}>Сервис · {contacts.service} <Icon name="phone" /></a>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-ssn]").forEach((el) => {
+    const ph = JSON.parse(el.dataset.ph!) as number[];
+    const m = new Date().getMonth();
+    el.querySelector(`[data-m="${m}"]`)!.classList.add("now");
+    el.querySelector<HTMLElement>(`[data-ssn-ph="${ph[m]}"]`)!.hidden = false;
+    el.querySelector("[data-ssn-k]")!.textContent = `Сейчас · ${new Date().toLocaleDateString("ru-RU", { month: "long" })}`;
+    // the ribbon fills month by month up to today when it comes into view
+    new IntersectionObserver(([e], o) => { if (e.isIntersecting) { o.disconnect(); el.classList.add("go"); } }, { threshold: 0.3 }).observe(el);
+  });
+</script>
+
+<style>
+  .ssn { display: grid; gap: 22px; }
+  .ssn__row { display: grid; grid-template-columns: repeat(12, 1fr); gap: 3px; }
+  .ssn__row li { position: relative; display: grid; gap: 8px; }
+  .ssn__row span { font-family: var(--mono); font-size: 9px; letter-spacing: 0.02em; color: var(--dim); text-align: center; }
+  .ssn__row i { height: 56px; border-radius: 6px; background: var(--mist); transform-origin: bottom; transform: scaleY(0.2); transition: transform 0.7s var(--ease), background 0.4s; }
+  .ssn.go .ssn__row i { transform: none; transition-delay: calc(var(--k, 0) * 40ms); }
+  .ssn__row li:nth-child(1) i { --k: 0; } .ssn__row li:nth-child(2) i { --k: 1; } .ssn__row li:nth-child(3) i { --k: 2; } .ssn__row li:nth-child(4) i { --k: 3; } .ssn__row li:nth-child(5) i { --k: 4; } .ssn__row li:nth-child(6) i { --k: 5; } .ssn__row li:nth-child(7) i { --k: 6; } .ssn__row li:nth-child(8) i { --k: 7; } .ssn__row li:nth-child(9) i { --k: 8; } .ssn__row li:nth-child(10) i { --k: 9; } .ssn__row li:nth-child(11) i { --k: 10; } .ssn__row li:nth-child(12) i { --k: 11; }
+  .p0 i { background: #c9d6dc; } .p1 i { background: #8fb7cc; } .p2 i { background: var(--sea); } .p3 i { background: var(--teak); }
+  .ssn__row .p2 i { height: 56px; }
+  .ssn__row li.now span { color: var(--signal); font-weight: 700; }
+  .ssn__row li.now i { box-shadow: 0 0 0 2px var(--hull), 0 0 0 4px var(--signal); }
+  .ssn__row li.now::after { content: ""; position: absolute; left: 50%; bottom: -10px; width: 0; height: 0; border: 5px solid transparent; border-bottom-color: var(--signal); transform: translateX(-50%); }
+  .ssn__legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 10px; }
+  .ssn__legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .ssn__legend i { width: 10px; height: 10px; border-radius: 3px; }
+  .ssn__legend .p0 i { background: #c9d6dc; } .ssn__legend .p1 i { background: #8fb7cc; } .ssn__legend .p2 i { background: var(--sea); } .ssn__legend .p3 i { background: var(--teak); }
+  .ssn__now { display: grid; gap: 12px; justify-items: start; padding: 22px; border-radius: 24px; background: var(--foam); box-shadow: inset 0 0 0 1px var(--line); }
+  .ssn__ph { display: grid; gap: 8px; }
+  @media (min-width: 1000px) {
+    .ssn__row { gap: 6px; }
+    .ssn__row span { font-size: 11px; }
+    .ssn__row i { height: 90px; }
+    .ssn__now { grid-template-columns: 1fr auto; align-items: end; padding: 32px; }
+    .ssn__now .mono { grid-column: 1 / -1; }
+  }
+</style>

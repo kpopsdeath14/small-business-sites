@@ -17,6 +17,7 @@
 #   RSEAT Russia            -> .../small-business-sites/simracing-shop/  (bespoke, not generated)
 #   Камин Лайн              -> .../small-business-sites/kaminline/  (bespoke, not generated)
 #   Подвалы Бахуса          -> .../small-business-sites/bacchus/  (bespoke, not generated)
+#   Командор                -> .../small-business-sites/komandor/  (bespoke, not generated)
 #
 # Each site's astro.config.mjs carries a matching `base`, so asset URLs resolve under
 # its subpath. CI must NOT re-run `npm run new-site` — without ANTHROPIC_API_KEY that
@@ -62,6 +63,7 @@ env:
     simracing-shop:/simracing-shop
     kaminline:/kaminline
     bacchus:/bacchus
+    komandor:/komandor
 
 jobs:
   build:

@@ -1,0 +1,125 @@
+---
+import "@fontsource/barlow-condensed/500.css";
+import "@fontsource/barlow-condensed/600.css";
+import "@fontsource-variable/manrope";
+import "@fontsource/roboto-mono/400.css";
+import "../styles/global.css";
+import Icon from "../components/Icon.astro";
+import { url, contacts, cartIndex, BASE, img } from "../lib/site";
+
+interface Props { title?: string; description?: string; nav?: string }
+const {
+  title = "Командор — катера и лодочные моторы в Жуковском",
+  description = "Салон катеров NorthSilver, Wellboat, Bossforr, Avanraid и лодочных моторов Mercury, Suzuki, Marlin. Подбор мотора и прицепа, сервисный центр. Жуковский, Речной проезд, 21, без выходных.",
+  nav = "",
+} = Astro.props;
+const year = new Date().getFullYear();
+const links = [
+  ["boats", "Катера", url("catalog/"), "boat"],
+  ["motors", "Моторы", url("catalog/motors/"), "motor"],
+  ["podbor", "Подбор", url("podbor/"), "compass"],
+  ["cart", "Комплект", url("cart/"), "anchor"],
+  ["contact", "Связь", url("contact/"), "chat"],
+] as const;
+---
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#f4f5f2" />
+    <link rel="icon" type="image/svg+xml" href={`${BASE}/favicon.svg`} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(img("og", 1200), Astro.site).href} />
+    <script is:inline>document.documentElement.classList.add("js");</script>
+    <slot name="head" />
+  </head>
+  <body>
+    <!-- phones: logo and live coordinates on top, navigation in a bottom dock -->
+    <header class="top">
+      <a href={url()} class="brand" aria-label="Командор — на главную">
+        <svg viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="12" fill="none" stroke="currentColor" stroke-opacity=".25" /><path d="M13 2.5l2.6 10.5L13 23.5 10.4 13z" fill="#0b2236" /><path d="M13 2.5l2.6 10.5h-5.2z" fill="#ff5a1f" /></svg>
+        <b>Командор</b>
+      </a>
+      <p class="coords"><i></i>{contacts.lat}<br />{contacts.lon}</p>
+    </header>
+
+    <!-- desktop: a side rail with the same navigation and an echo sounder -->
+    <aside class="rail" aria-label="Навигация">
+      <a href={url()} class="brand" aria-label="Командор — на главную">
+        <svg viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="12" fill="none" stroke="currentColor" stroke-opacity=".25" /><path d="M13 2.5l2.6 10.5L13 23.5 10.4 13z" fill="#0b2236" /><path d="M13 2.5l2.6 10.5h-5.2z" fill="#ff5a1f" /></svg>
+        <b>Командор</b>
+      </a>
+      <nav>
+        {links.map(([id, label, href, icon]) => (
+          <a href={href} aria-current={nav === id ? "page" : undefined}><Icon name={icon} />{label}{id === "cart" && <span class="cnt" data-cnt>0</span>}</a>
+        ))}
+      </nav>
+      <div class="sonar" aria-hidden="true">
+        <div class="sonar__col"><i data-sonar></i></div>
+        <p class="sonar__v"><span data-depth>0,0</span> м<br />под килем</p>
+      </div>
+    </aside>
+
+    <div class="page">
+      <slot />
+    </div>
+
+    <footer class="ftr">
+      <div class="wrap">
+        <div class="ftr__grid">
+          <div class="ftr__col">
+            <p class="mono">Командор · Жуковский</p>
+            <p class="ftr__big">Катера,<br />моторы,<br />сервис</p>
+          </div>
+          <div class="ftr__col">
+            <p class="mono">Салон</p>
+            <span>{contacts.salon}</span>
+            <span>{contacts.hours}</span>
+          </div>
+          <div class="ftr__col">
+            <p class="mono">Продажа</p>
+            <a href={contacts.salesHref}>{contacts.sales}</a>
+            <a href={contacts.wa} target="_blank" rel="noopener">WhatsApp</a>
+            <a href={contacts.tg} target="_blank" rel="noopener">Telegram</a>
+          </div>
+          <div class="ftr__col">
+            <p class="mono">Сервис и запчасти</p>
+            <a href={contacts.serviceHref}>{contacts.service}</a>
+            <a href={`mailto:${contacts.email}`}>{contacts.email}</a>
+            <a href={contacts.vk} target="_blank" rel="noopener">ВКонтакте</a>
+          </div>
+        </div>
+        <div class="ftr__base">
+          <p class="mono">© {year} Командор</p>
+          <p class="mono">{contacts.lat} · {contacts.lon}</p>
+        </div>
+      </div>
+    </footer>
+
+    <nav class="dock" aria-label="Навигация">
+      <span class="wake" aria-hidden="true"><i data-wake></i></span>
+      {links.map(([id, label, href, icon]) => (
+        <a href={href} aria-current={nav === id ? "page" : undefined}><Icon name={icon} />{label}{id === "cart" && <span class="cnt" data-cnt>0</span>}</a>
+      ))}
+    </nav>
+
+    <div class="log" role="status" aria-live="polite">
+      <span class="log__img"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" alt="" /></span>
+      <div>
+        <p class="log__t"><span data-log-time>00:00</span> · <b data-log-what>принято на борт</b></p>
+        <p class="log__n" data-log-n></p>
+      </div>
+      <a class="log__go" href={url("cart/")}>Комплект</a>
+    </div>
+
+    <script is:inline type="application/json" id="cart-index" set:html={JSON.stringify({ base: BASE, items: cartIndex })} />
+    <script>
+      import "../scripts/app.ts";
+    </script>
+  </body>
+</html>

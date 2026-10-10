@@ -1,0 +1,297 @@
+---
+import Base from "../layouts/Base.astro";
+import Icon from "../components/Icon.astro";
+import { url, contacts } from "../lib/site";
+---
+<Base title="Стапель — ваш комплект · «Командор»" nav="cart">
+  <main class="slp">
+    <div class="wrap slp__head">
+      <p class="bear mono" style="--b: 10deg">Стапель</p>
+      <h1 class="mark mark--l">Ваш <span class="out">комплект</span></h1>
+      <p class="lede">Катер, мотор на его транце и прицеп под ним — собираем как на верфи и сразу проверяем, что всё друг другу подходит.</p>
+    </div>
+
+    <!-- the scene: the boat to scale, afloat or on its trailer -->
+    <div class="scene" data-scene aria-hidden="true"></div>
+
+    <div class="wrap">
+      <div class="slots" data-slots></div>
+
+      <div class="deal" data-deal>
+        <div class="deal__sum">
+          <span class="mono">Комплект</span>
+          <strong data-total>—</strong>
+          <span class="mono deal__req" data-req hidden>+ позиции по запросу — цену назовёт менеджер</span>
+        </div>
+        <form class="deal__form" data-form novalidate>
+          <label class="field"><span>Имя</span><input class="input" name="name" autocomplete="name" required /></label>
+          <label class="field"><span>Телефон</span><input class="input" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7" required /></label>
+          <div class="field"><span>Куда отправить</span>
+            <div class="seg">
+              <label><input type="radio" name="via" value="wa" checked /><span>WhatsApp</span></label>
+              <label><input type="radio" name="via" value="tg" /><span>Telegram</span></label>
+              <label><input type="radio" name="via" value="mail" /><span>Почта</span></label>
+            </div>
+          </div>
+          <label class="field"><span>Комментарий</span><textarea class="input" name="comment" placeholder="Когда удобно посмотреть катер, нужна ли установка мотора, куда доставить"></textarea></label>
+          <button class="btn btn--sig btn--block" type="submit">Запросить комплект <Icon name="arrow" /></button>
+          <p class="deal__note">Менеджер проверит наличие и комплектацию, пригласит на осмотр и пробный выход. Никакой оплаты на сайте.</p>
+        </form>
+      </div>
+
+      <div class="sent" data-sent hidden>
+        <p class="mono mono--sig">Заявка <span data-oid></span></p>
+        <h2 class="mark mark--m">Швартовы <em>отданы</em></h2>
+        <p class="lede">Заявка открыта в мессенджере — отправьте сообщение, и менеджер ответит ({contacts.hours}). В Telegram текст уже скопирован: просто вставьте его. Если окно не открылось, позвоните: {contacts.sales}.</p>
+        <a class="link" href={url()}>На главную <Icon name="arrow" /></a>
+      </div>
+    </div>
+  </main>
+</Base>
+
+<script>
+  import { kit, items, rub, pimg, esc, BASE, type Slot } from "../scripts/app";
+  const $ = <T extends Element = HTMLElement>(s: string) => document.querySelector<T>(s)!;
+  const scene = $("[data-scene]"), slotsEl = $("[data-slots]");
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const S = 56; // px per metre: every boat is drawn at the same scale
+  const motorKg = (h: number) => (h <= 30 ? 1.2 * h + 25 : 0.95 * h + 60);
+  const fmt = (n: number) => String(Math.round(n * 100) / 100).replace(".", ",");
+  let sent = false, played = false;
+
+  /* ---------- the drawing ---------- */
+  function drawScene() {
+    const k = kit.get();
+    const B = k.boat ? items[k.boat] : null, M = k.motor ? items[k.motor] : null, T = k.trailer ? items[k.trailer] : null;
+    const L = Math.max(3, Math.min(9, B?.l ?? 5.5)) * S;
+    const x0 = 470 - L / 2;
+    const hp = M?.hp?.[1] ?? 0;
+    const mh = 40 + Math.min(hp, 350) * 0.18, mw = 16 + Math.min(hp, 350) * 0.06;
+    const onTrailer = !!T;
+    const hull = B
+      ? `<g class="hull" data-g="boat">
+          <path class="hull__body" pathLength="1" d="M${x0} 196 Q${x0 + L * 0.55} 194 ${x0 + L} 176 Q${x0 + L * 0.99} 214 ${x0 + L * 0.9} 234 Q${x0 + L * 0.5} 246 ${x0 + L * 0.06} 244 L${x0} 240 Z"/>
+          <path class="hull__stripe" d="M${x0 + 2} 226 Q${x0 + L * 0.6} 224 ${x0 + L * 0.93} 214"/>
+          <path class="hull__screen" d="M${x0 + L * 0.4} 195 L${x0 + L * 0.46} 168 L${x0 + L * 0.6} 166 L${x0 + L * 0.63} 191"/>
+          <path class="hull__rail" d="M${x0 + L * 0.64} 186 Q${x0 + L * 0.8} 180 ${x0 + L * 0.96} 172"/>
+          <g class="dim"><path d="M${x0} 128 H${x0 + L} M${x0} 120 V136 M${x0 + L} 120 V136"/><text x="${x0 + L / 2}" y="118">${fmt(B.l ?? 0)} м</text></g>
+        </g>`
+      : `<g class="ghost"><path d="M${x0} 196 Q${x0 + L * 0.55} 194 ${x0 + L} 176 Q${x0 + L * 0.99} 214 ${x0 + L * 0.9} 234 Q${x0 + L * 0.5} 246 ${x0 + L * 0.06} 244 L${x0} 240 Z"/><text x="470" y="216">стапель свободен</text></g>`;
+    // the motor hangs on the transom; on a trailer it is tilted up for the road
+    const mx = x0 - 6 - mw;
+    const motor = M && B
+      ? `<g class="motor" data-g="motor"><g class="motor__tilt${onTrailer ? " up" : ""}" style="transform-origin:${x0 - 4}px 200px">
+          <rect class="motor__cowl" x="${mx}" y="${196 - mh * 0.55}" width="${mw}" height="${mh * 0.62}" rx="${mw * 0.35}"/>
+          <rect class="motor__leg" x="${mx + mw * 0.38}" y="${196 + mh * 0.05}" width="${mw * 0.26}" height="${262 - 196 - mh * 0.05}"/>
+          <g class="prop" style="transform-origin:${mx + mw * 0.5 - 6}px 258px"><ellipse cx="${mx + mw * 0.5 - 6}" cy="258" rx="3" ry="11"/><ellipse cx="${mx + mw * 0.5 - 6}" cy="258" rx="11" ry="3"/></g>
+        </g><text class="tag" x="${mx + mw / 2}" y="${196 - mh * 0.55 - 10}">${hp} л. с.</text></g>`
+      : "";
+    const wakeX = mx - 10;
+    const wake = M && B && !onTrailer ? `<g class="wake"><path d="M${wakeX} 252 C ${wakeX - 80} 250 ${wakeX - 160} 258 ${wakeX - 300} 256"/><path d="M${wakeX} 258 C ${wakeX - 90} 262 ${wakeX - 170} 268 ${wakeX - 320} 270"/></g>` : "";
+    const axles = (B?.l ?? 5) > 6 ? [0.42, 0.56] : [0.48];
+    const trailer = T
+      ? `<g class="trailer" data-g="trailer">
+          <path class="trailer__frame" d="M${x0 + L * 0.04} 262 H${x0 + L + 40} L${x0 + L + 110} 270 H${x0 + L + 130}"/>
+          <path class="trailer__bunk" d="M${x0 + L * 0.1} 250 Q${x0 + L * 0.5} 256 ${x0 + L * 0.85} 244"/>
+          <path class="trailer__post" d="M${x0 + L * 0.1} 250 V262 M${x0 + L * 0.85} 244 V262 M${x0 + L + 18} 262 V218 H${x0 + L - 2}"/>
+          ${axles.map((a) => `<g class="wheel" style="transform-origin:${x0 + L * a}px 280px"><circle cx="${x0 + L * a}" cy="280" r="18"/><circle cx="${x0 + L * a}" cy="280" r="6"/><path d="M${x0 + L * a - 18} 280 H${x0 + L * a + 18} M${x0 + L * a} 262 V298"/></g>`).join("")}
+          <text class="tag" x="${x0 + L + 70}" y="300">до ${T.ld ?? "—"} кг</text>
+        </g>`
+      : "";
+    // the frame hugs the boat (same scale for every boat, so the metres read true)
+    const vx = x0 - (M ? 130 : 70), vw = L + (M ? 130 : 70) + (T ? 150 : 70), vy = 96, vh = 252;
+    const wave = (y: number, a: number) => { let d = `M${vx - 200} ${y}`; for (let x = vx - 200; x < vx + vw + 200; x += 80) d += ` Q ${x + 40} ${y - a} ${x + 80} ${y}`; return d; };
+    const ground = onTrailer
+      ? `<path class="road" d="M${vx - 50} 299 H${vx + vw + 50}"/><path class="road road--dash" d="M${vx - 50} 312 H${vx + vw + 50}"/>`
+      : `<path class="sea" d="${wave(250, 6)} V400 H${vx - 200} Z"/><path class="sea sea--2" d="${wave(268, 5)}"/>`;
+    scene.innerHTML = `<svg viewBox="${vx} ${vy} ${vw} ${vh}" preserveAspectRatio="xMidYMid meet" class="${onTrailer ? "is-road" : "is-sea"}${B ? "" : " is-empty"}">
+      <g class="bg">${ground}</g>${wake}${trailer}<g class="boatgrp${B && !onTrailer && !reduced ? " bob" : ""}">${hull}${motor}</g>
+      <text class="scene__lbl" x="${vx + 12}" y="${vy + vh - 12}">${onTrailer ? "НА ПРИЦЕПЕ · ГОТОВ К ДОРОГЕ" : B ? "НА ВОДЕ" : "СТАПЕЛЬ"}${B ? ` · ${esc(B.n)}` : ""}</text>
+    </svg>`;
+    if (!played && !reduced) { played = true; enter(k.last && k.at && Date.now() - k.at < 120000 ? k.last : undefined); }
+  }
+
+  /** The entrance for whatever was just chosen: the hull launches, the motor drops onto the transom, the trailer rolls in. */
+  function enter(what?: Slot) {
+    const g = (s: string) => scene.querySelector<SVGGElement>(`[data-g="${s}"]`);
+    const body = scene.querySelector<SVGPathElement>(".hull__body");
+    if (body) body.animate([{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], { duration: 1300, easing: "cubic-bezier(.7,0,.25,1)", fill: "backwards" });
+    const ease = "cubic-bezier(.2,.9,.25,1)";
+    if (what === "boat" && g("boat")) g("boat")!.animate([{ transform: "translateX(-640px)", opacity: 0 }, { opacity: 1, offset: 0.2 }, { transform: "translateX(14px)", offset: 0.85 }, { transform: "none" }], { duration: 1700, easing: ease, fill: "backwards" });
+    if (what === "motor" && g("motor")) g("motor")!.animate([{ transform: "translateY(-150px)", opacity: 0 }, { opacity: 1, offset: 0.3 }, { transform: "translateY(6px)", offset: 0.8 }, { transform: "none" }], { duration: 1100, easing: ease, fill: "backwards" });
+    if (what === "trailer" && g("trailer")) {
+      g("trailer")!.animate([{ transform: "translateX(-900px)" }, { transform: "none" }], { duration: 1600, easing: ease, fill: "backwards" });
+      scene.querySelectorAll<SVGGElement>(".wheel").forEach((w) => w.animate([{ transform: "rotate(-720deg)" }, { transform: "none" }], { duration: 1600, easing: ease, fill: "backwards" }));
+      scene.querySelector(".boatgrp")?.animate([{ transform: "translateY(16px)" }, { transform: "translateY(16px)", offset: 0.75 }, { transform: "none" }], { duration: 2000, easing: ease, fill: "backwards" });
+    }
+  }
+
+  /* ---------- the three slots with compatibility checks ---------- */
+  function slots() {
+    const k = kit.get();
+    const B = k.boat ? items[k.boat] : null, M = k.motor ? items[k.motor] : null, T = k.trailer ? items[k.trailer] : null;
+    const gross = B?.w ? Math.round(B.w + (M?.hp ? motorKg(M.hp[1]) : 0)) : 0;
+    const checks: Record<Slot, [string, string] | null> = {
+      boat: B ? ["ok", `${fmt(B.l ?? 0)} м${B.hp ? ` · мотор ${B.hp[0]}–${B.hp[1]} л. с.` : ""}`] : null,
+      motor: M && B?.hp && M.hp ? (M.hp[1] > B.hp[1] ? ["warn", `Мощнее допуска корпуса (${B.hp[1]} л. с.)`] : M.hp[1] < B.hp[0] ? ["warn", `Слабоват: корпус рассчитан от ${B.hp[0]} л. с.`] : ["ok", `В допуске корпуса ${B.hp[0]}–${B.hp[1]} л. с.`]) : M ? ["info", "Совместимость проверит менеджер"] : null,
+      trailer: T && gross && T.ld ? (T.ld < gross ? ["warn", `Слабоват: катер с мотором ≈ ${gross} кг`] : T.l && B?.l && (T.l < B.l - 0.3 || T.l > B.l + 1.5) ? ["warn", `Рассчитан на суда ${fmt(T.l)} м`] : T.l ? ["ok", `Выдержит ${gross} кг катера с мотором`] : ["info", `Выдержит ${gross} кг; ложементы под корпус уточнит менеджер`]) : T ? ["info", "Подбор прицепа проверит менеджер"] : null,
+    };
+    const empty: Record<Slot, [string, string, string]> = {
+      boat: ["Выберите катер", "От лодки на 3 метра до каютного крейсера", `${BASE}/catalog/`],
+      motor: ["Поставьте мотор", B?.hp ? `Корпус рассчитан на ${B.hp[0]}–${B.hp[1]} л. с.` : "Подберём под корпус", B?.hp ? `${BASE}/catalog/motors/?fit=${B.hp[0]}-${B.hp[1]}` : `${BASE}/catalog/motors/`],
+      trailer: ["Добавьте прицеп", gross ? `Нужна грузоподъёмность от ${gross} кг` : "Чтобы возить катер к воде", `${BASE}/catalog/trailers/${gross ? `?fit=${gross}` : ""}`],
+    };
+    const label: Record<Slot, string> = { boat: "01 · Катер", motor: "02 · Мотор", trailer: "03 · Прицеп" };
+    const sv = (d: string) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+    const icon: Record<Slot, string> = {
+      boat: sv('<path d="M3 15h18l-2.6 4.2a2 2 0 0 1-1.7.8H6.6a2 2 0 0 1-1.6-.8z"/><path d="M6 15l1.6-5h7.2L18 15"/><path d="M9.5 10V6.5h3"/>'),
+      motor: sv('<path d="M8 3h7a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H8z"/><path d="M11 12v7l-3 2M11 19h5"/><path d="M8 6H6"/>'),
+      trailer: sv('<path d="M2 14h15v-4H5z"/><circle cx="9" cy="17" r="2"/><path d="M17 14h5"/>'),
+    };
+    slotsEl.innerHTML = (["boat", "motor", "trailer"] as Slot[]).map((s) => {
+      const id = k[s];
+      if (!id) {
+        const [t, d, href] = empty[s];
+        return `<a class="slot slot--empty" href="${href}"><span class="mono">${label[s]}</span><span class="slot__ph" aria-hidden="true">${icon[s]}</span><b>${t}</b><small>${d}</small><span class="slot__go">Выбрать →</span></a>`;
+      }
+      const it = items[id], c = checks[s];
+      return `<div class="slot" data-slot="${s}">
+        <span class="mono">${label[s]}</span>
+        <a class="slot__img" href="${it.h}"><img src="${pimg(it.i)}" alt=""></a>
+        <a class="slot__n" href="${it.h}">${esc(it.n)}</a>
+        <p class="slot__p">${it.p ? rub(it.p) : "Цена по запросу"}</p>
+        ${c ? `<p class="chk chk--${c[0]}">${c[1]}</p>` : ""}
+        <div class="slot__act"><a href="${s === "boat" ? `${BASE}/catalog/` : empty[s][2]}">Заменить</a><button type="button" data-rm="${s}">Убрать</button></div>
+      </div>`;
+    }).join("");
+    const total = kit.total(), any = kit.count();
+    $("[data-total]").textContent = any ? (total ? rub(total) : "по запросу") : "—";
+    $("[data-req]").hidden = !(["boat", "motor", "trailer"] as Slot[]).some((s) => k[s] && !items[k[s]!].p);
+    $("[data-deal]").hidden = !any || sent;
+  }
+  slotsEl.addEventListener("click", (e) => {
+    const b = (e.target as HTMLElement).closest<HTMLElement>("[data-rm]");
+    if (!b) return;
+    const card = b.closest<HTMLElement>(".slot")!;
+    card.animate([{ opacity: 1 }, { opacity: 0, transform: "translateY(10px)" }], { duration: 260, easing: "ease-in", fill: "forwards" }).onfinish = () => kit.remove(b.dataset.rm as Slot);
+  });
+  const render = () => { if (!sent) { drawScene(); slots(); } };
+  document.addEventListener("cart:change", () => { played = true; render(); });
+  render();
+
+  /* ---------- the request ---------- */
+  const form = $<HTMLFormElement>("[data-form]");
+  const phone = form.elements.namedItem("phone") as HTMLInputElement;
+  phone.addEventListener("input", () => {
+    let d = phone.value.replace(/\D/g, ""); if (d.startsWith("8")) d = "7" + d.slice(1); if (!d.startsWith("7")) d = "7" + d; d = d.slice(0, 11);
+    const p = [d.slice(1, 4), d.slice(4, 7), d.slice(7, 9), d.slice(9, 11)];
+    phone.value = "+7" + (p[0] ? ` (${p[0]}` : "") + (p[0].length === 3 ? ")" : "") + (p[1] ? ` ${p[1]}` : "") + (p[2] ? `-${p[2]}` : "") + (p[3] ? `-${p[3]}` : "");
+  });
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const fd = new FormData(form);
+    const name = form.elements.namedItem("name") as HTMLInputElement;
+    const bad = [[name, String(fd.get("name")).trim().length > 1], [phone, phone.value.replace(/\D/g, "").length === 11]] as [HTMLInputElement, boolean][];
+    bad.forEach(([el, ok]) => el.classList.toggle("err", !ok));
+    const first = bad.find(([, ok]) => !ok); if (first) { first[0].focus(); return; }
+    const k = kit.get(), d = new Date();
+    const oid = `К-${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}-${Math.random().toString(36).slice(2, 5).toUpperCase()}`;
+    const row = (s: Slot, t: string) => (k[s] ? `${t}: ${items[k[s]!].n} — ${items[k[s]!].p ? rub(items[k[s]!].p) : "цена по запросу"}` : "");
+    const text = [`Заявка на комплект ${oid} с сайта «Командор»`, "", row("boat", "Катер"), row("motor", "Мотор"), row("trailer", "Прицеп"), "", `Итого: ${kit.total() ? rub(kit.total()) : "по запросу"}`, `Имя: ${fd.get("name")}`, `Телефон: ${fd.get("phone")}`, fd.get("comment") ? `Комментарий: ${fd.get("comment")}` : ""].filter(Boolean).join("\n");
+    const via = String(fd.get("via"));
+    const link = via === "wa" ? `https://wa.me/79772984772?text=${encodeURIComponent(text)}` : via === "tg" ? "https://t.me/+79772984745" : `mailto:comandor-marine@mail.ru?subject=${encodeURIComponent(`Заявка ${oid}`)}&body=${encodeURIComponent(text)}`;
+    // Telegram can't prefill a chat opened by phone number — put the request on the clipboard to paste
+    if (via === "tg") { try { navigator.clipboard.writeText(text); } catch {} }
+    window.open(link, "_blank");
+    // the finale: the boat sails off the slipway, leaving a wake
+    sent = true;
+    const grp = scene.querySelector<SVGGElement>(".boatgrp");
+    if (grp && !reduced && !k.trailer) grp.animate([{ transform: "none" }, { transform: "translateX(900px)" }], { duration: 2400, easing: "cubic-bezier(.6,0,.4,1)", fill: "forwards" });
+    else if (grp && !reduced) scene.querySelectorAll(".boatgrp, .trailer").forEach((g) => g.animate([{ transform: "none" }, { transform: "translateX(1100px)" }], { duration: 2600, easing: "cubic-bezier(.6,0,.4,1)", fill: "forwards" }));
+    $("[data-oid]").textContent = oid;
+    $("[data-deal]").hidden = true; slotsEl.hidden = true;
+    $("[data-sent]").hidden = false;
+    kit.clear();
+  });
+</script>
+
+<style>
+  .slp { padding-top: calc(var(--top) + env(safe-area-inset-top) + 24px); }
+  .slp__head { display: grid; gap: 14px; }
+  /* scene */
+  .scene { margin: 26px 0 8px; background: linear-gradient(180deg, var(--hull) 0%, var(--mist) 100%); border-block: 1px solid var(--line); }
+  .scene :global(svg) { display: block; width: 100%; height: auto; max-height: 56vh; }
+  .scene :global(.sea) { fill: rgba(44, 110, 149, 0.16); stroke: var(--sea); stroke-width: 1.5; animation: swell 6s linear infinite; }
+  .scene :global(.sea--2) { fill: none; stroke: rgba(44, 110, 149, 0.45); stroke-width: 1; animation-duration: 9s; }
+  @keyframes swell { to { transform: translateX(-80px); } }
+  .scene :global(.road) { stroke: var(--navy); stroke-width: 2; }
+  .scene :global(.road--dash) { stroke-width: 1; stroke-dasharray: 18 14; opacity: 0.4; }
+  .scene :global(.hull__body) { fill: var(--foam); stroke: var(--navy); stroke-width: 2.2; stroke-linejoin: round; stroke-dasharray: 1; }
+  .scene :global(.hull__stripe) { fill: none; stroke: var(--signal); stroke-width: 4; stroke-linecap: round; }
+  .scene :global(.hull__screen) { fill: rgba(44, 110, 149, 0.18); stroke: var(--navy); stroke-width: 1.8; stroke-linejoin: round; }
+  .scene :global(.hull__rail) { fill: none; stroke: var(--navy); stroke-width: 1.4; }
+  .scene :global(.dim path) { stroke: var(--soft); stroke-width: 1; fill: none; }
+  .scene :global(.dim text), .scene :global(.tag) { font-family: var(--mono); font-size: 14px; fill: var(--navy); text-anchor: middle; }
+  .scene :global(.ghost path) { fill: none; stroke: var(--line-2); stroke-width: 2; stroke-dasharray: 8 8; }
+  .scene :global(.ghost text) { font-family: var(--mono); font-size: 14px; fill: var(--dim); text-anchor: middle; text-transform: uppercase; letter-spacing: 0.1em; }
+  .scene :global(.scene__lbl) { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; fill: var(--soft); }
+  .scene :global(.motor__cowl) { fill: var(--navy); }
+  .scene :global(.motor__leg) { fill: var(--navy-2); }
+  .scene :global(.motor__tilt) { transition: transform 1s var(--ease); }
+  .scene :global(.motor__tilt.up) { transform: rotate(38deg); }
+  .scene :global(.prop ellipse) { fill: var(--soft); }
+  .scene :global(.is-sea .prop) { animation: spin 0.35s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .scene :global(.wake path) { fill: none; stroke: #fff; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 26 18; animation: wake 1.2s linear infinite; opacity: 0.9; }
+  @keyframes wake { to { stroke-dashoffset: 44; } }
+  .scene :global(.trailer path) { fill: none; stroke: var(--navy); stroke-width: 3; stroke-linejoin: round; }
+  .scene :global(.trailer__bunk) { stroke: var(--teak) !important; stroke-width: 5 !important; stroke-linecap: round; }
+  .scene :global(.wheel circle:first-child) { fill: var(--navy); }
+  .scene :global(.wheel circle:nth-child(2)) { fill: var(--mist); }
+  .scene :global(.wheel path) { stroke: var(--mist); stroke-width: 2; }
+  /* afloat, the boat breathes with the swell */
+  .scene :global(.bob) { animation: bob 4.5s ease-in-out infinite; transform-origin: 470px 240px; }
+  @keyframes bob { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(3px) rotate(-0.5deg); } }
+
+  /* slots */
+  .slots { display: grid; gap: 10px; margin: 18px 0 30px; }
+  .slots :global(.slot) { display: grid; grid-template-columns: 96px 1fr; grid-template-areas: "l l" "img n" "img p" "img c" "a a"; gap: 4px 14px; align-items: start; padding: 14px; border-radius: 24px; background: var(--foam); box-shadow: inset 0 0 0 1px var(--line); }
+  .slots :global(.slot > .mono) { grid-area: l; margin-bottom: 6px; color: var(--signal); }
+  .slots :global(.slot__img) { grid-area: img; aspect-ratio: 4 / 3; border-radius: 14px; overflow: hidden; background: #fff; }
+  .slots :global(.slot__img img) { width: 100%; height: 100%; object-fit: cover; }
+  .slots :global(.slot__n) { grid-area: n; font-weight: 800; line-height: 1.25; }
+  .slots :global(.slot__p) { grid-area: p; font-weight: 600; }
+  .slots :global(.chk) { grid-area: c; display: flex; gap: 6px; font-size: 12.5px; line-height: 1.35; }
+  .slots :global(.chk::before) { flex: none; width: 16px; height: 16px; border-radius: 50%; display: grid; place-content: center; font-size: 10px; color: #fff; margin-top: 1px; }
+  .slots :global(.chk--ok) { color: #1d7f55; } .slots :global(.chk--ok::before) { content: "✓"; background: #22a06b; }
+  .slots :global(.chk--warn) { color: #b5461c; } .slots :global(.chk--warn::before) { content: "!"; background: var(--signal); }
+  .slots :global(.chk--info) { color: var(--soft); } .slots :global(.chk--info::before) { content: "i"; background: var(--dim); }
+  .slots :global(.slot__act) { grid-area: a; display: flex; gap: 18px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); font-size: 13px; font-weight: 700; }
+  .slots :global(.slot__act button) { color: var(--soft); }
+  .slots :global(.slot--empty) { grid-template-columns: 1fr auto; grid-template-areas: "l ph" "b ph" "s ph" "g ph"; background: transparent; box-shadow: inset 0 0 0 1.5px var(--line-2); border: 0; outline: 1.5px dashed transparent; }
+  .slots :global(.slot--empty) { background-image: repeating-linear-gradient(135deg, transparent 0 10px, rgba(11, 34, 54, 0.03) 10px 20px); }
+  .slots :global(.slot--empty > .mono) { grid-area: l; color: var(--dim); }
+  .slots :global(.slot__ph) { grid-area: ph; align-self: center; width: 54px; height: 54px; color: var(--dim); opacity: 0.6; }
+  .slots :global(.slot__ph svg) { width: 100%; height: 100%; }
+  .slots :global(.slot--empty b) { grid-area: b; font-size: 16px; }
+  .slots :global(.slot--empty small) { grid-area: s; color: var(--soft); font-size: 13px; }
+  .slots :global(.slot__go) { grid-area: g; margin-top: 8px; font-weight: 800; font-size: 13px; color: var(--signal); }
+  .deal { display: grid; gap: 18px; padding: 22px; border-radius: 28px; background: var(--navy); color: #fff; }
+  .deal .mono { color: rgba(255, 255, 255, 0.6); }
+  .deal__sum { display: grid; gap: 4px; }
+  .deal__sum strong { font-family: var(--cond); font-weight: 600; font-size: 52px; line-height: 0.95; }
+  .deal__form { display: grid; gap: 14px; }
+  .deal .field > span { color: rgba(255, 255, 255, 0.6); }
+  .deal .input { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.16); color: #fff; }
+  .deal .input:focus { border-color: #fff; }
+  .deal .seg span { color: rgba(255, 255, 255, 0.75); border-color: rgba(255, 255, 255, 0.2); }
+  .deal .seg input:checked + span { background: #fff; color: var(--navy); border-color: #fff; }
+  .deal__note { font-size: 12.5px; color: rgba(255, 255, 255, 0.6); }
+  .sent { display: grid; gap: 14px; justify-items: start; max-width: 640px; margin-top: 10px; }
+  @media (min-width: 1000px) {
+    .slp { padding-top: 48px; }
+    .scene :global(svg) { max-height: 52vh; margin: 0 auto; }
+    .slots { grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .deal { grid-template-columns: 0.8fr 1.2fr; gap: 48px; padding: 36px; align-items: start; }
+  }
+</style>

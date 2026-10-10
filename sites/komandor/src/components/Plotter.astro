@@ -1,0 +1,88 @@
+---
+/**
+ * Once per visit: a chart plotter takes a GPS fix. Satellites come in one by one, the coordinates
+ * resolve digit by digit to the salon's position, the heading settles, then the screen drains away
+ * like water. Tap to skip.
+ */
+import { contacts } from "../lib/site";
+---
+<script is:inline>
+  try {
+    if (!sessionStorage.getItem("komandor-fix") && !matchMedia("(prefers-reduced-motion: reduce)").matches)
+      document.documentElement.classList.add("fix");
+  } catch (e) {}
+</script>
+<div class="plt" aria-hidden="true">
+  <div class="plt__screen">
+    <div class="plt__head"><span>GPS</span><span>Спутники <b data-sat>0</b>/12</span></div>
+    <svg class="plt__rose" viewBox="0 0 120 120">
+      <circle cx="60" cy="60" r="56" />
+      <circle cx="60" cy="60" r="40" opacity=".4" />
+      <g data-rose>
+        {Array.from({ length: 36 }, (_, i) => <line x1="60" y1="4" x2="60" y2={i % 9 === 0 ? 14 : 9} transform={`rotate(${i * 10} 60 60)`} />)}
+        <text x="60" y="26" text-anchor="middle">N</text>
+      </g>
+      <path class="plt__ship" d="M60 42l6 20-6-4-6 4z" />
+    </svg>
+    <p class="plt__c" data-lat>{contacts.lat}</p>
+    <p class="plt__c" data-lon>{contacts.lon}</p>
+    <p class="plt__s" data-st>Поиск спутников…</p>
+  </div>
+  <p class="plt__skip">Коснитесь, чтобы отдать швартовы</p>
+</div>
+
+<script>
+  const html = document.documentElement;
+  if (html.classList.contains("fix")) {
+    const el = document.querySelector<HTMLElement>(".plt")!;
+    const sat = el.querySelector("[data-sat]")!, st = el.querySelector("[data-st]")!, rose = el.querySelector<SVGGElement>("[data-rose]")!;
+    const fields = [el.querySelector<HTMLElement>("[data-lat]")!, el.querySelector<HTMLElement>("[data-lon]")!];
+    const finals = fields.map((f) => f.textContent!);
+    const t0 = performance.now(), DUR = 1900;
+    let done = false, raf = 0;
+    const frame = (t: number) => {
+      const k = Math.min(1, (t - t0) / DUR);
+      sat.textContent = String(Math.min(9, Math.floor(k * 11)));
+      // digits settle from left to right, like a fix tightening
+      fields.forEach((f, i) => {
+        const fin = finals[i];
+        let lock = Math.floor(k * 1.15 * fin.length);
+        f.textContent = [...fin].map((c, j) => (/\d/.test(c) && j >= lock ? String(Math.floor(Math.random() * 10)) : c)).join("");
+      });
+      rose.setAttribute("transform", `rotate(${(-200 * (1 - Math.pow(1 - k, 3)) + 45 * k).toFixed(1)} 60 60)`);
+      if (k < 1) raf = requestAnimationFrame(frame);
+      else { fields.forEach((f, i) => (f.textContent = finals[i])); st.textContent = "Позиция определена · курс 045°"; el.classList.add("ok"); setTimeout(cast, 650); }
+    };
+    raf = requestAnimationFrame(frame);
+    function cast() {
+      if (done) return;
+      done = true; cancelAnimationFrame(raf);
+      try { sessionStorage.setItem("komandor-fix", "1"); } catch {}
+      html.classList.add("fix-out");
+      document.dispatchEvent(new CustomEvent("fix:done"));
+      setTimeout(() => html.classList.remove("fix", "fix-out"), 1200);
+    }
+    el.addEventListener("click", cast);
+    addEventListener("keydown", cast, { once: true });
+  }
+</script>
+
+<style is:global>
+  .plt { display: none; }
+  html.fix { overflow: hidden; }
+  html.fix .plt { position: fixed; inset: 0; z-index: 300; display: grid; place-content: center; justify-items: center; gap: 22px; background: radial-gradient(80% 60% at 50% 40%, #12324d, #071827); color: #cfe3ee; cursor: pointer; clip-path: inset(0 0 0 0); transition: clip-path 1s var(--ease-io); }
+  /* the screen drains downward like water leaving a lock */
+  html.fix-out .plt { clip-path: inset(100% 0 0 0); }
+  .plt__screen { width: min(280px, 76vw); display: grid; justify-items: center; gap: 6px; padding: 18px 18px 16px; border-radius: 22px; background: #061420; box-shadow: inset 0 0 0 1px rgba(207, 227, 238, 0.14), 0 30px 60px rgba(0, 0, 0, 0.45); font-family: var(--mono); }
+  .plt__head { width: 100%; display: flex; justify-content: space-between; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(207, 227, 238, 0.55); }
+  .plt__head b { color: #7fd1a8; font-weight: 400; }
+  .plt__rose { width: 150px; height: 150px; margin: 8px 0 4px; }
+  .plt__rose circle { fill: none; stroke: rgba(207, 227, 238, 0.35); }
+  .plt__rose line { stroke: rgba(207, 227, 238, 0.6); stroke-width: 1; }
+  .plt__rose text { fill: var(--signal); font-family: var(--mono); font-size: 11px; }
+  .plt__ship { fill: var(--signal); }
+  .plt__c { font-size: 20px; letter-spacing: 0.02em; color: #fff; font-variant-numeric: tabular-nums; }
+  .plt__s { margin-top: 6px; font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(207, 227, 238, 0.55); }
+  .plt.ok .plt__s { color: #7fd1a8; }
+  .plt__skip { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(207, 227, 238, 0.45); }
+</style>
