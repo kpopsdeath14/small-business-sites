@@ -32,7 +32,7 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; scroll-padding-top: calc(var(--hdr) + 16px); }
-body { margin: 0; min-height: 100svh; background: var(--ivory); color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.65; -webkit-font-smoothing: antialiased; overflow-x: hidden; font-variant-numeric: lining-nums; }
+body { margin: 0; min-height: 100svh; background: var(--ivory); color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.65; -webkit-font-smoothing: antialiased; overflow-x: hidden; overflow-x: clip; font-variant-numeric: lining-nums; }
 img { display: block; max-width: 100%; }
 a { color: inherit; text-decoration: none; -webkit-tap-highlight-color: transparent; }
 h1, h2, h3, h4, p, ul, ol, dl, dd, figure { margin: 0; padding: 0; }
