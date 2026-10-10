@@ -3,6 +3,7 @@ import Base from "../../layouts/Base.astro";
 import ProductCard from "../../components/ProductCard.astro";
 import Icon from "../../components/Icon.astro";
 import Chapter from "../../components/Chapter.astro";
+import Drawing from "../../components/Drawing.astro";
 import { products, bySlug, url, pimg, rub, catTitle, area, lot } from "../../lib/site";
 
 export function getStaticPaths() {
@@ -13,6 +14,7 @@ const v = p.variants[0];
 const multi = p.variants.length > 1;
 const related = products.filter((x) => x.cat === p.cat && x.slug !== p.slug).concat(products.filter((x) => x.cat !== p.cat)).slice(0, 8);
 const vdata = p.variants.map((x) => ({ id: x.id, l: x.label, p: x.price, o: x.old, img: x.img, sc: x.scene }));
+const hasDwg = ["Ширина, см", "Высота, см", "Глубина, см"].every((k) => p.specs.some((g) => g.rows.some(([key, val]) => key === k && parseFloat(val.replace(",", ".")) > 0)));
 const flames = p.kw ? Math.min(5, Math.max(1, Math.round(p.kw / 2))) : 0;
 const desc = `${p.name}${p.sub ? ` — ${p.sub.toLowerCase()}` : ""}. Цена ${rub(p.from)}. Замер, проект и монтаж под ключ от «Камин Лайн».`;
 ---
@@ -32,6 +34,13 @@ const desc = `${p.name}${p.sub ? ` — ${p.sub.toLowerCase()}` : ""}. Цена $
               <figure class:list={["gal__slide", { scene: v.scene[i] }]}><img src={pimg(id, 960)} srcset={`${pimg(id)} 480w, ${pimg(id, 960)} 960w`} sizes="(min-width: 1000px) 46vw, 100vw" alt={`${p.name}, фото ${i + 1}`} loading={i === 0 ? "eager" : "lazy"} decoding="async" /></figure>
             ))}
           </div>
+          {hasDwg && <div class="gal__dwg" data-dwg aria-hidden="true"><Drawing p={p} /></div>}
+          {hasDwg && (
+            <div class="gal__mode" role="tablist" aria-label="Вид">
+              <button type="button" role="tab" aria-selected="true" data-mode="photo">Фото</button>
+              <button type="button" role="tab" aria-selected="false" data-mode="dwg">Чертёж</button>
+            </div>
+          )}
         </div>
         <div class="gal__dots" data-dots aria-hidden="true">{v.img.map((_, i) => <i class:list={{ on: i === 0 }}></i>)}</div>
         <div class="gal__thumbs" data-thumbs>
@@ -144,6 +153,21 @@ const desc = `${p.name}${p.sub ? ` — ${p.sub.toLowerCase()}` : ""}. Цена $
     const b = (e.target as HTMLElement).closest<HTMLElement>("[data-i]");
     if (b) track.scrollTo({ left: Number(b.dataset.i) * track.clientWidth, behavior: "smooth" });
   });
+  // photo / drawing switch: the drawing draws itself line by line
+  const dwg = document.querySelector<HTMLElement>("[data-dwg]");
+  if (dwg) {
+    const gal = $("[data-gal]");
+    const modes = $$<HTMLButtonElement>("[data-mode]");
+    modes.forEach((b) => b.addEventListener("click", () => {
+      const on = b.dataset.mode === "dwg";
+      modes.forEach((m) => m.setAttribute("aria-selected", String(m === b)));
+      gal.classList.toggle("dwg-on", on);
+      dwg.setAttribute("aria-hidden", String(!on));
+      if (on) requestAnimationFrame(() => requestAnimationFrame(() => dwg.classList.add("drawn")));
+      else dwg.classList.remove("drawn");
+    }));
+  }
+
   // stepper appears only once the item is in the cart and edits the cart directly
   const qv = $("[data-qv]");
   const act = $("[data-buybox]");
@@ -211,6 +235,16 @@ const desc = `${p.name}${p.sub ? ` — ${p.sub.toLowerCase()}` : ""}. Цена $
   .gal__dots :global(i) { width: 18px; height: 1px; background: var(--line-2); transition: background 0.4s, width 0.5s var(--ease); }
   .gal__dots :global(i.on) { width: 34px; background: var(--ink); }
   .gal__thumbs { display: none; }
+  /* drawing sheet: warm paper with a faint 1 cm grid */
+  .gal__dwg { position: absolute; inset: 0; z-index: 2; padding: 4% 3%; background-color: var(--paper); background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: 24px 24px; background-position: -1px -1px; opacity: 0; visibility: hidden; transition: opacity 0.6s var(--ease), visibility 0.6s; }
+  .gal__dwg::before { content: ""; position: absolute; inset: 0; background: radial-gradient(closest-side, var(--paper) 55%, rgba(249, 246, 241, 0.6)); pointer-events: none; }
+  .gal__dwg :global(svg) { position: relative; }
+  .dwg-on .gal__dwg { opacity: 1; visibility: visible; }
+  .gal__mode { position: absolute; right: 0; top: 0; z-index: 3; display: flex; background: var(--paper); }
+  .gal__mode button { position: relative; height: 40px; padding: 0 14px; font-size: 10.5px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--smoke); transition: color 0.3s; }
+  .gal__mode button::after { content: ""; position: absolute; left: 14px; right: 14px; bottom: 10px; height: 1px; background: var(--bronze); transform: scaleX(0); transition: transform 0.5s var(--ease); }
+  .gal__mode button[aria-selected="true"] { color: var(--ink); }
+  .gal__mode button[aria-selected="true"]::after { transform: none; }
 
   .buy { display: grid; gap: 16px; align-content: start; }
   .buy__t { font-size: clamp(32px, 8vw, 54px); }

@@ -1,0 +1,126 @@
+---
+/**
+ * Technical drawing of a model: front and side elevation to the real width, height and depth,
+ * with architectural dimension lines and a title block. Drawn in hairlines; strokes "draw" in when shown.
+ */
+import type { Product } from "../lib/site";
+import { lot } from "../lib/site";
+
+interface Props { p: Product }
+const { p } = Astro.props;
+
+const spec = (k: string) => {
+  for (const g of p.specs) for (const [key, val] of g.rows) if (key === k) return parseFloat(val.replace(",", "."));
+  return NaN;
+};
+const W = spec("Ширина, см"), H = spec("Высота, см"), D = spec("Глубина, см"), flue = spec("Диаметр (D), см"), kg = spec("Вес, кг");
+const fmt = (n: number) => String(Math.round(n * 10) / 10).replace(".", ",");
+
+// layout in a 400 × 500 sheet (the gallery frame is 4:5)
+const L = 64, R = 372, TOP = 56, BASE = 360, GAP = 44;
+const s = Math.min((R - L - GAP) / (W + D), (BASE - TOP) / H);
+const fw = W * s, fh = H * s, sw = D * s;
+const fx = L + (R - L - GAP - fw - sw) / 2, fy = BASE - fh, sx = fx + fw + GAP;
+
+const kind = ["biokamini", "electro"].includes(p.cat) ? "slot"
+  : p.cat === "topki" ? "insert"
+  : p.cat === "kamin-pechi" || (p.cat === "kamini" && H / W > 1.5) ? "stove"
+  : "portal";
+
+const r = (x0: number, y0: number, x1: number, y1: number) => `M${x0} ${y0}H${x1}V${y1}H${x0}Z`;
+const h = (y: number, x0: number, x1: number) => `M${x0} ${y}H${x1}`;
+const v = (x: number, y0: number, y1: number) => `M${x} ${y0}V${y1}`;
+// front-view helpers in fractions of the outline
+const X = (f: number) => fx + fw * f, Y = (f: number) => fy + fh * f;
+
+const body: string[] = [r(fx, fy, fx + fw, BASE), r(sx, fy, sx + sw, BASE)];
+const detail: string[] = [];
+if (kind === "portal") {
+  const oy = Y(0.5), ox0 = X(0.28), ox1 = X(0.72), rad = (ox1 - ox0) / 2;
+  detail.push(h(Y(0.07), fx, fx + fw), h(Y(0.12), fx, fx + fw), h(Y(0.93), fx, fx + fw));
+  detail.push(v(X(0.1), Y(0.12), Y(0.93)), v(X(0.9), Y(0.12), Y(0.93)));
+  detail.push(`M${ox0} ${Y(0.88)}V${oy + rad}A${rad} ${rad} 0 0 1 ${ox1} ${oy + rad}V${Y(0.88)}Z`);
+  detail.push(h(Y(0.07), sx, sx + sw), h(Y(0.93), sx, sx + sw));
+} else if (kind === "stove") {
+  detail.push(h(Y(0.035), fx, fx + fw), r(X(0.1), Y(0.09), X(0.9), Y(0.6)), r(X(0.18), Y(0.15), X(0.82), Y(0.52)));
+  detail.push(h(Y(0.66), fx, fx + fw), h(Y(0.96), fx, fx + fw));
+  detail.push(h(Y(0.035), sx, sx + sw), v(sx + sw * 0.12, Y(0.09), Y(0.6)), h(Y(0.66), sx, sx + sw));
+} else if (kind === "insert") {
+  detail.push(r(X(0.06), Y(0.06), X(0.94), Y(0.8)), r(X(0.11), Y(0.11), X(0.89), Y(0.75)), h(Y(0.87), fx, fx + fw));
+  detail.push(v(X(0.97), Y(0.3), Y(0.56)));
+  detail.push(v(sx + sw * 0.1, fy, BASE), h(Y(0.87), sx, sx + sw));
+} else {
+  detail.push(r(X(0.06), Y(0.28), X(0.94), Y(0.72)), h(Y(0.6), X(0.12), X(0.88)), h(Y(0.84), fx, fx + fw));
+  detail.push(v(sx + sw * 0.18, fy, BASE));
+}
+// flue collar, if the model has one
+const fl = flue > 0 ? Math.max(4, flue * s) : 0;
+const collar = fl ? Math.max(6, 8 * s) : 0;
+if (fl) {
+  body.push(r(fx + fw / 2 - fl / 2, fy - collar, fx + fw / 2 + fl / 2, fy), r(sx + sw / 2 - fl / 2, fy - collar, sx + sw / 2 + fl / 2, fy));
+}
+
+// architectural dimension lines: extension lines, 45° ticks, value in the middle
+const tick = (x: number, y: number) => `M${x - 4} ${y + 4}L${x + 4} ${y - 4}`;
+const dimH = (x0: number, x1: number, y: number, from: number) => ({
+  d: `${v(x0, from + 4, y + 6)}${v(x1, from + 4, y + 6)}${h(y, x0 - 6, x1 + 6)}${tick(x0, y)}${tick(x1, y)}`,
+  tx: (x0 + x1) / 2, ty: y - 7, rot: 0,
+});
+const dimV = (y0: number, y1: number, x: number, from: number) => ({
+  d: `${h(y0, x - 6, from - 4)}${h(y1, x - 6, from - 4)}${v(x, y0 - 6, y1 + 6)}${tick(x, y0)}${tick(x, y1)}`,
+  tx: x - 8, ty: (y0 + y1) / 2, rot: -90,
+});
+const dims = [
+  { ...dimH(fx, fx + fw, BASE + 30, BASE), t: fmt(W) },
+  { ...dimH(sx, sx + sw, BASE + 30, BASE), t: fmt(D) },
+  { ...dimV(fy, BASE, fx - 26, fx), t: fmt(H) },
+];
+const paths = [...body.map((d) => ["b", d]), ...detail.map((d) => ["d", d])];
+const ok = [W, H, D].every((n) => n > 0);
+---
+{ok && (
+  <svg class="dwg" viewBox="0 0 400 500" role="img" aria-label={`Чертёж: ширина ${fmt(W)} см, высота ${fmt(H)} см, глубина ${fmt(D)} см`}>
+    {paths.map(([c, d], i) => <path class={`dwg__${c}`} d={d} pathLength="1" style={`--k:${i}`} />)}
+    <path class="dwg__g" d={h(BASE, 30, 384)} pathLength="1" />
+    {dims.map((m, i) => (
+      <g class="dwg__dim" style={`--k:${i}`}>
+        <path d={m.d} />
+        <text x={m.tx} y={m.ty} transform={m.rot ? `rotate(${m.rot} ${m.tx} ${m.ty})` : undefined} text-anchor="middle">{m.t}</text>
+      </g>
+    ))}
+    {fl > 0 && <text class="dwg__note" x={fx + fw / 2 + fl / 2 + 6} y={fy - collar / 2 + 4}>Ø {fmt(flue)}</text>}
+    <text class="dwg__view" x={fx + fw / 2} y={BASE + 54} text-anchor="middle">Фасад</text>
+    <text class="dwg__view" x={sx + sw / 2} y={BASE + 54} text-anchor="middle">Сбоку</text>
+    <g class="dwg__stamp">
+      <path d={`${r(24, 440, 376, 482)}${v(236, 440, 482)}`} />
+      <text x="34" y="458" class="dwg__name">{p.name}</text>
+      <text x="34" y="474" class="dwg__meta">{lot(p)}{kg > 0 ? ` · вес ${fmt(kg)} кг` : ""}</text>
+      <text x="246" y="458" class="dwg__meta">Ш × В × Г, см</text>
+      <text x="246" y="475" class="dwg__size">{fmt(W)} × {fmt(H)} × {fmt(D)}</text>
+    </g>
+  </svg>
+)}
+
+<style>
+  .dwg { width: 100%; height: 100%; display: block; overflow: visible; }
+  .dwg path { fill: none; stroke-linecap: round; }
+  .dwg__b { stroke: var(--ink); stroke-width: 0.95; }
+  .dwg__d { stroke: var(--ink-2); stroke-width: 0.6; }
+  .dwg__g { stroke: var(--line-2); stroke-width: 0.7; stroke-dasharray: 0.01 0.012; }
+  .dwg__dim path { stroke: var(--bronze); stroke-width: 0.7; }
+  .dwg text { font-family: var(--serif); fill: var(--ink); }
+  .dwg__dim text { font-style: italic; font-size: 15px; fill: var(--bronze); }
+  .dwg__note { font-style: italic; font-size: 12px; fill: var(--bronze); }
+  .dwg__view { font-family: var(--sans) !important; font-size: 8px; letter-spacing: 0.28em; text-transform: uppercase; fill: var(--smoke) !important; }
+  .dwg__stamp path { stroke: var(--line-2); stroke-width: 0.7; }
+  .dwg__name { font-size: 14px; }
+  .dwg__size { font-style: italic; font-size: 14px; }
+  .dwg__meta { font-family: var(--sans) !important; font-size: 7.5px; letter-spacing: 0.12em; fill: var(--smoke) !important; text-transform: uppercase; }
+
+  /* drawn line by line when the drawing is shown */
+  .dwg__b, .dwg__d { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1.4s var(--ease-io); transition-delay: calc(var(--k) * 0.06s); }
+  .dwg__dim, .dwg__view, .dwg__note, .dwg__stamp { opacity: 0; transition: opacity 0.8s var(--ease); transition-delay: calc(0.8s + var(--k, 0) * 0.12s); }
+  :global(.drawn) .dwg__b, :global(.drawn) .dwg__d { stroke-dashoffset: 0; }
+  :global(.drawn) .dwg__dim, :global(.drawn) .dwg__view, :global(.drawn) .dwg__note, :global(.drawn) .dwg__stamp { opacity: 1; }
+  @media (prefers-reduced-motion: reduce) { .dwg__b, .dwg__d { stroke-dasharray: none; } }
+</style>
