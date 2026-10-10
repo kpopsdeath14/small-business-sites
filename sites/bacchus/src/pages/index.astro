@@ -7,6 +7,7 @@ import Thermostat from "../components/Thermostat.astro";
 import Descent from "../components/Descent.astro";
 import Aging from "../components/Aging.astro";
 import Rack from "../components/Rack.astro";
+import Foes from "../components/Foes.astro";
 import { products, categories, bySlug, url, img, srcset, pimg, contacts, plural } from "../lib/site";
 import catalog from "../data/catalog.json";
 
@@ -130,16 +131,7 @@ const steps = [
             <p class="lead" data-in>Погреб и винный шкаф решают одну задачу: убрать всё, что заставляет вино стареть раньше времени.</p>
           </div>
         </div>
-        <ol class="foes">
-          {enemies.map(([t, d, n], i) => (
-            <li class="filet" data-in style={`--d:${i * 0.08}s`}>
-              <span class="foes__n num">0{i + 1}</span>
-              <h3 class="d3">{t}</h3>
-              <p>{d}</p>
-              <p class="tag foes__k">{n}</p>
-            </li>
-          ))}
-        </ol>
+        <Foes enemies={enemies as [string, string, string][]} />
       </div>
     </section>
 

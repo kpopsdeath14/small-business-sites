@@ -1,0 +1,159 @@
+---
+/**
+ * «Четыре врага вина»: one bottle, drawn in section. Switch on an enemy and watch what it does —
+ * heat drives the wine out past the cork, light browns it, vibration stirs the sediment, dry air
+ * shrinks the cork and lets air in. Then close it in a cabinet: everything returns to rest.
+ */
+interface Props { enemies: [string, string, string][] }
+const { enemies } = Astro.props;
+const KEYS = ["heat", "light", "vib", "dry"];
+---
+<div class="fo" data-fo>
+  <div class="fo__stage">
+    <svg class="fo__svg" viewBox="0 0 240 400" aria-hidden="true">
+      <defs>
+        <clipPath id="fo-in"><path d="M106 70 V128 C106 150 76 160 76 196 V362 C76 372 82 376 92 376 H148 C158 376 164 372 164 362 V196 C164 160 134 150 134 128 V70 Z" /></clipPath>
+        <linearGradient id="fo-glass" x1="0" x2="1"><stop offset="0" stop-color="rgba(255,255,255,.05)" /><stop offset=".2" stop-color="rgba(255,255,255,.22)" /><stop offset=".3" stop-color="rgba(255,255,255,.04)" /><stop offset="1" stop-color="rgba(255,255,255,.08)" /></linearGradient>
+      </defs>
+      <!-- light rays -->
+      <g class="fo__rays">{[0, 1, 2, 3, 4].map((i) => <path d={`M${-20 + i * 26} ${-10 + i * 6} L${110 + i * 14} ${200 + i * 18}`} style={`--i:${i}`} />)}</g>
+      <!-- heat shimmer -->
+      <g class="fo__heat">{[0, 1, 2].map((i) => <path d={`M${92 + i * 28} 40 q6 -10 0 -20 q-6 -10 0 -20`} style={`--i:${i}`} />)}</g>
+      <g class="fo__bottle">
+        <g clip-path="url(#fo-in)">
+          <rect class="fo__wine" x="70" y="104" width="100" height="280" />
+          <path class="fo__surf" d="M70 104 Q95 100 120 104 T170 104" />
+          {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => <circle class="fo__sed" cx={96 + (i * 9) % 48} cy={356 - (i % 3) * 6} r="2" style={`--i:${i}`} />)}
+          {[0, 1, 2, 3].map((i) => <circle class="fo__air" cx={112 + i * 6} cy="300" r={2 + (i % 2)} style={`--i:${i}`} />)}
+        </g>
+        <path class="fo__outline" d="M106 70 V128 C106 150 76 160 76 196 V362 C76 372 82 376 92 376 H148 C158 376 164 372 164 362 V196 C164 160 134 150 134 128 V70 Z" />
+        <path d="M84 200 V350" stroke="url(#fo-glass)" stroke-width="10" stroke-linecap="round" />
+        <rect class="fo__label" x="86" y="232" width="68" height="76" rx="2" />
+        <text class="fo__lt" x="120" y="262" text-anchor="middle">GRAND</text>
+        <text class="fo__lt" x="120" y="276" text-anchor="middle">CRU</text>
+        <text class="fo__ly" x="120" y="296" text-anchor="middle">2015</text>
+        <rect class="fo__cork" x="109" y="58" width="22" height="34" rx="2" />
+        <rect x="104" y="48" width="32" height="26" rx="2" class="fo__foil" />
+      </g>
+      <!-- the cabinet that closes around it -->
+      <g class="fo__cab">
+        <rect x="28" y="20" width="184" height="372" rx="6" class="fo__cab-f" />
+        <rect x="40" y="32" width="160" height="348" rx="3" class="fo__cab-g" />
+        <rect x="186" y="170" width="6" height="70" rx="3" class="fo__cab-h" />
+      </g>
+    </svg>
+    <dl class="fo__gauges">
+      <div><dt class="tag">Температура</dt><dd class="num"><span data-t>12</span> °C</dd></div>
+      <div><dt class="tag">Влажность</dt><dd class="num"><span data-h>70</span> %</dd></div>
+      <div><dt class="tag">Возраст вина</dt><dd data-a>стареет красиво</dd></div>
+    </dl>
+  </div>
+
+  <div class="fo__ctl">
+    <div class="fo__tabs" role="tablist">
+      {enemies.map(([t], i) => <button type="button" role="tab" aria-selected="false" data-k={KEYS[i]}><span class="num">0{i + 1}</span>{t}</button>)}
+    </div>
+    <div class="fo__texts">
+      <p class="fo__idle" data-txt="none">Выберите врага — и посмотрите, что он делает с бутылкой.</p>
+      {enemies.map(([t, d, n], i) => <div class="fo__txt" data-txt={KEYS[i]} hidden><p class="d3">{t}</p><p class="lead">{d}</p><p class="tag fo__k">{n}</p></div>)}
+      <div class="fo__txt" data-txt="safe" hidden><p class="d3">В шкафу</p><p class="lead">12 °C, 70 % влажности, темнота и покой. Вино снова стареет так, как задумал винодел.</p></div>
+    </div>
+    <button type="button" class="btn fo__safe" data-safe>Закрыть в винном шкафу</button>
+  </div>
+</div>
+
+<script>
+  const el = document.querySelector<HTMLElement>("[data-fo]")!;
+  const tabs = [...el.querySelectorAll<HTMLButtonElement>("[data-k]")];
+  const txts = [...el.querySelectorAll<HTMLElement>("[data-txt]")];
+  const t = el.querySelector("[data-t]")!, h = el.querySelector("[data-h]")!, a = el.querySelector("[data-a]")!;
+  const STATE: Record<string, [number, number, string]> = {
+    none: [12, 70, "стареет красиво"], heat: [27, 60, "стареет втрое быстрее"], light: [18, 65, "теряет аромат и цвет"],
+    vib: [14, 70, "осадок поднимается"], dry: [16, 35, "пробка пропускает воздух"], safe: [12, 70, "стареет красиво"],
+  };
+  let k = "none", shown = 12, raf = 0;
+  const set = (key: string) => {
+    k = key;
+    el.dataset.state = key;
+    tabs.forEach((b) => b.setAttribute("aria-selected", String(b.dataset.k === key)));
+    txts.forEach((x) => (x.hidden = x.dataset.txt !== (key === "none" ? "none" : key)));
+    const [T, H, A] = STATE[key];
+    h.textContent = String(H); a.textContent = A;
+    cancelAnimationFrame(raf);
+    const from = shown, t0 = performance.now();
+    const run = (now: number) => { const q = Math.min(1, (now - t0) / 900); shown = from + (T - from) * (1 - Math.pow(1 - q, 3)); t.textContent = String(Math.round(shown)); if (q < 1) raf = requestAnimationFrame(run); };
+    raf = requestAnimationFrame(run);
+  };
+  tabs.forEach((b) => b.addEventListener("click", () => set(k === b.dataset.k ? "none" : b.dataset.k!)));
+  el.querySelector("[data-safe]")!.addEventListener("click", () => set("safe"));
+  set("none");
+  // when the section is first seen, heat is switched on by itself so it is clear what to do
+  new IntersectionObserver(([e], o) => { if (e.isIntersecting) { o.disconnect(); setTimeout(() => k === "none" && set("heat"), 700); } }, { threshold: 0.5 }).observe(el);
+</script>
+
+<style>
+  .fo { --wine: #6e0f24; display: grid; gap: 24px; }
+  .fo__stage { position: relative; display: grid; gap: 14px; justify-items: center; padding: 18px; background: radial-gradient(70% 60% at 50% 45%, #1e1512, #0e0b0a); box-shadow: inset 0 0 0 1px var(--line); }
+  .fo__svg { width: min(100%, 300px); overflow: visible; }
+  .fo__outline { fill: rgba(30, 40, 26, 0.55); stroke: rgba(241, 231, 216, 0.35); stroke-width: 2; }
+  .fo__wine { fill: var(--wine); transition: fill 2.4s ease, transform 2.4s var(--ease); }
+  .fo__surf { fill: none; stroke: rgba(255, 255, 255, 0.2); stroke-width: 2; transition: transform 2.4s var(--ease); }
+  .fo__label { fill: #efe4d0; transition: fill 2.4s; }
+  .fo__lt { font-family: var(--display); font-size: 13px; fill: #2a1810; }
+  .fo__ly { font-family: var(--mono); font-size: 9px; fill: #7d1a2c; }
+  .fo__cork { fill: #c99a62; transition: transform 1.6s var(--ease), width 1.6s; transform-box: fill-box; transform-origin: center; }
+  .fo__foil { fill: #7d1a2c; transition: transform 1.6s var(--ease); }
+  .fo__sed { fill: #2a0a10; opacity: 0.8; }
+  .fo__air { fill: rgba(255, 255, 255, 0.55); opacity: 0; }
+  .fo__rays path { stroke: rgba(255, 236, 160, 0.55); stroke-width: 6; stroke-linecap: round; opacity: 0; stroke-dasharray: 40 260; }
+  .fo__heat path { fill: none; stroke: rgba(255, 140, 80, 0.7); stroke-width: 2.5; stroke-linecap: round; opacity: 0; }
+  .fo__cab { opacity: 0; transform: translateX(-230px); transition: transform 1.1s var(--ease), opacity 0.6s; }
+  .fo__cab-f { fill: none; stroke: #2b2420; stroke-width: 12; }
+  .fo__cab-g { fill: rgba(80, 110, 120, 0.14); stroke: rgba(241, 231, 216, 0.25); stroke-width: 1.5; }
+  .fo__cab-h { fill: #b8b2a8; }
+  .fo__gauges { display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; border-top: 1px solid var(--line); }
+  .fo__gauges div { display: grid; gap: 2px; padding-top: 10px; }
+  .fo__gauges div + div { padding-left: 10px; border-left: 1px solid var(--line); }
+  .fo__gauges dt { font-size: 9px; color: var(--dim); }
+  .fo__gauges dd { font-size: 15px; color: var(--text); transition: color 0.6s; }
+  /* heat: wine expands and creeps past the cork, level drops, colour goes brick */
+  [data-state="heat"] .fo__wine { fill: #6a2a14; transform: translateY(26px); }
+  [data-state="heat"] .fo__surf { transform: translateY(26px); }
+  [data-state="heat"] .fo__cork, [data-state="heat"] .fo__foil { transform: translateY(-8px); }
+  [data-state="heat"] .fo__heat path { animation: rise 1.6s ease-in-out infinite; animation-delay: calc(var(--i) * 0.4s); }
+  @keyframes rise { 0% { opacity: 0; transform: translateY(10px); } 40% { opacity: 1; } 100% { opacity: 0; transform: translateY(-20px); } }
+  [data-state="heat"] .fo__gauges div:first-child dd { color: #e9a78f; }
+  /* light: rays strike, wine browns, the label fades */
+  [data-state="light"] .fo__rays path { animation: ray 1.4s linear infinite; animation-delay: calc(var(--i) * 0.2s); }
+  @keyframes ray { 0% { opacity: 0; stroke-dashoffset: 300; } 20% { opacity: 1; } 100% { opacity: 0; stroke-dashoffset: 0; } }
+  [data-state="light"] .fo__wine { fill: #7a3a1a; }
+  [data-state="light"] .fo__label { fill: #d9cdb2; }
+  /* vibration: the bottle trembles and the sediment rises */
+  [data-state="vib"] .fo__bottle { animation: shake 0.12s linear infinite; }
+  @keyframes shake { 25% { transform: translate(1.5px, -0.5px); } 75% { transform: translate(-1.5px, 0.5px); } }
+  [data-state="vib"] .fo__sed { animation: swirl 2.4s ease-in-out infinite; animation-delay: calc(var(--i) * -0.3s); }
+  @keyframes swirl { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(calc((var(--i) - 3.5) * 4px), -120px); } }
+  [data-state="vib"] .fo__wine { fill: #5a1420; }
+  /* dry air: the cork shrinks and air bubbles creep into the wine */
+  [data-state="dry"] .fo__cork { transform: scaleX(0.78); fill: #a8834f; }
+  [data-state="dry"] .fo__air { animation: air 2.6s ease-in infinite; animation-delay: calc(var(--i) * 0.6s); }
+  @keyframes air { 0% { opacity: 0; transform: translateY(0); } 20% { opacity: 1; } 100% { opacity: 0; transform: translateY(-180px); } }
+  [data-state="dry"] .fo__gauges div:nth-child(2) dd { color: #e9a78f; }
+  /* safe: the cabinet slides around the bottle, all is quiet */
+  [data-state="safe"] .fo__cab { opacity: 1; transform: none; }
+  [data-state="safe"] .fo__gauges dd { color: var(--straw); }
+  .fo__ctl { display: grid; gap: 18px; align-content: start; }
+  .fo__tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .fo__tabs button { display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 14px; border: 1px solid var(--line-2); font-size: 15px; color: var(--mute); text-align: left; transition: all 0.3s; }
+  .fo__tabs button .num { font-size: 11px; color: var(--wine-2); }
+  .fo__tabs button[aria-selected="true"] { color: var(--text); border-color: var(--wine-2); background: rgba(158, 31, 54, 0.16); }
+  .fo__texts { display: grid; min-height: 9.5em; }
+  .fo__texts > * { grid-area: 1 / 1; }
+  .fo__txt { display: grid; gap: 10px; align-content: start; animation: txtIn 0.5s var(--ease); }
+  @keyframes txtIn { from { opacity: 0; transform: translateY(8px); } }
+  .fo__idle { color: var(--mute); }
+  .fo__k { color: var(--straw); }
+  .fo__safe { justify-self: start; }
+  @media (min-width: 1000px) { .fo { grid-template-columns: 1fr 1.1fr; gap: 64px; align-items: center; } .fo__stage { padding: 30px; } }
+  @media (prefers-reduced-motion: reduce) { .fo * { animation: none !important; } }
+</style>
