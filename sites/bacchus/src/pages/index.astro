@@ -51,12 +51,16 @@ const steps = [
         </picture>
       </div>
       <div class="wrap hero__body">
-        <p class="clim hero__k" data-in style="--d:.3s"><i></i><span>Погреб · <span data-live>12,0</span> °C · 70 %</span></p>
-        <h1 class="d1 hero__t">
-          <span class="ln"><span>Вино, которое</span></span>
-          <span class="ln"><span><b>становится</b></span></span>
-          <span class="ln"><span><b>лучше</b></span></span>
-        </h1>
+        <!-- the title is set on a wine label: deckled paper, gold foil rules, vintage line -->
+        <div class="label" data-label>
+          <p class="label__top"><span>Grand Cru</span><span class="label__clim"><i></i><span data-live>12,0</span> °C · 70 %</span><span>2004</span></p>
+          <p class="label__house">Подвалы Бахуса</p>
+          <h1 class="label__t">
+            <span class="ln"><span>Вино, которое</span></span>
+            <span class="ln"><span><i>становится лучше</i></span></span>
+          </h1>
+          <p class="label__bot">Шкафы · погреба · климат · под ключ</p>
+        </div>
         <p class="lead hero__lead" data-in style="--d:.55s">Винные шкафы на {capMin}–{capMax} бутылок и погреба под ключ: проект, климатическое оборудование, стеллажи, монтаж и сервис.</p>
         <div class="hero__ctas" data-in style="--d:.65s">
           <a class="btn" href={url("catalog/shkafy/")}>Винные шкафы <Icon name="arrow" class="btn__ar" /></a>
@@ -257,6 +261,12 @@ const steps = [
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (!reduced) setInterval(() => { if (!document.hidden) live.textContent = (11.9 + Math.round(Math.random() * 2) / 10).toFixed(1).replace(".", ","); }, 3200);
 
+  // hero parallax: the photo pushes in, the label drifts up
+  if (!reduced) {
+    let tk = false;
+    addEventListener("scroll", () => { if (tk) return; tk = true; requestAnimationFrame(() => { tk = false; hero.style.setProperty("--hz", Math.min(1, scrollY / innerHeight).toFixed(3)); }); }, { passive: true });
+  }
+
   // counters
   const cio = new IntersectionObserver((es) => es.forEach((e) => {
     if (!e.isIntersecting) return;
@@ -319,26 +329,34 @@ const steps = [
 </style>
 
 <style>
-  /* hero */
-  .hero { position: relative; display: flex; flex-direction: column; padding-top: calc(var(--hdr) + env(safe-area-inset-top)); overflow: hidden; isolation: isolate; }
-  .hero__media { position: relative; height: 50svh; min-height: 320px; z-index: -1; overflow: hidden; }
-  .hero__media img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; filter: brightness(0.06) saturate(0.4); transform: scale(1.06); transition: filter 2.2s var(--ease-io), transform 3s var(--ease); }
-  /* lights on: the ceiling spots come up and the light falls down the racks */
-  .hero.on .hero__media img { filter: none; transform: none; }
-  .hero__media::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, transparent 0%, var(--bg) 0%); transition: transform 1.8s var(--ease-io); transform-origin: bottom; }
-  .hero.on .hero__media::before { transform: scaleY(0); }
-  .hero__media::after { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(0deg, var(--bg) 2%, rgba(11, 9, 8, 0) 45%); }
-  .hero__body { position: relative; margin-top: -54px; padding-bottom: 24px; }
-  .hero__k { margin-bottom: 18px; }
-  .hero__t { margin-bottom: 18px; }
+  /* hero: the cellar fills the screen, the title sits on a wine label */
+  .hero { position: relative; min-height: 100svh; display: flex; flex-direction: column; justify-content: flex-end; padding-top: calc(var(--hdr) + env(safe-area-inset-top)); overflow: hidden; isolation: isolate; }
+  .hero__media { position: absolute; inset: 0; z-index: -1; overflow: hidden; }
+  .hero__media img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; filter: brightness(0.06) saturate(0.4); transform: scale(calc(1.06 + var(--hz, 0) * 0.12)); transition: filter 2.2s var(--ease-io); }
+  .hero.on .hero__media img { filter: none; }
+  .hero__media::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, var(--bg) 4%, rgba(11, 9, 8, 0.55) 40%, rgba(11, 9, 8, 0.05) 70%); }
+  .hero__body { position: relative; display: grid; gap: 16px; padding-bottom: 22px; }
+  .label { position: relative; justify-self: start; width: min(100%, 420px); padding: 20px 22px 18px; color: #2a1810; text-align: center; background: radial-gradient(120% 90% at 30% 20%, #faf3e6, #efe4d0 60%, #e2d2b6); transform: translateY(calc(var(--hz, 0) * -60px)) rotate(-1deg); opacity: 0; transition: opacity 1.2s var(--ease) 0.25s; filter: drop-shadow(0 24px 30px rgba(0, 0, 0, 0.6));
+    -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'><path d='M1 2 L4 0 L9 1.5 L15 .3 L22 1.4 L30 .2 L37 1.6 L45 .4 L52 1.3 L60 .1 L67 1.5 L75 .3 L82 1.4 L90 .2 L96 1.2 L100 .5 L99.4 8 L100 16 L99.2 25 L100 34 L99.3 43 L100 52 L99.2 61 L100 70 L99.4 79 L100 88 L99.3 96 L100 100 L94 98.8 L87 100 L79 98.6 L71 99.9 L63 98.7 L55 100 L47 98.6 L39 99.8 L31 98.7 L23 100 L15 98.8 L8 99.8 L0 99 L.8 91 L0 82 L.7 73 L0 64 L.8 55 L0 46 L.7 37 L0 28 L.8 19 L0 10 Z'/></svg>") center / 100% 100%; mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'><path d='M1 2 L4 0 L9 1.5 L15 .3 L22 1.4 L30 .2 L37 1.6 L45 .4 L52 1.3 L60 .1 L67 1.5 L75 .3 L82 1.4 L90 .2 L96 1.2 L100 .5 L99.4 8 L100 16 L99.2 25 L100 34 L99.3 43 L100 52 L99.2 61 L100 70 L99.4 79 L100 88 L99.3 96 L100 100 L94 98.8 L87 100 L79 98.6 L71 99.9 L63 98.7 L55 100 L47 98.6 L39 99.8 L31 98.7 L23 100 L15 98.8 L8 99.8 L0 99 L.8 91 L0 82 L.7 73 L0 64 L.8 55 L0 46 L.7 37 L0 28 L.8 19 L0 10 Z'/></svg>") center / 100% 100%; }
+  .hero.on .label { opacity: 1; }
+  .label::before { content: ""; position: absolute; inset: 8px; border: 1px solid #a8803e; box-shadow: inset 0 0 0 3px #faf3e6, inset 0 0 0 4px rgba(168, 128, 62, 0.6); pointer-events: none; }
+  .label__top { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.22em; text-transform: uppercase; color: #8a6a3a; padding: 4px 10px 8px; border-bottom: 1px solid rgba(168, 128, 62, 0.5); }
+  .label__clim { display: inline-flex; align-items: center; gap: 5px; letter-spacing: 0.08em; color: #7d1a2c; }
+  .label__clim i { width: 5px; height: 5px; border-radius: 50%; background: #9e1f36; animation: live 2.2s ease-in-out infinite; }
+  .label__house { margin-top: 10px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: #7d1a2c; }
+  .label__t { font-family: var(--display); font-weight: 400; font-size: clamp(38px, 11vw, 64px); line-height: 0.98; margin: 6px 0 10px; }
+  .label__t i { font-style: normal; display: block; background: linear-gradient(100deg, #8a5e22 0%, #d9b265 30%, #f6e2a8 45%, #b8873a 60%, #8a5e22 100%) 0 0 / 220% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .hero.on .label__t i { animation: foil 3.2s var(--ease-io) 1.2s both; }
+  @keyframes foil { from { background-position: 100% 0; } to { background-position: 0 0; } }
+  .label__bot { padding-top: 8px; border-top: 1px solid rgba(168, 128, 62, 0.5); font-size: 11.5px; letter-spacing: 0.08em; color: #5e4632; }
   .ln { display: block; overflow: hidden; padding-bottom: 0.06em; margin-bottom: -0.06em; }
   .ln > span { display: block; transform: translateY(110%); transition: transform 1s var(--ease); }
-  .ln:nth-child(1) > span { transition-delay: 0.35s; }
-  .ln:nth-child(2) > span { transition-delay: 0.45s; }
-  .ln:nth-child(3) > span { transition-delay: 0.55s; }
+  .ln:nth-child(1) > span { transition-delay: 0.5s; }
+  .ln:nth-child(2) > span { transition-delay: 0.62s; }
   .hero.on .ln > span { transform: none; }
   :global(html:not(.js)) .ln > span { transform: none; }
-  .hero__lead { margin-bottom: 24px; }
+  :global(html:not(.js)) .label { opacity: 1; }
+  .hero__lead { max-width: 30em; }
   .hero__ctas { display: grid; gap: 8px; }
   .hero__hud { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); padding-top: 14px; padding-bottom: 20px; }
   .hero__hud div { display: grid; gap: 4px; }
@@ -438,14 +456,12 @@ const steps = [
     .hero__ctas, .cellar__ctas, .show__ctas { display: flex; flex-wrap: wrap; }
   }
   @media (min-width: 1000px) {
-    .hero { min-height: 100vh; justify-content: center; padding-top: 0; }
-    .hero__media { position: absolute; inset: 0 0 0 auto; width: 58%; height: auto; }
-    .hero__body { margin-top: 0; padding-bottom: 120px; }
+    .hero { justify-content: center; padding-top: var(--hdr); }
+    .hero__media::after { background: linear-gradient(90deg, rgba(11, 9, 8, 0.9) 0%, rgba(11, 9, 8, 0.35) 45%, rgba(11, 9, 8, 0) 70%), linear-gradient(0deg, var(--bg) 0%, rgba(11, 9, 8, 0) 24%); }
     .hero__media img { object-position: 50% 50%; }
-    .hero__media::after { background: linear-gradient(90deg, var(--bg) 0%, rgba(11, 9, 8, 0.6) 22%, rgba(11, 9, 8, 0) 50%), linear-gradient(0deg, var(--bg) 0%, rgba(11, 9, 8, 0) 24%); }
-    .hero__body { max-width: var(--max); padding-top: calc(var(--hdr) + 40px); }
-    .hero__t { max-width: 7.5em; }
-    .hero__lead { max-width: 27em; }
+    .hero__body { max-width: var(--max); padding-bottom: 120px; }
+    .label { width: 460px; padding: 26px 30px 22px; }
+    .label__t { font-size: 66px; }
     .hero__hud { position: absolute; left: 0; right: 0; bottom: 44px; grid-template-columns: repeat(3, max-content); gap: 0; border: 0; }
     .hero__hud div + div { padding-left: 28px; margin-left: 28px; }
 
