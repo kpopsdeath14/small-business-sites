@@ -1,0 +1,68 @@
+---
+import Base from "../layouts/Base.astro";
+import Icon from "../components/Icon.astro";
+import { url } from "../lib/site";
+---
+<Base title="Корзина — Камин Лайн" nav="cart">
+  <main>
+    <section class="ph">
+      <div class="wrap">
+        <nav class="crumbs" aria-label="Навигация"><a href={url()}>Главная</a><span>/</span><span>Корзина</span></nav>
+        <h1 class="h1" data-in>Корзина</h1>
+      </div>
+    </section>
+    <section class="wrap cartp">
+      <div class="cartp__list" data-list></div>
+      <aside class="sum" data-sum>
+        <p class="eyebrow">Ваш заказ</p>
+        <dl class="sum__rows">
+          <div><dt>Товары · <span data-n>0</span></dt><dd data-sub>0 ₽</dd></div>
+          <div><dt>Замер и монтаж</dt><dd>рассчитаем после замера</dd></div>
+          <div><dt>Доставка</dt><dd>по Москве, области и России</dd></div>
+        </dl>
+        <div class="sum__total"><span class="muted">Итого</span><strong data-total>0 ₽</strong></div>
+        <a class="btn btn--block" href={url("checkout/")}>Оформить заказ <Icon name="arrow" /></a>
+        <a class="ulink" style="justify-self:center" href={url("catalog/")}>Продолжить выбор</a>
+      </aside>
+      <div class="empty" data-empty hidden>
+        <p class="h3">Здесь пока прохладно</p>
+        <p class="lead">Выберите камин — а мы позаботимся о замере, монтаже и первом огне.</p>
+        <a class="btn" href={url("catalog/")}>В каталог <Icon name="arrow" /></a>
+      </div>
+    </section>
+  </main>
+</Base>
+
+<script>
+  import { cart, bindLines, renderLines, rollPrice } from "../scripts/cart";
+  const $ = <T extends Element = HTMLElement>(s: string) => document.querySelector<T>(s)!;
+  const list = $("[data-list]");
+  bindLines(list);
+  function render() {
+    const n = cart.lines().length, sub = cart.total();
+    $("[data-empty]").hidden = n > 0; $("[data-sum]").hidden = !n; list.hidden = !n;
+    renderLines(list);
+    $("[data-n]").textContent = String(cart.count());
+    rollPrice($("[data-sub]"), sub); rollPrice($("[data-total]"), sub);
+  }
+  document.addEventListener("cart:change", render);
+  render();
+</script>
+
+<style>
+  .cartp { display: grid; gap: 28px; }
+  .cartp__list { border-top: 1px solid var(--line); }
+  .cartp__list :global(.line-item) { grid-template-columns: 96px 1fr; padding: 20px 0; }
+  .sum { display: grid; gap: 16px; padding: 24px 20px; border-radius: 26px; background: var(--paper); box-shadow: 0 20px 40px -30px rgba(36, 26, 20, 0.4); align-self: start; }
+  .sum__rows { display: grid; }
+  .sum__rows div { display: flex; justify-content: space-between; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--line); font-size: 14.5px; }
+  .sum__rows dt { color: var(--smoke); }
+  .sum__rows dd { text-align: right; }
+  .sum__total { display: flex; justify-content: space-between; align-items: baseline; }
+  .sum__total strong { font-family: var(--serif); font-size: 30px; font-weight: 400; }
+  .empty { display: grid; gap: 14px; justify-items: start; padding: 30px 0; grid-column: 1 / -1; }
+  @media (min-width: 1000px) {
+    .cartp { grid-template-columns: 1fr 400px; gap: 56px; align-items: start; }
+    .sum { position: sticky; top: calc(var(--hdr) + 24px); padding: 30px; }
+  }
+</style>

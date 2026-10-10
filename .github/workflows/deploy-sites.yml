@@ -15,6 +15,7 @@
 #   Лён и Хлопок            -> .../small-business-sites/len-shop/
 #   Berry Lab               -> .../small-business-sites/berry-shop/
 #   RSEAT Russia            -> .../small-business-sites/simracing-shop/  (bespoke, not generated)
+#   Камин Лайн              -> .../small-business-sites/kaminline/  (bespoke, not generated)
 #
 # Each site's astro.config.mjs carries a matching `base`, so asset URLs resolve under
 # its subpath. CI must NOT re-run `npm run new-site` — without ANTHROPIC_API_KEY that
@@ -58,6 +59,7 @@ env:
     len-i-hlopok:/len-shop
     berry-lab:/berry-shop
     simracing-shop:/simracing-shop
+    kaminline:/kaminline
 
 jobs:
   build:

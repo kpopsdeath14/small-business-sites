@@ -87,3 +87,8 @@ sites/berry-lab/.astro/
 sites/simracing-shop/node_modules/
 sites/simracing-shop/dist/
 sites/simracing-shop/.astro/
+
+!sites/kaminline/
+sites/kaminline/node_modules/
+sites/kaminline/dist/
+sites/kaminline/.astro/

@@ -1,0 +1,141 @@
+---
+import "@fontsource/playfair-display/400.css";
+import "@fontsource/playfair-display/500.css";
+import "@fontsource-variable/onest";
+import "../styles/global.css";
+import Icon from "../components/Icon.astro";
+import { url, contacts, categories, cartIndex, BASE, img, BRANDS } from "../lib/site";
+
+interface Props { title?: string; description?: string; nav?: string }
+const {
+  title = "Камин Лайн — камины и печи под ключ",
+  description = "Камины, топки, печи и биокамины ведущих европейских брендов. Собственное производство порталов из мрамора и камня. Проект, монтаж за 3–5 дней и сервис. Салон на Нахимовском проспекте.",
+  nav = "",
+} = Astro.props;
+const year = new Date().getFullYear();
+const links = [
+  ["catalog", "Каталог", url("catalog/")],
+  ["podbor", "Подбор по комнате", url("podbor/")],
+  ["works", "Наши камины", url("#works")],
+  ["salon", "Салон и замер", url("salon/")],
+];
+---
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#f3ece2" />
+    <link rel="icon" type="image/svg+xml" href={`${BASE}/favicon.svg`} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(img("hero", 1024), Astro.site).href} />
+    <script is:inline>document.documentElement.classList.add("js");</script>
+    <slot name="head" />
+  </head>
+  <body>
+    <header class="hdr">
+      <div class="wrap hdr__in">
+        <a href={url()} class="logo" aria-label="Камин Лайн — на главную">
+          <svg class="logo__mark" viewBox="0 0 26 30" aria-hidden="true">
+            <path d="M2 29V12a11 11 0 0 1 22 0v17" fill="none" stroke="currentColor" stroke-width="1.6" />
+            <path d="M13 26c2.9 0 4.6-1.8 4.6-4.2 0-2.6-2-3.9-2.6-6.4-.2 1.2-.8 2.1-1.7 2.5.1-2.2-.7-4.3-2.6-5.6.1 2.6-2.4 4.3-2.4 7.4 0 3.5 2 6.3 4.7 6.3z" fill="#e47a2c" />
+          </svg>
+          <span>
+            <span class="logo__word">Камин Лайн</span>
+            <span class="logo__sub">с 2006 года</span>
+          </span>
+        </a>
+        <nav class="nav" aria-label="Основное меню">
+          {links.map(([id, label, href]) => <a href={href} aria-current={nav === id ? "page" : undefined}>{label}</a>)}
+        </nav>
+        <a href={contacts.phoneHref} class="icon-btn" aria-label="Позвонить"><Icon name="phone" /></a>
+        <a href={url("cart/")} class="icon-btn" data-open-cart aria-label="Корзина">
+          <Icon name="bag" />
+          <span class="cart-count" data-cart-count>0</span>
+        </a>
+        <button class="icon-btn burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="menu"><span></span><span></span></button>
+      </div>
+      <div class="wick" aria-hidden="true"><i></i><b></b></div>
+    </header>
+
+    <div class="menu" id="menu" aria-hidden="true">
+      <nav class="menu__nav" aria-label="Меню">
+        {links.map(([, label, href], i) => <a href={href} style={`--i:${i}`}>{label}<small>0{i + 1}</small></a>)}
+        {categories.map((c, i) => <a href={url(`catalog/${c.id}/`)} style={`--i:${i + links.length}`}>{c.title}<small>→</small></a>)}
+      </nav>
+      <div class="menu__foot">
+        <a href={contacts.phoneHref}>{contacts.phone}</a>
+        <p>{contacts.address} · {contacts.hours}</p>
+      </div>
+    </div>
+
+    <slot />
+
+    <footer class="ftr night">
+      <canvas class="embers" data-embers="5" data-y="1.02" data-spread="1.1"></canvas>
+      <div class="wrap" style="position:relative">
+        <div class="ftr__grid">
+          <div class="ftr__col">
+            <p class="eyebrow">Камин Лайн</p>
+            <p class="ftr__big">Тепло, которое собирают вокруг себя</p>
+          </div>
+          <div class="ftr__col">
+            <p class="eyebrow">Каталог</p>
+            {categories.map((c) => <a href={url(`catalog/${c.id}/`)}>{c.title}</a>)}
+          </div>
+          <div class="ftr__col">
+            <p class="eyebrow">Клиентам</p>
+            <a href={url("podbor/")}>Подбор по площади</a>
+            <a href={url("salon/#zamer")}>Заявка на замер</a>
+            <a href={url("salon/")}>Салон на Нахимовском</a>
+            <a href={url("cart/")}>Корзина</a>
+          </div>
+          <div class="ftr__col">
+            <p class="eyebrow">Связь</p>
+            <a href={contacts.phoneHref}>{contacts.phone}</a>
+            <a href={contacts.freeHref}>{contacts.free}</a>
+            <a href={`mailto:${contacts.email}`}>{contacts.email}</a>
+            <a href={contacts.telegram} target="_blank" rel="noopener">Telegram</a>
+          </div>
+        </div>
+        <div class="ftr__base">
+          <p>© 2006–{year} ООО «Камин Лайн Ру»</p>
+          <p>{contacts.address}</p>
+        </div>
+      </div>
+    </footer>
+
+    <div class="scrim" data-close-cart></div>
+    <aside class="drawer" aria-label="Корзина" aria-hidden="true">
+      <div class="drawer__grip"></div>
+      <div class="drawer__head">
+        <p class="h3">Корзина</p>
+        <button class="icon-btn close" type="button" data-close-cart aria-label="Закрыть"><Icon name="close" /></button>
+      </div>
+      <div class="drawer__list" data-cart-list></div>
+      <div class="drawer__foot">
+        <div class="drawer__sum"><span class="muted">Итого</span><strong data-cart-total>0 ₽</strong></div>
+        <a class="btn btn--block" href={url("checkout/")}>Оформить заказ <Icon name="arrow" /></a>
+        <a class="ulink" style="justify-self:center" href={url("cart/")}>Перейти в корзину</a>
+      </div>
+    </aside>
+
+    <div class="ember-toast" role="status" aria-live="polite">
+      <span class="ember-toast__img"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" alt="" /></span>
+      <div style="min-width:0">
+        <p class="ember-toast__t"><svg class="flame-ico" viewBox="0 0 14 16" aria-hidden="true"><path d="M7 15.5c2.6 0 4.4-1.7 4.4-4.1 0-2.5-1.9-3.8-2.5-6.2-.2 1.2-.8 2-1.6 2.4.1-2.1-.7-4.1-2.5-5.4.1 2.5-2.3 4.1-2.3 7.1 0 3.6 1.9 6.2 4.5 6.2z" fill="#f2a24a"/></svg>Добавлено в корзину</p>
+        <p class="ember-toast__n"></p>
+      </div>
+      <a class="ember-toast__go" href={url("checkout/")}>Оформить</a>
+    </div>
+
+    <script is:inline type="application/json" id="cart-index" set:html={JSON.stringify({ base: BASE, items: cartIndex })} />
+    <script>
+      import "../scripts/app.ts";
+    </script>
+  </body>
+</html>

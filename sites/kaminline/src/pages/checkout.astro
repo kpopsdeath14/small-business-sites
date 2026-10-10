@@ -1,0 +1,228 @@
+---
+import Base from "../layouts/Base.astro";
+import Icon from "../components/Icon.astro";
+import Flame from "../components/Flame.astro";
+import { url, contacts } from "../lib/site";
+---
+<Base title="Оформление заказа — Камин Лайн" nav="cart">
+  <main>
+    <section class="ph">
+      <div class="wrap">
+        <nav class="crumbs" aria-label="Навигация"><a href={url()}>Главная</a><span>/</span><a href={url("cart/")}>Корзина</a><span>/</span><span>Оформление</span></nav>
+        <h1 class="h1" data-in>Оформление <em>заказа</em></h1>
+      </div>
+    </section>
+
+    <section class="wrap co" data-form-wrap>
+      <form class="co__form" novalidate data-form>
+        <!-- three logs: each one catches as its block is filled -->
+        <div class="logs" aria-hidden="true">
+          <span data-log="1"><i></i></span><span data-log="2"><i></i></span><span data-log="3"><i></i></span>
+          <p class="logs__t" data-logs-t>Заполните три шага — и огонь разгорится</p>
+        </div>
+
+        <fieldset>
+          <legend><span class="co__n">01</span><span class="h3">Контакты</span></legend>
+          <div class="field"><label for="f-name">Имя</label><input class="input" id="f-name" name="name" autocomplete="name" required /></div>
+          <div class="field"><label for="f-phone">Телефон</label><input class="input" id="f-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7" required /></div>
+          <div class="field"><label for="f-email">Email · по желанию</label><input class="input" id="f-email" name="email" type="email" inputmode="email" autocomplete="email" /></div>
+        </fieldset>
+
+        <fieldset>
+          <legend><span class="co__n">02</span><span class="h3">Где будет камин</span></legend>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="where" value="Загородный дом" checked /><span class="opt__dot"></span><span><span class="opt__t">Загородный дом</span><span class="opt__d">Дровяной камин или печь с дымоходом</span></span></label>
+            <label class="opt"><input type="radio" name="where" value="Квартира" /><span class="opt__dot"></span><span><span class="opt__t">Квартира</span><span class="opt__d">Био- или электрокамин без дымохода</span></span></label>
+            <label class="opt"><input type="radio" name="where" value="Ресторан или офис" /><span class="opt__dot"></span><span><span class="opt__t">Ресторан или офис</span><span class="opt__d">Проект под ваш интерьер</span></span></label>
+          </div>
+          <div class="field"><label for="f-addr">Город или адрес объекта</label><input class="input" id="f-addr" name="addr" autocomplete="street-address" placeholder="Например: Истра, КП «Лесное»" required /></div>
+        </fieldset>
+
+        <fieldset>
+          <legend><span class="co__n">03</span><span class="h3">Услуги</span></legend>
+          <label class="check"><input type="checkbox" name="zamer" checked /><span>Нужен замер — специалист приедет, проверит основание и дымоход</span></label>
+          <label class="check"><input type="checkbox" name="mount" checked /><span>Нужен монтаж под ключ — топка, дымоход и облицовка за 3–5 дней</span></label>
+          <div class="field"><label for="f-com">Комментарий</label><textarea class="input" id="f-com" name="comment" placeholder="Площадь комнаты, высота потолков, удобное время звонка…"></textarea></div>
+        </fieldset>
+
+        <label class="check"><input type="checkbox" name="agree" required checked /><span>Согласен на обработку персональных данных</span></label>
+        <p class="co__err" data-err hidden>Заполните отмеченные поля — и продолжим.</p>
+        <button class="btn btn--block" type="submit">Разжечь заказ <Icon name="flame" /></button>
+        <p class="co__note">Оплата — после замера и согласования сметы. Менеджер позвонит в рабочее время салона.</p>
+      </form>
+
+      <aside class="co__sum">
+        <details class="co__det" data-det>
+          <summary class="co__head"><span class="eyebrow">Заказ · <span data-n>0</span></span><span class="co__mini" data-mini>0 ₽</span><i class="co__chev"></i></summary>
+          <div class="co__body">
+            <div class="co__lines" data-lines></div>
+            <div class="co__total"><span class="muted">Итого</span><strong data-total>0 ₽</strong></div>
+            <a class="ulink" href={url("cart/")}>Изменить состав</a>
+          </div>
+        </details>
+      </aside>
+    </section>
+
+    <section class="done night" data-done hidden>
+      <canvas class="done__embers" data-embers="16" data-x="0.5" data-y="0.42" data-spread="0.2"></canvas>
+      <div class="wrap done__in">
+        <Flame class="done__flame" />
+        <p class="eyebrow">Заказ <span class="num" data-oid></span></p>
+        <h2 class="h2">Огонь <em>разожжён</em></h2>
+        <p class="lead">Отправьте заказ менеджеру — он подтвердит наличие и договорится о замере. Или просто дождитесь звонка.</p>
+        <div class="done__card" data-card></div>
+        <div class="done__ctas">
+          <button class="btn" type="button" data-tg>Отправить в Telegram <Icon name="tg" /></button>
+          <a class="btn btn--ghost" data-mail>Отправить на почту <Icon name="mail" /></a>
+          <a class="btn btn--ghost" href={contacts.phoneHref}>{contacts.phone}</a>
+        </div>
+        <p class="done__note" data-note hidden></p>
+        <a class="ulink" href={url("catalog/")}>Вернуться в каталог</a>
+      </div>
+    </section>
+  </main>
+</Base>
+
+<script>
+  import { cart, items, rub, esc, pimg } from "../scripts/cart";
+  import { sendTelegram, mailto, phoneMask } from "../scripts/send";
+  const $ = <T extends Element = HTMLElement>(s: string) => document.querySelector<T>(s)!;
+  const $$ = <T extends Element = HTMLElement>(s: string) => [...document.querySelectorAll<T>(s)];
+  const form = $<HTMLFormElement>("[data-form]");
+
+  function render() {
+    const ls = cart.lines();
+    if (!ls.length && $("[data-done]").hidden) { location.replace(form.baseURI.replace(/checkout\/?.*$/, "cart/")); return; }
+    $("[data-n]").textContent = `${cart.count()} поз.`;
+    const html = ls.map((l) => { const it = items[l.id]; return `<div class="co__line"><span class="co__img"><img src="${pimg(it.i)}" alt=""></span><span><b>${esc(it.n)}</b>${it.v ? `<small>${esc(it.v)}</small>` : ""}<small>${l.q} шт.</small></span><span class="co__lp">${rub(it.p * l.q)}</span></div>`; }).join("");
+    const box = $("[data-lines]"); if (box.dataset.h !== html) { box.innerHTML = html; box.dataset.h = html; }
+    $("[data-total]").textContent = rub(cart.total()); $("[data-mini]").textContent = rub(cart.total());
+  }
+  document.addEventListener("cart:change", render);
+  render();
+  const det = $<HTMLDetailsElement>("[data-det]");
+  const wide = matchMedia("(min-width: 1000px)");
+  const syncDet = () => { if (wide.matches) det.open = true; };
+  wide.addEventListener("change", syncDet); syncDet();
+
+  phoneMask($<HTMLInputElement>("#f-phone"));
+
+  // three logs catch fire as blocks are completed
+  const val = (id: string) => ($("#" + id) as HTMLInputElement).value.trim();
+  const fs = [...form.querySelectorAll("fieldset")];
+  let reached3 = false;
+  form.addEventListener("focusin", (e) => { if (fs[2].contains(e.target as Node)) { reached3 = true; logs(); } });
+  function logs() {
+    const s1 = val("f-name").length > 1 && val("f-phone").replace(/\D/g, "").length === 11;
+    const s2 = s1 && val("f-addr").length > 2;
+    const s3 = s2 && reached3;
+    [s1, s2, s3].forEach((ok, i) => $(`[data-log="${i + 1}"]`).classList.toggle("lit", ok));
+    $("[data-logs-t]").textContent = s3 ? "Всё готово — осталось разжечь" : s2 ? "Ещё один шаг" : s1 ? "Хорошее начало" : "Заполните три шага — и огонь разгорится";
+  }
+  form.addEventListener("input", logs); form.addEventListener("change", logs);
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const bad: HTMLElement[] = [];
+    $$<HTMLInputElement>("[required]").forEach((el) => {
+      const ok = el.type === "checkbox" ? el.checked : el.id === "f-phone" ? el.value.replace(/\D/g, "").length === 11 : el.value.trim().length > 1;
+      el.classList.toggle("err", !ok); if (!ok) bad.push(el);
+    });
+    $("[data-err]").hidden = !bad.length;
+    if (bad.length) { bad[0].focus(); return; }
+    const f = new FormData(form);
+    const d = new Date();
+    const oid = `KL-${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
+    const ls = cart.lines();
+    const text = [
+      `Заказ ${oid} с сайта «Камин Лайн»`, "",
+      ...ls.map((l, i) => { const it = items[l.id]; return `${i + 1}. ${it.n}${it.v ? ` (${it.v})` : ""} × ${l.q} — ${rub(it.p * l.q)}`; }),
+      "", `Итого: ${rub(cart.total())}`,
+      `Объект: ${f.get("where")}, ${f.get("addr")}`,
+      [f.get("zamer") ? "нужен замер" : "", f.get("mount") ? "нужен монтаж под ключ" : ""].filter(Boolean).join(", ") || null,
+      "", `Имя: ${f.get("name")}`, `Телефон: ${f.get("phone")}`,
+      f.get("email") ? `Email: ${f.get("email")}` : null,
+      f.get("comment") ? `Комментарий: ${f.get("comment")}` : null,
+    ].filter((x) => x !== null).join("\n");
+
+    $("[data-oid]").textContent = oid;
+    $("[data-card]").innerHTML = ls.map((l) => { const it = items[l.id]; return `<div class="dc"><span class="dc__img"><img src="${pimg(it.i)}" alt=""></span><span><b>${esc(it.n)}</b><small>${it.v ? esc(it.v) + " · " : ""}${l.q} шт.</small></span><span class="dc__p">${rub(it.p * l.q)}</span></div>`; }).join("") + `<div class="dc__total"><span>Итого</span><strong>${rub(cart.total())}</strong></div>`;
+    $("[data-tg]").onclick = () => sendTelegram(text, $("[data-note]"));
+    $<HTMLAnchorElement>("[data-mail]").href = mailto(`Заказ ${oid}`, text);
+
+    const btn = form.querySelector<HTMLButtonElement>("button[type=submit]")!;
+    btn.disabled = true;
+    $$("[data-log]").forEach((l) => l.classList.add("lit"));
+    setTimeout(() => {
+      $("[data-form-wrap]").hidden = true;
+      $("[data-done]").hidden = false;
+      document.querySelector(".ph")!.setAttribute("hidden", "");
+      cart.clear();
+      scrollTo({ top: 0 });
+      requestAnimationFrame(() => requestAnimationFrame(() => $("[data-done]").classList.add("lit")));
+    }, 650);
+  });
+</script>
+
+<style>
+  .co { display: grid; gap: 28px; }
+  .co__form { display: grid; gap: 34px; }
+  fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: 14px; min-width: 0; }
+  legend { display: flex; align-items: baseline; gap: 12px; padding: 0 0 6px; }
+  .co__n { font-size: 13px; font-weight: 700; color: var(--ember); }
+  .co__err { color: var(--ember-2); font-size: 14px; margin-bottom: -18px; }
+  .co__note { font-size: 13px; color: var(--smoke); margin-top: -18px; }
+
+  .logs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 18px 16px 14px; border-radius: 22px; background: var(--night); color: var(--cream); }
+  .logs span { position: relative; height: 54px; display: grid; place-items: end center; }
+  .logs span::before { content: ""; width: 70%; height: 12px; border-radius: 8px; background: linear-gradient(180deg, #5b3a24, #3a2418); box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.06); }
+  .logs i { position: absolute; bottom: 9px; width: 26px; height: 36px; border-radius: 50% 50% 45% 45% / 62% 62% 38% 38%; background: radial-gradient(circle at 50% 80%, #fff3cc, #ffb347 45%, #e8692c 80%); box-shadow: 0 0 22px 6px rgba(255, 140, 50, 0.45); transform-origin: 50% 100%; transform: scale(0); transition: transform 0.7s var(--ease); }
+  .logs .lit i { transform: scale(1); animation: lick 1.2s ease-in-out infinite alternate; }
+  .logs .lit::before { background: linear-gradient(180deg, #8a4a24, #3a2418); box-shadow: 0 0 12px rgba(255, 120, 40, 0.5); }
+  .logs__t { grid-column: 1 / -1; text-align: center; font-size: 13.5px; color: var(--cream-2); }
+
+  .co__sum { order: -1; padding: 16px 18px; border-radius: 22px; background: var(--paper); }
+  .co__det { display: contents; }
+  .co__head { display: flex; align-items: center; gap: 12px; list-style: none; cursor: pointer; }
+  .co__head::-webkit-details-marker { display: none; }
+  .co__mini { margin-left: auto; font-weight: 700; }
+  .co__chev { width: 9px; height: 9px; border-right: 1.5px solid var(--smoke); border-bottom: 1.5px solid var(--smoke); transform: rotate(45deg) translateY(-3px); transition: transform 0.4s var(--ease); }
+  .co__det[open] .co__chev { transform: rotate(-135deg); }
+  .co__body { display: grid; gap: 12px; padding-top: 12px; }
+  .co__lines :global(.co__line) { display: grid; grid-template-columns: 46px 1fr auto; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+  .co__lines :global(.co__img) { width: 46px; height: 56px; border-radius: 23px 23px 6px 6px; overflow: hidden; background: var(--sand); display: block; }
+  .co__lines :global(.co__img img) { width: 100%; height: 100%; object-fit: cover; }
+  .co__lines :global(b) { display: block; font-family: var(--serif); font-weight: 400; font-size: 15px; }
+  .co__lines :global(small) { display: block; color: var(--smoke); font-size: 12.5px; }
+  .co__lines :global(.co__lp) { white-space: nowrap; font-weight: 600; }
+  .co__total { display: flex; justify-content: space-between; align-items: baseline; }
+  .co__total strong { font-family: var(--serif); font-size: 26px; font-weight: 400; }
+
+  .done { position: relative; overflow: hidden; padding: calc(var(--hdr) + 30px) 0 70px; min-height: 100svh; }
+  .done__embers { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  .done__in { position: relative; display: grid; gap: 16px; justify-items: center; text-align: center; }
+  .done :global(.done__flame) { width: 170px; --heat: 0; }
+  .done.lit :global(.done__flame) { --heat: 1; }
+  .done :global(.done__flame .flame__body), .done :global(.done__flame .flame__glow) { transition-duration: 1.8s; }
+  .done .lead { margin: 0 auto; }
+  .done__card { width: 100%; max-width: 560px; display: grid; gap: 4px; padding: 14px 16px; border-radius: 22px; background: rgba(243, 231, 214, 0.06); border: 1px solid var(--nline); text-align: left; }
+  .done__card :global(.dc) { display: grid; grid-template-columns: 44px 1fr auto; gap: 12px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--nline); font-size: 14px; }
+  .done__card :global(.dc__img) { width: 44px; height: 54px; border-radius: 22px 22px 6px 6px; overflow: hidden; display: block; background: var(--sand); }
+  .done__card :global(.dc__img img) { width: 100%; height: 100%; object-fit: cover; }
+  .done__card :global(b) { display: block; font-family: var(--serif); font-weight: 400; font-size: 15.5px; }
+  .done__card :global(small) { color: var(--cream-2); font-size: 12.5px; }
+  .done__card :global(.dc__p) { white-space: nowrap; }
+  .done__card :global(.dc__total) { display: flex; justify-content: space-between; align-items: baseline; padding-top: 10px; }
+  .done__card :global(.dc__total strong) { font-family: var(--serif); font-weight: 400; font-size: 24px; }
+  .done__ctas { display: grid; gap: 8px; width: 100%; max-width: 420px; }
+  .done__note { color: var(--flame); font-size: 14px; }
+
+  @media (min-width: 1000px) {
+    .co { grid-template-columns: 1fr 400px; gap: 64px; align-items: start; }
+    .co__sum { order: 0; position: sticky; top: calc(var(--hdr) + 24px); padding: 26px; }
+    .co__head { pointer-events: none; }
+    .co__chev, .co__mini { display: none; }
+    .done :global(.done__flame) { width: 220px; }
+    .done__ctas { max-width: 760px; display: flex; flex-wrap: wrap; justify-content: center; }
+  }
+</style>

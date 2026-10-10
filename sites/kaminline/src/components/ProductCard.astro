@@ -1,0 +1,28 @@
+---
+import type { Product } from "../lib/site";
+import { pimg, url, rub, catTitle, area } from "../lib/site";
+import Icon from "./Icon.astro";
+
+interface Props { p: Product; d?: number; eager?: boolean; showCat?: boolean }
+const { p, d = 0, eager = false, showCat = true } = Astro.props;
+const v = p.variants[0];
+const multi = p.variants.length > 1;
+const varies = p.variants.some((x) => x.price !== p.from);
+const badge = v.old ? `−${Math.round((1 - v.price / v.old) * 100)}%` : p.kw ? `до ${area(p.kw)} м²` : "";
+---
+<article class="card" data-in style={`--d:${d}s`} data-price={p.from} data-kw={p.kw ?? ""}>
+  <div class="card__media arch">
+    <img src={pimg(v.img[0])} srcset={`${pimg(v.img[0])} 480w, ${pimg(v.img[0], 960)} 960w`} sizes="(min-width: 1000px) 24vw, (min-width: 640px) 32vw, 48vw" alt={p.name} loading={eager ? "eager" : "lazy"} decoding="async" />
+    {v.img[1] && <img src={pimg(v.img[1])} alt="" loading="lazy" decoding="async" />}
+    {badge && <span class="card__badge">{badge}</span>}
+    {!multi && (
+      <button class="card__plus" type="button" data-add={v.id} aria-label={`Добавить «${p.name}» в корзину`}><Icon name="plus" /></button>
+    )}
+  </div>
+  <div class="card__body">
+    {showCat && <p class="card__cat">{catTitle(p.cat)}{multi && ` · ${p.variants.length} вар.`}</p>}
+    <h3 class="card__name"><a class="card__link" href={url(`product/${p.slug}/`)}>{p.name}</a></h3>
+    {p.sub && <p class="card__sub">{p.sub}</p>}
+    <p class="card__price">{varies && <small>от </small>}{rub(p.from)}{v.old && !varies && <s>{rub(v.old)}</s>}</p>
+  </div>
+</article>

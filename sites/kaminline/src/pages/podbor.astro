@@ -1,0 +1,21 @@
+---
+import Base from "../layouts/Base.astro";
+import Podbor from "../components/Podbor.astro";
+import { url } from "../lib/site";
+---
+<Base title="Подбор камина по площади — Камин Лайн" nav="podbor">
+  <main class="night pb-page">
+    <section class="wrap">
+      <nav class="crumbs" aria-label="Навигация"><a href={url()}>Главная</a><span>/</span><span>Подбор по комнате</span></nav>
+      <div class="sh">
+        <h1 class="h1" data-in>Сколько огня <em>нужно вашему дому?</em></h1>
+        <p class="lead" data-in>Ориентир производителей — около 1 кВт тепла на 10 м² при потолках до 2,7 м. Точный расчёт с учётом утепления, окон и дымохода сделаем на замере.</p>
+      </div>
+      <Podbor />
+    </section>
+  </main>
+</Base>
+<style>
+  .pb-page { padding: calc(var(--hdr) + 28px) 0 90px; min-height: 100svh; }
+  .pb-page .crumbs { color: var(--cream-2); }
+</style>

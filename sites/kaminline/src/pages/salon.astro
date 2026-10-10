@@ -1,0 +1,200 @@
+---
+import Base from "../layouts/Base.astro";
+import Icon from "../components/Icon.astro";
+import { url, img, contacts } from "../lib/site";
+const zamer = [
+  "Выезд специалиста с измерительным оборудованием",
+  "Проверка стен, пола, фундамента и кровли — можно ли ставить камин",
+  "План расположения камина и дымохода",
+  "Подбор оборудования с точными ценами",
+  "Варианты облицовки под ваш интерьер",
+  "Сроки и итоговая стоимость под ключ",
+];
+---
+<Base title="Салон и замер — Камин Лайн" description={`Салон каминов: ${contacts.address}, ${contacts.salon}. ${contacts.hours}. Запись на визит и выезд замерщика.`} nav="salon">
+  <main>
+    <section class="sl-hero night">
+      <canvas class="embers" data-embers="8" data-y="1.02" data-spread="1.2"></canvas>
+      <div class="wrap sl-hero__grid">
+        <div class="sl-hero__img arch" data-rise>
+          <img src={img("malachite", 900)} srcset={`${img("malachite", 480)} 480w, ${img("malachite", 900)} 900w`} sizes="(min-width: 1000px) 40vw, 100vw" alt="Изразцовый камин в гостиной" />
+        </div>
+        <div class="sl-hero__text">
+          <nav class="crumbs" aria-label="Навигация"><a href={url()}>Главная</a><span>/</span><span>Салон и замер</span></nav>
+          <h1 class="h1" data-in>Приходите <em>погреться</em></h1>
+          <p class="lead" data-in>В салоне работают живые образцы: можно посмотреть на пламя, потрогать облицовку и обсудить проект за чашкой чая.</p>
+          <ul class="sl-info" data-in>
+            <li><Icon name="pin" /><span><b>{contacts.address}</b>{contacts.salon}, {contacts.place} · {contacts.metro}</span></li>
+            <li><Icon name="flame" /><span><b>{contacts.hours}</b>Без выходных</span></li>
+            <li><Icon name="phone" /><span><b><a href={contacts.phoneHref}>{contacts.phone}</a></b><a href={contacts.freeHref}>{contacts.free}</a> · бесплатно по России</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap book" id="visit">
+      <div class="book__head">
+        <p class="eyebrow" data-in>Запись</p>
+        <h2 class="h2" data-in>Выберите <em>удобное время</em></h2>
+        <p class="lead" data-in>Заявка уйдёт менеджеру одним сообщением — он подтвердит время.</p>
+      </div>
+      <form class="book__form" data-book novalidate id="zamer">
+        <div class="seg" role="radiogroup" aria-label="Что нужно">
+          <label><input type="radio" name="type" value="visit" checked /><span><b>Визит в салон</b><small>Посмотреть камины вживую</small></span></label>
+          <label><input type="radio" name="type" value="zamer" /><span><b>Замер на объекте</b><small>Специалист приедет к вам</small></span></label>
+        </div>
+        <fieldset>
+          <legend>День</legend>
+          <div class="chips-row" data-days></div>
+        </fieldset>
+        <fieldset>
+          <legend>Время</legend>
+          <div class="chips-row chips-row--wrap" data-times></div>
+        </fieldset>
+        <div class="field" data-addr hidden><label for="b-addr">Адрес объекта</label><input class="input" id="b-addr" name="addr" placeholder="Город, посёлок, улица" /></div>
+        <div class="field" data-prod hidden><label for="b-prod">Модель</label><input class="input" id="b-prod" name="prod" /></div>
+        <div class="book__who">
+          <input class="input" name="name" placeholder="Имя" autocomplete="name" />
+          <input class="input" name="phone" type="tel" inputmode="tel" placeholder="+7" autocomplete="tel" />
+        </div>
+        <div class="book__sum"><span class="muted">Ваше время</span><p class="book__slot" data-slot>—</p></div>
+        <div class="book__ctas">
+          <button class="btn" type="submit" data-via="tg">Отправить в Telegram <Icon name="tg" /></button>
+          <button class="btn btn--ghost" type="submit" data-via="mail">На почту <Icon name="mail" /></button>
+        </div>
+        <p class="book__note" data-note hidden></p>
+      </form>
+    </section>
+
+    <section class="wrap zm">
+      <div class="zm__img arch" data-rise>
+        <img src={img("palace", 900)} srcset={`${img("palace", 480)} 480w, ${img("palace", 900)} 900w`} sizes="(min-width: 1000px) 34vw, 100vw" alt="Изразцовый камин в светлой гостиной" loading="lazy" />
+      </div>
+      <div class="zm__text">
+        <p class="eyebrow" data-in>Замер</p>
+        <h2 class="h2" data-in>Что входит <em>в замер</em></h2>
+        <ol class="zm__list">
+          {zamer.map((z, i) => <li data-in style={`--d:${i * 0.06}s`}><span>0{i + 1}</span>{z}</li>)}
+        </ol>
+        <p class="lead" data-in>Монтаж по готовому проекту занимает 3–5 дней: подготовка, топка и дымоход, облицовка.</p>
+      </div>
+    </section>
+  </main>
+</Base>
+
+<script>
+  import { sendTelegram, mailto, phoneMask } from "../scripts/send";
+  const form = document.querySelector<HTMLFormElement>("[data-book]")!;
+  const $ = <T extends Element = HTMLElement>(s: string) => form.querySelector<T>(s)!;
+  const DOW = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
+  const now = new Date();
+  const days = Array.from({ length: 14 }, (_, i) => { const d = new Date(now); d.setDate(now.getDate() + i + 1); return d; });
+  $("[data-days]").innerHTML = days.map((d, i) => `<label class="cd"><input type="radio" name="day" value="${d.toISOString().slice(0, 10)}" ${i === 0 ? "checked" : ""}><span><small>${DOW[d.getDay()]}</small><b>${d.getDate()}</b><small>${d.toLocaleDateString("ru-RU", { month: "short" }).replace(".", "")}</small></span></label>`).join("");
+  const fmt = (iso: string) => { const d = new Date(iso + "T12:00"); return `${DOW[d.getDay()]}, ${d.toLocaleDateString("ru-RU", { day: "numeric", month: "long" })}`; };
+
+  function times() {
+    const f = new FormData(form);
+    const type = String(f.get("type"));
+    const day = new Date(String(f.get("day")) + "T12:00").getDay();
+    const prev = String(f.get("time") || "");
+    const list = type === "zamer" ? ["Утро · 10–13", "День · 13–16", "Вечер · 16–19"] : Array.from({ length: day === 0 ? 8 : 9 }, (_, i) => `${10 + i}:00`);
+    $("[data-times]").innerHTML = list.map((t, i) => `<label class="ct"><input type="radio" name="time" value="${t}" ${(prev ? t === prev : i === (type === "zamer" ? 0 : 4)) ? "checked" : ""}><span>${t}</span></label>`).join("");
+    if (!form.querySelector("input[name=time]:checked")) (form.querySelector("input[name=time]") as HTMLInputElement).checked = true;
+    $("[data-addr]").hidden = type !== "zamer";
+  }
+  function update() {
+    const f = new FormData(form);
+    $("[data-slot]").textContent = `${fmt(String(f.get("day")))} · ${f.get("time")}${f.get("type") === "zamer" ? " · выезд" : " · салон"}`;
+  }
+  form.addEventListener("change", (e) => { const n = (e.target as HTMLInputElement).name; if (n === "type" || n === "day") times(); update(); });
+  const q = new URLSearchParams(location.search);
+  if (location.hash === "#zamer") form.querySelector<HTMLInputElement>('input[value="zamer"]')!.checked = true;
+  if (q.get("p")) { $("[data-prod]").hidden = false; $<HTMLInputElement>("#b-prod").value = q.get("p")!; }
+  times(); update();
+  phoneMask($<HTMLInputElement>("[name=phone]"));
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const via = ((e as SubmitEvent).submitter as HTMLElement | null)?.dataset.via || "tg";
+    const f = new FormData(form);
+    const name = String(f.get("name") || "").trim(), phone = String(f.get("phone") || "");
+    const okN = name.length > 1, okP = phone.replace(/\D/g, "").length === 11;
+    $("[name=name]").classList.toggle("err", !okN); $("[name=phone]").classList.toggle("err", !okP);
+    const zamer = f.get("type") === "zamer";
+    const okA = !zamer || String(f.get("addr")).trim().length > 2;
+    $("#b-addr").classList.toggle("err", !okA);
+    if (!okN || !okP || !okA) return;
+    const text = [
+      zamer ? "Здравствуйте! Хочу заказать замер." : "Здравствуйте! Хочу приехать в салон на Нахимовском.",
+      `Когда: ${fmt(String(f.get("day")))}, ${f.get("time")}`,
+      zamer ? `Адрес: ${f.get("addr")}` : null,
+      f.get("prod") ? `Интересует: ${f.get("prod")}` : null,
+      `Имя: ${name}`, `Телефон: ${phone}`,
+    ].filter(Boolean).join("\n");
+    if (via === "mail") location.href = mailto(zamer ? "Заявка на замер" : "Запись в салон", text);
+    else sendTelegram(text, $("[data-note]"));
+  });
+</script>
+
+<style>
+  .sl-hero { position: relative; overflow: hidden; padding: calc(var(--hdr) + 18px) 0 60px; }
+  .sl-hero__grid { position: relative; display: grid; gap: 28px; }
+  .sl-hero__img { aspect-ratio: 4 / 5; max-height: 62svh; width: 100%; }
+  .sl-hero__img img { width: 100%; height: 100%; object-fit: cover; }
+  .sl-hero__text { display: grid; gap: 18px; align-content: center; }
+  .sl-hero .crumbs { color: var(--cream-2); }
+  .sl-info { display: grid; gap: 14px; margin-top: 6px; }
+  .sl-info li { display: grid; grid-template-columns: 22px 1fr; gap: 12px; color: var(--cream-2); font-size: 14.5px; line-height: 1.5; }
+  .sl-info :global(svg) { width: 20px; height: 20px; color: var(--flame); margin-top: 2px; }
+  .sl-info b { display: block; color: var(--cream); font-weight: 600; font-size: 16px; }
+
+  .book { display: grid; gap: 26px; padding-top: 80px; scroll-margin-top: calc(var(--hdr) + 10px); }
+  .book__head { display: grid; gap: 14px; align-content: start; }
+  .book__form { display: grid; gap: 22px; padding: 20px 16px; border-radius: 28px; background: var(--paper); box-shadow: 0 30px 60px -40px rgba(36, 26, 20, 0.45); scroll-margin-top: calc(var(--hdr) + 10px); }
+  .book__form fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: 10px; min-width: 0; }
+  .book__form legend { font-size: 13px; font-weight: 600; color: var(--ink-2); padding-bottom: 8px; }
+  .seg { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .seg label { position: relative; cursor: pointer; }
+  .seg input { position: absolute; opacity: 0; pointer-events: none; }
+  .seg span { display: grid; gap: 2px; height: 100%; padding: 12px 14px; border-radius: 18px; border: 1px solid var(--line); transition: background 0.3s, border-color 0.3s, color 0.3s; }
+  .seg b { font-weight: 600; }
+  .seg small { color: var(--smoke); font-size: 12.5px; }
+  .seg input:checked + span { background: var(--night); color: var(--cream); border-color: var(--night); }
+  .seg input:checked + span small { color: var(--cream-2); }
+  .chips-row { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin: 0 -16px; padding: 2px 16px; }
+  .chips-row::-webkit-scrollbar { display: none; }
+  .chips-row--wrap { flex-wrap: wrap; margin: 0; padding: 0; overflow: visible; }
+  .book :global(.cd), .book :global(.ct) { position: relative; flex: none; cursor: pointer; }
+  .book :global(.cd input), .book :global(.ct input) { position: absolute; opacity: 0; pointer-events: none; }
+  .book :global(.cd span) { display: grid; justify-items: center; width: 58px; padding: 10px 0; border-radius: 30px; border: 1px solid var(--line); transition: background 0.3s, color 0.3s, box-shadow 0.4s; }
+  .book :global(.cd small) { font-size: 11px; color: var(--smoke); text-transform: uppercase; letter-spacing: 0.06em; }
+  .book :global(.cd b) { font-family: var(--serif); font-weight: 400; font-size: 22px; line-height: 1.2; }
+  .book :global(.ct span) { display: block; padding: 10px 15px; border-radius: 999px; border: 1px solid var(--line); font-size: 14px; font-variant-numeric: tabular-nums; transition: background 0.3s, color 0.3s, box-shadow 0.4s; }
+  .book :global(.cd input:checked + span), .book :global(.ct input:checked + span) { background: var(--ember); border-color: var(--ember); color: #fff; box-shadow: 0 8px 20px -8px rgba(232, 105, 44, 0.8); }
+  .book :global(.cd input:checked + span small) { color: rgba(255, 255, 255, 0.85); }
+  .book__who { display: grid; gap: 8px; }
+  .book__sum { display: grid; gap: 4px; padding: 14px 0; border-block: 1px solid var(--line); }
+  .book__slot { font-family: var(--serif); font-size: 21px; }
+  .book__ctas { display: grid; gap: 8px; }
+  .book__note { font-size: 14px; color: var(--ember-2); }
+
+  .zm { display: grid; gap: 28px; padding-top: 90px; }
+  .zm__img { aspect-ratio: 4 / 5; }
+  .zm__img img { width: 100%; height: 100%; object-fit: cover; }
+  .zm__text { display: grid; gap: 18px; align-content: center; }
+  .zm__list { display: grid; border-top: 1px solid var(--line); }
+  .zm__list li { display: grid; grid-template-columns: 34px 1fr; gap: 10px; padding: 13px 0; border-bottom: 1px solid var(--line); }
+  .zm__list span { font-weight: 700; font-size: 13px; color: var(--ember); padding-top: 2px; }
+
+  @media (min-width: 1000px) {
+    .sl-hero { padding: calc(var(--hdr) + 50px) 0 90px; }
+    .sl-hero__grid { grid-template-columns: 0.8fr 1fr; gap: 80px; align-items: center; }
+    .sl-hero__img { max-height: none; }
+    .book { grid-template-columns: 0.8fr 1.2fr; gap: 80px; padding-top: 130px; align-items: start; }
+    .book__form { padding: 34px; }
+    .chips-row { margin: 0; padding: 2px 0; flex-wrap: wrap; }
+    .book__who { grid-template-columns: 1fr 1fr; }
+    .book__ctas { display: flex; }
+    .zm { grid-template-columns: 0.7fr 1fr; gap: 80px; padding-top: 130px; align-items: center; }
+  }
+</style>
