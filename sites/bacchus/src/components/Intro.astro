@@ -1,7 +1,7 @@
 ---
 /**
- * Once per visit: the cellar controller brings the room to temperature (22,4 → 12,0 °C, 41 → 70 %),
- * then the cellar doors part on the hero. Tap anywhere to skip.
+ * Once per visit: a sommelier's corkscrew turns into the cork, draws it out with a pop,
+ * and red wine pours over the screen and drains away to reveal the cellar. Tap to skip.
  */
 ---
 <script is:inline>
@@ -10,72 +10,82 @@
       document.documentElement.classList.add("intro");
   } catch (e) {}
 </script>
-<div class="ctl" aria-hidden="true">
-  <i class="ctl__door ctl__door--l"></i><i class="ctl__door ctl__door--r"></i>
-  <div class="ctl__panel">
-    <p class="tag ctl__h"><span class="ctl__led"></span>Погреб · зона 1</p>
-    <p class="ctl__t num"><span data-ct>22,4</span><sup>°C</sup></p>
-    <div class="ctl__row num"><span>Влажность</span><span><span data-ch>41</span> %</span></div>
-    <div class="ctl__bar"><i data-cb></i></div>
-    <p class="tag ctl__s" data-cs>Охлаждение</p>
-  </div>
-  <p class="tag ctl__skip">Коснитесь, чтобы войти</p>
+<div class="crk" aria-hidden="true">
+  <svg class="crk__svg" viewBox="0 0 200 360">
+    <defs>
+      <linearGradient id="crk-glass" x1="0" x2="1"><stop offset="0" stop-color="#1a0f0c" /><stop offset=".25" stop-color="#3b1d18" /><stop offset=".45" stop-color="#5a2b24" /><stop offset=".55" stop-color="#2a1511" /><stop offset="1" stop-color="#120a08" /></linearGradient>
+      <linearGradient id="crk-foil" x1="0" x2="1"><stop offset="0" stop-color="#5e1020" /><stop offset=".4" stop-color="#b8344d" /><stop offset=".6" stop-color="#7d1a2c" /><stop offset="1" stop-color="#4a0c18" /></linearGradient>
+      <linearGradient id="crk-cork" x1="0" x2="1"><stop offset="0" stop-color="#9c7448" /><stop offset=".5" stop-color="#d4ab78" /><stop offset="1" stop-color="#8f6840" /></linearGradient>
+      <linearGradient id="crk-steel" x1="0" x2="1"><stop offset="0" stop-color="#8a8f95" /><stop offset=".5" stop-color="#eef1f4" /><stop offset="1" stop-color="#7b8086" /></linearGradient>
+    </defs>
+    <!-- bottle neck and shoulder -->
+    <path d="M78 160 V250 C78 280 40 290 40 330 V360 H160 V330 C160 290 122 280 122 250 V160 Z" fill="url(#crk-glass)" />
+    <path d="M86 170 V250" stroke="rgba(255,255,255,.18)" stroke-width="3" stroke-linecap="round" />
+    <!-- the foil was cut below the lip -->
+    <path d="M76 176 H124 V214 H76 Z" fill="url(#crk-foil)" />
+    <path d="M72 158 H128 V170 H72 Z" fill="#2a1511" />
+    <!-- cork, drawn out with the screw -->
+    <g class="crk__pull">
+      <rect class="crk__cork" x="81" y="150" width="38" height="58" rx="3" fill="url(#crk-cork)" />
+      <g class="crk__screw">
+        <path class="crk__worm" d="M100 40 V60 M100 60 c12 4 12 10 0 14 c-12 4 -12 10 0 14 c12 4 12 10 0 14 c-12 4 -12 10 0 14 c12 4 12 10 0 14 c-12 4 -12 10 0 14" fill="none" stroke="url(#crk-steel)" stroke-width="3.2" stroke-linecap="round" />
+        <rect x="56" y="22" width="88" height="18" rx="9" fill="#2c211d" />
+        <rect x="56" y="22" width="88" height="6" rx="3" fill="rgba(255,255,255,.12)" />
+      </g>
+    </g>
+  </svg>
+  <svg class="crk__wine" viewBox="0 0 100 100" preserveAspectRatio="none"><defs><linearGradient id="crk-red" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#8e1730" /><stop offset=".5" stop-color="#5e0d1f" /><stop offset="1" stop-color="#3a0712" /></linearGradient></defs><path data-wave fill="url(#crk-red)" d="M0 0 H100 V0 Q75 0 50 0 T0 0 Z" /></svg>
+  <p class="crk__skip">Коснитесь, чтобы открыть</p>
 </div>
 
 <script>
   const html = document.documentElement;
   if (html.classList.contains("intro")) {
-    const el = document.querySelector<HTMLElement>(".ctl")!;
-    const t = el.querySelector("[data-ct]")!, h = el.querySelector("[data-ch]")!, bar = el.querySelector<HTMLElement>("[data-cb]")!, s = el.querySelector("[data-cs]")!;
-    const T0 = 22.4, T1 = 12, H0 = 41, H1 = 70, DUR = 1700;
-    let raf = 0, done = false;
-    const t0 = performance.now() + 250;
-    const tick = (now: number) => {
-      const k = Math.max(0, Math.min(1, (now - t0) / DUR)), e = 1 - Math.pow(1 - k, 3);
-      t.textContent = (T0 + (T1 - T0) * e).toFixed(1).replace(".", ",");
-      h.textContent = String(Math.round(H0 + (H1 - H0) * e));
-      bar.style.transform = `scaleX(${e})`;
-      if (k < 1) raf = requestAnimationFrame(tick);
-      else { s.textContent = "Погреб готов"; el.classList.add("ready"); setTimeout(open, 520); }
-    };
-    raf = requestAnimationFrame(tick);
-    function open() {
-      if (done) return;
-      done = true;
-      cancelAnimationFrame(raf);
+    const el = document.querySelector<HTMLElement>(".crk")!;
+    const wave = el.querySelector<SVGPathElement>("[data-wave]")!;
+    let done = false, raf = 0;
+    const ts = [setTimeout(() => el.classList.add("screw"), 200), setTimeout(() => el.classList.add("pull"), 1450), setTimeout(pour, 2350)];
+    // the wine flows down in a wave, holds for a breath and drains, uncovering the page
+    function pour() {
+      if (done) return; done = true;
+      ts.forEach(clearTimeout);
+      el.classList.add("pour");
       try { sessionStorage.setItem("bacchus-intro", "1"); } catch {}
-      html.classList.add("intro-out");
-      document.dispatchEvent(new CustomEvent("intro:done"));
-      setTimeout(() => html.classList.remove("intro", "intro-out"), 1300);
+      const t0 = performance.now();
+      const frame = (t: number) => {
+        const k = (t - t0) / 1600;
+        const fill = Math.min(1, k / 0.45) * 120;                  // flood down
+        const drain = Math.max(0, (k - 0.55) / 0.45) * 130;         // then drain away
+        const top = Math.max(-10, drain - 10), bot = Math.min(110, fill);
+        const a = 6 * Math.sin(t / 140), b2 = 6 * Math.cos(t / 170);
+        wave.setAttribute("d", `M0 ${top} Q25 ${top + a} 50 ${top} T100 ${top} V${bot} Q75 ${bot + b2} 50 ${bot} T0 ${bot} Z`);
+        if (k > 0.5 && !html.classList.contains("intro-out")) { html.classList.add("intro-out"); document.dispatchEvent(new CustomEvent("intro:done")); }
+        if (k < 1) raf = requestAnimationFrame(frame);
+        else { cancelAnimationFrame(raf); html.classList.remove("intro", "intro-out"); }
+      };
+      raf = requestAnimationFrame(frame);
     }
-    el.addEventListener("click", open);
-    addEventListener("keydown", open, { once: true });
+    el.addEventListener("click", pour);
+    addEventListener("keydown", pour, { once: true });
   }
 </script>
 
 <style is:global>
-  .ctl { display: none; }
+  .crk { display: none; }
   html.intro { overflow: hidden; }
-  html.intro .ctl { position: fixed; inset: 0; z-index: 300; display: grid; place-content: center; cursor: pointer; }
-  .ctl__door { position: absolute; top: 0; bottom: 0; width: 50.5%; background: var(--bg); transition: transform 1.1s var(--ease-io); }
-  .ctl__door--l { left: 0; border-right: 1px solid var(--line); }
-  .ctl__door--r { right: 0; border-left: 1px solid var(--line); }
-  html.intro-out .ctl__door--l { transform: translateX(-101%); }
-  html.intro-out .ctl__door--r { transform: translateX(101%); }
-  .ctl__panel { position: relative; width: min(300px, 78vw); display: grid; gap: 12px; padding: 22px 22px 18px; background: #0f0c0b; border: 1px solid var(--line-2); box-shadow: inset 0 0 0 5px #0f0c0b, inset 0 0 0 6px var(--line); transition: opacity 0.4s, transform 0.6s var(--ease); }
-  html.intro-out .ctl__panel { opacity: 0; transform: scale(0.96); }
-  .ctl__h { display: flex; align-items: center; gap: 8px; color: var(--mute); }
-  .ctl__led { width: 6px; height: 6px; border-radius: 50%; background: var(--wine-2); box-shadow: 0 0 8px var(--wine-2); }
-  .ctl.ready .ctl__led { background: var(--straw); box-shadow: 0 0 10px var(--straw); }
-  .ctl__t { font-size: 64px; line-height: 1; letter-spacing: -0.04em; color: var(--text); }
-  .ctl__t sup { font-size: 0.28em; vertical-align: top; margin-left: 4px; color: var(--wine-2); letter-spacing: 0; }
-  .ctl__row { display: flex; justify-content: space-between; font-size: 12px; color: var(--mute); padding-top: 10px; border-top: 1px solid var(--line); }
-  .ctl__bar { height: 1px; background: var(--line); overflow: hidden; }
-  .ctl__bar i { display: block; height: 100%; background: var(--wine-2); transform-origin: left; transform: scaleX(0); }
-  .ctl.ready .ctl__bar i { background: var(--straw); }
-  .ctl__s { color: var(--dim); }
-  .ctl.ready .ctl__s { color: var(--straw); }
-  .ctl__skip { position: fixed; left: 0; right: 0; bottom: calc(24px + env(safe-area-inset-bottom)); text-align: center; color: var(--dim); transition: opacity 0.4s; }
-  html.intro-out .ctl__skip { opacity: 0; }
-  html.intro-out .ctl { pointer-events: none; }
+  html.intro .crk { position: fixed; inset: 0; z-index: 300; display: grid; place-content: center; justify-items: center; gap: 18px; background: radial-gradient(60% 50% at 50% 45%, #1d1210, #0b0908 75%); cursor: pointer; }
+  html.intro-out .crk { background: transparent; }
+  html.intro-out .crk__svg, html.intro-out .crk__skip { opacity: 0; transition: opacity 0.2s; }
+  .crk__svg { width: min(46vw, 210px); overflow: visible; }
+  .crk__screw { transform-box: fill-box; transform-origin: 50% 0; transform: translateY(-40px); }
+  .crk__worm { stroke-dasharray: 3 0; }
+  /* the worm turns into the cork: a spiral reads as rotation when its stripes scroll */
+  .screw .crk__screw { transform: translateY(70px); transition: transform 1.2s cubic-bezier(0.45, 0, 0.55, 1); }
+  .screw .crk__worm { animation: twist 0.32s linear 4; }
+  @keyframes twist { 0% { transform: scaleX(1); } 50% { transform: scaleX(-1); } 100% { transform: scaleX(1); } }
+  .crk__worm { transform-box: fill-box; transform-origin: center; }
+  .crk__pull { transition: transform 0.45s cubic-bezier(0.3, 0, 0.2, 1.4); }
+  .pull .crk__pull { transform: translateY(-90px); }
+  .crk__wine { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  .crk__skip { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim); }
 </style>
