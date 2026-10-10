@@ -6,6 +6,7 @@ import Intro from "../components/Intro.astro";
 import Thermostat from "../components/Thermostat.astro";
 import Descent from "../components/Descent.astro";
 import Aging from "../components/Aging.astro";
+import Rack from "../components/Rack.astro";
 import { products, categories, bySlug, url, img, srcset, pimg, contacts, plural } from "../lib/site";
 import catalog from "../data/catalog.json";
 
@@ -80,23 +81,11 @@ const steps = [
         <div class="sh">
           <div class="sh__top"><span class="tag">[A1]</span><span class="tag">Каталог</span></div>
           <div class="sh__row">
-            <h2 class="d2" data-in>Всё для <b>хранения вина</b></h2>
+            <h2 class="d2" data-in>Выберите <b>бутылку</b></h2>
             <p class="lead" data-in>Винные шкафы LaSommeliere, Climadiff, Avintage и Vinosafe. Климатические системы для погребов, стеллажи, диспенсеры для розлива и шкафы для сигар.</p>
           </div>
         </div>
-        <div class="cats">
-          {categories.map((c, i) => (
-            <a class:list={["cat", { "cat--hero": i === 0 }]} href={url(`catalog/${c.id}/`)} data-in style={`--d:${(i % 4) * 0.06}s`}>
-              <span class="cat__media paper"><img src={pimg(cover(c.id), i === 0 ? 960 : 480)} alt="" loading="lazy" decoding="async" /></span>
-              <span class="cat__body">
-                <span class="tag">B{i + 1} · {count(c.id)} {plural(count(c.id), "модель", "модели", "моделей")}</span>
-                <span class="cat__t">{c.title}</span>
-                <span class="cat__n">{c.note}</span>
-              </span>
-              <Icon name="arrow" class="cat__ar" />
-            </a>
-          ))}
-        </div>
+        <Rack />
       </div>
     </section>
 

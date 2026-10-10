@@ -1,0 +1,138 @@
+---
+/**
+ * The catalogue as a diamond wine rack seen from the front: bottles lie end-on in the lattice.
+ * The catalogue's sections are the bottles with coloured capsules — tap one and it slides out
+ * towards you, and its label (the section) appears beside the rack.
+ */
+import { categories, products, url, pimg, plural } from "../lib/site";
+import catalog from "../data/catalog.json";
+const covers = catalog.covers as Record<string, string>;
+const CAPS = ["#8e1730", "#c9a24a", "#2f4a3a", "#3c2a4d", "#8a5a32"];
+// diamond lattice: slats run at ±45° every D; each diamond holds one bottle seen end-on.
+// Diamond centres sit on a half-step grid where (a + b) is odd.
+const D = 80, h = D / 2, A = 13, B = 6;
+const W = (A + 1) * h, H = (B + 1) * h;
+const cells: { x: number; y: number; key: string }[] = [];
+for (let b = 0; b <= B + 1; b++) for (let a = 0; a <= A + 1; a++) if ((a + b) % 2 === 1) cells.push({ x: a * h, y: b * h - h / 2, key: `${a},${b}` });
+const HOT = ["3,2", "7,2", "11,2", "5,4", "9,4"].slice(0, categories.length);
+const slats: string[] = [];
+for (let c = -H - D; c < W + H + D; c += D) { slats.push(`M${c} ${-h} L${c + H + 2 * h} ${H + h}`); slats.push(`M${c} ${H + h} L${c + H + 2 * h} ${-h}`); }
+---
+<div class="rk" data-rk>
+  <div class="rk__rack">
+    <svg viewBox={`0 0 ${W} ${H}`} aria-hidden="true" class="rk__svg">
+      <defs>
+        <radialGradient id="rk-glass" cx="40%" cy="35%" r="65%"><stop offset="0" stop-color="#3b3a26" /><stop offset=".55" stop-color="#151a10" /><stop offset="1" stop-color="#050604" /></radialGradient>
+        <radialGradient id="rk-punt" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#0a0b07" /><stop offset=".7" stop-color="#232516" /><stop offset="1" stop-color="#3d3f2a" /></radialGradient>
+      </defs>
+      <rect width={W} height={H} fill="#120c0a" />
+      {cells.map((c) => {
+        const k = HOT.indexOf(c.key);
+        return (
+          <g class:list={["rk__b", { "rk__b--hot": k >= 0 }]} transform={`translate(${c.x} ${c.y})`} data-i={k}>
+            <g class="rk__in">
+              <circle r="21" fill="url(#rk-glass)" />
+              <circle r="21" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="2" />
+              <circle r="10" fill="url(#rk-punt)" />
+              <path d="M-13 -11 A17 17 0 0 1 4 -17" stroke="rgba(255,255,255,.2)" stroke-width="2.5" fill="none" stroke-linecap="round" />
+              {k >= 0 && <circle r="21" fill="none" stroke={CAPS[k]} stroke-width="5" class="rk__cap" />}
+              {k >= 0 && <text y="3.5" text-anchor="middle" class="rk__no">{String(k + 1).padStart(2, "0")}</text>}
+            </g>
+          </g>
+        );
+      })}
+      <!-- the lattice: oak slats crossing in front of the bottles -->
+      <g class="rk__lat">
+        {slats.map((d) => <path d={d} />)}
+      </g>
+      <g class="rk__front" data-front></g>
+    </svg>
+    <p class="rk__hint tag">Коснитесь бутылки с капсулой</p>
+  </div>
+
+  <div class="rk__labels">
+    {categories.map((c, i) => {
+      const n = products.filter((p) => p.cat === c.id).length;
+      return (
+        <a class:list={["rkl", { on: i === 0 }]} href={url(`catalog/${c.id}/`)} data-l={i} style={`--cap:${CAPS[i]}`}>
+          <span class="rkl__img paper"><img src={pimg(covers[c.id] ?? products.find((p) => p.cat === c.id)!.img[0])} alt="" loading="lazy" /></span>
+          <span class="rkl__body">
+            <span class="rkl__top tag">№ {String(i + 1).padStart(2, "0")} · {n} {plural(n, "модель", "модели", "моделей")}</span>
+            <span class="rkl__t">{c.title}</span>
+            <span class="rkl__n">{c.note}</span>
+            <span class="rkl__go">Открыть раздел →</span>
+          </span>
+        </a>
+      );
+    })}
+  </div>
+</div>
+
+<script>
+  const el = document.querySelector<HTMLElement>("[data-rk]")!;
+  const bottles = [...el.querySelectorAll<SVGGElement>(".rk__b--hot")];
+  const labels = [...el.querySelectorAll<HTMLElement>("[data-l]")];
+  const front = el.querySelector<SVGGElement>("[data-front]")!;
+  let cur = 0;
+  const pick = (i: number) => {
+    if (i < 0) return;
+    cur = i;
+    bottles.forEach((b) => b.classList.toggle("out", Number(b.dataset.i) === i));
+    // the chosen bottle is drawn again in front of the slats: pulled out of the rack towards you
+    const b = bottles.find((x) => Number(x.dataset.i) === i)!;
+    front.innerHTML = `<g transform="${b.getAttribute("transform")}"><g class="rk__pulled">${b.querySelector(".rk__in")!.innerHTML}</g></g>`;
+    labels.forEach((l, k) => l.classList.toggle("on", k === i));
+    if (typeof navigator.vibrate === "function") try { navigator.vibrate(8); } catch {}
+  };
+  bottles.forEach((b) => {
+    b.addEventListener("click", () => pick(Number(b.dataset.i)));
+    b.addEventListener("pointerenter", (e) => { if ((e as PointerEvent).pointerType === "mouse") pick(Number(b.dataset.i)); });
+  });
+  // on first sight the bottles are pulled one after another, as if someone were choosing
+  new IntersectionObserver(([e], o) => {
+    if (!e.isIntersecting) return; o.disconnect();
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) { pick(0); return; }
+    bottles.forEach((_, k) => setTimeout(() => pick(k), 300 + k * 380));
+    setTimeout(() => pick(0), 300 + bottles.length * 380);
+  }, { threshold: 0.5 }).observe(el);
+  void cur;
+</script>
+
+<style>
+  .rk { display: grid; gap: 20px; }
+  .rk__rack { position: relative; padding: 10px; background: linear-gradient(180deg, #5a3a22, #3e2716); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.4), 0 30px 60px -30px rgba(0, 0, 0, 0.9); }
+  .rk__svg { display: block; width: 100%; height: auto; }
+  .rk__b { cursor: default; }
+  .rk__b--hot { cursor: pointer; }
+  .rk__in { transition: transform 0.6s var(--ease); }
+  /* pulled out: the bottle comes towards you and its capsule catches the light */
+  .rk__front { pointer-events: none; }
+  .rk__front :global(.rk__pulled) { animation: pull 0.6s var(--ease) both; filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.7)); }
+  @keyframes pull { from { transform: scale(0.85); opacity: 0.4; } to { transform: scale(1.3); } }
+  .rk__front :global(.rk__cap) { filter: drop-shadow(0 0 6px rgba(255, 210, 140, 0.55)); }
+  .rk__b--hot.out { position: relative; }
+  .rk__b--hot.out .rk__cap { filter: drop-shadow(0 0 6px rgba(255, 210, 140, 0.55)); }
+  .rk__b--hot { filter: drop-shadow(0 0 0 transparent); }
+  .rk__no { font-family: var(--mono); font-size: 9px; fill: rgba(241, 231, 216, 0.75); }
+  .rk__lat { pointer-events: none; }
+  .rk__lat { filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.7)); }
+  .rk__lat path { stroke: #8a5a32; stroke-width: 11; stroke-linecap: square; }
+  .rk__lat path:nth-child(odd) { stroke: #9a6a3c; }
+  .rk__hint { position: absolute; left: 18px; bottom: 16px; color: rgba(241, 231, 216, 0.6); background: rgba(11, 9, 8, 0.7); padding: 4px 8px; }
+  .rk__labels { display: grid; }
+  /* the label of the chosen section, on cream paper like the bottle's own */
+  .rkl { grid-area: 1 / 1; display: grid; grid-template-columns: 110px 1fr; gap: 16px; align-items: center; padding: 14px; color: #2a1810; background: radial-gradient(120% 90% at 30% 20%, #faf3e6, #efe4d0 60%, #e2d2b6); border-left: 6px solid var(--cap); opacity: 0; visibility: hidden; transform: translateX(-16px) rotate(-0.6deg); transition: opacity 0.5s var(--ease), transform 0.6s var(--ease), visibility 0.5s; }
+  .rkl.on { opacity: 1; visibility: visible; transform: rotate(-0.6deg); }
+  .rkl__img { aspect-ratio: 4 / 5; }
+  .rkl__img img { width: 100%; height: 100%; object-fit: contain; padding: 6px; }
+  .rkl__body { display: grid; gap: 4px; }
+  .rkl__top { color: #8a6a3a; }
+  .rkl__t { font-family: var(--display); font-size: 30px; line-height: 1.02; }
+  .rkl__n { font-size: 13.5px; color: #5e4632; }
+  .rkl__go { margin-top: 4px; font-size: 13px; font-weight: 600; color: #7d1a2c; }
+  @media (min-width: 1000px) {
+    .rk { grid-template-columns: 1.3fr 1fr; gap: 48px; align-items: center; }
+    .rkl { grid-template-columns: 160px 1fr; padding: 22px; }
+    .rkl__t { font-size: 40px; }
+  }
+</style>
