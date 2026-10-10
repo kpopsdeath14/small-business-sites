@@ -29,6 +29,13 @@ const works = [
   ["palace", "Дворцовое наследие", "dvortsovoe-nasledie", "Светлая керамика"],
   ["manor", "Дворянская усадьба", "dvoryanskaya-usadba", "Классика из изразцов"],
 ];
+/* the life of one fire, told by scroll: [title, text, °C at the end of the stage] */
+const burn = [
+  ["Растопка", "Сухие дубовые поленья, полностью открытая тяга. Воздух омывает стекло изнутри — оно остаётся чистым весь вечер.", 320],
+  ["Вторичный дожиг", "Около 850 °C в топке догорают газы, которые открытый очаг выпускает в трубу. Больше тепла, почти без дыма.", 850],
+  ["Жар", "Шамот и изразец впитывают тепло и отдают его комнате ещё часы после того, как пламя стихнет.", 560],
+  ["Угли", "Самое ровное тепло. Современные топки отдают дому до 84% энергии дров — втрое больше открытого камина.", 280],
+];
 const steps = [
   ["I", "Замер", "Специалист приезжает с оборудованием, проверяет стены, пол, фундамент и кровлю, планирует камин и дымоход."],
   ["II", "Проект", "Подбираем топку и облицовку под интерьер, показываем 3D-визуализацию и фиксируем смету под ключ."],
@@ -134,8 +141,36 @@ const steps = [
       <div class="rail">{hits.map((p, i) => <ProductCard p={p} d={Math.min(i, 3) * 0.08} />)}</div>
     </section>
 
+    <!-- BURN: one evening of fire, scrubbed by scroll -->
+    <section class="burn night" data-burn>
+      <div class="burn__pin">
+        <div class="burn__hud wrap">
+          <Chapter k="Огонь">Как горит <em>камин</em></Chapter>
+  <div class="burn__img" aria-hidden="true">
+            <img class="burn__cold" src={img("fire", 600)} srcset={`${img("fire", 600)} 600w, ${img("fire", 960)} 960w`} sizes="(min-width: 1000px) 56vw, 100vw" alt="" loading="lazy" decoding="async" />
+            <img class="burn__warm" data-warm src={img("fire", 600)} srcset={`${img("fire", 600)} 600w, ${img("fire", 960)} 960w`} sizes="(min-width: 1000px) 56vw, 100vw" alt="" loading="lazy" decoding="async" />
+            <img class="burn__ember" data-ember src={img("fire", 600)} srcset={`${img("fire", 600)} 600w, ${img("fire", 960)} 960w`} sizes="(min-width: 1000px) 56vw, 100vw" alt="" loading="lazy" decoding="async" />
+          </div>
+          <div class="burn__read">
+            <p class="burn__deg" aria-hidden="true"><span data-deg>20</span><sup>°C</sup></p>
+            <p class="burn__at">в топке</p>
+          </div>
+          <ol class="burn__stages">
+            {burn.map(([t, d], i) => (
+              <li class:list={["burn__st", { on: i === 0 }]} data-st>
+                <span class="burn__n">{["I", "II", "III", "IV"][i]}</span>
+                <h3 class="burn__t">{t}</h3>
+                <p class="burn__d">{d}</p>
+              </li>
+            ))}
+          </ol>
+          <div class="burn__bar" aria-hidden="true"><i data-burnbar></i></div>
+        </div>
+      </div>
+    </section>
+
     <!-- PODBOR -->
-    <section class="sec sec--night night" id="podbor">
+    <section class="sec sec--night sec--after-burn night" id="podbor">
       <div class="wrap">
         <Chapter k="Подбор по комнате">Сколько тепла <em>нужно вашему дому</em></Chapter>
         <Podbor compact />
@@ -231,6 +266,34 @@ const steps = [
     el.querySelector("span")!.textContent = open ? `Салон открыт до ${close}:00 — в нём горит огонь` : m < 600 ? "Салон откроется сегодня в 10:00" : "Салон откроется завтра в 10:00";
     el.hidden = false;
   }
+  /* burn: map the section's scroll to one evening of fire */
+  {
+    const sec = document.querySelector<HTMLElement>("[data-burn]")!;
+    const warm = sec.querySelector<HTMLElement>("[data-warm]")!;
+    const ember = sec.querySelector<HTMLElement>("[data-ember]")!;
+    const deg = sec.querySelector<HTMLElement>("[data-deg]")!;
+    const bar = sec.querySelector<HTMLElement>("[data-burnbar]")!;
+    const sts = [...sec.querySelectorAll<HTMLElement>("[data-st]")];
+    const T = [20, 320, 850, 560, 280]; // °C at the stage boundaries
+    const smooth = (t: number) => t * t * (3 - 2 * t);
+    let on = false, ticking = false, cur = -1;
+    const frame = () => {
+      ticking = false;
+      const r = sec.getBoundingClientRect();
+      const p = Math.min(1, Math.max(0, -r.top / (r.height - innerHeight)));
+      const f = p * 4, k = Math.min(3, Math.floor(f)), t = smooth(f - k);
+      deg.textContent = String(Math.round((T[k] + (T[k + 1] - T[k]) * t) / 10) * 10);
+      warm.style.opacity = String(Math.min(1, p / 0.42));
+      ember.style.opacity = String(Math.max(0, (p - 0.6) / 0.35));
+      sec.style.setProperty("--z", String(1.12 - p * 0.1));
+      bar.style.transform = `scaleX(${p})`;
+      if (k !== cur) { cur = k; sts.forEach((s, i) => s.classList.toggle("on", i === k)); }
+    };
+    const onScroll = () => { if (on && !ticking) { ticking = true; requestAnimationFrame(frame); } };
+    new IntersectionObserver(([e]) => { on = e.isIntersecting; if (on) frame(); }).observe(sec);
+    addEventListener("scroll", onScroll, { passive: true });
+  }
+
   /* collection index: a preview window follows the cursor (desktop only) */
   if (matchMedia("(hover: hover) and (min-width: 1000px)").matches) {
     const ix = document.querySelector<HTMLElement>("[data-ix]")!;
@@ -395,6 +458,32 @@ const steps = [
     .ix__float :global(img.on) { opacity: 1; transform: none; }
   }
 
+  /* burn — the section is tall, its frame is pinned; scroll moves one evening of fire */
+  .burn { position: relative; height: 420svh; margin-top: 110px; }
+  .burn__pin { position: sticky; top: 0; height: 100svh; overflow: hidden; isolation: isolate; }
+  /* phones: the fire is a wide window between title and reading (the source is landscape, so it stays sharp) */
+  .burn__img { position: relative; z-index: -1; height: min(56vw, 30svh); margin: 18px calc(-1 * var(--gut)) 0; overflow: hidden; -webkit-mask-image: linear-gradient(180deg, transparent, #000 14%, #000 86%, transparent); mask-image: linear-gradient(180deg, transparent, #000 14%, #000 86%, transparent); }
+  .burn__img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 60%; transform: scale(var(--z, 1.12)); will-change: opacity, transform; }
+  /* three gradings of one photograph; only their opacity moves, so scrolling stays smooth */
+  .burn__cold { filter: brightness(0.16) saturate(0) contrast(1.1); }
+  .burn__warm { opacity: 0; }
+  .burn__ember { opacity: 0; filter: brightness(0.62) saturate(1.35) sepia(0.25) contrast(1.15); }
+  .burn__hud { height: 100%; display: grid; grid-template-rows: auto auto 1fr auto auto; padding-top: calc(var(--hdr) + 22px); padding-bottom: 24px; }
+  .burn__hud :global(.chap) { margin: 0; }
+  .burn__read { align-self: end; display: flex; align-items: baseline; gap: 14px; margin: 12px 0 14px; }
+  .burn__deg { font-family: var(--serif); font-weight: 300; font-size: min(22vw, 11.5svh, 200px); line-height: 0.8; font-variant-numeric: lining-nums tabular-nums; letter-spacing: -0.02em; }
+  .burn__deg sup { font-size: 0.26em; vertical-align: top; margin-left: 6px; color: var(--bronze-2); letter-spacing: 0.04em; }
+  .burn__at { font-size: 10.5px; letter-spacing: 0.26em; text-transform: uppercase; color: var(--cream-2); }
+  .burn__stages { display: grid; min-height: 118px; }
+  .burn__st { grid-area: 1 / 1; display: grid; grid-template-columns: 34px 1fr; gap: 4px 12px; align-content: start; opacity: 0; transform: translateY(14px); transition: opacity 0.7s var(--ease), transform 0.9s var(--ease); }
+  .burn__st.on { opacity: 1; transform: none; }
+  .burn__n { grid-row: span 2; font-family: var(--serif); font-style: italic; font-size: 22px; color: var(--bronze-2); line-height: 1.2; }
+  .burn__t { font-family: var(--serif); font-weight: 400; font-size: 28px; line-height: 1.1; }
+  .burn__d { font-size: 14px; line-height: 1.6; color: var(--cream-2); max-width: 30em; }
+  .burn__bar { position: relative; height: 1px; margin-top: 22px; background: var(--nline); }
+  .burn__bar i { position: absolute; inset: 0; background: var(--bronze-2); transform-origin: left; transform: scaleX(0); }
+  .sec--after-burn { margin-top: 0; }
+
   /* band */
   .band { position: relative; margin-top: 110px; min-height: 86svh; display: flex; align-items: flex-end; overflow: hidden; isolation: isolate; }
   .band__img { position: absolute; inset: 0; z-index: -1; }
@@ -442,6 +531,16 @@ const steps = [
     .works { grid-auto-columns: 42%; }
   }
   @media (min-width: 1000px) {
+    .burn { height: 400vh; margin-top: 160px; }
+    .burn__pin { height: 100vh; }
+    .burn__img { position: absolute; inset: 0 0 0 40%; margin: 0; height: auto; -webkit-mask-image: none; mask-image: none; }
+    .burn__pin::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, var(--night) 40%, rgba(15, 13, 11, 0.2) 62%, rgba(15, 13, 11, 0) 80%), linear-gradient(0deg, rgba(15, 13, 11, 0.5), transparent 30%); }
+    .burn__img img { object-position: 50% 60%; }
+    .burn__hud { padding-top: calc(var(--hdr) + 60px); padding-bottom: 60px; grid-template-columns: minmax(0, 520px); grid-template-rows: auto 1fr auto auto; }
+    .burn__read { margin-bottom: 34px; }
+    .burn__deg { font-size: min(13vw, 200px); }
+    .burn__stages { min-height: 120px; }
+    .burn__t { font-size: 34px; }
     .sec { padding-top: 160px; }
     .sec--night { padding: 150px 0; margin-top: 160px; }
     .hero { flex-direction: row; align-items: stretch; min-height: 100vh; padding-top: 0; }
