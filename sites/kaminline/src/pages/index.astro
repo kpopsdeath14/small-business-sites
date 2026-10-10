@@ -4,7 +4,12 @@ import ProductCard from "../components/ProductCard.astro";
 import Icon from "../components/Icon.astro";
 import Podbor from "../components/Podbor.astro";
 import Chapter from "../components/Chapter.astro";
-import { products, categories, bySlug, url, img, pimg, contacts, BRANDS, CAT_NOTE } from "../lib/site";
+import { products, categories, bySlug, url, img, pimg, rub, contacts, BRANDS, CAT_NOTE } from "../lib/site";
+
+const plural = (n: number, one: string, few: string, many: string) => {
+  const m10 = n % 10, m100 = n % 100;
+  return m10 === 1 && m100 !== 11 ? one : m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14) ? few : many;
+};
 
 const catCover: Record<string, string> = {};
 for (const c of categories) catCover[c.id] = products.find((p) => p.cat === c.id)!.variants[0].img[0];
@@ -87,16 +92,26 @@ const steps = [
           <a slot="more" class="ulink" href={url("catalog/")}>Весь каталог <Icon name="arrow" /></a>
         </Chapter>
       </div>
-      <div class="rail cats">
-        {categories.map((c, i) => (
-          <a class="cat" href={url(`catalog/${c.id}/`)} data-in style={`--d:${(i % 3) * 0.08}s`}>
-            <span class="cat__img"><img src={pimg(catCover[c.id], 960)} srcset={`${pimg(catCover[c.id])} 480w, ${pimg(catCover[c.id], 960)} 960w`} sizes="(min-width: 1000px) 30vw, 72vw" alt="" loading="lazy" decoding="async" /></span>
-            <span class="cat__no">0{i + 1}</span>
-            <span class="cat__t">{c.title}</span>
-            <span class="cat__n">{CAT_NOTE[c.id]}</span>
-          </a>
-        ))}
+      <div class="wrap">
+        <ol class="ix" data-ix>
+          {categories.map((c, i) => {
+            const list = products.filter((p) => p.cat === c.id);
+            const from = Math.min(...list.map((p) => p.from));
+            return (
+              <li data-in style={`--d:${i * 0.06}s`}>
+                <a class="ix__row" href={url(`catalog/${c.id}/`)} data-src={pimg(catCover[c.id], 960)}>
+                  <span class="ix__no">{String(i + 1).padStart(2, "0")}</span>
+                  <span class="ix__t">{c.title}</span>
+                  <span class="ix__n">{CAT_NOTE[c.id]}</span>
+                  <span class="ix__c">{list.length} {plural(list.length, "модель", "модели", "моделей")} · от {rub(from)}</span>
+                  <span class="ix__th arch"><img src={pimg(catCover[c.id])} alt="" loading="lazy" decoding="async" /></span>
+                </a>
+              </li>
+            );
+          })}
+        </ol>
       </div>
+      <div class="ix__float arch" data-float aria-hidden="true"></div>
     </section>
 
     <!-- BAND -->
@@ -216,6 +231,35 @@ const steps = [
     el.querySelector("span")!.textContent = open ? `Салон открыт до ${close}:00 — в нём горит огонь` : m < 600 ? "Салон откроется сегодня в 10:00" : "Салон откроется завтра в 10:00";
     el.hidden = false;
   }
+  /* collection index: a preview window follows the cursor (desktop only) */
+  if (matchMedia("(hover: hover) and (min-width: 1000px)").matches) {
+    const ix = document.querySelector<HTMLElement>("[data-ix]")!;
+    const fl = document.querySelector<HTMLElement>("[data-float]")!;
+    const imgs = new Map<string, HTMLImageElement>();
+    let tx = 0, ty = 0, x = 0, y = 0, raf = 0;
+    const step = () => {
+      x += (tx - x) * 0.14; y += (ty - y) * 0.14;
+      fl.style.setProperty("--x", `${x}px`); fl.style.setProperty("--y", `${y}px`);
+      raf = Math.abs(tx - x) + Math.abs(ty - y) > 0.5 ? requestAnimationFrame(step) : 0;
+    };
+    ix.addEventListener("pointermove", (e) => {
+      tx = e.clientX + 36; ty = e.clientY - 190;
+      if (!fl.classList.contains("on")) {
+        x = tx; y = ty;
+        (e.target as Element).closest(".ix__row")?.dispatchEvent(new Event("pointerenter"));
+      }
+      if (!raf) raf = requestAnimationFrame(step);
+    });
+    ix.querySelectorAll<HTMLElement>(".ix__row").forEach((row) => row.addEventListener("pointerenter", () => {
+      const src = row.dataset.src!;
+      let im = imgs.get(src);
+      if (!im) { im = new Image(); im.src = src; im.alt = ""; fl.appendChild(im); imgs.set(src, im); }
+      imgs.forEach((o) => o.classList.toggle("on", o === im));
+      fl.classList.add("on");
+    }));
+    ix.addEventListener("pointerleave", () => fl.classList.remove("on"));
+    addEventListener("scroll", () => fl.classList.remove("on"), { passive: true });
+  }
   const html = document.documentElement;
   const hero = document.querySelector<HTMLElement>("[data-hero]")!;
   const slides = [...hero.querySelectorAll<HTMLElement>("[data-slide]")];
@@ -324,15 +368,32 @@ const steps = [
   .facts dt { font-family: var(--serif); font-weight: 300; font-size: clamp(36px, 9vw, 64px); line-height: 1; }
   .facts dd { margin-top: 8px; font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--smoke); line-height: 1.5; }
 
-  /* collections */
-  .cats { grid-auto-columns: 72%; }
-  .cat { display: grid; gap: 6px; align-content: start; }
-  .cat__img { aspect-ratio: 4 / 5; overflow: hidden; background: var(--stone); margin-bottom: 10px; }
-  .cat__img img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.6s var(--ease); }
-  @media (hover: hover) { .cat:hover .cat__img img { transform: scale(1.04); } }
-  .cat__no { font-size: 11px; letter-spacing: 0.2em; color: var(--bronze); }
-  .cat__t { font-family: var(--serif); font-size: 30px; font-weight: 400; line-height: 1.05; }
-  .cat__n { font-size: 14px; color: var(--smoke); }
+  /* collections — an index, like the contents page of a catalogue */
+  .ix { border-top: 1px solid var(--line-2); }
+  .ix li { border-bottom: 1px solid var(--line); }
+  .ix__row { display: grid; grid-template-columns: 34px 1fr 76px; grid-template-areas: "no t th" "no n th" "no c th"; gap: 2px 14px; align-items: start; padding: 22px 0; }
+  .ix__no { grid-area: no; padding-top: 9px; font-family: var(--serif); font-style: italic; font-size: 17px; color: var(--bronze); }
+  .ix__t { grid-area: t; font-family: var(--serif); font-weight: 300; font-size: 34px; line-height: 1.05; }
+  .ix__n { grid-area: n; font-size: 13.5px; color: var(--ink-2); }
+  .ix__c { grid-area: c; margin-top: 6px; font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--smoke); }
+  .ix__th { grid-area: th; aspect-ratio: 4 / 5; overflow: hidden; background: var(--stone); align-self: center; }
+  .ix__th img { width: 100%; height: 100%; object-fit: cover; }
+  .ix__float { display: none; }
+  @media (hover: hover) and (min-width: 1000px) {
+    .ix__row { grid-template-columns: 90px 1.3fr 1fr 230px; grid-template-areas: "no t n c"; align-items: baseline; gap: 24px; padding: 30px 0; transition: opacity 0.6s var(--ease); }
+    .ix__no { padding: 0; font-size: 20px; }
+    .ix__t { font-size: clamp(44px, 4.4vw, 68px); transition: transform 0.8s var(--ease); }
+    .ix__c { margin: 0; text-align: right; }
+    .ix__th { display: none; }
+    .ix:hover .ix__row { opacity: 0.32; }
+    .ix .ix__row:hover { opacity: 1; }
+    .ix__row:hover .ix__t { transform: translateX(18px); font-style: italic; }
+    /* the preview trails the cursor, a portal-shaped window into the collection */
+    .ix__float { display: block; position: fixed; left: 0; top: 0; z-index: 5; width: 300px; height: 380px; pointer-events: none; opacity: 0; transform: translate3d(var(--x, 0), var(--y, 0), 0) scale(0.92); transition: opacity 0.5s var(--ease), transform 0.08s linear; background: var(--stone); overflow: hidden; }
+    .ix__float.on { opacity: 1; }
+    .ix__float :global(img) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transform: scale(1.08); transition: opacity 0.7s var(--ease), transform 1.4s var(--ease); }
+    .ix__float :global(img.on) { opacity: 1; transform: none; }
+  }
 
   /* band */
   .band { position: relative; margin-top: 110px; min-height: 86svh; display: flex; align-items: flex-end; overflow: hidden; isolation: isolate; }
@@ -378,7 +439,6 @@ const steps = [
   .salon__ctas .ulink { color: var(--cream); }
 
   @media (min-width: 640px) {
-    .cats { grid-auto-columns: 40%; }
     .works { grid-auto-columns: 42%; }
   }
   @media (min-width: 1000px) {
@@ -395,7 +455,6 @@ const steps = [
     .facts { max-width: 820px; margin-left: auto; }
     .facts div { padding-left: 28px; }
     .facts div:first-child { padding-left: 0; }
-    .cats { grid-auto-flow: row; grid-template-columns: repeat(3, 1fr); gap: 64px 24px; overflow: visible; padding-inline: max(var(--gut), calc((100vw - var(--max)) / 2 + var(--gut))); }
     .band { min-height: 92vh; margin-top: 160px; }
     .band__text { padding-bottom: 96px; }
     .works { grid-auto-columns: calc((min(100vw, var(--max)) - 2 * var(--gut) - 2 * 24px) / 3); }
