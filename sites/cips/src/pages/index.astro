@@ -1,0 +1,172 @@
+---
+import Base from "../layouts/Base.astro";
+import Brand from "../components/Brand.astro";
+import Parade from "../components/Parade.astro";
+import Drawers from "../components/Drawers.astro";
+import Blueprint from "../components/Blueprint.astro";
+import Dovetail from "../components/Dovetail.astro";
+import Rings from "../components/Rings.astro";
+import Directory from "../components/Directory.astro";
+import { img, url, contacts } from "../lib/site";
+---
+<Base nav="">
+  <Brand />
+  <main>
+    <Parade />
+
+    <section class="wrap sec" id="izdeliya">
+      <p class="par"><b>§ 1</b><span class="cap">Изделия</span></p>
+      <div class="head">
+        <h2 class="t2">Комод <i>мастерской</i></h2>
+        <p class="read">Окна и двери для памятников архитектуры, входные и межкомнатные двери, лестницы, мебель и бильярдные столы — всё из массива и всё на заказ. Выдвиньте ящик.</p>
+      </div>
+      <Drawers />
+    </section>
+
+    <Dovetail />
+
+    <section class="wrap sec0">
+      <p class="par"><b>§ 2</b><span class="cap">Чертёж</span></p>
+      <div class="head">
+        <h2 class="t2">Сначала <i>линия</i>, потом дуб</h2>
+        <p class="read">Выезжаем на обмер, обсуждаем конструкцию с учётом дизайна и разрабатываем чертежи. Потяните разделитель: это одна и та же дверь — на чертеже и в парадной.</p>
+      </div>
+      <Blueprint />
+    </section>
+
+    <Dovetail />
+
+    <section class="wrap sec0 giop">
+      <p class="par"><b>§ 3</b><span class="cap">ГИОП</span></p>
+      <div class="head">
+        <h2 class="t2">Как было <i>при постройке</i></h2>
+        <p class="read">Для домов под охраной КГИОП воссоздаём окна и двери по историческим образцам: профили, филёнки, резные фризы, фрамуги с расстекловкой. Остальное — как и положено столярам: сухой массив, шип и клей.</p>
+      </div>
+      <div class="giop__row">
+        <figure data-plane style="--d:0s"><img src={img("giop-facade", 600)} alt="Историческая дверь в фасаде с колоннами" loading="lazy" /><figcaption class="cap">Парадная · ГИОП</figcaption></figure>
+        <figure data-plane style="--d:.15s"><img src={img("giop-work", 600)} alt="Монтаж исторической двери" loading="lazy" /><figcaption class="cap">Монтаж на объекте</figcaption></figure>
+        <figure data-plane style="--d:.3s"><img src={img("giop-fan", 600)} alt="Арочная фрамуга с расстекловкой" loading="lazy" /><figcaption class="cap">Фрамуга-веер</figcaption></figure>
+        <figure data-plane style="--d:.45s"><img src={img("giop-carved", 600)} alt="Резная дверь из массива" loading="lazy" /><figcaption class="cap">Резьба вручную</figcaption></figure>
+      </div>
+    </section>
+
+    <Dovetail />
+
+    <section class="wrap sec0">
+      <p class="par"><b>§ 4</b><span class="cap">С 2011 года</span></p>
+      <Rings />
+    </section>
+
+    <Dovetail />
+
+    <section class="wrap sec0" id="obekty">
+      <p class="par"><b>§ 5</b><span class="cap">Объекты</span></p>
+      <div class="head">
+        <h2 class="t2">Адреса, <i>где стоят наши двери</i></h2>
+        <p class="read">Из справочника мастерской: музеи, дворцы и храмы Петербурга и области — и сотни квартир и загородных домов, которые мы не называем.</p>
+      </div>
+      <Directory />
+    </section>
+
+    <section class="sec teaser">
+      <div class="wrap teaser__in">
+        <div class="teaser__txt">
+          <p class="par"><b>§ 6</b><span class="cap">Конструктор</span></p>
+          <h2 class="t2">Соберите свою <i>дверь</i></h2>
+          <p class="read">Тип, порода, размеры в миллиметрах, филёнки и фрамуга — чертёж собирается на глазах, цена считается по прайсу мастерской.</p>
+          <a class="btn btn--oak" href={url("konstruktor/")}>Открыть конструктор</a>
+        </div>
+        <div class="teaser__board" data-teaser data-base={url()}></div>
+      </div>
+    </section>
+
+    <section class="wrap sec masters">
+      <p class="par"><b>§ 7</b><span class="cap">Мастерская</span></p>
+      <div class="masters__grid">
+        <div>
+          <h2 class="t2">Звоните <i>мастерам</i></h2>
+          <p class="read">{contacts.address}. {contacts.hours}. Приезжайте посмотреть образцы массива и фурнитуры.</p>
+        </div>
+        <a class="mst" href={contacts.viktorHref}><span class="cap">Мастер</span><b>Виктор</b><span class="mm">{contacts.viktor}</span></a>
+        <a class="mst" href={contacts.dmitryHref}><span class="cap">Мастер</span><b>Дмитрий</b><span class="mm">{contacts.dmitry}</span></a>
+        <a class="mst" href={contacts.phoneHref}><span class="cap">Мастерская</span><b>Городской</b><span class="mm">{contacts.phone}</span></a>
+      </div>
+    </section>
+  </main>
+</Base>
+
+<script>
+  import { draw, type Params } from "../scripts/door";
+  // the teaser board cycles through the workshop's products, assembling each drawing
+  const box = document.querySelector<HTMLElement>("[data-teaser]")!;
+  const BASE = box.dataset.base!;
+  const seq: [Params, string][] = [
+    [{ kind: "giop", wood: "oak", w: 1600, h: 2900, leaves: 2, style: "classic", transom: "arch" }, "wood-oak"],
+    [{ kind: "inner", wood: "white", w: 800, h: 2100, leaves: 1, style: "six", transom: "none" }, "wood-white"],
+    [{ kind: "giopwin", wood: "pine", w: 1300, h: 2300, leaves: 2, style: "grid", transom: "arch" }, "wood-pine"],
+    [{ kind: "entry", wood: "dark", w: 1000, h: 2200, leaves: 1, style: "classic", transom: "rect" }, "wood-dark"],
+  ];
+  let i = 0, t = 0;
+  const show = () => {
+    const [p, sw] = seq[i % seq.length];
+    box.innerHTML = draw(p, { swatch: `${BASE}img/tex-${p.wood}.webp`, id: "t" }); void sw;
+    box.classList.remove("build"); void box.offsetWidth; box.classList.add("build");
+    i++;
+  };
+  new IntersectionObserver(([e]) => {
+    clearInterval(t);
+    if (e.isIntersecting) { show(); if (!matchMedia("(prefers-reduced-motion: reduce)").matches) t = window.setInterval(show, 3600); }
+  }, { threshold: 0.3 }).observe(box);
+</script>
+
+<style>
+  .sec { padding-top: 110px; }
+  .sec0 { padding-top: 0; }
+  .head { display: grid; gap: 14px; margin-bottom: 34px; }
+  .giop__row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .giop__row figure { display: grid; gap: 8px; }
+  .giop__row img { aspect-ratio: 3 / 4; width: 100%; object-fit: cover; }
+  .teaser { margin-top: 110px; padding: 70px 0; background: var(--green); color: var(--paper); }
+  .teaser .read { color: rgba(241, 235, 225, 0.75); }
+  .teaser .t2 i { color: var(--oak-2); }
+  .teaser .par::after { background: rgba(241, 235, 225, 0.25); }
+  .teaser__in { display: grid; gap: 30px; }
+  .teaser__txt { display: grid; gap: 16px; justify-items: start; }
+  .teaser__board :global(svg) { position: absolute; inset: 18px; width: calc(100% - 36px) !important; height: calc(100% - 36px) !important; }
+  .teaser__board { position: relative; height: 52svh; padding: 18px; background: #f7f3ea; background-image: linear-gradient(rgba(34, 56, 46, 0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(34, 56, 46, 0.07) 1px, transparent 1px); background-size: 40px 40px; display: grid; place-items: center; }
+  .teaser__board :global(svg) { width: 100%; height: 100%; overflow: visible; }
+  .teaser__board :global(rect), .teaser__board :global(path), .teaser__board :global(circle) { stroke: rgba(43, 33, 24, 0.75); stroke-width: 2.5; }
+  .teaser__board :global(.sh) { stroke: none; }
+  .teaser__board :global(.sh--lt) { fill: rgba(255, 245, 225, 0.22); }
+  .teaser__board :global(.sh--dk) { fill: rgba(40, 22, 8, 0.22); }
+  .teaser__board :global(.pnl__r) { stroke: rgba(43, 33, 24, 0.45); stroke-width: 1.5; }
+  .teaser__board :global(.refl) { stroke: rgba(255, 255, 255, 0.7); stroke-width: 10; }
+  .teaser__board :global(.hw rect), .teaser__board :global(.hw circle) { fill: #c9a24a; }
+  .teaser__board :global(.dim path) { stroke: var(--oak); fill: none; }
+  .teaser__board :global(.dim text) { font-family: var(--mono); font-size: 100px; fill: var(--oak); text-anchor: middle; }
+  .teaser__board :global(.pnl), .teaser__board :global(.gls) { transform-box: fill-box; transform-origin: center; }
+  .teaser__board.build :global(.frm) { animation: tF 0.5s ease-out both; }
+  .teaser__board.build :global(.stile) { animation: tF 0.5s ease-out 0.2s both; }
+  .teaser__board.build :global(.rail) { animation: tF 0.5s ease-out 0.4s both; }
+  .teaser__board.build :global(.pnl), .teaser__board.build :global(.gls) { animation: tP 0.6s var(--ease) 0.65s both; }
+  .teaser__board.build :global(.hw), .teaser__board.build :global(.dim) { animation: tF 0.5s ease-out 1.05s both; }
+  @keyframes tF { from { opacity: 0; } }
+  @keyframes tP { from { opacity: 0; transform: scale(1.04); } }
+  .masters__grid { display: grid; gap: 10px; }
+  .masters__grid > div { display: grid; gap: 14px; margin-bottom: 14px; }
+  .mst { display: grid; gap: 2px; padding: 18px 20px; background: var(--card); box-shadow: inset 0 0 0 1px var(--line-2); transition: box-shadow 0.3s; }
+  @media (hover: hover) { .mst:hover { box-shadow: inset 0 0 0 1px var(--ink); } }
+  .mst b { font-family: var(--serif); font-weight: 400; font-size: 30px; line-height: 1.1; }
+  .mst .mm { font-size: 16px; color: var(--oak); }
+  @media (min-width: 1000px) {
+    .sec { padding-top: 160px; }
+    .head { grid-template-columns: 1.1fr 1fr; align-items: end; gap: 64px; margin-bottom: 52px; }
+    .giop__row { grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .giop__row figure:nth-child(even) { margin-top: 60px; }
+    .teaser { margin-top: 160px; padding: 110px 0; }
+    .teaser__in { grid-template-columns: 1fr 1.1fr; gap: 64px; align-items: center; }
+    .teaser__board { height: 70vh; }
+    .masters__grid { grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 14px; align-items: end; }
+    .masters__grid > div { margin: 0 40px 0 0; }
+  }
+</style>

@@ -1,0 +1,108 @@
+---
+/**
+ * «Парадная»: the workshop's own oak double door (a front door they made for a museum). Scroll swings
+ * both leaves open on their hinges, the view walks through the doorway and the hall behind fills the screen.
+ * Leaves are the same photograph, cut along the real seams of the door.
+ */
+import { img, url } from "../lib/site";
+// leaf positions in the photograph, in % of its width/height
+const L = { x: 25.9, w: 24.1 }, R = { x: 50, w: 23.8 }, Y = { y: 15.7, h: 66.4 };
+const leafVars = (x: number, w: number) => `left:${x}%;top:${Y.y}%;width:${w}%;height:${Y.h}%;--iw:${(100 / w) * 100}%;--ix:${(-x / w) * 100}%;--ih:${(100 / Y.h) * 100}%;--iy:${(-Y.y / Y.h) * 100}%`;
+---
+<section class="pd" data-pd>
+  <div class="pd__pin">
+    <div class="pd__hall" data-hall><img src={img("hall")} srcset={`${img("hall", 600)} 600w, ${img("hall")} 1200w`} sizes="100vw" alt="Зал с паркетом и окнами из массива" /></div>
+    <div class="pd__frame" data-frame>
+      <img class="pd__photo" src={img("giop-pair")} srcset={`${img("giop-pair", 600)} 600w, ${img("giop-pair")} 1200w`} sizes="(min-width: 1000px) 46vh, 88vw" alt="Двустворчатая дверь из массива дуба в исторической парадной" fetchpriority="high" />
+      <div class="pd__open" style={`left:${L.x}%;top:${Y.y}%;width:${L.w + R.w}%;height:${Y.h}%`}><img src={img("hall", 600)} alt="" /></div>
+      <div class="pd__leaf pd__leaf--l" style={leafVars(L.x, L.w)} data-leaf="l"><img src={img("giop-pair")} alt="" /></div>
+      <div class="pd__leaf pd__leaf--r" style={leafVars(R.x, R.w)} data-leaf="r"><img src={img("giop-pair")} alt="" /></div>
+    </div>
+    <div class="pd__text wrap">
+      <div class="pd__a" data-a>
+        <p class="cap cap--oak">Столярная мастерская · Санкт-Петербург</p>
+        <h1 class="t1">Двери, которые <i>открывают</i> Петербург</h1>
+        <p class="pd__hint cap">Листайте — дверь откроется</p>
+      </div>
+      <div class="pd__b" data-b>
+        <p class="cap">Эрмитаж · Гатчинский дворец · Шереметьевский дворец</p>
+        <p class="t2">И ваш дом</p>
+        <div class="pd__ctas">
+          <a class="btn btn--oak" href={url("konstruktor/")}>Собрать дверь</a>
+          <a class="btn btn--line pd__light" href={url("#izdeliya")}>Все изделия</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const sec = document.querySelector<HTMLElement>("[data-pd]")!;
+  const frame = sec.querySelector<HTMLElement>("[data-frame]")!;
+  const l = sec.querySelector<HTMLElement>('[data-leaf="l"]')!, r = sec.querySelector<HTMLElement>('[data-leaf="r"]')!;
+  const hall = sec.querySelector<HTMLElement>("[data-hall]")!, a = sec.querySelector<HTMLElement>("[data-a]")!, b = sec.querySelector<HTMLElement>("[data-b]")!;
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const clamp = (v: number, lo = 0, hi = 1) => Math.min(hi, Math.max(lo, v));
+  const ease = (t: number) => t * t * (3 - 2 * t);
+  let on = true, tick = false;
+  const frameAt = () => {
+    tick = false;
+    const rc = sec.getBoundingClientRect();
+    const p = reduced ? 1 : clamp(-rc.top / (rc.height - innerHeight));
+    const open = ease(clamp(p / 0.5));            // leaves swing in the first half
+    const walk = ease(clamp((p - 0.35) / 0.55));  // then we walk through the doorway
+    l.style.transform = `rotateY(${-108 * open}deg)`;
+    r.style.transform = `rotateY(${108 * open}deg)`;
+    l.style.filter = r.style.filter = `brightness(${1 - open * 0.35})`;
+    frame.style.transform = `scale(${1 + walk * 2.6})`;
+    frame.style.opacity = String(1 - clamp((walk - 0.75) / 0.25));
+    hall.style.opacity = String(clamp((walk - 0.55) / 0.35));
+    hall.style.transform = `scale(${1.25 - walk * 0.25})`;
+    a.style.opacity = String(1 - clamp(p / 0.22));
+    a.style.transform = `translateY(${-30 * clamp(p / 0.22)}px)`;
+    b.style.opacity = String(clamp((p - 0.78) / 0.18));
+    b.style.transform = `translateY(${24 * (1 - clamp((p - 0.78) / 0.18))}px)`;
+    b.style.pointerEvents = p > 0.8 ? "auto" : "none";
+  };
+  new IntersectionObserver(([e]) => { on = e.isIntersecting; if (on) frameAt(); }).observe(sec);
+  addEventListener("scroll", () => { if (on && !tick) { tick = true; requestAnimationFrame(frameAt); } }, { passive: true });
+  addEventListener("resize", frameAt);
+  // the doors start closed after the branding intro
+  frameAt();
+</script>
+
+<style>
+  .pd { position: relative; height: 330svh; background: #1d1813; }
+  .pd__pin { position: sticky; top: 0; height: 100svh; overflow: hidden; display: grid; place-items: center; perspective: 1400px; }
+  .pd__hall { position: absolute; inset: 0; opacity: 0; }
+  .pd__hall img { width: 100%; height: 100%; object-fit: cover; }
+  .pd__hall::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(29, 24, 19, 0.35), rgba(29, 24, 19, 0.15) 40%, rgba(29, 24, 19, 0.8)); }
+  .pd__frame { position: relative; width: min(84vw, calc(72svh * 0.75)); aspect-ratio: 760 / 1022; transform-origin: 50% 49%; will-change: transform; transform-style: preserve-3d; box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5); }
+  .pd__photo { width: 100%; height: 100%; object-fit: cover; }
+  .pd__open { position: absolute; overflow: hidden; background: #2a2119; }
+  .pd__open img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.9); }
+  .pd__leaf { position: absolute; overflow: hidden; backface-visibility: hidden; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25); will-change: transform; }
+  .pd__leaf img { position: absolute; left: var(--ix); top: var(--iy); width: var(--iw); height: var(--ih); max-width: none; object-fit: cover; }
+  .pd__leaf--l { transform-origin: left center; }
+  .pd__leaf--r { transform-origin: right center; }
+  .pd__pin::after { content: ""; position: absolute; inset: 45% 0 0; background: linear-gradient(180deg, rgba(29, 24, 19, 0), rgba(29, 24, 19, 0.85) 70%); pointer-events: none; }
+  .pd__text { z-index: 2; position: absolute; inset: auto 0 0; padding-bottom: calc(28px + env(safe-area-inset-bottom)); color: var(--paper); pointer-events: none; }
+  .pd__a, .pd__b { display: grid; gap: 14px; }
+  .pd__a { text-shadow: 0 2px 30px rgba(0, 0, 0, 0.6); }
+  .pd__a .t1 { font-size: clamp(40px, 10.5vw, 104px); max-width: 9em; }
+  .pd__a .t1 i { color: var(--oak-2); }
+  .pd__hint { color: rgba(241, 235, 225, 0.6); }
+  .pd__b { position: absolute; left: var(--gut); right: var(--gut); bottom: calc(28px + env(safe-area-inset-bottom)); opacity: 0; }
+  .pd__b .cap { color: rgba(241, 235, 225, 0.7); }
+  .pd__b .t2 { font-size: clamp(56px, 16vw, 150px); }
+  .pd__ctas { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pd__light { color: var(--paper); box-shadow: inset 0 0 0 1px rgba(241, 235, 225, 0.6); }
+  @media (min-width: 1000px) {
+    .pd__pin { place-items: center end; padding-right: max(6vw, calc((100vw - var(--max)) / 2 + 80px)); }
+    .pd__frame { width: calc(82vh * 0.75); }
+    .pd__pin::after { inset: 0 50% 0 0; background: linear-gradient(90deg, rgba(29, 24, 19, 0.7), rgba(29, 24, 19, 0)); }
+    .pd__text { inset: 0; display: grid; align-items: end; padding-bottom: 64px; }
+    .pd__a { max-width: 520px; }
+    .pd__b { left: max(var(--gut), calc((100vw - var(--max)) / 2 + var(--gut))); bottom: 64px; }
+  }
+</style>

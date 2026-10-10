@@ -1,0 +1,293 @@
+---
+import Base from "../layouts/Base.astro";
+import { contacts, url } from "../lib/site";
+---
+<Base title="Смета — бланк заказа ЦИПС" nav="smeta">
+  <main class="sm wrap" data-sm data-base={url()}>
+    <div class="sm__head">
+      <p class="par"><b>§</b><span class="cap">Бланк заказа</span></p>
+      <h1 class="t2">Заполните <i>и подпишите</i></h1>
+      <ol class="sm__how">
+        <li><b class="mm">1</b>Проверьте изделия в бланке</li>
+        <li><b class="mm">2</b>Впишите имя и телефон</li>
+        <li><b class="mm">3</b>Распишитесь в графе «Заказчик»</li>
+      </ol>
+    </div>
+
+    <form class="blank" data-blank novalidate>
+      <header class="blank__head">
+        <div>
+          <p class="blank__org">{contacts.company}</p>
+          <p class="mm blank__addr">{contacts.address} · {contacts.phone}</p>
+        </div>
+        <div class="blank__no"><span class="cap">Бланк заказа</span><b class="mm" data-no>№ —</b><span class="mm" data-date></span></div>
+      </header>
+
+      <div class="blank__list" data-list></div>
+      <p class="blank__empty read" data-empty hidden>Бланк пока пуст. Соберите изделие в <a class="lnk" href={url("konstruktor/")}>конструкторе</a> — чертёж ляжет сюда.</p>
+
+      <!-- tape measure to the bulk discount: the price list gives extra discounts from 30 m² -->
+      <div class="bulk" data-bulk>
+        <div class="bulk__tape"><i data-bulk-fill></i><span class="bulk__mark">30 м²</span></div>
+        <p class="mm bulk__t" data-bulk-t></p>
+      </div>
+      <div class="blank__sum"><span class="cap">Итого по бланку</span><strong class="mm" data-total>0 ₽</strong><span class="mm blank__area" data-area></span></div>
+
+      <!-- the customer's part, written on the form itself -->
+      <fieldset class="cust">
+        <legend class="cap">Заказчик</legend>
+        <label class="ln"><span>Ф. И. О.</span><input name="name" autocomplete="name" required /></label>
+        <label class="ln"><span>Телефон</span><input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7" required /></label>
+        <label class="ln"><span>Адрес объекта</span><input name="addr" placeholder="для обмера" /></label>
+        <label class="ln"><span>Примечание</span><input name="note" placeholder="например, дом под охраной ГИОП" /></label>
+        <label class="ln ln--chk"><input type="checkbox" name="zamer" checked /><span>Прошу выехать на обмер</span></label>
+      </fieldset>
+
+      <!-- signatures: the master's appears when the form is accepted; the customer signs with a finger or mouse -->
+      <div class="sig">
+        <div class="sig__box sig__box--m">
+          <svg class="sig__master" viewBox="0 0 240 90" aria-hidden="true"><path data-msig pathLength="1" d="M14 62 C 26 20, 40 18, 38 50 C 36 76, 22 72, 30 52 C 40 28, 58 30, 60 52 C 61 66, 66 68, 74 54 C 82 40, 86 44, 90 56 C 94 68, 100 66, 108 48 C 116 30, 120 34, 118 54 C 117 70, 126 70, 136 52 L 150 28 M 140 50 C 160 46, 190 40, 226 36" /></svg>
+          <span class="sig__l">Мастер</span>
+        </div>
+        <div class="sig__box sig__box--c">
+          <canvas class="sig__pad" data-pad aria-label="Поле для подписи заказчика"></canvas>
+          <span class="sig__hint" data-hint>Распишитесь здесь пальцем или мышкой</span>
+          <button class="sig__clr" type="button" data-clr hidden>Стереть</button>
+          <span class="sig__l">Заказчик</span>
+        </div>
+      </div>
+
+      <div class="blank__stamp" aria-hidden="true" data-stamp><svg viewBox="0 0 200 120"><ellipse cx="100" cy="60" rx="94" ry="54" /><ellipse cx="100" cy="60" rx="82" ry="44" /><text x="100" y="54" text-anchor="middle">ПРИНЯТО</text><text x="100" y="80" text-anchor="middle" class="s">ЦИПС · В РАБОТУ</text></svg></div>
+    </form>
+
+    <aside class="act" data-act>
+      <ul class="act__chk">
+        <li data-c="items">Изделия в бланке</li>
+        <li data-c="name">Имя</li>
+        <li data-c="phone">Телефон</li>
+        <li data-c="sign">Подпись заказчика</li>
+      </ul>
+      <button class="btn btn--oak btn--block act__go" type="button" data-go disabled>Подписать и передать в мастерскую</button>
+      <p class="act__n">Мастер распишется и поставит печать — бланк уйдёт в мастерскую письмом. Или позвоните: Виктор {contacts.viktor}, Дмитрий {contacts.dmitry}.</p>
+    </aside>
+
+    <section class="done" data-done hidden>
+      <p class="t3">Бланк <span class="mm" data-dno></span> <i>принят</i></p>
+      <p class="read">Письмо с бланком открыто в вашей почте — нажмите «Отправить», и он окажется у мастера. Мастер перезвонит, уточнит детали и договорится об обмере.</p>
+      <div class="done__act">
+        <button class="btn btn--line" type="button" data-print>Распечатать копию</button>
+        <a class="btn" href={contacts.viktorHref}>Позвонить Виктору</a>
+      </div>
+    </section>
+  </main>
+</Base>
+
+<script>
+  import { smeta } from "../scripts/app";
+  import { draw, type Params } from "../scripts/door";
+  const root = document.querySelector<HTMLElement>("[data-sm]")!;
+  const BASE = root.dataset.base!;
+  const $ = <T extends Element = HTMLElement>(s: string) => root.querySelector<T>(s)!;
+  const rub = (n: number) => Math.round(n).toLocaleString("ru-RU").replace(/\s/g, " ") + " ₽";
+  const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
+  const d = new Date();
+  // the form number is fixed for the day, like a page torn from a numbered pad
+  const no = `${String(d.getFullYear()).slice(2)}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}-${String((d.getHours() * 7 + 13) % 97).padStart(2, "0")}`;
+  $("[data-no]").textContent = `№ ${no}`;
+  $("[data-date]").textContent = d.toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" });
+  const form = $<HTMLFormElement>("[data-blank]");
+
+  function render() {
+    const ls = smeta.lines();
+    $("[data-empty]").hidden = ls.length > 0;
+    $("[data-list]").innerHTML = ls.map((l, i) => `<div class="row" data-id="${l.id}">
+      <span class="row__n mm">${i + 1}</span>
+      <span class="row__dr">${l.params ? draw(l.params as unknown as Params, { swatch: `${BASE}img/tex-${l.wood}.webp`, dims: false, id: `r${i}` }) : ""}</span>
+      <span class="row__t"><b>${esc(l.label)}</b><small class="mm">${l.w} × ${l.h} мм</small><small>${esc(l.spec)}</small></span>
+      <span class="row__q"><button type="button" data-d="-1" aria-label="Меньше">−</button><output class="mm">${l.q}</output><button type="button" data-d="1" aria-label="Больше">+</button></span>
+      <span class="row__p mm">${rub(l.price * l.q)}</span>
+    </div>`).join("");
+    const total = ls.reduce((s, l) => s + l.price * l.q, 0);
+    const area = ls.reduce((s, l) => s + (l.w * l.h * l.q) / 1e6, 0);
+    $("[data-total]").textContent = rub(total);
+    $("[data-area]").textContent = area ? `${area.toFixed(2).replace(".", ",")} м² изделий` : "";
+    $("[data-bulk-fill]").style.width = `${Math.min(1, area / 30) * 100}%`;
+    $("[data-bulk-t]").textContent = area >= 30 ? "От 30 м² мастерская даёт дополнительную скидку — её назовут в расчёте." : `До дополнительной скидки ещё ${(30 - area).toFixed(1).replace(".", ",")} м² изделий`;
+    root.classList.toggle("empty", !ls.length);
+    check();
+  }
+  $("[data-list]").addEventListener("click", (e) => {
+    const b = (e.target as HTMLElement).closest<HTMLElement>("[data-d]"); if (!b || root.classList.contains("sent")) return;
+    const row = b.closest<HTMLElement>("[data-id]")!, l = smeta.lines().find((x) => x.id === row.dataset.id)!;
+    const nq = l.q + Number(b.dataset.d);
+    if (nq <= 0) row.animate([{ opacity: 1 }, { opacity: 0, transform: "translateX(-30px)" }], { duration: 300, fill: "forwards" }).onfinish = () => smeta.set(l.id, 0);
+    else smeta.set(l.id, nq);
+  });
+
+  /* ---------- the customer's signature: ink on a canvas ---------- */
+  const pad = $<HTMLCanvasElement>("[data-pad]");
+  const ctx = pad.getContext("2d")!;
+  let ink = 0, drawing = false, lx = 0, ly = 0;
+  const size = () => {
+    const r = pad.getBoundingClientRect(), k = devicePixelRatio || 1;
+    pad.width = r.width * k; pad.height = r.height * k;
+    ctx.setTransform(k, 0, 0, k, 0, 0); ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.strokeStyle = "#1d2c6b";
+    ink = 0; $("[data-hint]").hidden = false; $("[data-clr]").hidden = true; check();
+  };
+  const pos = (e: PointerEvent) => { const r = pad.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+  pad.addEventListener("pointerdown", (e) => { if (root.classList.contains("sent")) return; drawing = true; pad.setPointerCapture(e.pointerId); [lx, ly] = pos(e); $("[data-hint]").hidden = true; e.preventDefault(); });
+  pad.addEventListener("pointermove", (e) => {
+    if (!drawing) return;
+    const [x, y] = pos(e), dist = Math.hypot(x - lx, y - ly);
+    // a pen: the faster the stroke, the thinner the line
+    ctx.lineWidth = Math.max(1.2, 3.2 - dist * 0.08);
+    ctx.beginPath(); ctx.moveTo(lx, ly); ctx.lineTo(x, y); ctx.stroke();
+    ink += dist; lx = x; ly = y;
+  });
+  const up = () => { if (!drawing) return; drawing = false; $("[data-clr]").hidden = ink < 1; check(); };
+  pad.addEventListener("pointerup", up); pad.addEventListener("pointercancel", up);
+  $("[data-clr]").addEventListener("click", size);
+  addEventListener("resize", () => { if (!ink) size(); });
+
+  /* ---------- what is still missing ---------- */
+  const phone = form.elements.namedItem("phone") as HTMLInputElement;
+  const name = form.elements.namedItem("name") as HTMLInputElement;
+  phone.addEventListener("input", () => {
+    let x = phone.value.replace(/\D/g, ""); if (x.startsWith("8")) x = "7" + x.slice(1); if (!x.startsWith("7")) x = "7" + x; x = x.slice(0, 11);
+    const p = [x.slice(1, 4), x.slice(4, 7), x.slice(7, 9), x.slice(9, 11)];
+    phone.value = "+7" + (p[0] ? ` (${p[0]}` : "") + (p[0].length === 3 ? ")" : "") + (p[1] ? ` ${p[1]}` : "") + (p[2] ? `-${p[2]}` : "") + (p[3] ? `-${p[3]}` : "");
+  });
+  function check() {
+    const ok = { items: smeta.lines().length > 0, name: name.value.trim().length > 1, phone: phone.value.replace(/\D/g, "").length === 11, sign: ink > 60 };
+    (Object.keys(ok) as (keyof typeof ok)[]).forEach((k) => $(`[data-c="${k}"]`).classList.toggle("ok", ok[k]));
+    $<HTMLButtonElement>("[data-go]").disabled = !Object.values(ok).every(Boolean) || root.classList.contains("sent");
+    return ok;
+  }
+  form.addEventListener("input", check);
+
+  /* ---------- accepted: the master signs, the stamp comes down, the letter goes ---------- */
+  $("[data-go]").addEventListener("click", () => {
+    if (!Object.values(check()).every(Boolean)) return;
+    root.classList.add("sent");
+    $<HTMLButtonElement>("[data-go]").disabled = true;
+    form.querySelectorAll("input").forEach((i) => (i.readOnly = true));
+    $<SVGPathElement>("[data-msig]").animate([{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], { duration: 1300, easing: "cubic-bezier(.5,0,.5,1)", fill: "forwards" });
+    setTimeout(() => {
+      $("[data-stamp]").classList.add("on");
+      setTimeout(() => {
+        form.animate([{ transform: "none" }, { transform: "translateY(3px) scale(.996)" }, { transform: "none" }], { duration: 260 });
+        if (typeof navigator.vibrate === "function") try { navigator.vibrate(25); } catch {}
+      }, 520);
+    }, 1350);
+    setTimeout(() => {
+      const fd = new FormData(form), ls = smeta.lines();
+      const text = [`Бланк заказа № ${no} с сайта ЦИПС (подписан заказчиком на сайте)`, "", ...ls.map((l, i) => `${i + 1}. ${l.label}, ${l.w} × ${l.h} мм, ${l.spec} — ${l.q} шт. — ${rub(l.price * l.q)}`), "", `Итого: ${rub(ls.reduce((s, l) => s + l.price * l.q, 0))}`, `Заказчик: ${fd.get("name")}`, `Телефон: ${fd.get("phone")}`, fd.get("addr") ? `Адрес объекта: ${fd.get("addr")}` : "", fd.get("zamer") ? "Прошу выехать на обмер" : "", fd.get("note") ? `Примечание: ${fd.get("note")}` : ""].filter(Boolean).join("\n");
+      $("[data-dno]").textContent = `№ ${no}`;
+      $("[data-act]").hidden = true;
+      $("[data-done]").hidden = false;
+      $("[data-done]").scrollIntoView({ behavior: "smooth", block: "center" });
+      location.href = `mailto:cips.2011@yandex.ru?subject=${encodeURIComponent(`Бланк заказа № ${no}`)}&body=${encodeURIComponent(text)}`;
+    }, 2600);
+  });
+  $("[data-print]").addEventListener("click", () => print());
+
+  document.addEventListener("smeta:change", render);
+  size();
+  render();
+</script>
+
+<style>
+  .sm { padding-top: calc(var(--hdr) + 36px); display: grid; gap: 26px; }
+  .sm__head { display: grid; gap: 14px; }
+  .sm__how { display: grid; gap: 6px; }
+  .sm__how li { display: flex; align-items: center; gap: 10px; font-size: 15px; color: var(--ink-2); }
+  .sm__how b { display: grid; place-content: center; width: 24px; height: 24px; border-radius: 50%; background: var(--green); color: var(--paper); font-size: 11px; font-weight: 400; }
+  /* the order form: ruled paper with a printed header */
+  .blank { position: relative; display: grid; gap: 18px; margin: 0; padding: 22px 18px 46px; background: #fbf8f1; background-image: repeating-linear-gradient(transparent 0 31px, rgba(34, 56, 46, 0.09) 31px 32px); box-shadow: 0 0 0 1px var(--line), 0 24px 50px -28px rgba(34, 29, 24, 0.6); overflow: hidden; }
+  .blank__head { display: flex; justify-content: space-between; gap: 14px; padding-bottom: 14px; border-bottom: 2px solid var(--ink); }
+  .blank__org { font-family: var(--serif); font-size: 15px; line-height: 1.2; max-width: 16em; }
+  .blank__addr { font-size: 10.5px; color: var(--mute); margin-top: 4px; }
+  .blank__no { display: grid; justify-items: end; text-align: right; gap: 2px; }
+  .blank__no b { font-weight: 400; font-size: 15px; white-space: nowrap; }
+  .blank__no span.mm { font-size: 11px; color: var(--mute); }
+  .blank__list { display: grid; }
+  .blank__list :global(.row) { display: grid; grid-template-columns: 24px 64px 1fr; grid-template-areas: "n d t" "n d q" "n d p"; gap: 2px 12px; padding: 12px 0; border-bottom: 1px solid var(--line-2); align-items: center; }
+  .blank__list :global(.row__n) { grid-area: n; align-self: start; color: var(--mute); }
+  .blank__list :global(.row__dr) { grid-area: d; position: relative; height: 88px; }
+  .blank__list :global(.row__dr svg) { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .blank__list :global(.row__dr rect), .blank__list :global(.row__dr path), .blank__list :global(.row__dr circle) { stroke: rgba(43, 33, 24, 0.8); stroke-width: 8; }
+  .blank__list :global(.row__dr .hw rect) { fill: #c9a24a; }
+  .blank__list :global(.row__dr .sh), .blank__list :global(.row__dr .refl), .blank__list :global(.row__dr .pnl__r) { display: none; }
+  .blank__list :global(.row__t) { grid-area: t; display: grid; gap: 1px; }
+  .blank__list :global(.row__t b) { font-family: var(--serif); font-weight: 400; font-size: 19px; line-height: 1.15; }
+  .blank__list :global(.row__t small) { font-size: 12px; color: var(--mute); }
+  .blank__list :global(.row__q) { grid-area: q; display: inline-flex; align-items: center; gap: 4px; }
+  .blank__list :global(.row__q button) { width: 30px; height: 30px; border: 1px solid var(--line-2); background: #fff; }
+  .blank__list :global(.row__q output) { min-width: 24px; text-align: center; }
+  .blank__list :global(.row__p) { grid-area: p; font-size: 15px; }
+  .bulk { display: grid; gap: 6px; }
+  .bulk__tape { position: relative; height: 16px; background: repeating-linear-gradient(90deg, rgba(34, 29, 24, 0.5) 0 1px, transparent 1px 10%), #efe7d4; border: 1px solid #8d6c2a; }
+  .bulk__tape i { position: absolute; left: 0; top: 0; bottom: 0; background: linear-gradient(180deg, #e2c46f, var(--brass)); transition: width 0.9s var(--ease); }
+  .bulk__mark { position: absolute; right: -1px; top: 18px; font-family: var(--mono); font-size: 10px; color: var(--mute); }
+  .bulk__t { font-size: 12px; color: var(--ink-2); margin-top: 8px; }
+  .blank__sum { display: grid; gap: 2px; padding-top: 12px; border-top: 2px solid var(--ink); }
+  .blank__sum strong { font-weight: 400; font-size: 34px; }
+  .blank__area { font-size: 12px; color: var(--mute); }
+  .empty .bulk, .empty .blank__sum { opacity: 0.4; }
+  /* customer lines: ink handwriting on the ruled form */
+  .cust { border: 0; margin: 0; padding: 0; display: grid; gap: 2px; }
+  .cust legend { padding: 0 0 6px; }
+  .ln { display: flex; align-items: baseline; gap: 10px; border-bottom: 1px solid var(--ink-2); padding: 6px 0 2px; }
+  .ln span { flex: none; font-size: 12px; color: var(--mute); }
+  .ln input { flex: 1; min-width: 0; border: 0; background: transparent; padding: 4px 0; font-family: var(--serif); font-style: italic; font-size: 20px; color: #1d2c6b; outline: none; }
+  .ln input::placeholder { color: rgba(34, 29, 24, 0.25); }
+  .ln--chk { border: 0; align-items: center; }
+  .ln--chk input { flex: none; width: 18px; height: 18px; accent-color: var(--green); }
+  .ln--chk span { font-size: 14px; color: var(--ink-2); }
+  /* signatures */
+  .sig { display: grid; grid-template-columns: 1fr 1.4fr; gap: 14px; margin-top: 6px; }
+  .sig__box { position: relative; height: 104px; border-bottom: 1.5px solid var(--ink); display: grid; }
+  .sig__l { pointer-events: none; position: absolute; left: 0; bottom: -22px; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--mute); }
+  .sig__master { width: 100%; height: 100%; }
+  .sig__master path { fill: none; stroke: #1d2c6b; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+  .sig__box--c { background: repeating-linear-gradient(135deg, rgba(168, 116, 58, 0.07) 0 8px, transparent 8px 16px); outline: 1.5px dashed rgba(168, 116, 58, 0.6); outline-offset: -1px; }
+  .sent .sig__box--c { outline-color: transparent; background: none; }
+  .sig__pad { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
+  .sig__hint { position: absolute; inset: 0; display: grid; place-content: center; padding: 0 10px; text-align: center; font-family: var(--serif); font-style: italic; font-size: 15px; color: var(--oak); pointer-events: none; animation: hint 2.4s ease-in-out infinite; }
+  @keyframes hint { 50% { opacity: 0.45; } }
+  .sig__clr { position: absolute; right: 4px; top: 4px; font-size: 12px; color: var(--mute); text-decoration: underline; }
+  /* the stamp: violet ink, rotated, pressed down with a thump across both signatures */
+  .blank__stamp { position: absolute; left: 30%; bottom: 14px; width: 170px; opacity: 0; transform: scale(2.2) rotate(-12deg); pointer-events: none; }
+  .blank__stamp ellipse { fill: none; stroke: #6b2a6b; stroke-width: 4; }
+  .blank__stamp ellipse + ellipse { stroke-width: 1.6; }
+  .blank__stamp text { fill: #6b2a6b; font-family: var(--serif); font-weight: 700; font-size: 26px; letter-spacing: 3px; }
+  .blank__stamp text.s { font-family: var(--mono); font-weight: 400; font-size: 11px; letter-spacing: 2px; }
+  .blank__stamp.on { animation: stamp 0.55s cubic-bezier(0.5, 0, 0.75, 0) forwards; }
+  @keyframes stamp { to { opacity: 0.8; transform: scale(1) rotate(-12deg); } }
+  /* action */
+  .act { display: grid; gap: 14px; align-content: start; }
+  .act__chk { display: grid; gap: 6px; }
+  .act__chk li { display: flex; align-items: center; gap: 10px; font-size: 15px; color: var(--mute); transition: color 0.3s; }
+  .act__chk li::before { content: ""; width: 18px; height: 18px; border: 1.5px solid var(--line-2); border-radius: 50%; transition: background 0.3s, border-color 0.3s; }
+  .act__chk li.ok { color: var(--ink); }
+  .act__chk li.ok::before { background: var(--green) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M6 12.5l4 4 8-9' fill='none' stroke='%23f1ebe1' stroke-width='2.4'/></svg>") center / 14px no-repeat; border-color: var(--green); }
+  .act__go[disabled] { opacity: 0.4; }
+  .act__n { font-size: 13px; color: var(--mute); }
+  .done { display: grid; gap: 14px; }
+  .done__act { display: flex; flex-wrap: wrap; gap: 8px; }
+  @media (min-width: 1000px) {
+    .sm { padding-top: calc(var(--hdr) + 56px); grid-template-columns: 1.4fr 1fr; gap: 26px 56px; align-items: start; }
+    .sm__head { grid-column: 1 / -1; grid-template-columns: 1fr auto; align-items: end; }
+    .blank { padding: 36px 40px 56px; }
+    .blank__list :global(.row) { grid-template-columns: 30px 80px 1fr auto 130px; grid-template-areas: "n d t q p"; }
+    .blank__list :global(.row__dr) { height: 110px; }
+    .blank__list :global(.row__p) { text-align: right; }
+    .act, .done { position: sticky; top: calc(var(--hdr) + 24px); }
+    .sig { gap: 40px; }
+  }
+  @media print {
+    :global(.hdr), :global(.ftr), :global(.note), .act, .sm__head, .done { display: none !important; }
+    .sm { padding: 0; display: block; }
+    .blank { box-shadow: none; }
+  }
+</style>

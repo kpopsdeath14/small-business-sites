@@ -1,0 +1,56 @@
+---
+import Base from "../layouts/Base.astro";
+import { contacts, img } from "../lib/site";
+---
+<Base title="Мастерская ЦИПС — контакты" nav="contact">
+  <main class="ct wrap" data-ct>
+    <p class="par"><b>§</b><span class="cap">Мастерская</span></p>
+    <h1 class="t2">Приезжайте <i>в мастерскую</i></h1>
+    <div class="ct__grid">
+      <div class="ct__info">
+        <p class="read">{contacts.address}. {contacts.hours}.</p>
+        <a class="ct__ph" href={contacts.phoneHref}>{contacts.phone}</a>
+        <a class="ct__ph" href={contacts.viktorHref}>{contacts.viktor} <small>Виктор</small></a>
+        <a class="ct__ph" href={contacts.dmitryHref}>{contacts.dmitry} <small>Дмитрий</small></a>
+        <a class="lnk" href={`mailto:${contacts.email}`}>{contacts.email}</a>
+        <figure class="ct__img" data-plane><img src={img("door-oak", 600)} alt="Дверь из массива дуба" loading="lazy" /></figure>
+      </div>
+      <form class="ct__f" data-f novalidate>
+        <p class="t3">Обсудить <i>проект</i></p>
+        <div class="pick" data-what>
+          {[["stair", "Лестница"], ["furniture", "Мебель"], ["billiard", "Бильярдный стол"], ["giop", "Объект ГИОП"], ["other", "Другое"]].map(([v, l], i) => <label><input type="radio" name="what" value={l} data-k={v} checked={i === 0} /><span>{l}</span></label>)}
+        </div>
+        <label class="field"><span>Имя</span><input class="input" name="name" autocomplete="name" required /></label>
+        <label class="field"><span>Телефон</span><input class="input" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7" required /></label>
+        <label class="field"><span>О проекте</span><textarea class="input" name="note" placeholder="Размеры, порода, эскиз или фото — пришлём мастера на обмер"></textarea></label>
+        <button class="btn btn--oak" type="submit">Отправить на почту мастерской</button>
+      </form>
+    </div>
+  </main>
+</Base>
+<script>
+  const f = document.querySelector<HTMLFormElement>("[data-f]")!;
+  const p = new URLSearchParams(location.search).get("p");
+  if (p) { const r = f.querySelector<HTMLInputElement>(`input[data-k="${p}"]`); if (r) r.checked = true; }
+  f.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const fd = new FormData(f);
+    const name = f.elements.namedItem("name") as HTMLInputElement, phone = f.elements.namedItem("phone") as HTMLInputElement;
+    const okN = String(fd.get("name")).trim().length > 1, okP = String(fd.get("phone")).replace(/\D/g, "").length >= 10;
+    name.classList.toggle("err", !okN); phone.classList.toggle("err", !okP);
+    if (!okN || !okP) return;
+    const text = [`Заявка с сайта ЦИПС: ${fd.get("what")}`, `Имя: ${fd.get("name")}`, `Телефон: ${fd.get("phone")}`, `${fd.get("note") || ""}`].join("\n");
+    location.href = `mailto:cips.2011@yandex.ru?subject=${encodeURIComponent(`Проект: ${fd.get("what")}`)}&body=${encodeURIComponent(text)}`;
+  });
+</script>
+<style>
+  .ct { padding-top: calc(var(--hdr) + 36px); display: grid; gap: 18px; }
+  .ct__grid { display: grid; gap: 40px; margin-top: 10px; }
+  .ct__info { display: grid; gap: 10px; align-content: start; justify-items: start; }
+  .ct__ph { font-family: var(--serif); font-size: 30px; line-height: 1.15; }
+  .ct__ph small { font-family: var(--sans); font-size: 13px; color: var(--mute); }
+  .ct__img { margin-top: 18px; width: 100%; }
+  .ct__img img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+  .ct__f { display: grid; gap: 14px; align-content: start; padding: 22px; background: var(--card); box-shadow: inset 0 0 0 1px var(--line-2); }
+  @media (min-width: 1000px) { .ct { padding-top: calc(var(--hdr) + 56px); } .ct__grid { grid-template-columns: 1fr 1fr; gap: 64px; } }
+</style>

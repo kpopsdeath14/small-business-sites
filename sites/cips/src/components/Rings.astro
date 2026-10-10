@@ -1,0 +1,75 @@
+---
+/**
+ * «Годовые кольца»: a cross-cut of an oak log with one ring for every year of the workshop.
+ * The rings grow outward from 2011 when the section comes into view; tap a ring to read its year.
+ */
+import { contacts } from "../lib/site";
+const now = new Date().getFullYear();
+const years = Array.from({ length: now - contacts.since + 1 }, (_, i) => contacts.since + i);
+const C = 150;
+// slightly irregular rings, like a real cut: radius wobbles with a few low harmonics
+const ring = (r: number, seed: number) => {
+  const pts = Array.from({ length: 72 }, (_, i) => {
+    const a = (i / 72) * Math.PI * 2;
+    const rr = r * (1 + 0.035 * Math.sin(a * 2 + seed) + 0.02 * Math.sin(a * 5 + seed * 1.7) + 0.012 * Math.sin(a * 9 + seed * 0.3));
+    return [C + Math.cos(a) * rr, C + Math.sin(a) * rr * 0.96];
+  });
+  return "M" + pts.map((p) => p.map((v) => v.toFixed(1)).join(" ")).join("L") + "Z";
+};
+const R0 = 14, R1 = 128;
+const step = (R1 - R0) / years.length;
+---
+<div class="rg" data-rg>
+  <svg class="rg__cut" viewBox="0 0 300 300" role="img" aria-label={`Спил дуба: ${years.length} годовых колец, с ${contacts.since} года`}>
+    <defs>
+      <radialGradient id="rg-wood" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#9b6a36" /><stop offset=".55" stop-color="#c6955a" /><stop offset=".9" stop-color="#d7ad74" /><stop offset="1" stop-color="#b68650" /></radialGradient>
+    </defs>
+    <path d={ring(R1 + 12, 3)} class="rg__bark" />
+    <path d={ring(R1 + 2, 1)} fill="url(#rg-wood)" />
+    <path class="rg__check" d={`M${C} ${C} L${C + 40} ${C - 96} L${C + 44} ${C - 118}`} />
+    {years.map((y, i) => <path class:list={["rg__r", { "rg__r--now": i === years.length - 1 }]} d={ring(R0 + step * (i + 1), i * 0.9)} style={`--i:${i}`} data-y={y} pathLength="1" />)}
+    <circle cx={C} cy={C} r="5" class="rg__pith" />
+  </svg>
+  <div class="rg__txt">
+    <p class="rg__n"><span class="mm" data-rg-n>{years.length}</span> <small>колец</small></p>
+    <p class="rg__y mm" data-rg-y>{contacts.since} — {now}</p>
+    <p class="read">По одному на каждый год мастерской. «Каждый год мы принимаем заказы от сотни самых разных клиентов — частных лиц и крупных компаний Петербурга и области».</p>
+    <p class="cap">Коснитесь кольца</p>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-rg]").forEach((el) => {
+    const yEl = el.querySelector("[data-rg-y]")!, nEl = el.querySelector("[data-rg-n]")!;
+    const rings = [...el.querySelectorAll<SVGPathElement>(".rg__r")];
+    const all = yEl.textContent;
+    new IntersectionObserver(([e], o) => { if (e.isIntersecting) { o.disconnect(); el.classList.add("grow"); } }, { threshold: 0.35 }).observe(el);
+    rings.forEach((r) => r.addEventListener("click", () => {
+      rings.forEach((x) => x.classList.toggle("pick", x === r));
+      const y = Number(r.dataset.y), k = rings.indexOf(r) + 1;
+      yEl.textContent = `${y} · ${k}-й год`;
+      nEl.textContent = String(k);
+    }));
+    el.querySelector("svg")!.addEventListener("click", (e) => { if (!(e.target as Element).classList.contains("rg__r")) { rings.forEach((x) => x.classList.remove("pick")); yEl.textContent = all; nEl.textContent = String(rings.length); } });
+  });
+</script>
+
+<style>
+  .rg { display: grid; gap: 28px; align-items: center; }
+  .rg__cut { width: min(100%, 460px); justify-self: center; filter: drop-shadow(0 24px 30px rgba(34, 29, 24, 0.35)); }
+  .rg__bark { fill: #4a3020; stroke: #2e1d12; stroke-width: 3; }
+  .rg__check { fill: none; stroke: rgba(60, 35, 15, 0.45); stroke-width: 1.2; }
+  .rg__pith { fill: #6b4423; }
+  .rg__r { fill: none; stroke: #7a4f28; stroke-width: 1.3; stroke-opacity: 0.75; stroke-dasharray: 1; stroke-dashoffset: 1; cursor: pointer; transition: stroke 0.3s, stroke-width 0.3s; pointer-events: stroke; }
+  .rg__r:hover { stroke-width: 3; }
+  .grow .rg__r { stroke-dashoffset: 0; transition: stroke-dashoffset 1s var(--ease-io), stroke 0.3s, stroke-width 0.3s; transition-delay: calc(var(--i) * 0.09s), 0s, 0s; }
+  .rg__r--now { stroke: var(--green); stroke-width: 2; stroke-opacity: 1; }
+  .rg__r.pick { stroke: var(--green); stroke-width: 3.2; stroke-opacity: 1; }
+  .rg__txt { display: grid; gap: 10px; }
+  .rg__n { font-family: var(--serif); font-size: clamp(80px, 22vw, 160px); line-height: 0.85; }
+  .rg__n .mm { font-family: var(--serif); }
+  .rg__n small { font-size: 0.26em; color: var(--mute); }
+  .rg__y { font-size: 15px; color: var(--oak); }
+  @media (min-width: 1000px) { .rg { grid-template-columns: 1fr 1fr; gap: 80px; } }
+  @media (prefers-reduced-motion: reduce) { .rg__r { stroke-dashoffset: 0; } }
+</style>

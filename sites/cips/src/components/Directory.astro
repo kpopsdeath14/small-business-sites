@@ -1,0 +1,71 @@
+---
+/**
+ * Objects as an entry in an old Petersburg address book («Весь Петербург»): name, dotted leader, address.
+ * The photo of the building appears in an oval cartouche beside the list — on hover, tap or as you scroll.
+ */
+import { OBJECTS, img } from "../lib/site";
+---
+<div class="dir" data-dir>
+  <div class="dir__oval" aria-hidden="true">
+    {OBJECTS.map((o, i) => <img class:list={{ on: i === 0 }} data-o={i} src={img(o.img, 600)} alt="" loading="lazy" decoding="async" />)}
+    <span class="dir__cap mm" data-cap>{OBJECTS[0].y}</span>
+  </div>
+  <ol class="dir__list">
+    {OBJECTS.map((o, i) => (
+      <li class:list={{ on: i === 0 }} data-i={i} tabindex="0">
+        <span class="dir__t">{o.t}</span>
+        <span class="dir__dots" aria-hidden="true"></span>
+        <span class="dir__a">{o.a || o.y}</span>
+        <span class="dir__mini" aria-hidden="true"><img src={img(o.img, 600)} alt="" loading="lazy" decoding="async" /></span>
+      </li>
+    ))}
+  </ol>
+</div>
+
+<script>
+  const el = document.querySelector<HTMLElement>("[data-dir]")!;
+  const items = [...el.querySelectorAll<HTMLElement>("[data-i]")];
+  const pics = [...el.querySelectorAll<HTMLElement>("[data-o]")];
+  const cap = el.querySelector("[data-cap]")!;
+  const ys = items.map((li) => li.querySelector(".dir__a")!.textContent!);
+  let cur = 0;
+  const show = (i: number) => {
+    if (i === cur) return; cur = i;
+    items.forEach((x, k) => x.classList.toggle("on", k === i));
+    pics.forEach((p, k) => p.classList.toggle("on", k === i));
+    cap.textContent = ys[i];
+  };
+  items.forEach((li, i) => {
+    li.addEventListener("pointerenter", (e) => { if (e.pointerType === "mouse") show(i); });
+    li.addEventListener("click", () => show(i));
+    li.addEventListener("focus", () => show(i));
+  });
+</script>
+
+<style>
+  .dir { display: grid; gap: 24px; }
+  .dir__oval { position: sticky; top: calc(var(--hdr) + 14px); z-index: 2; justify-self: center; width: min(62vw, 300px); aspect-ratio: 3 / 4; border-radius: 50%; overflow: hidden; background: var(--paper-2); box-shadow: 0 0 0 6px var(--paper), 0 0 0 7px var(--oak), 0 0 0 11px var(--paper), 0 0 0 12px var(--line-2), 0 24px 40px -16px rgba(34, 29, 24, 0.5); }
+  .dir__oval img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transform: scale(1.08); transition: opacity 0.6s, transform 1.4s var(--ease); filter: sepia(0.25) saturate(0.9); }
+  .dir__oval img.on { opacity: 1; transform: none; }
+  .dir__cap { position: absolute; left: 0; right: 0; bottom: 16%; text-align: center; font-size: 10.5px; color: #fff; text-shadow: 0 1px 6px rgba(0, 0, 0, 0.8); }
+  .dir__list { display: grid; border-top: 1px solid var(--line-2); }
+  .dir__list li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px; padding: 14px 0; border-bottom: 1px solid var(--line); cursor: pointer; outline: none; transition: color 0.3s; color: var(--mute); }
+  .dir__list li.on, .dir__list li:focus-visible { color: var(--ink); }
+  .dir__t { font-family: var(--serif); font-size: clamp(22px, 5.4vw, 34px); line-height: 1.1; flex: none; max-width: 70%; }
+  .dir__list li.on .dir__t { font-style: italic; }
+  .dir__dots { flex: 1; border-bottom: 2px dotted currentColor; opacity: 0.35; transform: translateY(-6px); min-width: 20px; }
+  .dir__a { font-family: var(--mono); font-size: 12px; text-align: right; flex: none; max-width: 40%; }
+  /* phones: the photo opens inside the entry itself, in a small oval */
+  .dir__mini { flex-basis: 100%; display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.6s var(--ease); }
+  .dir__mini img { min-height: 0; width: 150px; height: 190px; border-radius: 50%; object-fit: cover; filter: sepia(0.25); box-shadow: 0 0 0 4px var(--paper), 0 0 0 5px var(--oak); margin: 4px 0 4px 6px; }
+  .dir__list li.on .dir__mini { grid-template-rows: 1fr; }
+  .dir__mini > img { overflow: hidden; }
+  @media (max-width: 999px) { .dir__oval { display: none; } .dir__mini { overflow: hidden; } }
+  @media (min-width: 1000px) {
+    .dir__mini { display: none; }
+    .dir { grid-template-columns: 1fr 380px; gap: 80px; align-items: start; }
+    .dir__oval { order: 2; width: 380px; top: calc(var(--hdr) + 40px); }
+    .dir__list li { padding: 18px 0; }
+    .dir__a { font-size: 13px; }
+  }
+</style>

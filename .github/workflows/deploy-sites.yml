@@ -18,6 +18,7 @@
 #   Камин Лайн              -> .../small-business-sites/kaminline/  (bespoke, not generated)
 #   Подвалы Бахуса          -> .../small-business-sites/bacchus/  (bespoke, not generated)
 #   Командор                -> .../small-business-sites/komandor/  (bespoke, not generated)
+#   ЦИПС                    -> .../small-business-sites/cips/  (bespoke, not generated)
 #
 # Each site's astro.config.mjs carries a matching `base`, so asset URLs resolve under
 # its subpath. CI must NOT re-run `npm run new-site` — without ANTHROPIC_API_KEY that
@@ -64,6 +65,7 @@ env:
     kaminline:/kaminline
     bacchus:/bacchus
     komandor:/komandor
+    cips:/cips
 
 jobs:
   build:

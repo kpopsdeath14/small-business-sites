@@ -1,0 +1,112 @@
+---
+import "@fontsource/old-standard-tt/400.css";
+import "@fontsource/old-standard-tt/400-italic.css";
+import "@fontsource/old-standard-tt/700.css";
+import "@fontsource-variable/ibm-plex-sans";
+import "@fontsource/pt-mono/400.css";
+import "../styles/global.css";
+import { url, contacts, BASE, img } from "../lib/site";
+
+interface Props { title?: string; description?: string; nav?: string }
+const {
+  title = "ЦИПС — столярная мастерская: двери, окна и лестницы из массива в Петербурге",
+  description = "Центр изделий повышенной сложности: исторические окна и двери ГИОП, входные и межкомнатные двери из массива дуба и сосны, лестницы, мебель и бильярдные столы на заказ. Эрмитаж, Гатчинский дворец, Шереметьевский дворец.",
+  nav = "",
+} = Astro.props;
+const links = [
+  ["work", "Изделия", url("#izdeliya")],
+  ["konstr", "Конструктор", url("konstruktor/")],
+  ["obj", "Объекты", url("#obekty")],
+  ["smeta", "Смета", url("smeta/")],
+  ["contact", "Мастерская", url("kontakty/")],
+];
+---
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#f1ebe1" />
+    <link rel="icon" type="image/svg+xml" href={`${BASE}/favicon.svg`} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(img("og"), Astro.site).href} />
+    <script is:inline>document.documentElement.classList.add("js");</script>
+    <slot name="head" />
+  </head>
+  <body>
+    <header class="hdr">
+      <div class="wrap hdr__in">
+        <a href={url()} class="stamp" aria-label="ЦИПС — на главную">
+          <!-- the workshop mark: a door leaf in an oval cartouche, like a branded stamp -->
+          <svg viewBox="0 0 46 32" aria-hidden="true"><ellipse cx="23" cy="16" rx="21.5" ry="14.5" fill="none" stroke="currentColor" stroke-width="1.2" /><ellipse cx="23" cy="16" rx="18.5" ry="11.8" fill="none" stroke="currentColor" stroke-width=".6" /><path d="M17 25V10.5a6 6 0 0 1 12 0V25" fill="none" stroke="currentColor" stroke-width="1.4" /><path d="M19.5 25v-6h7v6M19.5 16.5v-5h7v5" fill="none" stroke="currentColor" stroke-width=".8" /></svg>
+          <span><b>ЦИПС</b><small>Столярная мастерская · с 2011</small></span>
+        </a>
+        <nav class="nav" aria-label="Основное меню">
+          {links.map(([id, label, href]) => <a href={href} aria-current={nav === id ? "page" : undefined}>{label}</a>)}
+        </nav>
+        <div class="hdr__r">
+          <a class="hdr__phone" href={contacts.phoneHref}>{contacts.phone}</a>
+          <a class="est-btn" href={url("smeta/")} aria-label="Смета">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M6 3h9l4 4v14H6z" /><path d="M15 3v4h4M9 11h7M9 14.5h7M9 18h4" /></svg>
+            <span class="cnt" data-cnt>0</span>
+          </a>
+          <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu" data-menu><i></i>Меню</button>
+        </div>
+      </div>
+      <div class="tape" aria-hidden="true" data-tape><span class="tape__blade" data-blade><i class="tape__hook"></i></span><span class="tape__mm" data-mm>0 мм</span></div>
+    </header>
+
+    <div class="menu" id="menu" aria-hidden="true">
+      <i class="menu__leaf menu__leaf--l"></i><i class="menu__leaf menu__leaf--r"></i>
+      <div class="menu__in">
+        <div class="menu__top"><span class="stamp" style="color:#f1ebe1"><span><b>ЦИПС</b></span></span><button class="menu__close" type="button" data-menu-close>Закрыть</button></div>
+        <nav class="menu__nav" aria-label="Меню">
+          {links.map(([, label, href], i) => <a href={href}>{label}<small>§ {i + 1}</small></a>)}
+        </nav>
+        <div class="menu__foot">
+          <a href={contacts.phoneHref}>{contacts.phone}</a>
+          <span>{contacts.address}</span>
+          <span>{contacts.hours}</span>
+        </div>
+      </div>
+    </div>
+
+    <slot />
+
+    <footer class="ftr">
+      <div class="wrap">
+        <div class="ftr__grid">
+          <div>
+            <p class="ftr__big">Делаем то, что <i>другие</i> не берутся</p>
+          </div>
+          <div class="ftr__col">
+            <p class="cap">Мастерская</p>
+            <span>{contacts.address}</span>
+            <span>{contacts.hours}</span>
+            <a href={`mailto:${contacts.email}`}>{contacts.email}</a>
+          </div>
+          <div class="ftr__col">
+            <p class="cap">Телефоны</p>
+            <a href={contacts.phoneHref}>{contacts.phone}</a>
+            <a href={contacts.viktorHref}>{contacts.viktor} — Виктор</a>
+            <a href={contacts.dmitryHref}>{contacts.dmitry} — Дмитрий</a>
+          </div>
+        </div>
+        <div class="ftr__base"><span>© {contacts.since}–{new Date().getFullYear()} {contacts.company}</span><span>Санкт-Петербург</span></div>
+      </div>
+    </footer>
+
+    <div class="note" role="status" aria-live="polite" data-note>
+      <div><p class="note__t" data-note-t></p><p class="note__s" data-note-s></p></div>
+      <a class="btn btn--line" href={url("smeta/")} style="min-height:42px;padding:0 16px">Смета</a>
+    </div>
+
+    <script>
+      import "../scripts/app.ts";
+    </script>
+  </body>
+</html>

@@ -102,3 +102,8 @@ sites/bacchus/.astro/
 sites/komandor/node_modules/
 sites/komandor/dist/
 sites/komandor/.astro/
+
+!sites/cips/
+sites/cips/node_modules/
+sites/cips/dist/
+sites/cips/.astro/

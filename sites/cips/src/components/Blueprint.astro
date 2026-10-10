@@ -1,0 +1,75 @@
+---
+/**
+ * «От чертежа к двери»: the same door as a drawing and as the finished piece. Drag the divider —
+ * the drawing is traced from the photograph, so every line falls on the real joinery.
+ * Callouts name the parts a joiner draws: transom, stile, rail, raised panel, architrave.
+ */
+import { img } from "../lib/site";
+const parts = [
+  { x: 52, y: 9, t: "Фрамуга", d: "Полуциркульная, с расстекловкой" },
+  { x: 33, y: 40, t: "Филёнка", d: "Фрезерованная, из массива дуба" },
+  { x: 19, y: 52, t: "Пилястра", d: "С розеткой — по историческому образцу" },
+  { x: 52, y: 60, t: "Средник", d: "Резной фриз, как в оригинале" },
+  { x: 70, y: 80, t: "Нижняя филёнка", d: "Утолщённая — для парадной" },
+];
+---
+<figure class="bp" data-bp style="--p:50%">
+  <div class="bp__view">
+    <img class="bp__photo" src={img("giop-pair")} srcset={`${img("giop-pair", 600)} 600w, ${img("giop-pair")} 1200w`} sizes="(min-width: 1000px) 40vw, 92vw" alt="Готовая дверь из массива дуба" loading="lazy" />
+    <div class="bp__draw"><img src={img("giop-pair-draw")} srcset={`${img("giop-pair-draw", 600)} 600w, ${img("giop-pair-draw")} 1200w`} sizes="(min-width: 1000px) 40vw, 92vw" alt="Чертёж той же двери" loading="lazy" />
+      {parts.map((c, i) => <span class="bp__pin" style={`left:${c.x}%;top:${c.y}%;--i:${i}`}><b>{i + 1}</b></span>)}
+    </div>
+    <div class="bp__bar" aria-hidden="true"><span class="bp__knob"><i></i><i></i></span></div>
+    <span class="bp__tag bp__tag--l cap">Чертёж</span><span class="bp__tag bp__tag--r cap">Изделие</span>
+    <input class="bp__in" type="range" min="0" max="100" value="50" aria-label="Чертёж или готовая дверь" data-bp-in />
+  </div>
+  <figcaption>
+    <ol class="bp__parts">{parts.map((c, i) => <li><b class="mm">{i + 1}</b><span><strong>{c.t}</strong> — {c.d}</span></li>)}</ol>
+  </figcaption>
+</figure>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-bp]").forEach((el) => {
+    const input = el.querySelector<HTMLInputElement>("[data-bp-in]")!;
+    let touched = false;
+    const set = (v: number) => el.style.setProperty("--p", `${v}%`);
+    input.addEventListener("input", () => { touched = true; set(Number(input.value)); });
+    // when it first comes into view, the drawing sweeps across once, like a sheet being laid over the door
+    new IntersectionObserver(([e], o) => {
+      if (!e.isIntersecting) return; o.disconnect();
+      if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      const t0 = performance.now();
+      const run = (t: number) => {
+        if (touched) return;
+        const k = Math.min(1, (t - t0) / 2200);
+        const v = 50 + Math.sin(k * Math.PI * 2) * 40 * (1 - k);
+        set(v); input.value = String(Math.round(v));
+        if (k < 1) requestAnimationFrame(run);
+      };
+      requestAnimationFrame(run);
+    }, { threshold: 0.5 }).observe(el);
+  });
+</script>
+
+<style>
+  .bp { display: grid; gap: 22px; }
+  .bp__view { position: relative; aspect-ratio: 760 / 1022; max-height: 80svh; margin: 0 auto; overflow: hidden; background: var(--green); box-shadow: 0 24px 50px -24px rgba(34, 29, 24, 0.6); user-select: none; }
+  .bp__view img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .bp__draw { position: absolute; inset: 0; clip-path: inset(0 calc(100% - var(--p)) 0 0); }
+  .bp__pin { position: absolute; transform: translate(-50%, -50%); width: 26px; height: 26px; border-radius: 50%; display: grid; place-content: center; background: var(--paper); color: var(--green); box-shadow: 0 0 0 3px rgba(241, 235, 225, 0.25); animation: pin 2.6s ease-in-out infinite; animation-delay: calc(var(--i) * 0.35s); }
+  .bp__pin b { font-family: var(--mono); font-size: 12px; font-weight: 400; }
+  @keyframes pin { 50% { box-shadow: 0 0 0 8px rgba(241, 235, 225, 0); } }
+  .bp__bar { position: absolute; top: 0; bottom: 0; left: var(--p); width: 2px; margin-left: -1px; background: var(--paper); box-shadow: 0 0 12px rgba(0, 0, 0, 0.4); pointer-events: none; }
+  .bp__knob { position: absolute; left: 50%; top: 50%; width: 46px; height: 46px; margin: -23px 0 0 -23px; border-radius: 50%; background: var(--paper); display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35); }
+  .bp__knob i { width: 0; height: 0; border: 6px solid transparent; }
+  .bp__knob i:first-child { border-right-color: var(--green); margin-left: -6px; }
+  .bp__knob i:last-child { border-left-color: var(--oak); margin-right: -6px; }
+  .bp__tag { position: absolute; top: 14px; padding: 5px 10px; background: rgba(34, 29, 24, 0.55); color: var(--paper); pointer-events: none; }
+  .bp__tag--l { left: 14px; } .bp__tag--r { right: 14px; }
+  .bp__in { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: ew-resize; touch-action: pan-y; }
+  .bp__parts { display: grid; gap: 10px; counter-reset: p; }
+  .bp__parts li { display: grid; grid-template-columns: 28px 1fr; gap: 10px; font-size: 15px; color: var(--ink-2); padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+  .bp__parts b { display: grid; place-content: center; width: 24px; height: 24px; border-radius: 50%; background: var(--green); color: var(--paper); font-size: 11px; font-weight: 400; }
+  .bp__parts strong { color: var(--ink); font-weight: 600; }
+  @media (min-width: 1000px) { .bp { grid-template-columns: auto 1fr; gap: 64px; align-items: center; } .bp__view { height: 78vh; } }
+</style>

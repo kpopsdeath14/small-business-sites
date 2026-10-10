@@ -1,0 +1,259 @@
+---
+import Base from "../layouts/Base.astro";
+import { KINDS, WOODS, img, url } from "../lib/site";
+const LIM: Record<string, { w: [number, number]; h: [number, number]; leaves: number[]; styles: [string, string][]; transom: string[] }> = {
+  inner: { w: [600, 1800], h: [1900, 2700], leaves: [1, 2], styles: [["classic", "Две филёнки"], ["six", "Шесть филёнок"], ["glass", "Со стеклом"]], transom: ["none", "rect"] },
+  entry: { w: [800, 1800], h: [2000, 3000], leaves: [1, 2], styles: [["classic", "Две филёнки"], ["six", "Шесть филёнок"]], transom: ["none", "rect"] },
+  giop: { w: [1200, 2400], h: [2400, 3800], leaves: [2], styles: [["classic", "Две филёнки"], ["six", "Шесть филёнок"], ["glass", "Со стеклом"]], transom: ["none", "rect", "arch"] },
+  window: { w: [500, 2400], h: [600, 2400], leaves: [1, 2], styles: [["plain", "Без шпросов"], ["cross", "Шпросы 2 × 2"], ["grid", "Шпросы 2 × 3"]], transom: ["none", "rect"] },
+  giopwin: { w: [800, 2000], h: [1400, 3000], leaves: [2], styles: [["cross", "Шпросы 2 × 2"], ["grid", "Шпросы 2 × 3"]], transom: ["none", "rect", "arch"] },
+};
+const TR: Record<string, string> = { none: "Нет", rect: "Прямая", arch: "Арочная" };
+---
+<Base title="Конструктор двери и окна — ЦИПС" description="Соберите дверь или окно из массива: тип, порода, размеры в миллиметрах, филёнки и фрамуга. Живой чертёж и цена по прайсу мастерской." nav="konstr">
+  <main class="kb" data-kb data-lim={JSON.stringify(LIM)} data-kinds={JSON.stringify(KINDS)} data-base={url()}>
+    <section class="wrap kb__head">
+      <p class="par"><b>§</b><span class="cap">Конструктор</span></p>
+      <h1 class="t2">Чертёж <i>на ваш проём</i></h1>
+      <p class="read">Задайте тип, породу и размеры — мастерская нарисует изделие в миллиметрах и посчитает по своему прайсу. Готовый чертёж ляжет в смету.</p>
+    </section>
+
+    <div class="wrap kb__grid">
+      <!-- the drawing board -->
+      <div class="board">
+        <div class="board__sheet">
+          <div class="board__draw" data-draw></div>
+          <div class="board__stamp" aria-hidden="true">
+            <span class="mm">ЦИПС · ЧЕРТЁЖ</span>
+            <span data-title>Межкомнатная дверь</span>
+            <span class="mm" data-sub>800 × 2000 · дуб</span>
+          </div>
+        </div>
+        <p class="board__hint cap">Масштаб условный · размеры в миллиметрах</p>
+      </div>
+
+      <!-- the controls -->
+      <form class="ctl" data-f>
+        <fieldset class="ctl__g">
+          <legend class="cap">Изделие</legend>
+          <div class="pick">{KINDS.map((k, i) => <label><input type="radio" name="kind" value={k.id} checked={i === 0} /><span>{k.short}</span></label>)}</div>
+        </fieldset>
+        <fieldset class="ctl__g">
+          <legend class="cap">Порода и отделка</legend>
+          <div class="woods">{WOODS.map((w, i) => (
+            <label><input type="radio" name="wood" value={w.id} checked={i === 0} /><span class="wd"><i style={`background-image:url(${url(`img/tex-${w.id}.webp`)})`}></i><b>{w.name}</b><small>{w.note}</small></span></label>
+          ))}</div>
+        </fieldset>
+        <fieldset class="ctl__g ctl__sz">
+          <legend class="cap">Размеры проёма</legend>
+          <label class="sz"><span>Ширина</span><output class="mm" data-wv>800</output><input type="range" name="w" min="600" max="1800" step="10" value="800" /></label>
+          <label class="sz"><span>Высота</span><output class="mm" data-hv>2000</output><input type="range" name="h" min="1900" max="2700" step="10" value="2000" /></label>
+        </fieldset>
+        <fieldset class="ctl__g">
+          <legend class="cap">Створки · рисунок · фрамуга</legend>
+          <div class="pick" data-leaves></div>
+          <div class="pick" data-styles></div>
+          <div class="pick" data-transom></div>
+        </fieldset>
+
+        <div class="tkt" aria-live="polite">
+          <p class="cap">Расчёт по прайсу мастерской</p>
+          <dl class="tkt__rows">
+            <div><dt>Площадь</dt><dd class="mm" data-area>1,60 м²</dd></div>
+            <div><dt data-rate-l>Дуб, за м²</dt><dd class="mm" data-rate>46 000 ₽</dd></div>
+            <div data-big hidden><dt>Габарит свыше 2200 × 950 мм</dt><dd class="mm">+10%</dd></div>
+            <div data-kit-row><dt>Комплект фурнитуры</dt><dd class="mm" data-kit>4 500 ₽</dd></div>
+          </dl>
+          <div class="tkt__sum"><span class="cap">За изделие</span><strong class="mm" data-total>78 100 ₽</strong></div>
+          <div class="tkt__q">
+            <span class="cap">Количество</span>
+            <div class="q"><button type="button" data-q="-1" aria-label="Меньше">−</button><output class="mm" data-qv>1</output><button type="button" data-q="1" aria-label="Больше">+</button></div>
+          </div>
+          <button class="btn btn--oak btn--block" type="button" data-add>Положить чертёж в смету</button>
+          <p class="tkt__n">Отделка тон-лак или краска по RAL / NCS — в базовой цене. Окончательную цену назовёт мастер после замера.</p>
+        </div>
+      </form>
+    </div>
+  </main>
+</Base>
+
+<script>
+  import { draw, price, isWindow, type Params } from "../scripts/door";
+  import { smeta, noted } from "../scripts/app";
+  const root = document.querySelector<HTMLElement>("[data-kb]")!;
+  const LIM = JSON.parse(root.dataset.lim!) as Record<string, { w: [number, number]; h: [number, number]; leaves: number[]; styles: [string, string][]; transom: string[] }>;
+  const KINDS = JSON.parse(root.dataset.kinds!) as { id: string; name: string; short: string; w: number; h: number; leaves: number }[];
+  const BASE = root.dataset.base!;
+  const f = root.querySelector<HTMLFormElement>("[data-f]")!;
+  const box = root.querySelector<HTMLElement>("[data-draw]")!;
+  const $ = (s: string) => root.querySelector<HTMLElement>(s)!;
+  const WN: Record<string, string> = { oak: "Дуб", pine: "Сосна", dark: "Тёмный дуб", white: "Эмаль" };
+  const SW: Record<string, string> = { oak: "wood-oak", pine: "wood-pine", dark: "wood-dark", white: "wood-white" };
+  const TR: Record<string, string> = { none: "Без фрамуги", rect: "Фрамуга", arch: "Арочная фрамуга" };
+  const rub = (n: number) => Math.round(n).toLocaleString("ru-RU").replace(/\s/g, " ") + " ₽";
+  let q = 1, shownTotal = 0;
+
+  const radios = (name: string, opts: [string, string][], val: string) => opts.map(([v, l]) => `<label><input type="radio" name="${name}" value="${v}"${v === val ? " checked" : ""}><span>${l}</span></label>`).join("");
+  /** Rebuild the option groups that depend on the product kind. */
+  function setKind(kind: string, keep = false) {
+    const L = LIM[kind], K = KINDS.find((k) => k.id === kind)!;
+    const w = f.elements.namedItem("w") as HTMLInputElement, h = f.elements.namedItem("h") as HTMLInputElement;
+    w.min = String(L.w[0]); w.max = String(L.w[1]); h.min = String(L.h[0]); h.max = String(L.h[1]);
+    if (!keep) { w.value = String(K.w); h.value = String(K.h); }
+    $("[data-leaves]").innerHTML = radios("leaves", L.leaves.map((n) => [String(n), n === 1 ? "Одна створка" : "Две створки"]), String(K.leaves));
+    $("[data-styles]").innerHTML = radios("style", L.styles, L.styles[0][0]);
+    $("[data-transom]").innerHTML = radios("transom", L.transom.map((t) => [t, TR[t]]), kind === "giop" || kind === "giopwin" ? "arch" : "none");
+  }
+  const params = (): Params => {
+    const fd = new FormData(f);
+    return { kind: String(fd.get("kind")), wood: String(fd.get("wood")), w: Number(fd.get("w")), h: Number(fd.get("h")), leaves: Number(fd.get("leaves")), style: String(fd.get("style")), transom: String(fd.get("transom")) };
+  };
+  /** Render the drawing; `build` replays the assembly: frame, stiles, rails, panels, hardware, dimensions. */
+  function render(build: boolean) {
+    const p = params();
+    // an arch needs room above the leaves
+    if (p.transom === "arch" && p.h < p.w / 2 + (isWindow(p.kind) ? 900 : 1900)) p.transom = "rect";
+    box.innerHTML = draw(p, { swatch: `${BASE}img/tex-${p.wood}.webp`, id: "k" });
+    if (build && !matchMedia("(prefers-reduced-motion: reduce)").matches) { box.classList.remove("build"); void box.offsetWidth; box.classList.add("build"); }
+    const pr = price(p);
+    const K = KINDS.find((k) => k.id === p.kind)!;
+    $("[data-wv]").textContent = String(p.w); $("[data-hv]").textContent = String(p.h);
+    $("[data-title]").textContent = K.name;
+    $("[data-sub]").textContent = `${p.w} × ${p.h} · ${WN[p.wood].toLowerCase()}`;
+    $("[data-area]").textContent = `${pr.area.toFixed(2).replace(".", ",")} м²`;
+    $("[data-rate-l]").textContent = `${WN[p.wood]}, за м²`;
+    $("[data-rate]").textContent = rub(pr.rate);
+    $("[data-big]").hidden = !pr.big;
+    $("[data-kit-row]").hidden = !pr.kit;
+    $("[data-kit]").textContent = rub(pr.kit);
+    roll(pr.total * q);
+    return { p, pr, K };
+  }
+  // the total counts like an abacus, never jumps
+  let raf = 0;
+  function roll(to: number) {
+    const from = shownTotal, t0 = performance.now(), el = $("[data-total]");
+    cancelAnimationFrame(raf);
+    const run = (t: number) => { const k = Math.min(1, (t - t0) / 500), e = 1 - Math.pow(1 - k, 3); shownTotal = from + (to - from) * e; el.textContent = rub(Math.round(shownTotal / 100) * 100); if (k < 1) raf = requestAnimationFrame(run); };
+    raf = requestAnimationFrame(run);
+  }
+
+  f.addEventListener("input", (e) => {
+    const n = (e.target as HTMLInputElement).name;
+    if (n === "kind") setKind((e.target as HTMLInputElement).value);
+    render(n !== "w" && n !== "h");
+  });
+  root.querySelectorAll<HTMLElement>("[data-q]").forEach((b) => b.addEventListener("click", () => { q = Math.max(1, Math.min(50, q + Number(b.dataset.q))); $("[data-qv]").textContent = String(q); render(false); }));
+
+  // the finished drawing flies into the estimate in the header
+  $("[data-add]").addEventListener("click", () => {
+    const { p, pr, K } = render(false);
+    smeta.add({ kind: p.kind, wood: p.wood, w: p.w, h: p.h, q, price: pr.total, label: K.name, spec: `${WN[p.wood]} · ${p.leaves === 2 ? "две створки" : "одна створка"} · ${TR[p.transom].toLowerCase()}`, params: p });
+    const target = document.querySelector<HTMLElement>(".est-btn")!.getBoundingClientRect();
+    const src = box.getBoundingClientRect();
+    const ghost = box.cloneNode(true) as HTMLElement;
+    Object.assign(ghost.style, { position: "fixed", left: `${src.left}px`, top: `${src.top}px`, width: `${src.width}px`, height: `${src.height}px`, zIndex: "200", pointerEvents: "none", transformOrigin: "0 0" });
+    document.body.appendChild(ghost);
+    const s = 40 / src.width;
+    ghost.animate([{ transform: "none", opacity: 1 }, { transform: `translate(${target.left - src.left}px, ${target.top - src.top}px) scale(${s}) rotate(-8deg)`, opacity: 0.3 }], { duration: 800, easing: "cubic-bezier(.6,0,.3,1)" }).onfinish = () => ghost.remove();
+    noted(`${K.short} ${p.w} × ${p.h} — в смете`, `${q} шт. · ${rub(pr.total * q)}`);
+  });
+
+  // a kind can be preset from the catalogue: ?k=entry
+  const pre = new URLSearchParams(location.search).get("k");
+  if (pre && LIM[pre]) (f.querySelector<HTMLInputElement>(`input[name="kind"][value="${pre}"]`)!).checked = true;
+  setKind(String(new FormData(f).get("kind")));
+  // assemble when the board scrolls into view
+  render(false);
+  new IntersectionObserver(([e], o) => { if (e.isIntersecting) { o.disconnect(); render(true); } }, { threshold: 0.3 }).observe(box);
+</script>
+
+<style>
+  .kb { padding-top: calc(var(--hdr) + 36px); }
+  .kb__head { display: grid; gap: 14px; margin-bottom: 30px; }
+  .kb__grid { display: grid; gap: 28px; }
+  /* the drawing board: drafting paper with a fine millimetre grid */
+  .board { position: sticky; top: calc(var(--hdr) + 10px); z-index: 2; display: grid; gap: 8px; }
+  .board__sheet { position: relative; padding: 14px; background: #f7f3ea; background-image: linear-gradient(rgba(34, 56, 46, 0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(34, 56, 46, 0.07) 1px, transparent 1px), linear-gradient(rgba(34, 56, 46, 0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(34, 56, 46, 0.035) 1px, transparent 1px); background-size: 50px 50px, 50px 50px, 10px 10px, 10px 10px; box-shadow: 0 0 0 1px var(--line-2), 0 20px 40px -24px rgba(34, 29, 24, 0.55); }
+  .board__draw { height: min(48svh, 520px); display: grid; place-items: center; }
+  .board__draw { position: relative; }
+  .board__draw :global(svg) { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .board__stamp { position: absolute; right: 14px; bottom: 14px; display: grid; gap: 1px; padding: 6px 10px; border: 1px solid var(--green); background: #f7f3ea; color: var(--green); font-size: 11px; text-align: right; }
+  .board__stamp .mm { font-size: 9.5px; letter-spacing: 0.08em; }
+  .board__hint { color: var(--mute); }
+  /* drawing styles: thin ink lines over the wood, like a coloured working drawing */
+  .board__draw :global(.dr rect), .board__draw :global(.dr path), .board__draw :global(.dr circle) { stroke: rgba(43, 33, 24, 0.75); stroke-width: 2.5; }
+  .board__draw :global(.sh) { stroke: none !important; }
+  .board__draw :global(.sh--lt) { fill: rgba(255, 245, 225, 0.22); }
+  .board__draw :global(.sh--dk) { fill: rgba(40, 22, 8, 0.22); }
+  .board__draw :global(.pnl__r) { stroke: rgba(43, 33, 24, 0.45) !important; stroke-width: 1.5 !important; }
+  .board__draw :global(.gls .refl) { stroke: rgba(255, 255, 255, 0.7) !important; stroke-width: 10 !important; }
+  .board__draw :global(.hw rect), .board__draw :global(.hw circle) { fill: #c9a24a; stroke: #7d5f1e !important; }
+  .board__draw :global(.hw .key) { fill: #3a2c1c; }
+  .board__draw :global(.dim path) { stroke: var(--oak) !important; stroke-width: 3 !important; fill: none; }
+  .board__draw :global(.dim text) { font-family: var(--mono); font-size: 92px; fill: var(--oak); text-anchor: middle; }
+  .board__draw :global(.dim .dim__s) { font-size: 70px; fill: var(--mute); }
+  /* assembly, in joinery order, with nothing sliding out of true: frame, stiles and rails, panels pressed home, hardware, dimensions */
+  .build :global(.frm) { animation: inFade 0.5s ease-out both; }
+  .build :global(.stile) { animation: inFade 0.5s ease-out 0.2s both; }
+  .build :global(.rail) { animation: inFade 0.5s ease-out 0.4s both; }
+  .build :global(.pnl), .build :global(.gls) { animation: inPress 0.6s var(--ease) 0.65s both; }
+  .build :global(.hw) { animation: inFade 0.4s ease-out 1.05s both; }
+  .build :global(.dim) { animation: inFade 0.5s ease-out 1.2s both; }
+  .board__draw :global(.pnl), .board__draw :global(.gls) { transform-box: fill-box; transform-origin: center; }
+  @keyframes inFade { from { opacity: 0; } }
+  @keyframes inPress { from { opacity: 0; transform: scale(1.04); } }
+
+  .ctl { display: grid; gap: 24px; }
+  .ctl__g { border: 0; margin: 0; padding: 0; display: grid; gap: 10px; min-width: 0; }
+  .woods { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .woods label { position: relative; cursor: pointer; }
+  .woods input { position: absolute; opacity: 0; pointer-events: none; }
+  .wd { display: grid; grid-template-columns: 44px 1fr; grid-template-areas: "i b" "i s"; gap: 0 10px; align-items: center; padding: 8px; border: 1px solid var(--line-2); background: var(--card); transition: border-color 0.25s, box-shadow 0.25s; }
+  .wd i { grid-area: i; width: 44px; height: 44px; background-size: cover; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15); }
+  .wd b { grid-area: b; font-family: var(--serif); font-weight: 400; font-size: 18px; line-height: 1.1; }
+  .wd small { grid-area: s; font-size: 11.5px; color: var(--mute); line-height: 1.3; }
+  .woods input:checked + .wd { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+  .woods input:focus-visible + .wd { outline: 2px solid var(--oak); outline-offset: 2px; }
+  .ctl__sz { gap: 14px; }
+  .sz { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; align-items: baseline; }
+  .sz span { font-size: 14px; }
+  .sz output { font-size: 22px; }
+  .sz output::after { content: " мм"; font-size: 12px; color: var(--mute); }
+  .sz input { grid-column: 1 / -1; -webkit-appearance: none; appearance: none; width: 100%; height: 34px; background: transparent; margin: 0; }
+  /* the slider track is a folding rule: alternating segments */
+  .sz input::-webkit-slider-runnable-track { height: 10px; background: repeating-linear-gradient(90deg, #e9cf86 0 calc(20% - 1px), #2b2118 calc(20% - 1px) 20%); border: 1px solid #8d6c2a; }
+  .sz input::-moz-range-track { height: 10px; background: repeating-linear-gradient(90deg, #e9cf86 0 calc(20% - 1px), #2b2118 calc(20% - 1px) 20%); border: 1px solid #8d6c2a; }
+  .sz input::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 30px; margin-top: -11px; background: var(--green); border: 2px solid var(--paper); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3); }
+  .sz input::-moz-range-thumb { width: 14px; height: 30px; background: var(--green); border: 2px solid var(--paper); border-radius: 0; }
+
+  /* the workshop ticket */
+  .tkt { display: grid; gap: 14px; padding: 20px; background: var(--card); box-shadow: inset 0 0 0 1px var(--line-2); position: relative; }
+  .tkt::before { content: ""; position: absolute; left: 0; right: 0; top: -6px; height: 12px; background: radial-gradient(circle at 6px 6px, var(--paper) 5px, transparent 5.5px) 0 0 / 12px 12px repeat-x; }
+  .tkt__rows { display: grid; }
+  .tkt__rows div { display: flex; justify-content: space-between; gap: 10px; padding: 8px 0; border-bottom: 1px dashed var(--line-2); font-size: 14.5px; }
+  .tkt__rows div[hidden] { display: none; }
+  .tkt__rows dt { color: var(--ink-2); }
+  .tkt__sum { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+  .tkt__sum strong { font-family: var(--serif); font-weight: 400; font-size: 38px; line-height: 1; }
+  .tkt__q { display: flex; justify-content: space-between; align-items: center; }
+  .q { display: inline-grid; grid-template-columns: 40px 44px 40px; height: 40px; border: 1px solid var(--line-2); }
+  .q button { font-size: 18px; }
+  .q output { display: grid; place-content: center; }
+  .tkt__n { font-size: 12.5px; color: var(--mute); }
+
+  @media (min-width: 1000px) {
+    .kb { padding-top: calc(var(--hdr) + 56px); }
+    .kb__grid { grid-template-columns: 1.15fr 1fr; gap: 64px; align-items: start; }
+    .board { top: calc(var(--hdr) + 24px); }
+    .board__draw { height: min(72vh, 700px); }
+  }
+  @media (max-width: 999px) {
+    /* on phones the board stays pinned at the top but smaller, so the controls scroll under it */
+    .board { background: var(--paper); margin: 0 calc(-1 * var(--gut)); padding: 0 var(--gut) 8px; }
+    .board__draw { height: 34svh; }
+    .board__hint { display: none; }
+    .board__stamp { position: static; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 10px; margin-top: 8px; padding: 4px 8px; text-align: left; }
+    .board__sheet { padding: 8px; }
+  }
+</style>
