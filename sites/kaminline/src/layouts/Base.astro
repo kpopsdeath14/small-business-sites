@@ -1,6 +1,7 @@
 ---
-import "@fontsource/playfair-display/400.css";
-import "@fontsource/playfair-display/500.css";
+import "@fontsource/cormorant-garamond/300.css";
+import "@fontsource/cormorant-garamond/400.css";
+import "@fontsource/cormorant-garamond/500.css";
 import "@fontsource-variable/onest";
 import "../styles/global.css";
 import Icon from "../components/Icon.astro";
@@ -27,7 +28,7 @@ const links = [
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#f3ece2" />
+    <meta name="theme-color" content="#0f0d0b" />
     <link rel="icon" type="image/svg+xml" href={`${BASE}/favicon.svg`} />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
@@ -40,14 +41,8 @@ const links = [
     <header class="hdr">
       <div class="wrap hdr__in">
         <a href={url()} class="logo" aria-label="Камин Лайн — на главную">
-          <svg class="logo__mark" viewBox="0 0 26 30" aria-hidden="true">
-            <path d="M2 29V12a11 11 0 0 1 22 0v17" fill="none" stroke="currentColor" stroke-width="1.6" />
-            <path d="M13 26c2.9 0 4.6-1.8 4.6-4.2 0-2.6-2-3.9-2.6-6.4-.2 1.2-.8 2.1-1.7 2.5.1-2.2-.7-4.3-2.6-5.6.1 2.6-2.4 4.3-2.4 7.4 0 3.5 2 6.3 4.7 6.3z" fill="#e47a2c" />
-          </svg>
-          <span>
-            <span class="logo__word">Камин Лайн</span>
-            <span class="logo__sub">с 2006 года</span>
-          </span>
+          <svg class="logo__mark" viewBox="0 0 20 26" aria-hidden="true"><path d="M1 25.5V10a9 9 0 0 1 18 0v15.5" fill="none" stroke="currentColor" stroke-width="1" /><path d="M5 25.5V11.5a5 5 0 0 1 10 0v14" fill="none" stroke="currentColor" stroke-width="1" opacity=".5" /></svg>
+          <span class="logo__word">Камин Лайн</span>
         </a>
         <nav class="nav" aria-label="Основное меню">
           {links.map(([id, label, href]) => <a href={href} aria-current={nav === id ? "page" : undefined}>{label}</a>)}
@@ -59,7 +54,7 @@ const links = [
         </a>
         <button class="icon-btn burger" type="button" aria-label="Меню" aria-expanded="false" aria-controls="menu"><span></span><span></span></button>
       </div>
-      <div class="wick" aria-hidden="true"><i></i><b></b></div>
+      <div class="wick" aria-hidden="true"><i></i></div>
     </header>
 
     <div class="menu" id="menu" aria-hidden="true">
@@ -76,12 +71,11 @@ const links = [
     <slot />
 
     <footer class="ftr night">
-      <canvas class="embers" data-embers="5" data-y="1.02" data-spread="1.1"></canvas>
       <div class="wrap" style="position:relative">
         <div class="ftr__grid">
           <div class="ftr__col">
             <p class="eyebrow">Камин Лайн</p>
-            <p class="ftr__big">Тепло, которое собирают вокруг себя</p>
+            <p class="ftr__big">Камины и печи<br />под ключ с 2006 года</p>
           </div>
           <div class="ftr__col">
             <p class="eyebrow">Каталог</p>
@@ -124,13 +118,10 @@ const links = [
       </div>
     </aside>
 
-    <div class="ember-toast" role="status" aria-live="polite">
-      <span class="ember-toast__img"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" alt="" /></span>
-      <div style="min-width:0">
-        <p class="ember-toast__t"><svg class="flame-ico" viewBox="0 0 14 16" aria-hidden="true"><path d="M7 15.5c2.6 0 4.4-1.7 4.4-4.1 0-2.5-1.9-3.8-2.5-6.2-.2 1.2-.8 2-1.6 2.4.1-2.1-.7-4.1-2.5-5.4.1 2.5-2.3 4.1-2.3 7.1 0 3.6 1.9 6.2 4.5 6.2z" fill="#f2a24a"/></svg>Добавлено в корзину</p>
-        <p class="ember-toast__n"></p>
-      </div>
-      <a class="ember-toast__go" href={url("checkout/")}>Оформить</a>
+    <div class="note" role="status" aria-live="polite">
+      <span class="note__img"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" alt="" /></span>
+      <div style="min-width:0"><p class="note__t">Добавлено в корзину</p><p class="note__n"></p></div>
+      <a class="note__go" href={url("checkout/")}>Оформить</a>
     </div>
 
     <script is:inline type="application/json" id="cart-index" set:html={JSON.stringify({ base: BASE, items: cartIndex })} />

@@ -1,20 +1,32 @@
 ---
-// Room calculator: drag the area, the flame grows, matching wood-burning models appear.
-// Rule of thumb from stove makers: ~1 kW of heat per 10 m² (ceilings up to ~2.7 m).
-import Flame from "./Flame.astro";
+// Room calculator styled as a thermostat dial: drag the area, the bronze scale fills to the
+// heat output needed. Rule of thumb from stove makers: ~1 kW per 10 m² (ceilings up to ~2.7 m).
 import Icon from "./Icon.astro";
-import { products, pimg, url, rub } from "../lib/site";
+import { products, url } from "../lib/site";
 
 interface Props { compact?: boolean }
 const { compact = false } = Astro.props;
-const wood = products.filter((p) => p.kw && p.kw >= 5).map((p) => ({ s: p.slug, n: p.name, kw: p.kw, p: p.from, i: p.variants[0].img[0], c: p.cat }));
-const decor = products.filter((p) => p.cat === "biokamini" || p.cat === "electro").map((p) => ({ s: p.slug, n: p.name, kw: 0, p: p.from, i: p.variants[0].img[0], c: p.cat }));
+const wood = products.filter((p) => p.kw && p.kw >= 5).map((p) => ({ s: p.slug, n: p.name, kw: p.kw, p: p.from, i: p.variants[0].img[0] }));
+const decor = products.filter((p) => p.cat === "biokamini" || p.cat === "electro").map((p) => ({ s: p.slug, n: p.name, kw: 0, p: p.from, i: p.variants[0].img[0] }));
+const R = 120, C = 2 * Math.PI * R, ARC = C * 0.75; // 270° scale
+const ticks = Array.from({ length: 31 }, (_, i) => -135 + i * 9);
 ---
 <div class:list={["pb", { "pb--compact": compact }]} data-podbor>
-  <div class="pb__stage">
-    <canvas class="pb__embers" data-embers="14" data-x="0.5" data-y="0.62" data-spread="0.18"></canvas>
-    <Flame class="pb__flame" />
-    <p class="pb__kw"><span data-kw>3</span><small> кВт</small></p>
+  <div class="pb__dial" aria-hidden="true">
+    <svg viewBox="0 0 300 300">
+      <g transform="translate(150 150)">
+        {ticks.map((a, i) => (
+          <line x1="0" y1={-138} x2="0" y2={i % 5 === 0 ? -128 : -132} transform={`rotate(${a})`} class:list={["pb__tick", { major: i % 5 === 0 }]} data-t={i} />
+        ))}
+        <circle r={R} class="pb__track" stroke-dasharray={`${ARC} ${C}`} transform="rotate(135)" />
+        <circle r={R} class="pb__fill" stroke-dasharray={`0 ${C}`} transform="rotate(135)" data-fill />
+        <circle r="4" class="pb__knob" cy={-R} data-knob />
+      </g>
+    </svg>
+    <div class="pb__read">
+      <p class="pb__kw"><span data-kw>3</span></p>
+      <p class="pb__unit" data-unit>кВт тепла</p>
+    </div>
   </div>
 
   <div class="pb__ctl">
@@ -23,36 +35,37 @@ const decor = products.filter((p) => p.cat === "biokamini" || p.cat === "electro
       <output class="pb__val" for="pb-area"><span data-area>30</span> м²</output>
     </div>
     <input id="pb-area" class="pb__range" type="range" min="10" max="150" step="5" value="30" />
-    <div class="pb__ticks" aria-hidden="true"><span>10</span><span>50</span><span>100</span><span>150 м²</span></div>
+    <div class="pb__ticks" aria-hidden="true"><span>10</span><span>50</span><span>100</span><span>150</span></div>
 
-    <div class="pb__seg" role="radiogroup" aria-label="Что важнее">
-      <label><input type="radio" name="pb-mode" value="heat" checked /><span>Греть дом</span></label>
-      <label><input type="radio" name="pb-mode" value="decor" /><span>Атмосфера без дымохода</span></label>
+    <div class="pb__seg" role="radiogroup" aria-label="Задача">
+      <label><input type="radio" name="pb-mode" value="heat" checked /><span>Отопление</span></label>
+      <label><input type="radio" name="pb-mode" value="decor" /><span>Без дымохода</span></label>
     </div>
 
     <p class="pb__note" data-note></p>
     {!compact && <div class="pb__list" data-list></div>}
-    {compact && <a class="btn btn--cream pb__go" href={url("podbor/")} data-go>Показать подходящие <Icon name="arrow" /></a>}
+    {compact && <a class="ulink pb__go" href={url("podbor/")} data-go>Показать подходящие модели <Icon name="arrow" /></a>}
   </div>
 </div>
 
-<script is:inline type="application/json" id="pb-data" set:html={JSON.stringify({ wood, decor, base: url("") })} />
+<script is:inline type="application/json" id="pb-data" set:html={JSON.stringify({ wood, decor, base: url(""), arc: ARC, c: C })} />
 
 <script>
   const root = document.querySelector<HTMLElement>("[data-podbor]")!;
-  const D = JSON.parse(document.getElementById("pb-data")!.textContent!) as { base: string; wood: { s: string; n: string; kw: number; p: number; i: string; c: string }[]; decor: { s: string; n: string; kw: number; p: number; i: string; c: string }[] };
+  const D = JSON.parse(document.getElementById("pb-data")!.textContent!) as { base: string; arc: number; c: number; wood: { s: string; n: string; kw: number; p: number; i: string }[]; decor: { s: string; n: string; kw: number; p: number; i: string }[] };
   const range = root.querySelector<HTMLInputElement>(".pb__range")!;
-  const flame = root.querySelector<HTMLElement>(".flame")!;
-  const out = root.querySelector("[data-area]")!;
-  const kwEl = root.querySelector("[data-kw]")!;
+  const fill = root.querySelector<SVGCircleElement>("[data-fill]")!;
+  const knob = root.querySelector<SVGCircleElement>("[data-knob]")!;
+  const ticks = [...root.querySelectorAll<SVGLineElement>("[data-t]")];
+  const out = root.querySelector("[data-area]")!, kwEl = root.querySelector("[data-kw]")!, unit = root.querySelector("[data-unit]")!;
   const note = root.querySelector("[data-note]")!;
   const listEl = root.querySelector<HTMLElement>("[data-list]");
   const go = root.querySelector<HTMLAnchorElement>("[data-go]");
   const rub = (n: number) => n.toLocaleString("ru-RU").replace(/\s/g, " ") + " ₽";
-  const img = (id: string) => `${D.base}p/${id}-480.webp`;
   const qs = new URLSearchParams(location.search);
   if (qs.get("a")) range.value = qs.get("a")!;
   if (qs.get("m") === "decor") root.querySelector<HTMLInputElement>('input[value="decor"]')!.checked = true;
+  const cnt = (n: number) => `${n} ${n % 10 === 1 && n !== 11 ? "модель" : [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n) ? "модели" : "моделей"}`;
 
   let shown = "";
   function update() {
@@ -60,24 +73,30 @@ const decor = products.filter((p) => p.cat === "biokamini" || p.cat === "electro
     const mode = root.querySelector<HTMLInputElement>('input[name="pb-mode"]:checked')!.value;
     const need = Math.max(3, Math.ceil(a / 10));
     out.textContent = String(a);
-    kwEl.textContent = mode === "heat" ? String(need) : "—";
-    const heat = mode === "heat" ? Math.min(1, 0.25 + (a - 10) / 140 * 0.75) : 0.45;
-    flame.style.setProperty("--heat", heat.toFixed(2));
     range.style.setProperty("--p", `${((a - 10) / 140) * 100}%`);
+    const k = mode === "heat" ? Math.min(1, (need - 1) / 14) : 0;
+    fill.setAttribute("stroke-dasharray", `${(D.arc * k).toFixed(1)} ${D.c}`);
+    const ang = (-135 + 270 * k) * (Math.PI / 180);
+    knob.setAttribute("cx", (Math.sin(ang) * 120).toFixed(1));
+    knob.setAttribute("cy", (-Math.cos(ang) * 120).toFixed(1));
+    knob.style.opacity = mode === "heat" ? "1" : "0";
+    ticks.forEach((t, i) => t.classList.toggle("on", mode === "heat" && i / 30 <= k));
+    kwEl.textContent = mode === "heat" ? String(need) : "0";
+    unit.textContent = mode === "heat" ? "кВт тепла" : "без дымохода";
+
     let picks: typeof D.wood = [];
     if (mode === "heat") {
       const fit = D.wood.filter((x) => x.kw >= need).sort((x, y) => x.kw - y.kw || x.p - y.p);
       const minKw = fit.length ? fit[0].kw : 0;
       picks = fit.filter((x) => x.kw <= Math.max(need, minKw) + 1);
-      const cnt = (n: number) => `${n} ${n === 1 ? "модель" : n < 5 ? "модели" : "моделей"}`;
       note.textContent = !fit.length
-        ? `Для ${a} м² нужно около ${need} кВт — больше, чем даёт одна топка из каталога. Подберём мощную печь или систему с теплообменником на замере.`
+        ? `Для ${a} м² нужно около ${need} кВт — это задача для мощной печи или системы с теплообменником. Рассчитаем на замере.`
         : need < minKw
-          ? `Для ${a} м² хватит ${need} кВт. Самые компактные дровяные модели — от ${minKw} кВт: их топят вполсилы, и в комнате не жарко. Подходят ${cnt(picks.length)}.`
-          : `Для ${a} м² нужно около ${need} кВт. Подходят ${cnt(picks.length)} — топки и печи на дровах.`;
+          ? `Для ${a} м² достаточно ${need} кВт. Компактные модели начинаются от ${minKw} кВт — их топят в мягком режиме. Подходят ${cnt(picks.length)}.`
+          : `Для ${a} м² нужно около ${need} кВт. Подходят ${cnt(picks.length)}.`;
     } else {
       picks = D.decor.slice().sort((x, y) => x.p - y.p);
-      note.textContent = "Био- и электрокамины не требуют дымохода и согласований — живой огонь или 3D-пламя для квартиры. Это атмосфера, а не отопление.";
+      note.textContent = "Био- и электрокамины не требуют дымохода и согласований. Это атмосфера и живое пламя, а не отопление.";
     }
     if (go) go.href = `${D.base}podbor/?a=${a}&m=${mode}`;
     if (!listEl) return;
@@ -86,7 +105,7 @@ const decor = products.filter((p) => p.cat === "biokamini" || p.cat === "electro
     shown = key;
     listEl.innerHTML = picks.slice(0, 8).map((p, i) => `
       <a class="pb__item" href="${D.base}product/${p.s}/" style="--d:${i * 0.05}s">
-        <span class="pb__img"><img src="${img(p.i)}" alt="" loading="lazy"></span>
+        <span class="pb__img"><img src="${D.base}p/${p.i}-480.webp" alt="" loading="lazy"></span>
         <span class="pb__n">${p.n}</span>
         <span class="pb__m">${p.kw ? `${p.kw} кВт · до ${p.kw * 10} м²` : "без дымохода"}</span>
         <span class="pb__p">от ${rub(p.p)}</span>
@@ -98,44 +117,51 @@ const decor = products.filter((p) => p.cat === "biokamini" || p.cat === "electro
 </script>
 
 <style>
-  .pb { display: grid; gap: 22px; }
-  .pb__stage { position: relative; height: 300px; display: grid; place-items: end center; border-radius: 999px 999px 24px 24px; overflow: hidden; background: radial-gradient(70% 55% at 50% 100%, #3a2216 0%, #1b130e 60%, #140f0c 100%); box-shadow: inset 0 0 0 1px rgba(243, 231, 214, 0.08); }
-  .pb__stage::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 24px; background: linear-gradient(0deg, #0c0907, transparent); }
-  .pb__embers { position: absolute; inset: 0; width: 100%; height: 100%; }
-  .pb :global(.pb__flame) { width: 190px; margin-bottom: 4px; }
-  .pb__kw { position: absolute; left: 50%; top: 22%; transform: translateX(-50%); font-family: var(--serif); font-size: 44px; line-height: 1; color: var(--cream); text-shadow: 0 0 24px rgba(242, 162, 74, 0.5); }
-  .pb__kw small { font-family: var(--sans); font-size: 15px; color: var(--cream-2); }
-  .pb__ctl { display: grid; gap: 14px; align-content: start; }
+  .pb { display: grid; gap: 30px; }
+  .pb__dial { position: relative; width: min(100%, 360px); aspect-ratio: 1; margin: 0 auto; }
+  .pb__dial svg { width: 100%; height: 100%; overflow: visible; }
+  .pb__track { fill: none; stroke: var(--nline); stroke-width: 1; }
+  .pb__fill { fill: none; stroke: var(--bronze-2); stroke-width: 1.5; transition: stroke-dasharray 0.9s var(--ease); }
+  .pb__knob { fill: var(--bronze-2); transition: cx 0.9s var(--ease), cy 0.9s var(--ease), opacity 0.4s; }
+  .pb__tick { stroke: var(--nline); stroke-width: 1; transition: stroke 0.6s; }
+  .pb__tick.major { stroke: rgba(239, 231, 219, 0.28); }
+  .pb__tick.on { stroke: var(--bronze-2); }
+  .pb__read { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; text-align: center; }
+  .pb__kw { font-family: var(--serif); font-weight: 300; font-size: 104px; line-height: 0.9; }
+  .pb__unit { margin-top: 10px; font-size: 10.5px; letter-spacing: 0.26em; text-transform: uppercase; color: var(--cream-2); }
+  .pb__ctl { display: grid; gap: 16px; align-content: start; }
   .pb__row { display: flex; justify-content: space-between; align-items: baseline; }
-  .pb__label { font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--cream-2); }
-  .pb__val { font-family: var(--serif); font-size: 34px; }
-  .pb__range { --p: 14%; -webkit-appearance: none; appearance: none; width: 100%; height: 34px; background: transparent; cursor: pointer; }
-  .pb__range::-webkit-slider-runnable-track { height: 4px; border-radius: 4px; background: linear-gradient(90deg, #f6c46b, #ee8a33 var(--p), rgba(243, 231, 214, 0.16) var(--p)); }
-  .pb__range::-moz-range-track { height: 4px; border-radius: 4px; background: linear-gradient(90deg, #f6c46b, #ee8a33 var(--p), rgba(243, 231, 214, 0.16) var(--p)); }
-  .pb__range::-webkit-slider-thumb { -webkit-appearance: none; width: 30px; height: 30px; margin-top: -13px; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #ffe2a6, #f2a24a 55%, #c9521f); box-shadow: 0 0 0 6px rgba(242, 162, 74, 0.18), 0 0 22px rgba(242, 162, 74, 0.7); }
-  .pb__range::-moz-range-thumb { width: 30px; height: 30px; border: 0; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #ffe2a6, #f2a24a 55%, #c9521f); box-shadow: 0 0 0 6px rgba(242, 162, 74, 0.18), 0 0 22px rgba(242, 162, 74, 0.7); }
-  .pb__ticks { display: flex; justify-content: space-between; margin-top: -8px; font-size: 12px; color: var(--cream-2); }
-  .pb__seg { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 5px; border-radius: 999px; background: rgba(243, 231, 214, 0.07); }
+  .pb__label { font-size: 10.5px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--cream-2); }
+  .pb__val { font-family: var(--serif); font-weight: 300; font-size: 40px; }
+  .pb__range { --p: 14%; -webkit-appearance: none; appearance: none; width: 100%; height: 30px; background: transparent; cursor: pointer; }
+  .pb__range::-webkit-slider-runnable-track { height: 1px; background: linear-gradient(90deg, var(--bronze-2) var(--p), var(--nline) var(--p)); }
+  .pb__range::-moz-range-track { height: 1px; background: linear-gradient(90deg, var(--bronze-2) var(--p), var(--nline) var(--p)); }
+  .pb__range::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; margin-top: -11px; border-radius: 50%; background: var(--night); border: 1px solid var(--bronze-2); box-shadow: inset 0 0 0 5px var(--night), inset 0 0 0 11px var(--bronze-2); }
+  .pb__range::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: var(--bronze-2); border: 5px solid var(--night); box-shadow: 0 0 0 1px var(--bronze-2); }
+  .pb__ticks { display: flex; justify-content: space-between; margin-top: -8px; font-size: 11px; letter-spacing: 0.1em; color: var(--cream-2); }
+  .pb__seg { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--nline); }
   .pb__seg label { position: relative; cursor: pointer; }
+  .pb__seg label + label { border-left: 1px solid var(--nline); }
   .pb__seg input { position: absolute; opacity: 0; pointer-events: none; }
-  .pb__seg span { display: grid; place-content: center; min-height: 44px; padding: 6px 10px; border-radius: 999px; text-align: center; font-size: 13.5px; line-height: 1.2; color: var(--cream-2); transition: background 0.35s, color 0.35s; }
+  .pb__seg span { display: grid; place-content: center; min-height: 50px; font-size: 11px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--cream-2); transition: background 0.4s, color 0.4s; }
   .pb__seg input:checked + span { background: var(--cream); color: var(--night); }
-  .pb__note { font-size: 15px; color: var(--cream-2); line-height: 1.55; min-height: 3.1em; }
-  .pb__go { justify-self: start; }
-  .pb__list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 6px; }
-  .pb :global(.pb__item) { display: grid; gap: 4px; padding: 8px 8px 12px; border-radius: 120px 120px 16px 16px; background: rgba(243, 231, 214, 0.05); border: 1px solid var(--nline); animation: pbIn 0.6s var(--ease) both; animation-delay: var(--d); transition: border-color 0.3s, background 0.3s; }
-  @media (hover: hover) { .pb :global(.pb__item:hover) { border-color: rgba(242, 162, 74, 0.5); background: rgba(243, 231, 214, 0.08); } }
+  .pb__note { font-size: 15px; color: var(--cream-2); line-height: 1.65; min-height: 3.3em; }
+  .pb__go { justify-self: start; color: var(--cream); }
+  .pb__list { display: grid; grid-template-columns: 1fr 1fr; gap: 24px 12px; margin-top: 8px; }
+  .pb :global(.pb__item) { display: grid; gap: 4px; animation: pbIn 0.8s var(--ease) both; animation-delay: var(--d); }
   @keyframes pbIn { from { opacity: 0; transform: translateY(10px); } }
-  .pb :global(.pb__img) { aspect-ratio: 4 / 5; border-radius: 120px 120px 10px 10px; overflow: hidden; background: var(--sand); }
-  .pb :global(.pb__img img) { width: 100%; height: 100%; object-fit: cover; }
-  .pb :global(.pb__n) { font-family: var(--serif); font-size: 16px; line-height: 1.2; margin-top: 4px; }
-  .pb :global(.pb__m) { font-size: 12.5px; color: var(--flame); }
-  .pb :global(.pb__p) { font-size: 14px; font-weight: 600; }
+  .pb :global(.pb__img) { aspect-ratio: 4 / 5; overflow: hidden; background: var(--stone); margin-bottom: 8px; }
+  .pb :global(.pb__img img) { width: 100%; height: 100%; object-fit: cover; transition: transform 1.4s var(--ease); }
+  @media (hover: hover) { .pb :global(.pb__item:hover .pb__img img) { transform: scale(1.04); } }
+  .pb :global(.pb__n) { font-family: var(--serif); font-size: 21px; line-height: 1.15; }
+  .pb :global(.pb__m) { font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--bronze-2); }
+  .pb :global(.pb__p) { font-size: 14px; color: var(--cream-2); }
   @media (min-width: 900px) {
-    .pb { grid-template-columns: 0.9fr 1.1fr; gap: 56px; align-items: start; }
-    .pb__stage { height: 440px; position: sticky; top: calc(var(--hdr) + 24px); }
-    .pb :global(.pb__flame) { width: 260px; }
+    .pb { grid-template-columns: 0.9fr 1.1fr; gap: 80px; align-items: center; }
+    .pb:not(.pb--compact) { align-items: start; }
+    .pb:not(.pb--compact) .pb__dial { position: sticky; top: calc(var(--hdr) + 40px); }
+    .pb__dial { width: 100%; max-width: 440px; }
+    .pb__kw { font-size: 130px; }
     .pb__list { grid-template-columns: repeat(3, 1fr); }
-    .pb--compact .pb__stage { position: relative; top: 0; }
   }
 </style>

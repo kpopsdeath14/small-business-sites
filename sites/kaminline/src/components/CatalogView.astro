@@ -19,7 +19,7 @@ const note = cat ? CAT_NOTE[cat] : "Камины, топки, печи, био- 
           {cat ? <><a href={url("catalog/")}>Каталог</a><span>/</span><span>{title}</span></> : <span>Каталог</span>}
         </nav>
         <div class="cv-head">
-          <h1 class="h1" data-in>{cat ? title : <>Каталог <em>огня</em></>}</h1>
+          <h1 class="h1" data-in>{cat ? title : <>Коллекция</>}</h1>
           <p class="lead" data-in>{note}</p>
         </div>
       </div>
@@ -52,7 +52,7 @@ const note = cat ? CAT_NOTE[cat] : "Камины, топки, печи, био- 
       <aside class="hint night" data-in>
         <div>
           <p class="eyebrow">Не уверены, что выбрать?</p>
-          <p class="h3">Подберём камин под вашу комнату</p>
+          <p class="h3">Подберём камин под площадь и задачу</p>
         </div>
         <a class="btn" href={url("podbor/")}>Подбор по площади <Icon name="arrow" /></a>
       </aside>
@@ -79,18 +79,19 @@ const note = cat ? CAT_NOTE[cat] : "Камины, топки, печи, био- 
 
 <style>
   .cv-head { display: grid; gap: 14px; }
-  .bar { position: sticky; top: calc(var(--hdr) + env(safe-area-inset-top)); z-index: 50; background: rgba(243, 236, 226, 0.88); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-block: 1px solid var(--line); }
-  .chips { display: flex; gap: 8px; overflow-x: auto; padding-block: 10px; scrollbar-width: none; }
+  .bar { position: sticky; top: calc(var(--hdr) + env(safe-area-inset-top)); z-index: 50; background: rgba(243, 238, 231, 0.9); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-block: 1px solid var(--line); }
+  .chips { display: flex; gap: 28px; overflow-x: auto; padding-block: 0; scrollbar-width: none; }
   .chips::-webkit-scrollbar { display: none; }
-  .chips a { flex: none; display: inline-flex; align-items: center; gap: 4px; height: 38px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--line-2); font-size: 14px; color: var(--ink-2); transition: background 0.3s, color 0.3s, border-color 0.3s; }
-  .chips a:hover { border-color: var(--gold); }
-  .chips a[aria-current] { background: var(--ink); color: var(--cream); border-color: var(--ink); }
-  .chips sup { font-size: 10px; opacity: 0.6; }
+  .chips a { position: relative; flex: none; display: inline-flex; align-items: center; gap: 6px; height: 54px; font-size: 11px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--smoke); transition: color 0.3s; }
+  .chips a::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 1px; background: var(--ink); transform: scaleX(0); transition: transform 0.6s var(--ease); }
+  .chips a:hover, .chips a[aria-current] { color: var(--ink); }
+  .chips a[aria-current]::after { transform: none; }
+  .chips sup { font-size: 9px; letter-spacing: 0; color: var(--bronze); }
   .list { padding-top: 22px; }
   .list__meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 14px; }
   .sort { display: inline-flex; align-items: center; gap: 8px; }
-  .sort select { -webkit-appearance: none; appearance: none; border: 0; background: transparent; font-weight: 600; padding: 6px 18px 6px 0; background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%); background-position: right 6px center, right 2px center; background-size: 4px 4px; background-repeat: no-repeat; }
-  .hint { display: grid; gap: 18px; margin-top: 56px; padding: 26px 22px; border-radius: 28px; }
+  .sort select { -webkit-appearance: none; appearance: none; border: 0; background: transparent; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; padding: 6px 18px 6px 0; background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%); background-position: right 6px center, right 2px center; background-size: 4px 4px; background-repeat: no-repeat; }
+  .hint { display: grid; gap: 22px; margin-top: 72px; padding: 36px 26px; }
   .hint .h3 { margin-top: 10px; }
   .hint .btn { justify-self: start; }
   @media (min-width: 1000px) {

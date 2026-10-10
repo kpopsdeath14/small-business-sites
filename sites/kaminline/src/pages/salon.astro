@@ -14,18 +14,17 @@ const zamer = [
 <Base title="Салон и замер — Камин Лайн" description={`Салон каминов: ${contacts.address}, ${contacts.salon}. ${contacts.hours}. Запись на визит и выезд замерщика.`} nav="salon">
   <main>
     <section class="sl-hero night">
-      <canvas class="embers" data-embers="8" data-y="1.02" data-spread="1.2"></canvas>
       <div class="wrap sl-hero__grid">
-        <div class="sl-hero__img arch" data-rise>
+        <div class="sl-hero__img arch" data-kindle>
           <img src={img("malachite", 900)} srcset={`${img("malachite", 480)} 480w, ${img("malachite", 900)} 900w`} sizes="(min-width: 1000px) 40vw, 100vw" alt="Изразцовый камин в гостиной" />
         </div>
         <div class="sl-hero__text">
           <nav class="crumbs" aria-label="Навигация"><a href={url()}>Главная</a><span>/</span><span>Салон и замер</span></nav>
-          <h1 class="h1" data-in>Приходите <em>погреться</em></h1>
-          <p class="lead" data-in>В салоне работают живые образцы: можно посмотреть на пламя, потрогать облицовку и обсудить проект за чашкой чая.</p>
+          <h1 class="h1" data-in>Салон <em>на Нахимовском</em></h1>
+          <p class="lead" data-in>Работающие образцы, живое пламя, образцы мрамора и облицовок. Здесь же обсуждаем проект с мастером.</p>
           <ul class="sl-info" data-in>
             <li><Icon name="pin" /><span><b>{contacts.address}</b>{contacts.salon}, {contacts.place} · {contacts.metro}</span></li>
-            <li><Icon name="flame" /><span><b>{contacts.hours}</b>Без выходных</span></li>
+            <li><Icon name="moon" /><span><b>{contacts.hours}</b>Без выходных</span></li>
             <li><Icon name="phone" /><span><b><a href={contacts.phoneHref}>{contacts.phone}</a></b><a href={contacts.freeHref}>{contacts.free}</a> · бесплатно по России</span></li>
           </ul>
         </div>
@@ -35,7 +34,7 @@ const zamer = [
     <section class="wrap book" id="visit">
       <div class="book__head">
         <p class="eyebrow" data-in>Запись</p>
-        <h2 class="h2" data-in>Выберите <em>удобное время</em></h2>
+        <h2 class="h2" data-in>Визит или <em>выезд замерщика</em></h2>
         <p class="lead" data-in>Заявка уйдёт менеджеру одним сообщением — он подтвердит время.</p>
       </div>
       <form class="book__form" data-book novalidate id="zamer">
@@ -67,7 +66,7 @@ const zamer = [
     </section>
 
     <section class="wrap zm">
-      <div class="zm__img arch" data-rise>
+      <div class="zm__img arch" data-kindle>
         <img src={img("palace", 900)} srcset={`${img("palace", 480)} 480w, ${img("palace", 900)} 900w`} sizes="(min-width: 1000px) 34vw, 100vw" alt="Изразцовый камин в светлой гостиной" loading="lazy" />
       </div>
       <div class="zm__text">
@@ -139,52 +138,53 @@ const zamer = [
 <style>
   .sl-hero { position: relative; overflow: hidden; padding: calc(var(--hdr) + 18px) 0 60px; }
   .sl-hero__grid { position: relative; display: grid; gap: 28px; }
-  .sl-hero__img { aspect-ratio: 4 / 5; max-height: 62svh; width: 100%; }
+  .sl-hero__img { aspect-ratio: 4 / 5; max-height: 62svh; width: 100%; overflow: hidden; }
   .sl-hero__img img { width: 100%; height: 100%; object-fit: cover; }
   .sl-hero__text { display: grid; gap: 18px; align-content: center; }
   .sl-hero .crumbs { color: var(--cream-2); }
   .sl-info { display: grid; gap: 14px; margin-top: 6px; }
   .sl-info li { display: grid; grid-template-columns: 22px 1fr; gap: 12px; color: var(--cream-2); font-size: 14.5px; line-height: 1.5; }
-  .sl-info :global(svg) { width: 20px; height: 20px; color: var(--flame); margin-top: 2px; }
-  .sl-info b { display: block; color: var(--cream); font-weight: 600; font-size: 16px; }
+  .sl-info :global(svg) { width: 18px; height: 18px; color: var(--bronze-2); margin-top: 3px; }
+  .sl-info b { display: block; color: var(--cream); font-family: var(--serif); font-weight: 400; font-size: 21px; }
 
   .book { display: grid; gap: 26px; padding-top: 80px; scroll-margin-top: calc(var(--hdr) + 10px); }
   .book__head { display: grid; gap: 14px; align-content: start; }
-  .book__form { display: grid; gap: 22px; padding: 20px 16px; border-radius: 28px; background: var(--paper); box-shadow: 0 30px 60px -40px rgba(36, 26, 20, 0.45); scroll-margin-top: calc(var(--hdr) + 10px); }
+  .book__form { display: grid; gap: 26px; padding: 26px 20px; background: var(--paper); border: 1px solid var(--line); scroll-margin-top: calc(var(--hdr) + 10px); }
   .book__form fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: 10px; min-width: 0; }
-  .book__form legend { font-size: 13px; font-weight: 600; color: var(--ink-2); padding-bottom: 8px; }
-  .seg { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .book__form legend { font-size: 10.5px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--smoke); padding-bottom: 10px; }
+  .seg { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line-2); }
+  .seg label + label { border-left: 1px solid var(--line-2); }
   .seg label { position: relative; cursor: pointer; }
   .seg input { position: absolute; opacity: 0; pointer-events: none; }
-  .seg span { display: grid; gap: 2px; height: 100%; padding: 12px 14px; border-radius: 18px; border: 1px solid var(--line); transition: background 0.3s, border-color 0.3s, color 0.3s; }
-  .seg b { font-weight: 600; }
+  .seg span { display: grid; gap: 2px; height: 100%; padding: 14px 16px; transition: background 0.4s, color 0.4s; }
+  .seg b { font-family: var(--serif); font-weight: 400; font-size: 20px; }
   .seg small { color: var(--smoke); font-size: 12.5px; }
-  .seg input:checked + span { background: var(--night); color: var(--cream); border-color: var(--night); }
+  .seg input:checked + span { background: var(--ink); color: var(--cream); }
   .seg input:checked + span small { color: var(--cream-2); }
   .chips-row { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin: 0 -16px; padding: 2px 16px; }
   .chips-row::-webkit-scrollbar { display: none; }
   .chips-row--wrap { flex-wrap: wrap; margin: 0; padding: 0; overflow: visible; }
   .book :global(.cd), .book :global(.ct) { position: relative; flex: none; cursor: pointer; }
   .book :global(.cd input), .book :global(.ct input) { position: absolute; opacity: 0; pointer-events: none; }
-  .book :global(.cd span) { display: grid; justify-items: center; width: 58px; padding: 10px 0; border-radius: 30px; border: 1px solid var(--line); transition: background 0.3s, color 0.3s, box-shadow 0.4s; }
-  .book :global(.cd small) { font-size: 11px; color: var(--smoke); text-transform: uppercase; letter-spacing: 0.06em; }
-  .book :global(.cd b) { font-family: var(--serif); font-weight: 400; font-size: 22px; line-height: 1.2; }
-  .book :global(.ct span) { display: block; padding: 10px 15px; border-radius: 999px; border: 1px solid var(--line); font-size: 14px; font-variant-numeric: tabular-nums; transition: background 0.3s, color 0.3s, box-shadow 0.4s; }
-  .book :global(.cd input:checked + span), .book :global(.ct input:checked + span) { background: var(--ember); border-color: var(--ember); color: #fff; box-shadow: 0 8px 20px -8px rgba(232, 105, 44, 0.8); }
+  .book :global(.cd span) { display: grid; justify-items: center; width: 60px; padding: 10px 0; border: 1px solid var(--line); transition: background 0.3s, color 0.3s, border-color 0.3s; }
+  .book :global(.cd small) { font-size: 9.5px; color: var(--smoke); text-transform: uppercase; letter-spacing: 0.16em; }
+  .book :global(.cd b) { font-family: var(--serif); font-weight: 300; font-size: 26px; line-height: 1.2; }
+  .book :global(.ct span) { display: block; padding: 11px 16px; border: 1px solid var(--line); font-size: 13.5px; font-variant-numeric: tabular-nums; transition: background 0.3s, color 0.3s, border-color 0.3s; }
+  .book :global(.cd input:checked + span), .book :global(.ct input:checked + span) { background: var(--ink); border-color: var(--ink); color: var(--paper); }
   .book :global(.cd input:checked + span small) { color: rgba(255, 255, 255, 0.85); }
   .book__who { display: grid; gap: 8px; }
   .book__sum { display: grid; gap: 4px; padding: 14px 0; border-block: 1px solid var(--line); }
-  .book__slot { font-family: var(--serif); font-size: 21px; }
+  .book__slot { font-family: var(--serif); font-weight: 300; font-size: 28px; }
   .book__ctas { display: grid; gap: 8px; }
-  .book__note { font-size: 14px; color: var(--ember-2); }
+  .book__note { font-size: 14px; color: var(--bronze); }
 
   .zm { display: grid; gap: 28px; padding-top: 90px; }
-  .zm__img { aspect-ratio: 4 / 5; }
+  .zm__img { aspect-ratio: 4 / 5; overflow: hidden; }
   .zm__img img { width: 100%; height: 100%; object-fit: cover; }
   .zm__text { display: grid; gap: 18px; align-content: center; }
   .zm__list { display: grid; border-top: 1px solid var(--line); }
   .zm__list li { display: grid; grid-template-columns: 34px 1fr; gap: 10px; padding: 13px 0; border-bottom: 1px solid var(--line); }
-  .zm__list span { font-weight: 700; font-size: 13px; color: var(--ember); padding-top: 2px; }
+  .zm__list span { font-family: var(--serif); font-size: 18px; color: var(--bronze); }
 
   @media (min-width: 1000px) {
     .sl-hero { padding: calc(var(--hdr) + 50px) 0 90px; }

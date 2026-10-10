@@ -11,7 +11,7 @@ const varies = p.variants.some((x) => x.price !== p.from);
 const badge = v.old ? `−${Math.round((1 - v.price / v.old) * 100)}%` : p.kw ? `до ${area(p.kw)} м²` : "";
 ---
 <article class="card" data-in style={`--d:${d}s`} data-price={p.from} data-kw={p.kw ?? ""}>
-  <div class="card__media arch">
+  <div class="card__media">
     <img src={pimg(v.img[0])} srcset={`${pimg(v.img[0])} 480w, ${pimg(v.img[0], 960)} 960w`} sizes="(min-width: 1000px) 24vw, (min-width: 640px) 32vw, 48vw" alt={p.name} loading={eager ? "eager" : "lazy"} decoding="async" />
     {v.img[1] && <img src={pimg(v.img[1])} alt="" loading="lazy" decoding="async" />}
     {badge && <span class="card__badge">{badge}</span>}

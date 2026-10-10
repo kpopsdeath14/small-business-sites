@@ -25,14 +25,12 @@ const desc = `${p.name}${p.sub ? ` — ${p.sub.toLowerCase()}` : ""}. Цена $
 
     <div class="wrap pp__grid">
       <section class="gal" aria-label="Фотографии" data-gal>
-        <div class="gal__frame arch">
+        <div class="gal__frame">
           <div class="gal__track" data-track>
             {v.img.map((id, i) => (
               <figure class:list={["gal__slide", { scene: v.scene[i] }]}><img src={pimg(id, 960)} srcset={`${pimg(id)} 480w, ${pimg(id, 960)} 960w`} sizes="(min-width: 1000px) 46vw, 100vw" alt={`${p.name}, фото ${i + 1}`} loading={i === 0 ? "eager" : "lazy"} decoding="async" /></figure>
             ))}
           </div>
-          <span class="gal__glow" aria-hidden="true"></span>
-          <button class="gal__eve" type="button" data-eve aria-pressed="false" hidden={!v.scene.some(Boolean)}><Icon name="moon" /><span>Вечером</span></button>
         </div>
         <div class="gal__dots" data-dots aria-hidden="true">{v.img.map((_, i) => <i class:list={{ on: i === 0 }}></i>)}</div>
         <div class="gal__thumbs" data-thumbs>
@@ -73,13 +71,8 @@ const desc = `${p.name}${p.sub ? ` — ${p.sub.toLowerCase()}` : ""}. Цена $
 
         {p.kw && (
           <div class="heat">
-            <div class="heat__flames" aria-hidden="true">
-              {Array.from({ length: 5 }, (_, i) => <i class:list={{ on: i < flames }} style={`--i:${i}`}></i>)}
-            </div>
-            <div>
-              <p class="heat__t">Обогреет до {area(p.kw)} м²</p>
-              <p class="muted">{p.kw} кВт · {p.fuel || "дрова"} · ориентир 1 кВт на 10 м²</p>
-            </div>
+            <p class="heat__v">{area(p.kw)}<small> м²</small></p>
+            <p class="heat__t">Обогреет помещение до {area(p.kw)} м²<span>{p.kw} кВт · {(p.fuel || "дрова").toLowerCase()}</span></p>
           </div>
         )}
 
@@ -116,7 +109,7 @@ const desc = `${p.name}${p.sub ? ` — ${p.sub.toLowerCase()}` : ""}. Цена $
     )}
 
     <section class="rel">
-      <div class="wrap"><div class="sh"><p class="eyebrow">Ещё у огня</p><h2 class="h2">Вам может <em>понравиться</em></h2></div></div>
+      <div class="wrap"><div class="sh"><p class="eyebrow">Коллекция</p><h2 class="h2">Вам может <em>понравиться</em></h2></div></div>
       <div class="rail">{related.map((x, i) => <ProductCard p={x} d={Math.min(i, 3) * 0.06} />)}</div>
     </section>
 
@@ -150,15 +143,6 @@ const desc = `${p.name}${p.sub ? ` — ${p.sub.toLowerCase()}` : ""}. Цена $
     const b = (e.target as HTMLElement).closest<HTMLElement>("[data-i]");
     if (b) track.scrollTo({ left: Number(b.dataset.i) * track.clientWidth, behavior: "smooth" });
   });
-  // "Вечером": dim the room, let the fire glow
-  const eve = $<HTMLButtonElement>("[data-eve]");
-  eve.addEventListener("click", () => {
-    const on = !$("[data-gal]").classList.contains("eve");
-    $("[data-gal]").classList.toggle("eve", on);
-    eve.setAttribute("aria-pressed", String(on));
-    eve.querySelector("span")!.textContent = on ? "Днём" : "Вечером";
-  });
-
   // stepper appears only once the item is in the cart and edits the cart directly
   const qv = $("[data-qv]");
   const act = $("[data-buybox]");
@@ -190,7 +174,6 @@ const desc = `${p.name}${p.sub ? ` — ${p.sub.toLowerCase()}` : ""}. Цена $
     syncButtons();
     n = v.img.length;
     track.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 180, easing: "ease-in", fill: "forwards" }).onfinish = () => {
-      eve.hidden = !v.sc.some(Boolean);
       track.innerHTML = v.img.map((im, i) => `<figure class="gal__slide${v.sc[i] ? " scene" : ""}"><img src="${pimg(im, 960)}" srcset="${pimg(im)} 480w, ${pimg(im, 960)} 960w" sizes="(min-width: 1000px) 46vw, 100vw" alt="Фото ${i + 1}" decoding="async"></figure>`).join("");
       $("[data-dots]").innerHTML = v.img.map((_, i) => `<i class="${i ? "" : "on"}"></i>`).join("");
       $("[data-thumbs]").innerHTML = v.img.map((im, i) => `<button type="button" class="${i ? "" : "on"}" data-i="${i}" aria-label="Фото ${i + 1}"><img src="${pimg(im)}" alt=""></button>`).join("");
@@ -218,53 +201,44 @@ const desc = `${p.name}${p.sub ? ` — ${p.sub.toLowerCase()}` : ""}. Цена $
   .pp__grid { display: grid; gap: 26px; }
 
   .gal { position: relative; }
-  .gal__frame { position: relative; aspect-ratio: 4 / 5; background: var(--sand); isolation: isolate; }
+  .gal__frame { position: relative; aspect-ratio: 4 / 5; background: var(--stone); overflow: hidden; }
   .gal__track { display: flex; height: 100%; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; touch-action: pan-x pan-y; }
   .gal__track::-webkit-scrollbar { display: none; }
   .gal :global(.gal__slide) { flex: 0 0 100%; height: 100%; scroll-snap-align: center; }
-  .gal :global(.gal__slide img) { width: 100%; height: 100%; object-fit: cover; transition: filter 1.2s var(--ease-io); }
-  .gal__glow { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(45% 35% at 50% 62%, rgba(255, 170, 80, 0.75), rgba(255, 120, 40, 0.25) 50%, transparent 75%); mix-blend-mode: screen; opacity: 0; transition: opacity 1.2s; }
-  .gal.eve :global(.gal__slide.scene img) { filter: brightness(0.5) saturate(1.15) sepia(0.15); }
-  .gal.eve .gal__glow { opacity: 1; animation: flick 2.4s ease-in-out infinite alternate; }
-  @keyframes flick { 0% { opacity: 0.8; } 20% { opacity: 1; } 35% { opacity: 0.7; } 60% { opacity: 0.95; } 80% { opacity: 0.75; } 100% { opacity: 1; } }
-  .gal__eve { position: absolute; right: 12px; bottom: 12px; z-index: 2; display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px 0 12px; border-radius: 999px; background: rgba(20, 15, 12, 0.62); color: var(--cream); font-size: 13px; font-weight: 600; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
-  .gal__eve :global(svg) { width: 16px; height: 16px; }
-  .gal__eve[aria-pressed="true"] { background: rgba(242, 162, 74, 0.9); color: var(--night); }
+  .gal :global(.gal__slide img) { width: 100%; height: 100%; object-fit: cover; }
   .gal__dots { display: flex; justify-content: center; gap: 6px; margin-top: 12px; }
-  .gal__dots :global(i) { width: 6px; height: 6px; border-radius: 50%; background: var(--line-2); transition: background 0.3s, transform 0.4s var(--ease); }
-  .gal__dots :global(i.on) { background: var(--ember); transform: scale(1.3); box-shadow: 0 0 8px rgba(242, 162, 74, 0.7); }
+  .gal__dots :global(i) { width: 18px; height: 1px; background: var(--line-2); transition: background 0.4s, width 0.5s var(--ease); }
+  .gal__dots :global(i.on) { width: 34px; background: var(--ink); }
   .gal__thumbs { display: none; }
 
   .buy { display: grid; gap: 16px; align-content: start; }
   .buy__t { font-size: clamp(32px, 8vw, 54px); }
   .buy__sub { margin-top: -6px; }
   .buy__price { display: flex; align-items: baseline; gap: 12px; padding: 14px 0; border-block: 1px solid var(--line); }
-  .buy__p { font-family: var(--serif); font-size: 34px; font-variant-numeric: lining-nums tabular-nums; }
+  .buy__p { font-family: var(--serif); font-weight: 300; font-size: 40px; font-variant-numeric: lining-nums tabular-nums; }
   .buy__old { color: var(--smoke); font-size: 16px; }
   .vpick { display: grid; gap: 10px; }
   .vpick__row { display: flex; flex-wrap: wrap; gap: 8px; }
-  .vpick__row button { display: inline-flex; align-items: center; gap: 8px; min-height: 42px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--line-2); font-size: 14.5px; transition: border-color 0.3s, background 0.3s, color 0.3s; }
-  .vpick__row button i { width: 14px; height: 14px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15); }
-  .vpick__row button[aria-checked="true"] { background: var(--ink); color: var(--cream); border-color: var(--ink); }
+  .vpick__row button { display: inline-flex; align-items: center; gap: 10px; min-height: 46px; padding: 0 18px; border: 1px solid var(--line-2); font-size: 14px; transition: border-color 0.3s, background 0.3s, color 0.3s; }
+  .vpick__row button i { width: 12px; height: 12px; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.18); }
+  .vpick__row button[aria-checked="true"] { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
   .buy__act { display: grid; grid-template-columns: 1fr; gap: 8px; }
   .buy__act .qty { display: none; height: 54px; }
   .buy__act.has-qty { grid-template-columns: auto 1fr; }
   .buy__act.has-qty .qty { display: inline-grid; }
 
-  .heat { display: flex; align-items: center; gap: 16px; padding: 16px 18px; border-radius: 20px; background: var(--night); color: var(--cream); }
-  .heat .muted { color: var(--cream-2); font-size: 13.5px; }
-  .heat__t { font-family: var(--serif); font-size: 21px; }
-  .heat__flames { display: flex; align-items: flex-end; gap: 3px; height: 30px; flex: none; }
-  .heat__flames i { width: 10px; height: calc(12px + var(--i) * 4px); border-radius: 50% 50% 45% 45% / 65% 65% 35% 35%; background: rgba(243, 231, 214, 0.14); }
-  .heat__flames i.on { background: radial-gradient(circle at 50% 80%, #fff1c4, #ffb347 50%, #e8692c); box-shadow: 0 0 10px rgba(255, 150, 60, 0.5); animation: lick 1.4s ease-in-out infinite alternate; animation-delay: calc(var(--i) * -0.3s); transform-origin: 50% 100%; }
-
+  .heat { display: grid; grid-template-columns: auto 1fr; gap: 20px; align-items: center; padding: 18px 0; border-block: 1px solid var(--line); }
+  .heat__v { font-family: var(--serif); font-weight: 300; font-size: 54px; line-height: 1; color: var(--bronze); }
+  .heat__v small { font-size: 22px; }
+  .heat__t { font-size: 14.5px; line-height: 1.5; }
+  .heat__t span { display: block; font-size: 10.5px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--smoke); margin-top: 4px; }
   .perks { display: grid; border-top: 1px solid var(--line); }
   .perks li { display: grid; grid-template-columns: 112px 1fr; gap: 12px; padding: 13px 0; border-bottom: 1px solid var(--line); font-size: 14px; color: var(--ink-2); }
-  .perks li span:first-child { font-weight: 600; color: var(--ink); }
+  .perks li span:first-child { font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink); padding-top: 3px; }
 
   .info { display: grid; gap: 48px; margin-top: 72px; }
   .info__desc { display: grid; gap: 16px; }
-  .info__first { font-family: var(--serif); font-size: 21px; line-height: 1.5; color: var(--ink); }
+  .info__first { font-family: var(--serif); font-weight: 300; font-size: 26px; line-height: 1.4; color: var(--ink); }
   .spec { display: grid; padding-bottom: 14px; }
   .spec div { display: flex; justify-content: space-between; gap: 16px; padding: 9px 0; border-bottom: 1px dashed var(--line); font-size: 14.5px; }
   .spec div:last-child { border-bottom: 0; }
@@ -276,8 +250,8 @@ const desc = `${p.name}${p.sub ? ` — ${p.sub.toLowerCase()}` : ""}. Цена $
   .sbar.on { transform: none; }
   .sbar > div { min-width: 0; }
   .sbar__n { font-size: 13px; color: var(--smoke); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .sbar__p { font-weight: 700; font-variant-numeric: tabular-nums; }
-  .sbar .btn { min-height: 46px; padding: 0 20px; flex: none; }
+  .sbar__p { font-family: var(--serif); font-size: 22px; font-variant-numeric: tabular-nums; }
+  .sbar .btn { min-height: 48px; padding: 0 22px; flex: none; }
   .sbar .btn :global(.btn__go) { display: none; }
 
   @media (min-width: 1000px) {
@@ -286,7 +260,7 @@ const desc = `${p.name}${p.sub ? ` — ${p.sub.toLowerCase()}` : ""}. Цена $
     .gal { position: sticky; top: calc(var(--hdr) + 24px); }
     .gal__dots { display: none; }
     .gal__thumbs { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-top: 10px; }
-    .gal__thumbs :global(button) { aspect-ratio: 4 / 5; border-radius: 60px 60px 8px 8px; overflow: hidden; opacity: 0.55; transition: opacity 0.3s; background: var(--sand); }
+    .gal__thumbs :global(button) { aspect-ratio: 4 / 5; overflow: hidden; opacity: 0.5; transition: opacity 0.3s; background: var(--stone); }
     .gal__thumbs :global(button.on), .gal__thumbs :global(button:hover) { opacity: 1; }
     .gal__thumbs :global(img) { width: 100%; height: 100%; object-fit: cover; }
     .buy { padding-top: 12px; }

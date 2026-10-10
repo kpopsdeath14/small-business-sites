@@ -25,9 +25,9 @@ import { url } from "../lib/site";
         <a class="ulink" style="justify-self:center" href={url("catalog/")}>Продолжить выбор</a>
       </aside>
       <div class="empty" data-empty hidden>
-        <p class="h3">Здесь пока прохладно</p>
-        <p class="lead">Выберите камин — а мы позаботимся о замере, монтаже и первом огне.</p>
-        <a class="btn" href={url("catalog/")}>В каталог <Icon name="arrow" /></a>
+        <p class="h3">Корзина пуста</p>
+        <p class="lead">Выберите камин — замер, монтаж и первый огонь мы возьмём на себя.</p>
+        <a class="btn" href={url("catalog/")}>Коллекция <Icon name="arrow" /></a>
       </div>
     </section>
   </main>
@@ -53,13 +53,13 @@ import { url } from "../lib/site";
   .cartp { display: grid; gap: 28px; }
   .cartp__list { border-top: 1px solid var(--line); }
   .cartp__list :global(.line-item) { grid-template-columns: 96px 1fr; padding: 20px 0; }
-  .sum { display: grid; gap: 16px; padding: 24px 20px; border-radius: 26px; background: var(--paper); box-shadow: 0 20px 40px -30px rgba(36, 26, 20, 0.4); align-self: start; }
+  .sum { display: grid; gap: 18px; padding: 28px 22px; background: var(--paper); border: 1px solid var(--line); align-self: start; }
   .sum__rows { display: grid; }
   .sum__rows div { display: flex; justify-content: space-between; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--line); font-size: 14.5px; }
   .sum__rows dt { color: var(--smoke); }
   .sum__rows dd { text-align: right; }
   .sum__total { display: flex; justify-content: space-between; align-items: baseline; }
-  .sum__total strong { font-family: var(--serif); font-size: 30px; font-weight: 400; }
+  .sum__total strong { font-family: var(--serif); font-size: 34px; font-weight: 300; }
   .empty { display: grid; gap: 14px; justify-items: start; padding: 30px 0; grid-column: 1 / -1; }
   @media (min-width: 1000px) {
     .cartp { grid-template-columns: 1fr 400px; gap: 56px; align-items: start; }
