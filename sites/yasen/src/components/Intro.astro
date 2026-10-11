@@ -1,0 +1,82 @@
+---
+/**
+ * Once per visit: a flight of stairs is drawn step by step, the counter climbs with it,
+ * an ash leaf lands on the top landing — and the sheet lifts away like a page of drawings.
+ */
+const N = 12, S = 30; // steps, size of a step in the drawing
+let d = `M10 ${10 + N * S}`;
+for (let i = 0; i < N; i++) d += `h${S}v${-S}`;
+d += `h${S * 2}`;
+// leaflets along the stalk: four opposite pairs and one at the tip, in five shades of ash green
+const greens = ["#2f5a34", "#3e6b3f", "#4f7d47", "#628f52", "#7aa362"];
+const leaflets = [0, 1, 2, 3].flatMap((k) => {
+  const y = -28 - k * 30, x = (k % 2 ? 4 : -2);
+  return [
+    { x, y, r: 200 - k * 6, k, c: greens[k] },
+    { x, y, r: -20 + k * 6, k, c: greens[k + 1] },
+  ];
+}).concat([{ x: 2, y: -150, r: -90, k: 4, c: greens[4] }]);
+---
+<script is:inline>
+  try {
+    if (!sessionStorage.getItem("yasen-intro") && !matchMedia("(prefers-reduced-motion: reduce)").matches)
+      document.documentElement.classList.add("intro");
+  } catch (e) {}
+</script>
+<div class="ys" aria-hidden="true">
+  <svg class="ys__st" viewBox={`0 -170 ${N * S + 80} ${N * S + 190}`}>
+    <path class="ys__line" d={d} pathLength="1" />
+    <!-- a compound ash leaf grows from the top landing: the stalk first, then pairs of leaflets -->
+    <g transform={`translate(${N * S + 40} 10)`}>
+      <path class="ys__rachis" d="M0 0 C -6 -50, 8 -100, 2 -150" pathLength="1" />
+      {leaflets.map((l, i) => <g class="ys__lf" style={`--i:${l.k};--c:${l.c}`} transform={`translate(${l.x} ${l.y}) rotate(${l.r})`}><path d="M0 0 C 10 -8, 30 -8, 44 0 C 30 8, 10 8, 0 0 Z" /><path class="ys__vein" d="M2 0 H40" /></g>)}
+    </g>
+  </svg>
+  <p class="ys__n mono"><span data-ys-n>0</span> / {N}</p>
+  <p class="ys__w">Ясень</p>
+  <p class="ys__skip mono">коснитесь, чтобы подняться</p>
+</div>
+
+<script>
+  const html = document.documentElement;
+  if (html.classList.contains("intro")) {
+    const el = document.querySelector<HTMLElement>(".ys")!;
+    const n = el.querySelector("[data-ys-n]")!;
+    let done = false;
+    const t0 = performance.now() + 250;
+    const tick = (t: number) => { const k = Math.max(0, Math.min(1, (t - t0) / 1800)); n.textContent = String(Math.round(k * 12)); if (k < 1 && !done) requestAnimationFrame(tick); };
+    requestAnimationFrame(tick);
+    const go = () => {
+      if (done) return; done = true;
+      try { sessionStorage.setItem("yasen-intro", "1"); } catch {}
+      html.classList.add("intro-out");
+      document.dispatchEvent(new CustomEvent("intro:done"));
+      setTimeout(() => html.classList.remove("intro", "intro-out"), 1100);
+    };
+    setTimeout(() => el.classList.add("top"), 2050);
+    setTimeout(go, 3700);
+    el.addEventListener("click", go);
+    addEventListener("keydown", go, { once: true });
+  }
+</script>
+
+<style is:global>
+  .ys { display: none; }
+  html.intro { overflow: hidden; }
+  html.intro .ys { position: fixed; inset: 0; z-index: 300; display: grid; place-content: center; justify-items: center; gap: 18px; background: var(--paper); cursor: pointer; transition: transform 1s var(--ease-io); }
+  html.intro-out .ys { transform: translateY(-101%); }
+  .ys__st { width: min(78vw, 380px); overflow: visible; }
+  .ys__line { fill: none; stroke: var(--ink); stroke-width: 2.2; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; animation: ys 1.8s cubic-bezier(0.45, 0, 0.3, 1) 0.25s forwards; }
+  @keyframes ys { to { stroke-dashoffset: 0; } }
+  .ys__rachis { fill: none; stroke: #3e6b3f; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+  .ys.top .ys__rachis { animation: ys 0.6s ease-out forwards; }
+  .ys__lf path:first-child { fill: var(--c); }
+  .ys__vein { stroke: rgba(255, 255, 255, 0.45); stroke-width: 1; }
+  .ys__lf > path { transform: scale(0); transform-origin: 0 0; }
+  .ys.top .ys__lf > path { animation: lf 0.55s cubic-bezier(0.3, 1.5, 0.5, 1) forwards; animation-delay: calc(0.35s + var(--i) * 0.11s); }
+  @keyframes lf { to { transform: scale(1); } }
+  .ys__n { font-size: 15px; color: var(--ink-2); }
+  .ys__w { font-family: var(--display); font-weight: 600; font-size: 52px; color: var(--leaf); opacity: 0; transform: translateY(8px); transition: opacity 0.6s, transform 0.7s var(--ease); }
+  .ys.top .ys__w { opacity: 1; transform: none; }
+  .ys__skip { position: fixed; left: 0; right: 0; bottom: calc(24px + env(safe-area-inset-bottom)); text-align: center; font-size: 12px; color: var(--mute); }
+</style>

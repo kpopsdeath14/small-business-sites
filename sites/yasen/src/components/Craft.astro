@@ -1,0 +1,97 @@
+---
+/**
+ * «Как мы делаем»: a cross-section of one glued tread that builds itself as you read —
+ * dry boards, lamellas glued in the press, a turned baluster beside it, sanding, the lacquer coat,
+ * and finally the tread set on its stringer.
+ */
+import { process } from "../lib/site";
+const lam = Array.from({ length: 6 }, (_, i) => i);
+---
+<div class="cf" data-cf data-s="0">
+  <div class="cf__stick">
+    <svg class="cf__svg" viewBox="20 30 300 170" aria-hidden="true">
+      <!-- the stringer the tread will sit on -->
+      <path class="cf__str" d="M20 200 L300 120 L300 150 L20 230 Z" />
+      <g class="cf__tread">
+        {lam.map((i) => <g class="cf__lam" style={`--i:${i}`}><rect x={40 + i * 40} y="80" width="38" height="40" rx="2" /><path d={`M${44 + i * 40} ${88 + (i % 3) * 6} q 14 ${i % 2 ? 8 : -6} 30 0`} class="cf__grain" /></g>)}
+        {lam.slice(1).map((i) => <rect class="cf__glue" x={39 + i * 40} y="80" width="2" height="40" style={`--i:${i}`} />)}
+        <rect class="cf__coat" x="38" y="77" width="244" height="46" rx="3" />
+        <path class="cf__shine" d="M50 84 H270" />
+      </g>
+      <!-- the turned baluster, made by template -->
+      <path class="cf__bal" d="M300 40 h10 v8 q -6 6 0 14 q 8 10 0 26 v60 q 6 4 0 10 h-10 q -6 -6 0 -10 v-60 q -8 -16 0 -26 q 6 -8 0 -14z" />
+    </svg>
+    <p class="cf__lbl mono" data-cf-lbl>{process[0].t} · {process[0].n}</p>
+  </div>
+  <ol class="cf__list">
+    {process.map((s, i) => (
+      <li class="cf__it" data-step={i}>
+        <p class="mono cf__n">{String(i + 1).padStart(2, "0")} · {s.n}</p>
+        <p class="h3">{s.t}</p>
+        <p class="read">{s.d}</p>
+      </li>
+    ))}
+  </ol>
+</div>
+
+<script define:vars={{ labels: process.map((s) => `${s.t} · ${s.n}`) }}>
+  const el = document.querySelector("[data-cf]");
+  const steps = [...el.querySelectorAll("[data-step]")];
+  const lbl = el.querySelector("[data-cf-lbl]");
+  let cur = -1, tk = false;
+  const pick = () => {
+    tk = false;
+    let i = 0; steps.forEach((s, k) => { if (s.getBoundingClientRect().top < innerHeight * 0.6) i = k; });
+    if (i === cur) return; cur = i;
+    el.dataset.s = String(i);
+    steps.forEach((s, k) => s.classList.toggle("on", k === i));
+    lbl.textContent = labels[i];
+  };
+  addEventListener("scroll", () => { if (!tk) { tk = true; requestAnimationFrame(pick); } }, { passive: true });
+  pick();
+</script>
+
+<style>
+  .cf { display: grid; }
+  .cf__stick { position: sticky; top: calc(var(--hdr) + env(safe-area-inset-top) + 8px); z-index: 4; display: grid; justify-items: center; gap: 4px; padding: 10px 0 12px; margin-bottom: 18px; background: var(--forest); border-bottom: 1px solid rgba(241, 236, 223, 0.16); }
+  .cf__svg { width: min(70vw, 300px); overflow: visible; }
+  .cf__lbl { font-size: 13px; color: #e0b06e; }
+  .cf__str { fill: var(--wood-2); opacity: 0; transform: translateY(20px); transition: opacity 0.6s, transform 0.8s var(--ease); }
+  .cf__lam rect { fill: #e9d6b2; stroke: #b48a5a; stroke-width: 1; transition: transform 0.8s var(--ease), fill 0.6s; }
+  .cf__grain { fill: none; stroke: rgba(140, 100, 60, 0.45); stroke-width: 1; }
+  /* 0 drying: boards apart, with moisture leaving */
+  .cf__lam rect { transform: translateX(calc((var(--i) - 2.5) * 6px)); }
+  .cf__drops path { fill: #8fb3c7; opacity: 0; }
+  [data-s="0"] .cf__drops path { animation: drop 1.6s ease-in infinite; animation-delay: calc(var(--i) * 0.3s); }
+  @keyframes drop { 0% { opacity: 0.9; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-30px); } }
+  .cf__glue { fill: #f2e9d0; opacity: 0; transition: opacity 0.5s; }
+  /* 1+ glued: lamellas pressed together, glue lines visible */
+  [data-s]:not([data-s="0"]) .cf__lam rect { transform: none; }
+  [data-s]:not([data-s="0"]) .cf__glue { opacity: 1; }
+  /* 2 the baluster is turned */
+  .cf__bal { fill: #e9d6b2; stroke: #b48a5a; opacity: 0; transform: translateX(10px); transition: opacity 0.6s, transform 0.8s var(--ease), fill 0.6s; }
+  [data-s="2"] .cf__bal, [data-s="3"] .cf__bal, [data-s="4"] .cf__bal, [data-s="5"] .cf__bal { opacity: 1; transform: none; }
+  /* 3 sanded: a soft sheen along the top */
+  .cf__shine { stroke: rgba(255, 255, 255, 0.9); stroke-width: 3; stroke-linecap: round; opacity: 0; transition: opacity 0.6s; }
+  [data-s="3"] .cf__shine, [data-s="4"] .cf__shine, [data-s="5"] .cf__shine { opacity: 1; }
+  /* 4 lacquered: the colour of walnut stain */
+  .cf__coat { fill: transparent; stroke: transparent; transition: fill 0.8s, stroke 0.8s; }
+  [data-s="4"] .cf__lam rect, [data-s="5"] .cf__lam rect { fill: #a87443; }
+  [data-s="4"] .cf__bal, [data-s="5"] .cf__bal { fill: #a87443; }
+  [data-s="4"] .cf__coat, [data-s="5"] .cf__coat { fill: rgba(120, 70, 30, 0.12); stroke: rgba(80, 45, 20, 0.5); }
+  /* 5 installed: the tread drops onto the stringer */
+  .cf__tread { transition: transform 0.9s var(--ease); transform-box: fill-box; transform-origin: center; }
+  [data-s="5"] .cf__str { opacity: 1; transform: none; }
+  [data-s="5"] .cf__tread { transform: translateY(18px) rotate(-16deg); }
+  .cf__list { display: grid; gap: 40px; }
+  .cf__it { display: grid; gap: 8px; }
+  .cf__n { font-size: 13px; color: #e0b06e; }
+  @media (min-width: 1000px) {
+    .cf { grid-template-columns: 1fr 1fr; gap: 64px; }
+    .cf__stick { top: calc(var(--hdr) + 80px); align-self: start; margin: 0; padding: 0; border: 0; }
+    .cf__svg { width: 100%; max-width: 480px; }
+    .cf__list { padding: 10vh 0 30vh; gap: 26vh; }
+    .cf__it { opacity: 0.3; transition: opacity 0.5s; }
+    .cf__it.on { opacity: 1; }
+  }
+</style>

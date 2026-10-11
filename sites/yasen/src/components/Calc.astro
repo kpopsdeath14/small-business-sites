@@ -1,0 +1,273 @@
+---
+/**
+ * «Посчитать лестницу»: floor-to-floor height, shape, width, tread, balusters and finish.
+ * The elevation is redrawn on every change, the step formula is checked, and the parts list is
+ * priced from Yasen's published list. Sending the estimate drops the steps into place one by one.
+ */
+import { balusters, contacts, rub } from "../lib/site";
+import { plan, elevationSVG, elCSS } from "../scripts/stair";
+const init = { H: 2800, kind: "l-landing" as const, W: 900, T: 40 as const, paint: true, bal: "b55", risers: false };
+const first = elevationSVG(init, plan(init));
+const kinds = [
+  ["straight", "Прямая", "M4 20h4v-4h4v-4h4V8h4V4"],
+  ["l-landing", "Г с площадкой", "M4 20V10h6v10M10 10h10v-6"],
+  ["l-winder", "Г с забежными", "M4 20V10l6 0M4 10l6 -6M10 4h10"],
+  ["u-landing", "П с площадкой", "M5 20V6h14v14M5 6h14"],
+] as const;
+const finishes = [["lak", "Лак", "#dcbf8f"], ["oreh", "Орех", "#9a6a3e"], ["venge", "Венге", "#4a3426"], ["white", "Белая эмаль", "#efede6"]] as const;
+---
+<div class="cc" data-cc>
+  <div class="cc__top">
+  <div class="cc__draw">
+    <div class="cc__svg" data-svg set:html={first} />
+    <div class="cc__badges mono">
+      <span><b data-o-n></b> подъёмов</span>
+      <span>по <b data-o-h></b> мм</span>
+      <span>угол <b data-o-a></b>°</span>
+    </div>
+  </div>
+
+  <div class="cc__ctl">
+    <label class="rg">
+      <span class="rg__l"><span>Высота от пола до пола</span><b class="mono" data-o-H></b></span>
+      <input type="range" min="2300" max="3600" step="10" value={init.H} data-H aria-label="Высота от пола до пола, мм" />
+    </label>
+
+    <div class="cc__group">
+      <p class="field"><span>Форма</span></p>
+      <div class="cc__kinds" role="radiogroup" aria-label="Форма лестницы">
+        {kinds.map(([id, t, d]) => <button type="button" role="radio" aria-checked={id === init.kind ? "true" : "false"} data-kind={id}><svg viewBox="0 0 24 24" aria-hidden="true"><path d={d} /></svg><span>{t}</span></button>)}
+      </div>
+    </div>
+
+    <label class="rg">
+      <span class="rg__l"><span>Ширина марша</span><b class="mono" data-o-W></b></span>
+      <input type="range" min="600" max="1400" step="100" value={init.W} data-W aria-label="Ширина марша, мм" />
+    </label>
+
+    <div class="cc__row">
+      <div class="cc__group">
+        <p class="field"><span>Ступень</span></p>
+        <div class="cc__chips" role="radiogroup" aria-label="Толщина ступени">
+          {[40, 50].map((t) => <button type="button" role="radio" aria-checked={t === init.T ? "true" : "false"} data-thick={t}>{t} мм</button>)}
+        </div>
+      </div>
+      <label class="cc__sw">
+        <input type="checkbox" data-risers />
+        <span class="cc__swi" aria-hidden="true"></span>
+        <span>Подступёнки</span>
+      </label>
+    </div>
+
+    <div class="cc__group">
+      <p class="field"><span>Балясины</span></p>
+      <div class="cc__chips cc__chips--wrap" role="radiogroup" aria-label="Балясины">
+        {balusters.map((b) => <button type="button" role="radio" aria-checked={b.id === init.bal ? "true" : "false"} data-bal={b.id}>{b.name}</button>)}
+      </div>
+    </div>
+
+    <div class="cc__group">
+      <p class="field"><span>Отделка</span></p>
+      <div class="cc__fin" role="radiogroup" aria-label="Отделка">
+        <button type="button" role="radio" aria-checked="false" data-fin="raw" style="--c:#e6d3b1"><i></i>Шлифованная</button>
+        {finishes.map(([id, t, c]) => <button type="button" role="radio" aria-checked={id === "oreh" ? "true" : "false"} data-fin={id} style={`--c:${c}`}><i></i>{t}</button>)}
+      </div>
+      <p class="cc__fine">Морилки и лаки Sayerlack, цвет можно подобрать под интерьер.</p>
+    </div>
+  </div>
+
+  </div>
+  <div class="cc__res">
+    <div class="cc__verdict" data-verdict>
+      <p class="mono cc__f">2h + b = <b data-o-f></b> мм</p>
+      <p class="h3" data-o-v></p>
+      <p class="read" data-o-vd></p>
+    </div>
+    <dl class="cc__dl mono">
+      <div><dt>Ступеней</dt><dd data-o-steps></dd></div>
+      <div><dt>Проступь</dt><dd>270 мм</dd></div>
+      <div><dt>Место на полу</dt><dd data-o-foot></dd></div>
+    </dl>
+    <details class="cc__parts">
+      <summary><span>Детали по прайсу «Ясеня»</span><b class="mono" data-o-total></b></summary>
+      <table class="mono"><tbody data-parts></tbody></table>
+      <p class="cc__fine">Детали из клеёной сосны по прайсу на сайте «Ясеня». Ясень, дуб и ильм — по запросу. Проект, доставку и монтаж мастер посчитает отдельно.</p>
+    </details>
+
+    <form class="cc__form" data-form novalidate>
+      <p class="h3">Отправить расчёт мастеру</p>
+      <label class="field"><span>Имя</span><input class="input" name="n" autocomplete="name" /></label>
+      <label class="field"><span>Телефон</span><input class="input" name="p" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7" /></label>
+      <label class="field"><span>Город или посёлок</span><input class="input" name="c" autocomplete="address-level2" /></label>
+      <button class="btn btn--leaf btn--block" type="submit">Отправить расчёт и заказать 3D-проект</button>
+      <p class="cc__fine">Или позвоните: <a href={contacts.officeHref}>{contacts.office}</a>, {contacts.managerName.toLowerCase()} — <a href={contacts.managerHref}>{contacts.manager}</a>.</p>
+    </form>
+    <div class="cc__done" data-done hidden>
+      <p class="mono cc__no" data-no></p>
+      <p class="h3">Лестница собрана — на бумаге</p>
+      <p class="read">Расчёт открыт в почте: отправьте письмо, и мастер подготовит 3D-проект лестницы под ваш дом.</p>
+      <a class="btn btn--line" data-again href="#">Открыть письмо ещё раз</a>
+    </div>
+  </div>
+</div>
+<style is:global set:html={elCSS}></style>
+
+<script define:vars={{ email: contacts.email }}>
+  window.__ys = { email };
+</script>
+<script>
+  import { plan, elevationSVG, type Kind, type Input } from "../scripts/stair";
+  import { noted } from "../scripts/app";
+  const el = document.querySelector<HTMLElement>("[data-cc]")!;
+  const q = <E extends HTMLElement = HTMLElement>(s: string) => el.querySelector<E>(s)!;
+  const qa = <E extends HTMLElement = HTMLElement>(s: string) => [...el.querySelectorAll<E>(s)];
+  const fmt = (n: number) => Math.round(n).toLocaleString("ru-RU") + " ₽";
+  const m = (n: number) => n.toFixed(2).replace(".", ",");
+  const colors: Record<string, [string, string]> = { raw: ["#e6d3b1", "#cdb48a"], lak: ["#dcbf8f", "#b48a5a"], oreh: ["#a87443", "#7d5230"], venge: ["#56402f", "#3b2a1e"], white: ["#f4f2ec", "#a9a392"] };
+  const st: Input & { fin: string } = { H: 2800, kind: "l-landing", W: 900, T: 40, paint: true, bal: "b55", risers: false, fin: "oreh" };
+  let last: ReturnType<typeof plan>;
+
+  function render() {
+    const p = (last = plan(st));
+    const svgBox = q("[data-svg]");
+    svgBox.innerHTML = elevationSVG(st, p);
+    const [wood, bal] = colors[st.fin];
+    svgBox.style.setProperty("--wood", wood); svgBox.style.setProperty("--bal", bal);
+    q("[data-o-H]").textContent = `${st.H} мм`;
+    q("[data-o-W]").textContent = `${st.W} мм`;
+    q("[data-o-n]").textContent = String(p.n);
+    q("[data-o-h]").textContent = String(Math.round(p.h));
+    q("[data-o-a]").textContent = String(Math.round(p.angle));
+    q("[data-o-f]").textContent = String(Math.round(p.comfort));
+    const ok = p.comfort >= 600 && p.comfort <= 650 && p.h <= 190;
+    q("[data-verdict]").classList.toggle("warn", !ok);
+    q("[data-o-v]").textContent = ok ? "Удобно ходить" : p.h > 190 ? "Крутовато" : "Шаг сбивается";
+    q("[data-o-vd]").textContent = ok
+      ? `Удвоенная высота ступени плюс проступь укладываются в средний шаг человека — 600–650 мм. По такой лестнице можно ходить с ребёнком на руках.`
+      : `Подъём ${Math.round(p.h)} мм — выйдет непривычный шаг. Мастер предложит другое число ступеней или забежные.`;
+    q("[data-o-steps]").textContent = `${p.f1 + p.f2}${p.winders ? ` + ${p.winders} забежн.` : ""}${p.landing ? " + площадка" : ""}`;
+    q("[data-o-foot]").textContent = `${m(p.foot.a)} × ${m(p.foot.b)} м`;
+    q("[data-o-total]").textContent = fmt(p.total);
+    q("[data-parts]").innerHTML = p.lines.map((l) => `<tr><td>${l.name}</td><td>${String(l.qty).replace(".", ",")} ${l.unit}</td><td>${fmt(l.price)}</td></tr>`).join("") + `<tr class="sum"><td>Итого детали</td><td></td><td>${fmt(p.total)}</td></tr>`;
+  }
+  const radio = (sel: string, key: string, cast: (v: string) => any) => qa(sel).forEach((b) => b.addEventListener("click", () => {
+    qa(sel).forEach((x) => x.setAttribute("aria-checked", String(x === b)));
+    (st as any)[key] = cast(b.dataset[key === "kind" ? "kind" : key === "T" ? "thick" : key === "bal" ? "bal" : "fin"]!);
+    if (key === "fin") st.paint = st.fin !== "raw";
+    render();
+  }));
+  radio("[data-kind]", "kind", (v) => v as Kind);
+  radio("[data-thick]", "T", (v) => +v);
+  radio("[data-bal]", "bal", (v) => v);
+  radio("[data-fin]", "fin", (v) => v);
+  q<HTMLInputElement>("[data-H]").addEventListener("input", (e) => { st.H = +(e.target as HTMLInputElement).value; render(); });
+  q<HTMLInputElement>("[data-W]").addEventListener("input", (e) => { st.W = +(e.target as HTMLInputElement).value; render(); });
+  q<HTMLInputElement>("[data-risers]").addEventListener("change", (e) => { st.risers = (e.target as HTMLInputElement).checked; render(); });
+
+  // send: the steps fall into place, the estimate opens in the mail
+  const form = q<HTMLFormElement>("[data-form]");
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const n = form.elements.namedItem("n") as HTMLInputElement, ph = form.elements.namedItem("p") as HTMLInputElement;
+    let bad = false;
+    [n, ph].forEach((i) => { const ok = i === ph ? i.value.replace(/\D/g, "").length >= 10 : i.value.trim().length > 1; i.classList.toggle("err", !ok); if (!ok && !bad) { i.focus(); bad = true; } });
+    if (bad) { noted("Нужны имя и телефон", "Чтобы мастер перезвонил по проекту"); return; }
+    const d = new FormData(form), p = last;
+    const no = `Я-${new Date().toISOString().slice(2, 10).replace(/-/g, "")}-${Math.floor(Math.random() * 900 + 100)}`;
+    const kindN = { straight: "прямая", "l-landing": "Г-образная с площадкой", "l-winder": "Г-образная с забежными ступенями", "u-landing": "П-образная с площадкой" }[st.kind];
+    const finN = (el.querySelector(`[data-fin="${st.fin}"]`) as HTMLElement).textContent!.trim();
+    const body = [`Здравствуйте! Прошу подготовить 3D-проект лестницы. Расчёт ${no}.`, "", `Высота от пола до пола: ${st.H} мм`, `Форма: ${kindN}, ширина марша ${st.W} мм`, `Подъёмов: ${p.n} по ${Math.round(p.h)} мм, угол ${Math.round(p.angle)}°`, `Ступень ${st.T} мм, балясины ${(el.querySelector(`[data-bal="${st.bal}"]`) as HTMLElement).textContent}, отделка: ${finN}${st.risers ? ", с подступёнками" : ""}`, `Детали по прайсу: ${fmt(p.total)}`, "", `Имя: ${d.get("n")}`, `Телефон: ${d.get("p")}`, d.get("c") ? `Где: ${d.get("c")}` : ""].join("\n");
+    const href = `mailto:${(window as any).__ys.email}?subject=${encodeURIComponent(`Лестница, расчёт ${no}`)}&body=${encodeURIComponent(body)}`;
+    const svgBox = q("[data-svg]");
+    svgBox.classList.remove("built"); svgBox.innerHTML = elevationSVG(st, p); void svgBox.offsetWidth; svgBox.classList.add("built");
+    svgBox.scrollIntoView({ behavior: "smooth", block: "center" });
+    setTimeout(() => {
+      form.hidden = true; const done = q("[data-done]"); done.hidden = false;
+      q("[data-no]").textContent = `Расчёт ${no}`;
+      q<HTMLAnchorElement>("[data-again]").href = href;
+      location.href = href;
+      noted("Лестница собрана", "Письмо с расчётом открыто в почте");
+    }, 400 + (p.f1 + p.f2 + p.winders + p.landing) * 90);
+  });
+  render();
+</script>
+
+<style>
+  .cc { display: grid; gap: 30px; }
+  .cc__draw { position: sticky; top: calc(var(--hdr) + env(safe-area-inset-top) + 8px); z-index: 5; background: var(--paper); padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+  .cc__svg { position: relative; height: 32svh; min-height: 210px; }
+  .cc__svg :global(svg) { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .cc__badges { display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px; color: var(--ink-2); }
+  .cc__badges b { font-weight: 400; font-size: 18px; color: var(--ink); }
+  .cc__ctl { display: grid; gap: 22px; }
+  .rg { display: grid; gap: 2px; }
+  .rg__l { display: flex; justify-content: space-between; align-items: baseline; font-family: var(--mono); font-size: 13px; color: var(--ink-2); }
+  .rg__l b { font-weight: 400; font-size: 18px; color: var(--ink); }
+  .rg input { -webkit-appearance: none; appearance: none; width: 100%; height: 38px; background: transparent; }
+  /* the track is a stringer with notches; the thumb is a square tread end */
+  .rg input::-webkit-slider-runnable-track { height: 6px; background: repeating-linear-gradient(90deg, var(--ink) 0 2px, transparent 2px 18px), linear-gradient(var(--wood), var(--wood)); background-size: auto 3px, auto; background-repeat: repeat-x, no-repeat; background-position: 0 0, 0 0; }
+  .rg input::-moz-range-track { height: 6px; background: var(--wood); }
+  .rg input::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; margin-top: -11px; background: var(--ink); box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25); }
+  .rg input::-moz-range-thumb { width: 28px; height: 28px; border: 0; border-radius: 0; background: var(--ink); }
+  .cc__group { display: grid; gap: 8px; }
+  .cc__kinds { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .cc__kinds button { display: grid; justify-items: center; gap: 6px; padding: 12px 4px 10px; box-shadow: inset 0 0 0 1.5px var(--line); font-size: 12.5px; line-height: 1.2; text-align: center; transition: box-shadow 0.25s, background 0.25s; }
+  .cc__kinds svg { width: 34px; height: 34px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linejoin: round; }
+  .cc__kinds [aria-checked="true"] { box-shadow: inset 0 0 0 2px var(--ink); background: #fff; }
+  .cc__chips { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .cc__chips--wrap { grid-template-columns: 1fr; }
+  .cc__chips button { min-height: 46px; padding: 0 12px; box-shadow: inset 0 0 0 1.5px var(--line); font-size: 15px; text-align: left; transition: box-shadow 0.25s, background 0.25s; }
+  .cc__chips [aria-checked="true"] { box-shadow: inset 0 0 0 2px var(--ink); background: #fff; }
+  .cc__row { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: end; }
+  .cc__sw { display: flex; align-items: center; gap: 10px; min-height: 46px; cursor: pointer; font-size: 15px; }
+  .cc__sw input { position: absolute; opacity: 0; }
+  .cc__swi { position: relative; width: 44px; height: 24px; box-shadow: inset 0 0 0 1.5px var(--ink); transition: background 0.3s; }
+  .cc__swi::after { content: ""; position: absolute; top: 4px; left: 4px; width: 16px; height: 16px; background: var(--ink); transition: transform 0.3s var(--ease), background 0.3s; }
+  .cc__sw input:checked + .cc__swi { background: var(--ink); }
+  .cc__sw input:checked + .cc__swi::after { transform: translateX(20px); background: var(--paper); }
+  .cc__sw input:focus-visible + .cc__swi { outline: 2px solid var(--leaf); outline-offset: 3px; }
+  .cc__fin { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+  .cc__fin button { display: grid; justify-items: center; gap: 6px; font-size: 11.5px; line-height: 1.2; text-align: center; }
+  .cc__fin i { width: 100%; aspect-ratio: 1; background: repeating-linear-gradient(100deg, rgba(0, 0, 0, 0.07) 0 2px, transparent 2px 9px), var(--c); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1); transition: box-shadow 0.25s, transform 0.25s var(--ease); }
+  .cc__fin [aria-checked="true"] i { box-shadow: 0 0 0 2px var(--paper), 0 0 0 3.5px var(--ink); transform: scale(0.92); }
+  .cc__fine { font-size: 14px; color: var(--mute); line-height: 1.5; }
+  .cc__fine a { color: var(--ink); border-bottom: 1px solid var(--line); }
+
+  .cc__res { display: grid; gap: 22px; align-content: start; }
+  .cc__verdict { display: grid; gap: 6px; padding: 20px; background: var(--leaf); color: #f4f1e6; }
+  .cc__verdict .read, .cc__verdict .cc__f { color: #d9e3cf; }
+  .cc__verdict .cc__f b { color: #fff; }
+  .cc__verdict.warn { background: #8c3b22; }
+  .cc__f { font-size: 14px; color: var(--ink-2); }
+  .cc__f b { font-weight: 400; color: var(--ink); }
+  .cc__dl { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; font-size: 15px; }
+  .cc__dl dt { font-size: 12px; color: var(--mute); }
+  .cc__parts { border-top: 1.5px solid var(--ink); border-bottom: 1px solid var(--line); }
+  .cc__parts summary { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 14px 0; cursor: pointer; list-style: none; font-size: 16px; }
+  .cc__parts summary::-webkit-details-marker { display: none; }
+  .cc__parts summary span::after { content: " ↓"; color: var(--mute); }
+  .cc__parts[open] summary span::after { content: " ↑"; }
+  .cc__parts summary b { font-weight: 400; font-size: 24px; }
+  .cc__parts table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 10px; }
+  .cc__parts :global(td) { padding: 7px 0; border-top: 1px solid var(--line); vertical-align: top; }
+  .cc__parts :global(td:nth-child(2)) { padding: 7px 10px; white-space: nowrap; color: var(--ink-2); }
+  .cc__parts :global(td:last-child) { text-align: right; white-space: nowrap; }
+  .cc__parts :global(tr.sum td) { border-top: 1.5px solid var(--ink); font-size: 15px; }
+  .cc__parts .cc__fine { margin-bottom: 14px; }
+  .cc__form { display: grid; gap: 12px; padding-top: 6px; }
+  .cc__form .btn { white-space: normal; text-align: center; padding: 12px 18px; }
+  .cc__done { display: grid; gap: 10px; padding: 22px; background: #fff; box-shadow: inset 4px 0 0 var(--leaf); animation: done 0.7s var(--ease); }
+  @keyframes done { from { opacity: 0; transform: translateY(12px); } }
+  .cc__no { font-size: 13px; color: var(--leaf); }
+
+  .cc__top { display: grid; gap: 26px; }
+  @media (min-width: 1000px) {
+    .cc { grid-template-columns: 1.25fr 1fr; gap: 30px 56px; align-items: start; }
+    .cc__top { display: contents; }
+    .cc__draw { grid-column: 1; grid-row: 1 / span 2; align-self: start; top: calc(var(--hdr) + 16px); border: 0; }
+    .cc__ctl { grid-column: 2; grid-row: 1; }
+    .cc__res { grid-column: 2; grid-row: 2; }
+    .cc__svg { height: 52vh; }
+    .cc__draw { padding-top: 10px; }
+  }
+</style>

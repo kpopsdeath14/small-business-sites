@@ -1,0 +1,110 @@
+---
+import "@fontsource/playfair-display/500.css";
+import "@fontsource/playfair-display/600.css";
+import "@fontsource/playfair-display/500-italic.css";
+import "@fontsource-variable/jost";
+import "@fontsource/ubuntu-mono/400.css";
+import "../styles/global.css";
+import { url, contacts, BASE, img } from "../lib/site";
+
+interface Props { title?: string; description?: string }
+const {
+  title = "Ясень — деревянные лестницы из массива, Кунгур",
+  description = "Проектируем, изготавливаем и устанавливаем деревянные лестницы из клеёного массива: сосна, ясень, дуб. Расчёт лестницы и смета деталей онлайн. Двери, окна и мебель из дерева.",
+} = Astro.props;
+const links = [
+  ["Посчитать лестницу", url("#calc"), "1"],
+  ["3D-проект", url("#project"), "2"],
+  ["Наши лестницы", url("#works"), "3"],
+  ["Как делаем", url("#craft"), "4"],
+  ["Мастерская", url("#more"), "5"],
+  ["Контакты", url("#contacts"), "6"],
+];
+// the stringer on the right: a zigzag of 14 steps
+const N = 14;
+let zig = "M8 1000";
+for (let i = 0; i < N; i++) { const y = 1000 - ((i + 1) * 1000) / N; zig += `V${y.toFixed(1)}H${i % 2 ? 8 : 16}`; }
+---
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#f6f5f1" />
+    <link rel="icon" type="image/svg+xml" href={`${BASE}/favicon.svg`} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(img("og", 1200), Astro.site).href} />
+    <script is:inline>document.documentElement.classList.add("js");</script>
+  </head>
+  <body>
+    <header class="hdr" data-hdr>
+      <div class="wrap hdr__in">
+        <a href={url()} class="brand" aria-label="Ясень — на главную">
+          <!-- an ash leaf: a stem with paired leaflets -->
+          <svg viewBox="0 0 30 30" fill="currentColor" aria-hidden="true"><path d="M15 29V6" stroke="currentColor" stroke-width="1.4" fill="none" /><ellipse cx="15" cy="4.5" rx="2.2" ry="4" /><ellipse cx="10.5" cy="10" rx="1.8" ry="4" transform="rotate(-55 10.5 10)" /><ellipse cx="19.5" cy="10" rx="1.8" ry="4" transform="rotate(55 19.5 10)" /><ellipse cx="10.5" cy="16.5" rx="1.8" ry="4" transform="rotate(-55 10.5 16.5)" /><ellipse cx="19.5" cy="16.5" rx="1.8" ry="4" transform="rotate(55 19.5 16.5)" /><ellipse cx="10.5" cy="23" rx="1.8" ry="4" transform="rotate(-55 10.5 23)" /><ellipse cx="19.5" cy="23" rx="1.8" ry="4" transform="rotate(55 19.5 23)" /></svg>
+          <span><b>Ясень</b><small>деревообрабатывающее предприятие</small></span>
+        </a>
+        <nav class="nav" aria-label="Основное меню">{links.slice(0, 5).map(([t, h]) => <a href={h}>{t}</a>)}</nav>
+        <div class="hdr__r">
+          <a class="hbtn" href={contacts.officeHref} aria-label={`Позвонить: ${contacts.office}`}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a1 1 0 0 1-1 1A16 16 0 0 1 4 5a1 1 0 0 1 1-1z" /></svg></a>
+          <button class="hbtn menu-btn" type="button" aria-label="Меню" aria-expanded="false" aria-controls="menu" data-menu>
+            <!-- three steps -->
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 19h6v-6h6V7h6" /></svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="climb" aria-hidden="true">
+      <svg viewBox="0 0 24 1000" preserveAspectRatio="none"><path class="climb__base" d={zig} /><path class="climb__fill" d={zig} pathLength="1" data-climb /></svg>
+    </div>
+
+    <div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="Меню" aria-hidden="true">
+      <div class="menu__top">
+        <span class="brand"><b>Ясень</b></span>
+        <button class="hbtn" type="button" aria-label="Закрыть" data-menu-close><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 5l14 14M19 5L5 19" /></svg></button>
+      </div>
+      <nav class="menu__nav" aria-label="Меню">{links.map(([t, h, n], i) => <a href={h} style={`--i:${i}`}><small>{n}</small>{t}</a>)}</nav>
+      <div class="menu__foot">
+        <a href={contacts.officeHref}>{contacts.office}</a>
+        <span>{contacts.addr}</span>
+      </div>
+    </div>
+
+    <slot />
+
+    <footer class="ftr" id="contacts">
+      <div class="wrap">
+        <p class="ftr__big">Лестница на <i>всю</i><br />оставшуюся жизнь</p>
+        <div class="ftr__grid">
+          <div class="ftr__col">
+            <p class="kick">Производство</p>
+            <span>{contacts.addr}</span>
+            <span>С {contacts.since} года: лестницы, двери, окна и мебель из дерева</span>
+          </div>
+          <div class="ftr__col">
+            <p class="kick">Позвонить</p>
+            <a href={contacts.officeHref}>{contacts.office} — офис</a>
+            <a href={contacts.managerHref}>{contacts.manager}</a><span>{contacts.managerName}</span>
+          </div>
+          <div class="ftr__col">
+            <p class="kick">Написать</p>
+            <a href={`mailto:${contacts.email}`}>{contacts.email}</a>
+            <a href={contacts.vk} target="_blank" rel="noopener">ВКонтакте</a>
+          </div>
+        </div>
+        <div class="ftr__base"><span>© {new Date().getFullYear()} {contacts.company}</span><span>ИНН {contacts.inn}</span></div>
+      </div>
+    </footer>
+
+    <div class="note" role="status" aria-live="polite" data-note><p class="note__t" data-note-t></p><p class="note__s" data-note-s></p></div>
+
+    <script>
+      import "../scripts/app.ts";
+    </script>
+  </body>
+</html>
