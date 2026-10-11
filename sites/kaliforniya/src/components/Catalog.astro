@@ -1,0 +1,213 @@
+---
+/**
+ * The texture wall and the catalogue. Real tabletop textures cut from the product photos filter the
+ * grid; categories are sections the header strip jumps to. A card opens a sheet with the interior
+ * shot, sizes, material and texture variants; «В корзину» everywhere.
+ */
+import { products, cats, textures, pimg, img, rub } from "../lib/site";
+const count = (f: string) => products.filter((p) => p.fam.includes(f)).length;
+const groups = cats.slice(1).map(([id, t]) => ({ id, t, items: products.filter((p) => p.cat === id) })).filter((g) => g.items.length);
+---
+<div class="tx" data-tx>
+  <ul class="tx__wall">
+    {textures.map(([id, t]) => (
+      <li><button type="button" data-tex={id} aria-pressed="false" style={`--bg:url(${img(`tex-${id}`, 600).replace("-600.webp", ".webp")})`}><i></i><span>{t}</span><small class="num">{count(id)}</small></button></li>
+    ))}
+  </ul>
+  <p class="tx__state" data-tx-state hidden><span></span><button type="button" data-tx-clear>Показать все</button></p>
+</div>
+
+<div class="ct" data-ct>
+  {groups.map((g) => (
+    <section class="ct__g" id={`c-${g.id}`} data-group={g.id}>
+      <h3 class="h3 ct__h">{g.t} <small class="num">{g.items.length}</small></h3>
+      <ul class="ct__grid">
+        {g.items.map((p) => (
+          <li class="ct__it" data-fam={p.fam.join(" ")} data-in>
+            <button type="button" class="ct__ph" data-open={p.id} aria-label={`${p.name}: подробнее`}>
+              <img class="ct__a" src={pimg(p.id, 480)} alt={p.name} loading="lazy" width="480" height="480" />
+              {p.interior && <img class="ct__b" src={img(p.id, 600)} alt="" loading="lazy" width="600" height="400" />}
+            </button>
+            <p class="ct__n">{p.short}</p>
+            <p class="ct__d num">{p.L}×{p.W}×{p.H} см</p>
+            <div class="ct__row">
+              <b class="num">{rub(p.price)}</b>
+              <button type="button" class="ct__add" data-add={p.id} aria-label={`Добавить в корзину: ${p.name}`}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))}
+</div>
+
+<div class="ps" data-sheet aria-hidden="true">
+  <div class="ps__veil" data-close></div>
+  <div class="ps__card" role="dialog" aria-modal="true" aria-labelledby="ps-n">
+    <button class="ps__x" type="button" aria-label="Закрыть" data-close><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6L6 18" /></svg></button>
+    <div class="ps__media"><img data-s-a alt="" /><img data-s-b alt="" /></div>
+    <div class="ps__body">
+      <p class="kick" data-s-cat></p>
+      <p class="h2" id="ps-n" data-s-name></p>
+      <p class="read" data-s-note></p>
+      <dl class="ps__dl" data-s-dl></dl>
+      <figure class="ps__cat"><svg viewBox="0 0 300 120" data-s-scale aria-label="Стол сбоку рядом с котом для масштаба"></svg><figcaption>Кот для масштаба: 30 см в холке</figcaption></figure>
+      <div class="ps__var" data-s-var></div>
+      <p class="ps__price num" data-s-price></p>
+      <button class="btn btn--block" type="button" data-s-add>В корзину</button>
+      <ul class="ps__perks"><li>Бесплатная доставка до пункта выдачи</li><li>Оплата при получении</li><li>Гарантия 24 месяца</li></ul>
+    </div>
+  </div>
+</div>
+
+<script define:vars={{ data: products.map((p) => ({ ...p, a: pimg(p.id, 960), b: p.interior ? img(p.id, 1200) : "" })), catN: Object.fromEntries(cats) }}>
+  window.__cat = { data, catN };
+</script>
+<script>
+  import { cart, noted } from "../scripts/app";
+  const { data, catN } = (window as any).__cat;
+  const byId = (id: string) => data.find((p: any) => p.id === id);
+  const fmt = (n: number) => Math.round(n).toLocaleString("ru-RU") + " ₽";
+
+  // texture filter
+  const wall = document.querySelector<HTMLElement>("[data-tx]")!;
+  const state = wall.querySelector<HTMLElement>("[data-tx-state]")!;
+  let tex = "";
+  const apply = () => {
+    wall.querySelectorAll<HTMLButtonElement>("[data-tex]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.tex === tex)));
+    document.querySelectorAll<HTMLElement>(".ct__it").forEach((li) => (li.hidden = !!tex && !li.dataset.fam!.split(" ").includes(tex)));
+    document.querySelectorAll<HTMLElement>("[data-group]").forEach((g) => (g.hidden = ![...g.querySelectorAll(".ct__it")].some((li) => !(li as HTMLElement).hidden)));
+    state.hidden = !tex;
+    if (tex) state.querySelector("span")!.textContent = `Фактура: ${wall.querySelector(`[data-tex="${tex}"] span`)!.textContent}`;
+  };
+  wall.querySelectorAll<HTMLButtonElement>("[data-tex]").forEach((b) => b.addEventListener("click", () => {
+    tex = tex === b.dataset.tex ? "" : b.dataset.tex!; apply();
+    if (tex) document.querySelector("[data-ct]")!.scrollIntoView({ behavior: "smooth", block: "start" });
+  }));
+  state.querySelector("[data-tx-clear]")!.addEventListener("click", () => { tex = ""; apply(); });
+
+  // add to cart
+  const add = (id: string, variant?: string) => { const p = byId(id); cart.add(id, variant); noted(p.name, `${fmt(p.price)} · добавлено в корзину`, p.a.replace("-960", "-480")); };
+  document.querySelectorAll<HTMLButtonElement>("[data-add]").forEach((b) => b.addEventListener("click", () => add(b.dataset.add!)));
+
+  // cards lean towards the cursor on desktop
+  if (matchMedia("(hover: hover)").matches) document.querySelectorAll<HTMLElement>(".ct__it").forEach((c) => {
+    c.addEventListener("pointermove", (e) => { const r = c.getBoundingClientRect(); c.style.setProperty("--rx", `${((e.clientY - r.top) / r.height - 0.5) * -8}deg`); c.style.setProperty("--ry", `${((e.clientX - r.left) / r.width - 0.5) * 10}deg`); });
+    c.addEventListener("pointerleave", () => { c.style.setProperty("--rx", "0deg"); c.style.setProperty("--ry", "0deg"); });
+  });
+
+  // the sheet
+  const sh = document.querySelector<HTMLElement>("[data-sheet]")!;
+  const $ = <E extends HTMLElement = HTMLElement>(s: string) => sh.querySelector<E>(s)!;
+  let cur = "", variant = "", last: HTMLElement | null = null;
+  function open(id: string, from: HTMLElement) {
+    const p = byId(id); cur = id; last = from;
+    $<HTMLImageElement>("[data-s-a]").src = p.a; $<HTMLImageElement>("[data-s-a]").alt = p.name;
+    const b = $<HTMLImageElement>("[data-s-b]"); b.hidden = !p.b; if (p.b) { b.src = p.b; b.alt = `${p.name} в интерьере`; }
+    $("[data-s-cat]").textContent = catN[p.cat];
+    $("[data-s-name]").textContent = p.name;
+    $("[data-s-note]").textContent = p.note; $("[data-s-note]").hidden = !p.note;
+    $("[data-s-dl]").innerHTML = [["Длина", `${p.L} см`], ["Ширина", `${p.W} см`], ["Высота", `${p.H} см`], ["Материал", p.mat || "—"]].map(([a, v]) => `<div><dt>${a}</dt><dd>${v}</dd></div>`).join("");
+    // texture variants as they list them, split on the known colour names
+    const vars = (p.tex || "").split(/\s(?=(?:белый|черный|серый|зеленый|бежевый|браун|сахара|калакатта|кальдо|дуб|орех|ЛДСП|графит|латте|желтый|грей|корунд|неро|интра|юта|белая|черная|акация|грецкий))/i).map((s: string) => s.trim()).filter(Boolean);
+    variant = vars[0] || "";
+    $("[data-s-var]").innerHTML = vars.length > 1 ? `<p class="ps__vl">Цвет и фактура</p>` + vars.map((v: string, i: number) => `<button type="button" aria-pressed="${i === 0}" data-v="${v}">${v}</button>`).join("") : `<p class="ps__vl">Цвет и фактура: ${p.tex || "—"}</p>`;
+    $("[data-s-var]").querySelectorAll<HTMLButtonElement>("[data-v]").forEach((x) => x.addEventListener("click", () => { variant = x.dataset.v!; $("[data-s-var]").querySelectorAll("[data-v]").forEach((y) => y.setAttribute("aria-pressed", String(y === x))); }));
+    $("[data-s-price]").textContent = fmt(p.price);
+    // side view to scale next to a sitting cat (≈30 cm at the shoulder, 45 cm to the ears)
+    const k = 1.15, base = 110, x0 = 120, w = Math.min(p.L, 150) * k, h = p.H * k, t = 4;
+    const legs = p.cat === "tv" || p.cat === "console" ? `<rect x="${x0}" y="${base - h}" width="${w}" height="${h}" rx="3" class="sc__body" />` : `<rect x="${x0}" y="${base - h}" width="${w}" height="${t + 2}" rx="2" class="sc__top" /><path d="M${x0 + 6} ${base - h + t}V${base}M${x0 + w - 6} ${base - h + t}V${base}" class="sc__leg" />`;
+    const cat = `<g class="sc__cat" transform="translate(40 ${base}) scale(${k})"><path d="M0 0 C 0 -14, 4 -26, 12 -30 L 14 -39 L 18 -33 L 22 -33 L 26 -39 L 27 -29 C 32 -24, 31 -14, 28 -8 C 34 -6, 40 -2, 38 0 Z" /><path d="M36 -1 C 48 -2, 50 -12, 44 -18" class="sc__tail" /></g>`;
+    $("[data-s-scale]").innerHTML = `<path d="M10 ${base}H290" class="sc__floor" />${cat}${legs}<text x="${x0 + w / 2}" y="${base - h - 8}" text-anchor="middle" class="sc__t">${p.H} см</text>`;
+    sh.classList.add("on"); sh.setAttribute("aria-hidden", "false"); document.documentElement.classList.add("sheet-open");
+    $<HTMLButtonElement>(".ps__x").focus({ preventScroll: true });
+  }
+  const close = () => { sh.classList.remove("on"); sh.setAttribute("aria-hidden", "true"); document.documentElement.classList.remove("sheet-open"); last?.focus({ preventScroll: true }); };
+  document.querySelectorAll<HTMLButtonElement>("[data-open]").forEach((b) => b.addEventListener("click", () => open(b.dataset.open!, b)));
+  sh.querySelectorAll("[data-close]").forEach((b) => b.addEventListener("click", close));
+  $("[data-s-add]").addEventListener("click", () => { add(cur, variant); close(); });
+  addEventListener("keydown", (e) => { if (e.key === "Escape" && sh.classList.contains("on")) close(); });
+  // open from other parts of the page (the hero, the sofa matcher)
+  document.addEventListener("product:open", (e: any) => open(e.detail.id, e.detail.from || document.body));
+</script>
+
+<style>
+  .tx__wall { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .tx__wall button { position: relative; width: 100%; height: 96px; border-radius: 16px; overflow: hidden; text-align: left; padding: 12px; display: flex; flex-direction: column; justify-content: flex-end; color: #fff; isolation: isolate; box-shadow: inset 0 0 0 0 var(--terra); transition: box-shadow 0.25s, transform 0.3s var(--ease); }
+  .tx__wall i { position: absolute; inset: 0; z-index: -1; background: var(--bg) center / cover; transition: transform 0.8s var(--ease); }
+  .tx__wall button::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(transparent 35%, rgba(0, 0, 0, 0.45)); }
+  @media (hover: hover) { .tx__wall button:hover i { transform: scale(1.08); } }
+  .tx__wall span { font-weight: 600; font-size: 15px; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4); }
+  .tx__wall small { position: absolute; top: 10px; right: 10px; min-width: 24px; height: 24px; padding: 0 6px; border-radius: 12px; background: rgba(255, 255, 255, 0.9); color: var(--ink); font-size: 12px; font-weight: 700; display: grid; place-content: center; }
+  .tx__wall [aria-pressed="true"] { box-shadow: inset 0 0 0 3px var(--terra); transform: scale(0.97); }
+  .tx__state { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 14px; padding: 10px 14px; border-radius: 14px; background: #fff; font-weight: 600; }
+  .tx__state button { color: var(--terra); font-weight: 600; }
+
+  .ct { display: grid; gap: 40px; margin-top: 44px; }
+  .ct__h { margin-bottom: 14px; display: flex; align-items: baseline; gap: 8px; }
+  .ct__h small { font-family: var(--sans); font-size: 14px; color: var(--mute); font-weight: 500; }
+  .ct__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .ct__it { display: grid; gap: 4px; padding: 8px 8px 12px; border-radius: var(--r); background: var(--card); transform: perspective(700px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: transform 0.25s ease-out, box-shadow 0.3s; }
+  @media (hover: hover) { .ct__it:hover { box-shadow: 0 18px 30px -16px rgba(198, 90, 53, 0.45); } }
+  .ct__ph { position: relative; display: block; width: 100%; aspect-ratio: 1; border-radius: 12px; overflow: hidden; background: #fff; }
+  .ct__ph img { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .ct__a { object-fit: contain; transition: opacity 0.4s; }
+  .ct__b { object-fit: cover; opacity: 0; transition: opacity 0.5s; }
+  @media (hover: hover) { .ct__ph:hover .ct__b { opacity: 1; } }
+  .ct__n { font-family: var(--display); font-weight: 600; font-size: 16px; padding: 0 4px; }
+  .ct__d { font-size: 12.5px; color: var(--mute); padding: 0 4px; }
+  .ct__row { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 0 0 4px; }
+  .ct__row b { font-size: 16px; }
+  .ct__add { width: 40px; height: 40px; border-radius: 50%; background: var(--terra); color: #fff; display: grid; place-content: center; transition: transform 0.25s var(--ease), background 0.25s; }
+  .ct__add svg { width: 20px; height: 20px; }
+  .ct__add:active { transform: scale(0.9); }
+  @media (hover: hover) { .ct__add:hover { background: var(--ink); } }
+
+  .ps { position: fixed; inset: 0; z-index: 140; pointer-events: none; }
+  .ps.on { pointer-events: auto; }
+  .ps__veil { position: absolute; inset: 0; background: rgba(31, 35, 40, 0.45); opacity: 0; transition: opacity 0.4s; }
+  .ps.on .ps__veil { opacity: 1; }
+  .ps__card { position: absolute; left: 0; right: 0; bottom: 0; max-height: 92svh; overflow-y: auto; overscroll-behavior: contain; background: var(--sand); border-radius: 22px 22px 0 0; transform: translateY(105%); transition: transform 0.55s var(--ease); }
+  .ps.on .ps__card { transform: none; }
+  .ps__x { position: sticky; top: 10px; float: right; margin: 10px 10px -52px 0; z-index: 3; width: 42px; height: 42px; border-radius: 50%; background: #fff; display: grid; place-content: center; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12); }
+  .ps__x svg { width: 20px; height: 20px; }
+  .ps__media { display: grid; grid-auto-flow: column; grid-auto-columns: 100%; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; background: #fff; }
+  .ps__media::-webkit-scrollbar { display: none; }
+  .ps__media img { width: 100%; aspect-ratio: 4 / 3; object-fit: contain; scroll-snap-align: start; background: #fff; }
+  .ps__media img + img { object-fit: cover; }
+  .ps__body { display: grid; gap: 12px; padding: 20px var(--gut) calc(24px + env(safe-area-inset-bottom)); }
+  .ps__dl { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .ps__dl :global(div:last-child) { grid-column: 1 / -1; }
+  .ps__dl :global(dt) { font-size: 12px; color: var(--mute); font-weight: 600; }
+  .ps__dl :global(dd) { font-size: 15px; }
+  .ps__var { display: flex; flex-wrap: wrap; gap: 6px; }
+  .ps__var :global(.ps__vl) { width: 100%; font-size: 13px; font-weight: 600; color: var(--ink-2); }
+  .ps__var :global(button) { padding: 8px 12px; border-radius: 999px; background: #fff; font-size: 14px; box-shadow: inset 0 0 0 1.5px var(--line); }
+  .ps__var :global(button[aria-pressed="true"]) { box-shadow: inset 0 0 0 2px var(--terra); }
+  .ps__cat { margin: 4px 0 0; padding: 10px 12px 8px; border-radius: 14px; background: #fff; }
+  .ps__cat svg { width: 100%; height: auto; display: block; }
+  .ps__cat figcaption { font-family: "Caveat", cursive; font-size: 22px; color: var(--pacific); text-align: center; }
+  .ps__cat :global(.sc__floor) { stroke: var(--ink); stroke-width: 1.5; }
+  .ps__cat :global(.sc__cat) { fill: #3a3a3a; }
+  .ps__cat :global(.sc__tail) { fill: none; stroke: #3a3a3a; stroke-width: 4; stroke-linecap: round; }
+  .ps__cat :global(.sc__top), .ps__cat :global(.sc__body) { fill: var(--terra); }
+  .ps__cat :global(.sc__leg) { stroke: var(--ink); stroke-width: 3; }
+  .ps__cat :global(.sc__t) { font-size: 12px; font-weight: 600; fill: var(--terra); font-family: var(--sans); }
+  .ps__price { font-family: var(--display); font-weight: 700; font-size: 30px; }
+  .ps__perks { display: grid; gap: 4px; font-size: 14px; color: var(--pacific); }
+  .ps__perks li::before { content: "✓ "; font-weight: 700; }
+  :global(html.sheet-open) { overflow: hidden; }
+
+  @media (min-width: 700px) { .tx__wall { grid-template-columns: repeat(5, 1fr); } .ct__grid { grid-template-columns: repeat(3, 1fr); gap: 14px; } }
+  @media (min-width: 1000px) {
+    .tx__wall button { height: 130px; }
+    .ct__grid { grid-template-columns: repeat(4, 1fr); }
+    .ps__card { left: 50%; right: auto; top: 50%; bottom: auto; width: min(1040px, 92vw); max-height: 88vh; border-radius: 22px; display: grid; grid-template-columns: 1.15fr 1fr; transform: translate(-50%, -46%) scale(0.97); opacity: 0; transition: transform 0.5s var(--ease), opacity 0.35s; }
+    .ps.on .ps__card { transform: translate(-50%, -50%); opacity: 1; }
+    .ps__x { position: absolute; top: 14px; right: 14px; margin: 0; }
+    .ps__media { grid-auto-flow: row; grid-auto-columns: auto; overflow: visible; align-content: start; }
+    .ps__body { padding: 36px 32px; align-content: start; }
+  }
+</style>

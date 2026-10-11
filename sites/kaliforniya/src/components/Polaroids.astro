@@ -1,0 +1,61 @@
+---
+/**
+ * A stack of polaroids from their interior shoots. Flick the top one away (drag or tap the arrow)
+ * and it slides under the stack; each has a handwritten caption with the table and its price.
+ */
+import { products, img, rub } from "../lib/site";
+const shots = products.filter((p) => p.interior).slice(0, 14).map((p, i) => ({ id: p.id, short: p.short, price: rub(p.price), src: img(p.id, 600), r: ((i * 37) % 13) - 6 }));
+---
+<div class="pl" data-pl>
+  <div class="pl__stack" data-stack>
+    {shots.map((s, i) => (
+      <figure class="pl__card" data-card data-id={s.id} style={`--r:${s.r}deg;--z:${shots.length - i}`}>
+        <img src={s.src} alt={`${s.short} в интерьере`} loading="lazy" width="600" height="600" draggable="false" />
+        <figcaption><span class="pl__h">{s.short}</span><span class="pl__h pl__h--p">{s.price}</span></figcaption>
+      </figure>
+    ))}
+  </div>
+  <div class="pl__ctl">
+    <button type="button" class="btn btn--line" data-open>Посмотреть этот стол</button>
+    <button type="button" class="btn btn--ink" data-flip>Следующий снимок →</button>
+  </div>
+</div>
+
+<script>
+  const el = document.querySelector<HTMLElement>("[data-pl]")!;
+  const stack = el.querySelector<HTMLElement>("[data-stack]")!;
+  const order = () => [...stack.querySelectorAll<HTMLElement>("[data-card]")].sort((a, b) => +b.style.getPropertyValue("--z") - +a.style.getPropertyValue("--z"));
+  const top = () => order()[0];
+  let busy = false;
+  function flip(dx = 1) {
+    if (busy) return; busy = true;
+    const c = top();
+    c.style.setProperty("--fx", `${dx * 120}%`); c.classList.add("away");
+    setTimeout(() => {
+      const min = Math.min(...order().map((x) => +x.style.getPropertyValue("--z")));
+      c.style.setProperty("--z", String(min - 1)); c.classList.remove("away"); c.style.removeProperty("--fx"); c.style.removeProperty("--dx");
+      busy = false;
+    }, 420);
+  }
+  el.querySelector("[data-flip]")!.addEventListener("click", () => flip(1));
+  el.querySelector("[data-open]")!.addEventListener("click", (e) => document.dispatchEvent(new CustomEvent("product:open", { detail: { id: top().dataset.id, from: e.currentTarget } })));
+  // drag the top card
+  let sx = 0, drag = false, card: HTMLElement | null = null;
+  stack.addEventListener("pointerdown", (e) => { card = top(); if (!card.contains(e.target as Node)) return; drag = true; sx = e.clientX; card.classList.add("drag"); stack.setPointerCapture(e.pointerId); });
+  stack.addEventListener("pointermove", (e) => { if (drag && card) card.style.setProperty("--dx", `${e.clientX - sx}px`); });
+  const end = (e: PointerEvent) => { if (!drag || !card) return; drag = false; card.classList.remove("drag"); const d = e.clientX - sx; if (Math.abs(d) > 70) flip(Math.sign(d)); else card.style.removeProperty("--dx"); };
+  stack.addEventListener("pointerup", end); stack.addEventListener("pointercancel", end);
+</script>
+
+<style>
+  .pl { display: grid; gap: 22px; justify-items: center; }
+  .pl__stack { position: relative; width: min(78vw, 360px); aspect-ratio: 0.84; touch-action: pan-y; }
+  .pl__card { position: absolute; inset: 0; z-index: var(--z); margin: 0; padding: 4% 4% 0; background: #fffdf8; border-radius: 4px; box-shadow: 0 14px 30px -10px rgba(60, 40, 20, 0.35), 0 2px 4px rgba(0, 0, 0, 0.08); transform: translateX(var(--dx, 0px)) rotate(calc(var(--r) + var(--dx, 0px) / 30 * 1deg)); transition: transform 0.4s var(--ease), opacity 0.3s; cursor: grab; user-select: none; -webkit-user-select: none; }
+  .pl__card.drag { transition: none; cursor: grabbing; }
+  .pl__card.away { transform: translateX(var(--fx)) rotate(calc(var(--r) * 3)); opacity: 0; }
+  .pl__card img { width: 100%; aspect-ratio: 1; object-fit: cover; pointer-events: none; }
+  .pl__card figcaption { display: flex; justify-content: space-between; align-items: baseline; padding: 4% 2% 0; }
+  .pl__h { font-family: "Caveat", cursive; font-size: clamp(24px, 6.5vw, 32px); line-height: 1; color: #2b3a55; }
+  .pl__h--p { color: var(--terra); }
+  .pl__ctl { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+</style>

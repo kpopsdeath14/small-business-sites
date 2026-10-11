@@ -1,0 +1,211 @@
+---
+/**
+ * «Примерочная»: a drawn California living room — a window onto palms and the Pacific, a sofa,
+ * a rug, a floor lamp. Swipe through the coffee tables and the real product photos land on the rug
+ * at roughly true scale against a 220 cm sofa. The time-of-day slider takes the room from morning
+ * through golden hour to night: the sky, the sun and the light in the room change, the lamp comes on.
+ * Units inside the scene are centimetres (1 cm = 100cqw / 420).
+ */
+import { products, url } from "../lib/site";
+const list = products.filter((p) => ["coffee", "set", "side"].includes(p.cat)).map((p) => ({ id: p.id, name: p.name, short: p.short, price: p.price, L: p.L, W: p.W, H: p.H, cat: p.cat, src: url(`cut/${p.id}.webp`) }));
+// start on a statement piece
+const first = Math.max(0, list.findIndex((p) => /Ориндж/.test(p.name)));
+---
+<div class="rm" data-rm style="--t:0.35">
+  <div class="rm__scene" data-scene>
+    <!-- window: sky, sun, ocean, palms -->
+    <div class="rm__win">
+      <div class="rm__sky"></div>
+      <i class="rm__sun"></i>
+      <i class="rm__stars"></i>
+      <div class="rm__sea"><i></i></div>
+      <svg class="rm__palms" viewBox="0 0 180 115" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+        <g class="rm__palm" style="--d:0s"><path d="M38 115 C 40 90, 34 70, 44 46" class="rm__trunk" /><path d="M44 46 c -14 -6 -26 -2 -34 6 M44 46 c -4 -12 -14 -18 -26 -18 M44 46 c 6 -12 18 -16 30 -12 M44 46 c 14 -2 24 6 28 16 M44 46 c 2 10 -2 20 -8 26" class="rm__frond" /></g>
+        <g class="rm__palm" style="--d:-1.4s"><path d="M136 115 C 132 86, 142 64, 134 36" class="rm__trunk" /><path d="M134 36 c -14 -6 -26 -2 -34 6 M134 36 c -4 -12 -14 -18 -26 -18 M134 36 c 6 -12 18 -16 30 -12 M134 36 c 14 -2 24 6 28 16 M134 36 c 2 10 -2 20 -8 26" class="rm__frond" /></g>
+        <g class="rm__palm rm__palm--far" style="--d:-2.2s"><path d="M98 115 C 99 98, 95 86, 100 72" class="rm__trunk" /><path d="M100 72 c -9 -4 -16 -1 -21 4 M100 72 c -3 -8 -9 -11 -16 -11 M100 72 c 4 -8 11 -10 19 -8 M100 72 c 9 -1 15 4 17 10" class="rm__frond" /></g>
+      </svg>
+      <i class="rm__frame"></i>
+    </div>
+    <!-- floor lamp -->
+    <div class="rm__lamp"><i class="rm__shade"></i><i class="rm__pole"></i><i class="rm__glow"></i></div>
+    <!-- a plant in a terracotta pot -->
+    <svg class="rm__plant" viewBox="0 0 60 120" aria-hidden="true"><path d="M30 70 C 10 50, 6 30, 14 8 M30 70 C 34 44, 46 30, 54 16 M30 70 C 24 40, 30 20, 28 2 M30 70 C 44 56, 54 52, 58 44 M30 70 C 18 62, 6 60, 2 52" class="rm__leaf" /><path d="M14 70 H46 L42 118 H18 Z" class="rm__pot" /></svg>
+    <!-- sofa -->
+    <svg class="rm__sofa" viewBox="0 0 220 86" aria-hidden="true">
+      <rect x="10" y="4" width="200" height="40" rx="12" class="rm__back" />
+      <rect x="0" y="22" width="22" height="52" rx="10" class="rm__arm" />
+      <rect x="198" y="22" width="22" height="52" rx="10" class="rm__arm" />
+      <rect x="20" y="40" width="88" height="28" rx="8" class="rm__seat" />
+      <rect x="112" y="40" width="88" height="28" rx="8" class="rm__seat" />
+      <rect x="34" y="16" width="34" height="28" rx="9" transform="rotate(-8 51 30)" class="rm__pillow" />
+      <path d="M8 74 H212 V80 H8 Z" class="rm__base" /><path d="M24 80 v6 M196 80 v6" class="rm__leg" />
+    </svg>
+    <i class="rm__rug"></i>
+    <div class="rm__table" data-table><img alt="" data-img /><i class="rm__shadow"></i></div>
+    <i class="rm__light"></i>
+    <i class="rm__lampglow"></i><i class="rm__lampshade"></i>
+    <button class="rm__nav rm__nav--l" type="button" data-prev aria-label="Предыдущий стол"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7" /></svg></button>
+    <button class="rm__nav rm__nav--r" type="button" data-next aria-label="Следующий стол"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5l7 7-7 7" /></svg></button>
+    <p class="rm__hint">листайте столы ← →</p>
+  </div>
+
+  <div class="rm__bar">
+    <div class="rm__info">
+      <p class="rm__n" data-name></p>
+      <p class="rm__d num" data-dims></p>
+    </div>
+    <p class="rm__p num" data-price></p>
+    <div class="rm__btns">
+      <button type="button" class="btn btn--line" data-more>Подробнее</button>
+      <button type="button" class="btn" data-add>В корзину</button>
+    </div>
+  </div>
+
+  <label class="rm__tod">
+    <span class="rm__ico" aria-hidden="true">☀︎</span>
+    <input type="range" min="0" max="1" step="0.001" value="0.35" data-tod aria-label="Время суток" />
+    <span class="rm__ico" aria-hidden="true">☾</span>
+    <b data-tod-o>День</b>
+  </label>
+</div>
+
+<script define:vars={{ list, first }}>
+  window.__room = { list, first };
+</script>
+<script>
+  import { cart, noted } from "../scripts/app";
+  const { list, first } = (window as any).__room;
+  const el = document.querySelector<HTMLElement>("[data-rm]")!;
+  const q = <E extends HTMLElement = HTMLElement>(s: string) => el.querySelector<E>(s)!;
+  const fmt = (n: number) => Math.round(n).toLocaleString("ru-RU") + " ₽";
+  let i = first, busy = false;
+  const table = q("[data-table]"), im = q<HTMLImageElement>("[data-img]");
+  // scale: the sofa is drawn 220 cm wide; the table stands a little closer, so ×1.12
+  const size = (p: any) => {
+    const reach = p.cat === "set" ? Math.max(p.L, p.W) * 1.55 : Math.max(p.L, p.W);
+    table.style.setProperty("--w", String(reach * 1.12 * (p.cat === "side" ? 1.1 : 1)));
+    table.style.setProperty("--x", p.cat === "side" ? "88" : "0"); // side tables stand by the armrest
+  };
+  function show(n: number, dir = 1) {
+    if (busy) return; busy = true;
+    i = (n + list.length) % list.length;
+    const p = list[i];
+    table.classList.remove("in"); table.style.setProperty("--dir", String(dir)); table.classList.add("out");
+    const next = new Image(); next.src = p.src;
+    const go = () => {
+      im.src = p.src; im.alt = p.name; size(p);
+      table.classList.remove("out"); void table.offsetWidth; table.classList.add("in");
+      q("[data-name]").textContent = p.name;
+      q("[data-dims]").textContent = `${p.L} × ${p.W} см, высота ${p.H} см`;
+      q("[data-price]").textContent = fmt(p.price);
+      setTimeout(() => (busy = false), 350);
+    };
+    setTimeout(() => (next.complete ? go() : (next.onload = go)), 220);
+  }
+  q("[data-prev]").addEventListener("click", () => show(i - 1, -1));
+  q("[data-next]").addEventListener("click", () => show(i + 1, 1));
+  // swipe on the scene
+  let sx = 0;
+  const scene = q("[data-scene]");
+  scene.addEventListener("pointerdown", (e) => (sx = e.clientX));
+  scene.addEventListener("pointerup", (e) => { const d = e.clientX - sx; if (Math.abs(d) > 40) show(i + (d < 0 ? 1 : -1), d < 0 ? 1 : -1); });
+  addEventListener("keydown", (e) => { if (!el.matches(":hover")) return; if (e.key === "ArrowRight") show(i + 1, 1); if (e.key === "ArrowLeft") show(i - 1, -1); });
+  q("[data-add]").addEventListener("click", () => { const p = list[i]; cart.add(p.id); noted(p.name, `${fmt(p.price)} · добавлено в корзину`, p.src); });
+  q("[data-more]").addEventListener("click", (e) => document.dispatchEvent(new CustomEvent("product:open", { detail: { id: list[i].id, from: e.currentTarget } })));
+
+  // time of day: 0 morning … 0.35 day … 0.68 golden hour … 1 night
+  const tod = q<HTMLInputElement>("[data-tod]"), lbl = q("[data-tod-o]");
+  const setT = (t: number) => {
+    el.style.setProperty("--t", t.toFixed(3));
+    el.classList.toggle("night", t > 0.86);
+    lbl.textContent = t < 0.18 ? "Утро" : t < 0.52 ? "День" : t < 0.8 ? "Золотой час" : "Вечер";
+  };
+  tod.addEventListener("input", () => setT(+tod.value));
+  setT(+tod.value);
+  // a slow sunset once the room is on screen, until someone touches the slider
+  let touched = false;
+  tod.addEventListener("pointerdown", () => (touched = true));
+  new IntersectionObserver(([e], o) => {
+    if (!e.isIntersecting) return; o.disconnect();
+    const t0 = performance.now(), a = 0.35, b = 0.72;
+    const run = (now: number) => { if (touched) return; const k = Math.min(1, (now - t0) / 5000), v = a + (b - a) * (k * k * (3 - 2 * k)); tod.value = String(v); setT(v); if (k < 1) requestAnimationFrame(run); };
+    setTimeout(() => requestAnimationFrame(run), 1200);
+  }, { threshold: 0.4 }).observe(el);
+
+  show(i);
+</script>
+
+<style>
+  .rm { display: grid; gap: 12px; }
+  .rm__scene { position: relative; container-type: inline-size; aspect-ratio: 420 / 330; border-radius: 22px; overflow: hidden; touch-action: pan-y; user-select: none; -webkit-user-select: none;
+    /* the wall warms at golden hour and dims at night */
+    background: linear-gradient(180deg, color-mix(in oklab, color-mix(in oklab, #f6e9d8, #f2c99a calc(clamp(0, (var(--t) - 0.45) * 3, 1) * 100%)), #2a2f45 calc(clamp(0, (var(--t) - 0.72) * 3.6, 1) * 100%)) 0 70%, color-mix(in oklab, color-mix(in oklab, #d9b48c, #c98d5d calc(clamp(0, (var(--t) - 0.45) * 3, 1) * 100%)), #3a3040 calc(clamp(0, (var(--t) - 0.72) * 3.6, 1) * 100%)) 70% 100%); }
+  .rm__scene > * { position: absolute; }
+  .rm__win { left: calc(100cqw * 120 / 420); width: calc(100cqw * 180 / 420); top: calc(100cqw * 22 / 420); height: calc(100cqw * 118 / 420); overflow: hidden; border-radius: 6px; }
+  .rm__win > * { position: absolute; }
+  .rm__sky { inset: 0; background: linear-gradient(180deg,
+      color-mix(in oklab, color-mix(in oklab, #9fd0ef, #f08a4b calc(clamp(0, (var(--t) - 0.45) * 3, 1) * 100%)), #0f1a3a calc(clamp(0, (var(--t) - 0.72) * 3.6, 1) * 100%)),
+      color-mix(in oklab, color-mix(in oklab, #e8f4fb, #ffd08a calc(clamp(0, (var(--t) - 0.45) * 3, 1) * 100%)), #4a3a66 calc(clamp(0, (var(--t) - 0.72) * 3.6, 1) * 100%))); }
+  /* the sun rises from the left and sets into the ocean */
+  .rm__sun { width: 22%; aspect-ratio: 1; border-radius: 50%; left: calc(8% + var(--t) * 60%); top: calc(64% - sin(var(--t) * 3.1416) * 52% + clamp(0, (var(--t) - 0.75) * 4, 1) * 40%); background: radial-gradient(circle, #fff6d8, #ffd66b 45%, #ff9e45 75%, transparent 76%); box-shadow: 0 0 40px 10px rgba(255, 190, 90, 0.55); }
+  .rm__sea { left: 0; right: 0; bottom: 0; height: 34%; background: linear-gradient(180deg, color-mix(in oklab, color-mix(in oklab, #3d9cc4, #d97a4d calc(clamp(0, (var(--t) - 0.45) * 3, 1) * 60%)), #172040 calc(clamp(0, (var(--t) - 0.72) * 3.6, 1) * 100%)), color-mix(in oklab, #1f6f93, #0c1428 calc(clamp(0, (var(--t) - 0.72) * 3.6, 1) * 100%))); }
+  .rm__sea i { position: absolute; inset: 0; background: repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0 1px, transparent 1px 7px); animation: waves 6s linear infinite; opacity: 0.6; }
+  @keyframes waves { to { background-position: 0 14px; } }
+  .rm__palms { left: 0; bottom: 0; width: 100%; height: 100%; }
+  .rm__trunk { fill: none; stroke: color-mix(in oklab, #4a3a2a, #0b0f1e calc(clamp(0, (var(--t) - 0.6) * 3, 1) * 100%)); stroke-width: 3.2; stroke-linecap: round; }
+  .rm__frond { fill: none; stroke: color-mix(in oklab, #2f5f3a, #0b0f1e calc(clamp(0, (var(--t) - 0.6) * 3, 1) * 100%)); stroke-width: 3; stroke-linecap: round; }
+  .rm__palm { transform-box: fill-box; transform-origin: 50% 100%; animation: sway 5s ease-in-out infinite alternate; animation-delay: var(--d); }
+  .rm__palm--far { opacity: 0.7; }
+  @keyframes sway { from { transform: rotate(-1.5deg); } to { transform: rotate(1.8deg); } }
+  .rm__frame { inset: 0; border: calc(100cqw * 4 / 420) solid #f9f4ec; border-radius: 6px; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06); background: linear-gradient(90deg, transparent calc(50% - 1.5px), #f9f4ec calc(50% - 1.5px) calc(50% + 1.5px), transparent calc(50% + 1.5px)); }
+  .rm__lamp { right: calc(100cqw * 34 / 420); bottom: calc(100cqw * 92 / 420); width: calc(100cqw * 40 / 420); height: calc(100cqw * 165 / 420); }
+  .rm__lamp > * { position: absolute; }
+  .rm__shade { top: 0; left: 0; right: 0; height: 22%; background: #efe2cf; clip-path: polygon(20% 0, 80% 0, 100% 100%, 0 100%); transition: background 0.6s; }
+  .rm__pole { top: 22%; bottom: 0; left: calc(50% - 1.5px); width: 3px; background: #2b2b2b; }
+  .rm__pole::after { content: ""; position: absolute; bottom: 0; left: -10px; width: 23px; height: 4px; border-radius: 2px; background: #2b2b2b; }
+  .rm__glow { top: -40%; left: -160%; width: 420%; height: 140%; border-radius: 50%; background: radial-gradient(closest-side, rgba(255, 200, 120, 0.55), transparent); opacity: 0; transition: opacity 0.8s; mix-blend-mode: screen; }
+  .night .rm__glow { opacity: 1; }
+  .night .rm__shade { background: #ffe0a8; box-shadow: 0 0 30px 8px rgba(255, 200, 120, 0.6); }
+  .rm__plant { left: calc(100cqw * 22 / 420); bottom: calc(100cqw * 92 / 420); width: calc(100cqw * 52 / 420); }
+  .rm__leaf { fill: none; stroke: #3c6b45; stroke-width: 5; stroke-linecap: round; }
+  .rm__pot { fill: #c65a35; }
+  .rm__sofa { left: calc(100cqw * 100 / 420); width: calc(100cqw * 220 / 420); bottom: calc(100cqw * 92 / 420); }
+  .rm__back, .rm__arm { fill: #7e9eaa; } .rm__seat { fill: #92b1bc; } .rm__pillow { fill: #f2b544; } .rm__base { fill: #6a8792; } .rm__leg { stroke: #3a2c22; stroke-width: 3; }
+  .rm__rug { left: calc(100cqw * 70 / 420); right: calc(100cqw * 70 / 420); bottom: calc(100cqw * 14 / 420); height: calc(100cqw * 66 / 420); border-radius: 50%; background: repeating-radial-gradient(ellipse at center, #e9dcc6 0 6px, #e2d1b6 6px 12px); box-shadow: inset 0 0 0 4px #d8c3a3; }
+  /* the table: its width in centimetres, landing on the rug */
+  .rm__table { left: calc(50% + 100cqw * var(--x, 0) / 420); bottom: calc(100cqw * 30 / 420); width: calc(100cqw * var(--w, 80) / 420); transform: translateX(-50%); }
+  .rm__table img { width: 100%; height: auto; position: relative; z-index: 1; filter: drop-shadow(0 6px 6px rgba(0, 0, 0, 0.18)); }
+  .rm__shadow { position: absolute; left: 8%; right: 8%; bottom: -4%; height: 14%; border-radius: 50%; background: radial-gradient(closest-side, rgba(60, 40, 20, 0.35), transparent); }
+  .rm__table.out { opacity: 0; transform: translateX(calc(-50% - var(--dir, 1) * 40%)) rotate(calc(var(--dir, 1) * -4deg)); transition: opacity 0.2s, transform 0.25s ease-in; }
+  .rm__table.in { animation: land 0.6s cubic-bezier(0.3, 1.5, 0.5, 1) both; }
+  @keyframes land { from { opacity: 0; transform: translateX(-50%) translateY(-30%) scale(0.92); } to { opacity: 1; transform: translateX(-50%); } }
+  /* room light: warm at golden hour, deep blue in the evening */
+  .rm__light { inset: 0; pointer-events: none; mix-blend-mode: multiply; background: color-mix(in oklab, color-mix(in oklab, #ffffff, #ffcf9a calc(clamp(0, (var(--t) - 0.45) * 3, 1) * 100%)), #4a5280 calc(clamp(0, (var(--t) - 0.72) * 3.6, 1) * 90%)); }
+  .rm__lampglow { right: calc(100cqw * -60 / 420); bottom: calc(100cqw * 0 / 420); width: calc(100cqw * 260 / 420); height: calc(100cqw * 300 / 420); border-radius: 50%; background: radial-gradient(closest-side at 50% 30%, rgba(255, 196, 120, 0.55), rgba(255, 170, 90, 0.18) 60%, transparent); mix-blend-mode: screen; opacity: 0; transition: opacity 0.9s; pointer-events: none; }
+  .rm__lampshade { right: calc(100cqw * 34 / 420); bottom: calc(100cqw * (92 + 165 * 0.78) / 420); width: calc(100cqw * 40 / 420); height: calc(100cqw * 165 * 0.22 / 420); background: #ffe2a8; clip-path: polygon(20% 0, 80% 0, 100% 100%, 0 100%); opacity: 0; transition: opacity 0.6s; box-shadow: 0 0 30px #ffcf80; }
+  .night .rm__lampglow, .night .rm__lampshade { opacity: 1; }
+  .rm__stars { inset: 0 0 34% 0; background-image: radial-gradient(1.2px 1.2px at 12% 20%, #fff, transparent), radial-gradient(1px 1px at 30% 45%, #fff, transparent), radial-gradient(1.4px 1.4px at 52% 15%, #fff, transparent), radial-gradient(1px 1px at 70% 38%, #fff, transparent), radial-gradient(1.2px 1.2px at 86% 22%, #fff, transparent), radial-gradient(1px 1px at 42% 70%, #fff, transparent); opacity: calc(clamp(0, (var(--t) - 0.8) * 5, 1)); }
+  .rm__nav { top: 74%; width: 44px; height: 44px; margin-top: -22px; border-radius: 50%; background: rgba(255, 255, 255, 0.92); color: var(--ink); display: grid; place-content: center; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15); z-index: 3; transition: transform 0.2s; }
+  .rm__nav:active { transform: scale(0.92); }
+  .rm__nav svg { width: 22px; height: 22px; }
+  .rm__nav--l { left: 10px; } .rm__nav--r { right: 10px; }
+  .rm__hint { top: 10px; left: 50%; transform: translateX(-50%); padding: 4px 12px; border-radius: 999px; background: rgba(255, 255, 255, 0.85); font-size: 12px; font-weight: 600; color: var(--ink-2); z-index: 3; white-space: nowrap; }
+  .rm__bar { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; align-items: center; padding: 14px 16px; border-radius: 18px; background: #fff; }
+  .rm__n { font-family: var(--display); font-weight: 700; font-size: 18px; line-height: 1.2; }
+  .rm__d { font-size: 13px; color: var(--mute); }
+  .rm__p { font-family: var(--display); font-weight: 700; font-size: 22px; color: var(--terra); }
+  .rm__btns { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1.3fr; gap: 8px; }
+  .rm__btns .btn { min-height: 46px; padding: 0 14px; }
+  .rm__tod { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 999px; background: #fff; font-size: 14px; }
+  .rm__tod b { min-width: 6.6em; text-align: right; color: var(--pacific); }
+  .rm__ico { font-size: 18px; }
+  .rm__tod input { flex: 1; -webkit-appearance: none; appearance: none; height: 30px; background: transparent; }
+  .rm__tod input::-webkit-slider-runnable-track { height: 8px; border-radius: 4px; background: linear-gradient(90deg, #9fd0ef, #ffd66b 40%, #f08a4b 70%, #2a2f55); }
+  .rm__tod input::-moz-range-track { height: 8px; border-radius: 4px; background: linear-gradient(90deg, #9fd0ef, #ffd66b 40%, #f08a4b 70%, #2a2f55); }
+  .rm__tod input::-webkit-slider-thumb { -webkit-appearance: none; width: 26px; height: 26px; margin-top: -9px; border-radius: 50%; background: #ffd66b; box-shadow: 0 0 0 3px #fff, 0 3px 10px rgba(0, 0, 0, 0.25); }
+  .rm__tod input::-moz-range-thumb { width: 26px; height: 26px; border: 0; border-radius: 50%; background: #ffd66b; box-shadow: 0 0 0 3px #fff; }
+  @media (min-width: 1000px) {
+    .rm__bar { grid-template-columns: 1fr auto auto; }
+    .rm__btns { grid-column: auto; }
+  }
+</style>

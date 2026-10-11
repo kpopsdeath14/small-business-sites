@@ -1,0 +1,137 @@
+---
+/**
+ * «Стол к дивану»: sofa length and seat height in, the living room drawn from above to scale,
+ * and the coffee tables that fit by the designers' rules — length about ½–⅔ of the sofa, top at
+ * seat height or a little lower, 40–45 cm from the seat. Their own tip is in too: the lower the
+ * table, the bigger its top should be.
+ */
+import { products, pimg } from "../lib/site";
+const pool = products.filter((p) => p.cat === "coffee" || p.cat === "set").map((p) => ({ id: p.id, short: p.short, name: p.name, price: p.price, L: p.L, W: p.W, H: p.H, set: p.cat === "set", round: p.L === p.W && !/Эйден/.test(p.name), src: pimg(p.id, 480) }));
+---
+<div class="fit" data-fit>
+  <div class="fit__ctl">
+    <label class="rg"><span class="rg__l"><span>Длина дивана</span><b class="num" data-o-s></b></span><input type="range" min="140" max="320" step="5" value="220" data-sofa aria-label="Длина дивана, см" /></label>
+    <label class="rg"><span class="rg__l"><span>Высота сиденья</span><b class="num" data-o-h></b></span><input type="range" min="38" max="52" step="1" value="44" data-seat aria-label="Высота сиденья, см" /></label>
+    <div class="fit__chips" role="radiogroup" aria-label="Что ищем">
+      <button type="button" role="radio" aria-checked="true" data-k="all">Любой</button>
+      <button type="button" role="radio" aria-checked="false" data-k="rect">Прямоугольный</button>
+      <button type="button" role="radio" aria-checked="false" data-k="round">Круглый</button>
+      <button type="button" role="radio" aria-checked="false" data-k="set">Пара столов</button>
+    </div>
+    <p class="fit__rule">Ищем стол длиной <b class="num" data-o-l></b> и высотой <b class="num" data-o-th></b>.</p>
+  </div>
+
+  <div class="fit__room">
+    <!-- the room from above: sofa, rug, table, all in centimetres -->
+    <svg viewBox="0 0 400 300" class="fit__svg" data-svg aria-label="Гостиная сверху: диван и журнальный стол в масштабе"></svg>
+    <p class="fit__cap num" data-cap></p>
+    <button type="button" class="btn btn--ink fit__go" data-go>Смотреть стол и купить</button>
+  </div>
+
+  <ul class="fit__list" data-list></ul>
+</div>
+
+<script define:vars={{ pool }}>
+  const el = document.querySelector("[data-fit]");
+  const $ = (s) => el.querySelector(s);
+  const sofa = $("[data-sofa]"), seat = $("[data-seat]");
+  let kind = "all", pick = null;
+  el.querySelectorAll("[data-k]").forEach((b) => b.addEventListener("click", () => { el.querySelectorAll("[data-k]").forEach((x) => x.setAttribute("aria-checked", String(x === b))); kind = b.dataset.k; pick = null; render(); }));
+  sofa.addEventListener("input", () => { pick = null; render(); });
+  seat.addEventListener("input", () => { pick = null; render(); });
+  // how well a table suits this sofa: 0..100
+  function score(t, S, h) {
+    const lo = S * 0.5, hi = S * 0.67;
+    const len = t.set ? t.L * 1.6 : t.L; // a nested pair covers about 1.6 of the big one
+    let s = 100;
+    if (len < lo) s -= ((lo - len) / lo) * 160; else if (len > hi) s -= ((len - hi) / hi) * 160;
+    const dh = t.H - h; // a coffee table sits level with the seat or up to ~8 cm lower
+    if (dh > 2) s -= (dh - 2) * 5; else if (dh < -8) s -= (-8 - dh) * 4;
+    // their tip: a low table needs a bigger top
+    if (t.H < h - 8 && len < lo * 1.1) s -= 10;
+    return Math.max(0, Math.round(s));
+  }
+  function render() {
+    const S = +sofa.value, h = +seat.value;
+    $("[data-o-s]").textContent = `${S} см`; $("[data-o-h]").textContent = `${h} см`;
+    $("[data-o-l]").textContent = `${Math.round(S * 0.5)}–${Math.round(S * 0.67)} см`;
+    $("[data-o-th]").textContent = `${h - 8}–${h + 2} см`;
+    const list = pool.filter((t) => kind === "all" || (kind === "set" ? t.set : kind === "round" ? t.round && !t.set : !t.round && !t.set)).map((t) => ({ ...t, s: score(t, S, h) })).sort((a, b) => b.s - a.s).slice(0, 6);
+    if (!pick || !list.find((t) => t.id === pick)) pick = list[0]?.id;
+    $("[data-list]").innerHTML = list.map((t) => `<li><button type="button" data-p="${t.id}" aria-pressed="${t.id === pick}"><img src="${t.src}" alt="" width="96" height="96" loading="lazy" /><span class="fit__n">${t.short}</span><span class="fit__d num">${t.L}×${t.W}×${t.H} см</span><span class="fit__m"><i style="--s:${t.s}%"></i><b class="num">${t.s}%</b></span><span class="fit__p num">${t.price.toLocaleString("ru-RU")} ₽</span></button></li>`).join("");
+    $("[data-list]").querySelectorAll("[data-p]").forEach((b) => b.addEventListener("click", () => { pick = b.dataset.p; render(); }));
+    draw(S, list.find((t) => t.id === pick));
+  }
+  function draw(S, t) {
+    // 1 unit = 1 cm; the room is 400 × 260
+    const D = 95, sx = 200 - S / 2, sy = 22; // sofa back against the top wall
+    const gap = 42, ty = sy + D + gap;
+    let g = `<rect class="fit__rug" x="${200 - S * 0.45}" y="${sy + D - 25}" width="${S * 0.9}" height="${190}" rx="4" />`;
+    g += `<rect class="fit__sofa" x="${sx}" y="${sy}" width="${S}" height="${D}" rx="14" />`;
+    g += `<rect class="fit__back" x="${sx + 8}" y="${sy + 6}" width="${S - 16}" height="22" rx="8" />`;
+    const n = S > 230 ? 3 : 2; for (let k = 0; k < n; k++) { const w = (S - 36) / n; g += `<rect class="fit__seat" x="${sx + 18 + k * w + 2}" y="${sy + 30}" width="${w - 4}" height="${D - 38}" rx="8" />`; }
+    g += `<rect class="fit__arm" x="${sx}" y="${sy + 8}" width="16" height="${D - 10}" rx="7" /><rect class="fit__arm" x="${sx + S - 16}" y="${sy + 8}" width="16" height="${D - 10}" rx="7" />`;
+    if (t) {
+      const shapes = t.set ? [[t.L, t.W, -t.L * 0.32, 0], [t.L * 0.78, t.W * 0.78, t.L * 0.42, t.W * 0.18]] : [[t.L, t.W, 0, 0]];
+      shapes.forEach(([L, W, ox, oy], k) => {
+        const x = 200 - L / 2 + ox, y = ty + oy;
+        g += t.round ? `<ellipse class="fit__table" style="--k:${k}" cx="${x + L / 2}" cy="${y + W / 2}" rx="${L / 2}" ry="${W / 2}" />` : `<rect class="fit__table" style="--k:${k}" x="${x}" y="${y}" width="${L}" height="${W}" rx="4" />`;
+      });
+      // measurements: gap to the sofa and the table length against the sofa
+      g += `<path class="fit__dim" d="M200 ${sy + D}V${ty}" /><text class="fit__t" x="206" y="${sy + D + gap / 2 + 4}">${gap} см</text>`;
+      const L = t.set ? t.L * 1.6 : t.L;
+      g += `<path class="fit__dim" d="M${200 - L / 2} ${ty + (t.set ? t.W : t.W) + 14}H${200 + L / 2}" /><text class="fit__t" x="200" y="${ty + t.W + 28}" text-anchor="middle">${Math.round((L / S) * 100)}% длины дивана</text>`;
+      $("[data-cap]").textContent = `${t.name}: ${t.L}×${t.W} см, высота ${t.H} см — сиденье ${seat.value} см`;
+    }
+    $("[data-svg]").innerHTML = g;
+  }
+  $("[data-go]").addEventListener("click", (e) => document.dispatchEvent(new CustomEvent("product:open", { detail: { id: pick, from: e.currentTarget } })));
+  render();
+</script>
+
+<style>
+  .fit { display: grid; gap: 22px; }
+  .fit__ctl { display: grid; gap: 14px; padding: 20px; border-radius: var(--r); background: #fff; }
+  .rg { display: grid; gap: 2px; }
+  .rg__l { display: flex; justify-content: space-between; align-items: baseline; font-size: 14px; font-weight: 600; color: var(--ink-2); }
+  .rg__l b { font-size: 18px; color: var(--ink); }
+  .rg input { -webkit-appearance: none; appearance: none; width: 100%; height: 34px; background: transparent; }
+  .rg input::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; background: linear-gradient(90deg, var(--sun), var(--terra)); }
+  .rg input::-moz-range-track { height: 6px; border-radius: 3px; background: linear-gradient(90deg, var(--sun), var(--terra)); }
+  .rg input::-webkit-slider-thumb { -webkit-appearance: none; width: 26px; height: 26px; margin-top: -10px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 2px var(--terra), 0 4px 10px rgba(0, 0, 0, 0.2); }
+  .rg input::-moz-range-thumb { width: 26px; height: 26px; border: 0; border-radius: 50%; background: #fff; box-shadow: 0 0 0 2px var(--terra); }
+  .fit__chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .fit__chips button { padding: 8px 14px; border-radius: 999px; background: var(--sand); font-size: 14px; font-weight: 500; transition: background 0.25s, color 0.25s; }
+  .fit__chips [aria-checked="true"] { background: var(--ink); color: #fff; }
+  .fit__rule { font-size: 15px; color: var(--ink-2); }
+  .fit__rule b { color: var(--terra); }
+  .fit__room { border-radius: var(--r); background: linear-gradient(160deg, #fffaf2, #f3e6d3); padding: 12px; }
+  .fit__svg { width: 100%; height: auto; display: block; }
+  .fit__svg :global(.fit__rug) { fill: #e9d9c2; }
+  .fit__svg :global(.fit__sofa) { fill: #8fa9b4; }
+  .fit__svg :global(.fit__back) { fill: #7d98a4; }
+  .fit__svg :global(.fit__seat) { fill: #a3bcc6; }
+  .fit__svg :global(.fit__arm) { fill: #7d98a4; }
+  .fit__svg :global(.fit__table) { fill: rgba(198, 90, 53, 0.18); stroke: var(--terra); stroke-width: 2; animation: tb 0.5s var(--ease) both; animation-delay: calc(var(--k) * 0.08s); transform-box: fill-box; transform-origin: center; }
+  @keyframes tb { from { opacity: 0; transform: scale(0.85); } }
+  .fit__svg :global(.fit__dim) { stroke: var(--pacific); stroke-width: 1; stroke-dasharray: 3 3; fill: none; }
+  .fit__svg :global(.fit__t) { font-size: 9px; fill: var(--pacific); font-family: var(--sans); font-weight: 600; }
+  .fit__go { display: flex; margin: 10px auto 2px; }
+  .fit__cap { margin-top: 6px; font-size: 13px; color: var(--ink-2); text-align: center; }
+  .fit__list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .fit__list :global(button) { width: 100%; display: grid; gap: 3px; text-align: left; padding: 10px; border-radius: 14px; background: #fff; box-shadow: inset 0 0 0 1.5px transparent; transition: box-shadow 0.25s; }
+  .fit__list :global(button[aria-pressed="true"]) { box-shadow: inset 0 0 0 2px var(--terra); }
+  .fit__list :global(img) { width: 100%; aspect-ratio: 1; object-fit: contain; }
+  .fit__list :global(.fit__n) { font-family: var(--display); font-weight: 600; font-size: 15px; }
+  .fit__list :global(.fit__d) { font-size: 12.5px; color: var(--mute); }
+  .fit__list :global(.fit__m) { display: flex; align-items: center; gap: 8px; font-size: 12.5px; }
+  .fit__list :global(.fit__m i) { flex: 1; height: 5px; border-radius: 3px; background: linear-gradient(90deg, var(--sun) var(--s), var(--sand-2) var(--s)); }
+  .fit__list :global(.fit__p) { font-weight: 600; }
+  @media (min-width: 1000px) {
+    .fit { grid-template-columns: 340px 1fr; grid-template-areas: "ctl room" "list list"; gap: 24px; }
+    .fit__ctl { grid-area: ctl; align-content: start; }
+    .fit__room { grid-area: room; display: grid; align-content: center; }
+    .fit__svg { max-height: 430px; }
+    .fit__list { grid-area: list; grid-template-columns: repeat(6, 1fr); }
+  }
+</style>

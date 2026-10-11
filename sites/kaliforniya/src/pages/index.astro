@@ -1,0 +1,81 @@
+---
+import Base from "../layouts/Base.astro";
+import Fit from "../components/Fit.astro";
+import Catalog from "../components/Catalog.astro";
+import Room from "../components/Room.astro";
+import Polaroids from "../components/Polaroids.astro";
+import Road from "../components/Road.astro";
+import { img, products, rub, byId } from "../lib/site";
+const coffee = products.filter((p) => p.cat === "coffee" || p.cat === "set" || p.cat === "side").length;
+---
+<Base>
+  <main>
+    <section class="hero wrap">
+      <div class="hero__txt">
+        <p class="kick" data-in>Фабрика в Йошкар-Оле · больше 20 лет</p>
+        <h1 class="h1" data-in style="--d:.06s">Гостиная начинается <em>со стола</em></h1>
+        <p class="read hero__lead" data-in style="--d:.12s">Примерьте стол прямо здесь — и дождитесь заката.</p>
+      </div>
+      <div class="hero__room" data-in style="--d:.1s"><Room /></div>
+    </section>
+    <section class="sec" id="fit">
+      <div class="wrap">
+        <div class="sh" data-in>
+          <p class="kick">Подбор</p>
+          <h2 class="h2">Стол <em>к вашему дивану</em></h2>
+          <p class="read">Укажите длину дивана и высоту сиденья — нарисуем гостиную сверху в масштабе и подберём столы по правилам дизайнеров: длина — от половины до двух третей дивана, высота — как у сиденья или чуть ниже, до дивана — 40–45 см.</p>
+        </div>
+        <Fit />
+      </div>
+    </section>
+
+    <section class="sec cat" id="catalog">
+      <div class="wrap">
+        <div class="sh" data-in>
+          <p class="kick">Каталог</p>
+          <h2 class="h2">Выберите <em>фактуру</em></h2>
+          <p class="read">{coffee} журнальных и придиванных столов — и у каждого своя столешница. Нажмите на фактуру, чтобы увидеть столы с ней.</p>
+        </div>
+        <Catalog />
+      </div>
+    </section>
+
+    <section class="sec pol">
+      <div class="wrap pol__in">
+        <div class="sh" data-in>
+          <p class="kick">В интерьере</p>
+          <h2 class="h2">Снимки <em>из гостиных</em></h2>
+          <p class="read">Смахните верхний снимок — под ним следующий. Понравился стол на фото — откройте его.</p>
+        </div>
+        <Polaroids />
+      </div>
+    </section>
+
+    <section class="sec road" id="delivery">
+      <div class="wrap">
+        <div class="sh" data-in>
+          <p class="kick">Доставка</p>
+          <h2 class="h2">Роуд-трип <em>до вашего города</em></h2>
+          <p class="read">Привозим бесплатно до пункта выдачи транспортной компании, а платите вы при получении — без предоплаты.</p>
+        </div>
+        <Road />
+      </div>
+    </section>
+  </main>
+</Base>
+
+
+<style>
+  .hero { display: grid; gap: 14px; padding-top: 14px; padding-bottom: 10px; }
+  .hero .h1 { font-size: clamp(32px, 9vw, 84px); }
+  .hero__txt { display: grid; gap: 14px; }
+  .cat { background: #fbf6ef; }
+  .pol { background: linear-gradient(180deg, var(--sand), #f9e2c8); }
+  .pol__in { display: grid; gap: 10px; }
+  .road { background: var(--sand-2); }
+  @media (min-width: 1000px) {
+    .hero { grid-template-columns: minmax(380px, 0.7fr) 1.5fr; align-items: center; gap: 44px; padding-top: 24px; }
+    .hero .h1 { font-size: clamp(38px, 3.7vw, 60px); }
+    .pol__in { grid-template-columns: 1fr 1fr; align-items: center; gap: 56px; }
+  }
+</style>

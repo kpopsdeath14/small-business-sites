@@ -1,0 +1,168 @@
+---
+/**
+ * The cart. Lines with quantities, free delivery to a pick-up point, payment on receipt.
+ * Placing the order packs the parcel: the items drop into a box, the flaps close, tape goes on,
+ * and a shipping label prints «Йошкар-Ола → ваш город».
+ */
+import Base from "../../layouts/Base.astro";
+import { products, pimg, contacts, url } from "../../lib/site";
+const data = Object.fromEntries(products.map((p) => [p.id, { name: p.name, price: p.price, src: pimg(p.id, 480), dims: `${p.L}×${p.W}×${p.H} см` }]));
+---
+<Base title="Корзина — Калифорния мебель" strip={false}>
+  <main class="wrap kz" data-kz>
+    <h1 class="h2">Корзина</h1>
+    <p class="kz__empty read" data-empty hidden>Пока пусто. <a href={url("#catalog")}>Выберите стол в каталоге</a> — доставим бесплатно.</p>
+
+    <div class="kz__grid" data-full>
+      <ul class="kz__lines" data-lines></ul>
+
+      <aside class="kz__side">
+        <div class="kz__sum">
+          <p><span>Товары</span><b class="num" data-goods></b></p>
+          <p><span>Доставка до пункта выдачи</span><b>бесплатно</b></p>
+          <p><span>Предоплата</span><b>не нужна</b></p>
+          <p class="kz__total"><span>К оплате при получении</span><b class="num" data-total></b></p>
+          <p class="kz__fine">Скидка 7% на первую покупку — для зарегистрированных покупателей, менеджер учтёт её при подтверждении.</p>
+        </div>
+
+        <form class="kz__form" data-form novalidate>
+          <label class="field"><span>Имя</span><input class="input" name="n" autocomplete="name" /></label>
+          <label class="field"><span>Телефон</span><input class="input" name="p" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7" /></label>
+          <label class="field"><span>Город</span><input class="input" name="c" autocomplete="address-level2" placeholder="Например, Казань" /></label>
+          <fieldset class="kz__how">
+            <legend class="field"><span>Как получить</span></legend>
+            <label><input type="radio" name="d" value="Пункт выдачи ТК (КИТ, ПЭК)" checked /><span>Пункт выдачи ТК</span></label>
+            <label><input type="radio" name="d" value="Курьер СДЭК или DPD" /><span>Курьер</span></label>
+          </fieldset>
+          <button class="btn btn--block kz__go" type="submit">Оформить заказ</button>
+          <p class="kz__fine">Менеджер позвонит, подтвердит заказ и срок доставки. {contacts.hours}.</p>
+        </form>
+
+        <div class="kz__done" data-done hidden>
+          <!-- the parcel -->
+          <svg class="box" viewBox="0 0 240 200" aria-hidden="true" data-box>
+            <g class="box__items" data-items></g>
+            <path class="box__body" d="M30 80 L120 110 L210 80 L210 170 L120 198 L30 170 Z" />
+            <path class="box__side" d="M120 110 L210 80 L210 170 L120 198 Z" />
+            <path class="box__flap box__flap--l" d="M30 80 L120 110 L90 132 L0 100 Z" />
+            <path class="box__flap box__flap--r" d="M120 110 L210 80 L240 102 L150 132 Z" />
+            <path class="box__tape" d="M75 95 L165 95" />
+            <g class="box__label"><rect x="132" y="128" width="64" height="40" rx="3" transform="skewY(-18)" /><text x="164" y="141" transform="skewY(-18)" data-lbl1>Йошкар-Ола</text><text x="164" y="152" transform="skewY(-18)">→</text><text x="164" y="163" transform="skewY(-18)" data-lbl2></text></g>
+          </svg>
+          <p class="kz__no num" data-no></p>
+          <p class="h3">Заказ упакован</p>
+          <p class="read">Письмо с заказом открыто в почте — отправьте его, и менеджер перезвонит. Оплата при получении.</p>
+          <a class="btn btn--line" data-again href="#">Открыть письмо ещё раз</a>
+          <a class="kz__call" href={contacts.phoneHref}>или позвоните: {contacts.phone}</a>
+        </div>
+      </aside>
+    </div>
+  </main>
+</Base>
+
+<script define:vars={{ data, email: contacts.email }}>
+  window.__kz = { data, email };
+</script>
+<script>
+  import { cart, noted } from "../../scripts/app";
+  const { data, email } = (window as any).__kz;
+  const el = document.querySelector<HTMLElement>("[data-kz]")!;
+  const q = <E extends HTMLElement = HTMLElement>(s: string) => el.querySelector<E>(s)!;
+  const fmt = (n: number) => Math.round(n).toLocaleString("ru-RU") + " ₽";
+  let placed = false;
+  function render() {
+    const lines = cart.get().filter((l) => data[l.id]);
+    q("[data-empty]").hidden = lines.length > 0 || placed;
+    q("[data-full]").hidden = !lines.length && !placed;
+    q("[data-lines]").innerHTML = lines.map((l) => { const p = data[l.id]; return `<li class="kz__l"><img src="${p.src}" alt="" width="96" height="96" /><div><p class="kz__n">${p.name}</p><p class="kz__d">${l.variant ? l.variant + " · " : ""}${p.dims}</p><div class="kz__q"><button type="button" data-q="-1" data-id="${l.id}" data-v="${l.variant || ""}" aria-label="Меньше">−</button><b class="num">${l.qty}</b><button type="button" data-q="1" data-id="${l.id}" data-v="${l.variant || ""}" aria-label="Больше">+</button></div></div><b class="kz__p num">${fmt(p.price * l.qty)}</b></li>`; }).join("");
+    q("[data-lines]").querySelectorAll<HTMLButtonElement>("[data-q]").forEach((b) => b.addEventListener("click", () => { const l = cart.get().find((x) => x.id === b.dataset.id && (x.variant || "") === b.dataset.v); if (l) cart.set(l.id, l.variant, l.qty + +b.dataset.q!); }));
+    const sum = lines.reduce((s, l) => s + data[l.id].price * l.qty, 0);
+    q("[data-goods]").textContent = fmt(sum); q("[data-total]").textContent = fmt(sum);
+    q<HTMLButtonElement>(".kz__go").textContent = lines.length ? `Оформить заказ · ${fmt(sum)}` : "Оформить заказ";
+  }
+  document.addEventListener("cart:change", render);
+  render();
+
+  const form = q<HTMLFormElement>("[data-form]");
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const lines = cart.get().filter((l) => data[l.id]);
+    if (!lines.length) return;
+    const n = form.elements.namedItem("n") as HTMLInputElement, p = form.elements.namedItem("p") as HTMLInputElement, c = form.elements.namedItem("c") as HTMLInputElement;
+    let bad = false;
+    [n, p, c].forEach((i) => { const ok = i === p ? i.value.replace(/\D/g, "").length >= 10 : i.value.trim().length > 1; i.classList.toggle("err", !ok); if (!ok && !bad) { i.focus(); bad = true; } });
+    if (bad) { noted("Заполните имя, телефон и город", "Чтобы мы знали, куда везти"); return; }
+    const d = new FormData(form);
+    const no = `К-${new Date().toISOString().slice(2, 10).replace(/-/g, "")}-${Math.floor(Math.random() * 9000 + 1000)}`;
+    const sum = lines.reduce((s, l) => s + data[l.id].price * l.qty, 0);
+    const body = [`Здравствуйте! Заказ ${no} с сайта.`, "", ...lines.map((l) => `${data[l.id].name}${l.variant ? ` (${l.variant})` : ""} × ${l.qty} — ${fmt(data[l.id].price * l.qty)}`), "", `Итого: ${fmt(sum)}, оплата при получении`, `Доставка: ${d.get("d")}, ${d.get("c")}`, `Имя: ${d.get("n")}`, `Телефон: ${d.get("p")}`].join("\n");
+    const href = `mailto:${email}?subject=${encodeURIComponent(`Заказ ${no}`)}&body=${encodeURIComponent(body)}`;
+    // pack the parcel: thumbnails drop in, flaps close, tape, label
+    placed = true;
+    form.hidden = true;
+    const done = q("[data-done]"); done.hidden = false;
+    q("[data-items]").innerHTML = lines.slice(0, 4).map((l, i) => `<image href="${data[l.id].src}" x="${55 + i * 30}" y="20" width="70" height="70" class="box__it" style="--i:${i}" />`).join("");
+    q("[data-lbl2]").textContent = String(d.get("c")).slice(0, 14);
+    q("[data-no]").textContent = `Заказ ${no}`;
+    q<HTMLAnchorElement>("[data-again]").href = href;
+    done.scrollIntoView({ behavior: "smooth", block: "center" });
+    requestAnimationFrame(() => q("[data-box]").classList.add("pack"));
+    setTimeout(() => { location.href = href; cart.clear(); }, 2600);
+  });
+</script>
+
+<style>
+  .kz { padding-top: 20px; padding-bottom: 80px; display: grid; gap: 22px; }
+  .kz__empty a { color: var(--terra); font-weight: 600; }
+  .kz__grid { display: grid; gap: 24px; }
+  .kz__lines { display: grid; gap: 8px; }
+  .kz__lines :global(.kz__l) { display: grid; grid-template-columns: 84px 1fr auto; gap: 12px; align-items: center; padding: 10px; border-radius: var(--r); background: #fff; }
+  .kz__lines :global(img) { width: 84px; height: 84px; object-fit: contain; border-radius: 10px; }
+  .kz__lines :global(.kz__n) { font-family: var(--display); font-weight: 600; font-size: 15px; line-height: 1.25; }
+  .kz__lines :global(.kz__d) { font-size: 12.5px; color: var(--mute); margin: 2px 0 6px; }
+  .kz__lines :global(.kz__q) { display: inline-flex; align-items: center; gap: 10px; padding: 3px; border-radius: 999px; background: var(--sand); }
+  .kz__lines :global(.kz__q button) { width: 30px; height: 30px; border-radius: 50%; background: #fff; font-size: 18px; line-height: 1; }
+  .kz__lines :global(.kz__p) { font-weight: 600; white-space: nowrap; align-self: start; padding-top: 4px; }
+  .kz__side { display: grid; gap: 16px; align-content: start; }
+  .kz__sum { display: grid; gap: 8px; padding: 18px; border-radius: var(--r); background: #fff; }
+  .kz__sum p { display: flex; justify-content: space-between; gap: 10px; font-size: 15px; color: var(--ink-2); }
+  .kz__sum b { color: var(--ink); font-weight: 600; }
+  .kz__sum .kz__total { padding-top: 10px; border-top: 1px solid var(--line); font-size: 16px; }
+  .kz__sum .kz__total b { font-family: var(--display); font-size: 24px; color: var(--terra); }
+  .kz__fine { font-size: 13px; color: var(--mute); line-height: 1.45; display: block; }
+  .kz__form { display: grid; gap: 12px; }
+  .kz__how { border: 0; margin: 0; padding: 0; display: flex; gap: 6px; flex-wrap: wrap; }
+  .kz__how legend { padding: 0; margin-bottom: 6px; }
+  .kz__how input { position: absolute; opacity: 0; }
+  .kz__how label span { display: inline-block; padding: 10px 16px; border-radius: 999px; background: #fff; box-shadow: inset 0 0 0 1.5px var(--line); font-size: 15px; cursor: pointer; }
+  .kz__how label input:checked + span { background: var(--ink); color: #fff; box-shadow: none; }
+  .kz__how label input:focus-visible + span { outline: 2px solid var(--pacific); outline-offset: 2px; }
+  .kz__done { display: grid; gap: 10px; justify-items: center; text-align: center; padding: 22px 18px; border-radius: var(--r); background: #fff; }
+  .kz__no { font-size: 13px; color: var(--pacific); font-weight: 600; }
+  .kz__call { font-size: 14px; color: var(--ink-2); }
+
+  /* the parcel packs itself */
+  .box { width: min(70vw, 260px); overflow: visible; }
+  .box__body { fill: #d6a978; stroke: #a67a4c; stroke-width: 1.5; }
+  .box__side { fill: #c4935f; }
+  .box__flap { fill: #e0b88a; stroke: #a67a4c; stroke-width: 1.5; transform-box: fill-box; transition: transform 0.6s cubic-bezier(0.5, 0, 0.3, 1.2); }
+  .box__flap--l { transform-origin: 100% 100%; transform: rotate(-38deg); }
+  .box__flap--r { transform-origin: 0% 100%; transform: rotate(38deg); }
+  .pack .box__flap--l { transform: rotate(0); transition-delay: 1.05s; }
+  .pack .box__flap--r { transform: rotate(0); transition-delay: 1.25s; }
+  .box__tape { stroke: #f2b544; stroke-width: 9; opacity: 0; stroke-dasharray: 90; stroke-dashoffset: 90; }
+  .pack .box__tape { opacity: 0.95; stroke-dashoffset: 0; transition: stroke-dashoffset 0.5s ease 1.7s, opacity 0.1s 1.7s; }
+  .box__label rect { fill: #fff; stroke: #1f2328; stroke-width: 0.8; }
+  .box__label text { font-family: var(--sans); font-size: 8px; font-weight: 600; fill: #1f2328; text-anchor: middle; }
+  .box__label { opacity: 0; transform: translateY(6px); transition: opacity 0.4s 2s, transform 0.5s var(--ease) 2s; }
+  .pack .box__label { opacity: 1; transform: none; }
+  .box__it { transform: translateY(-120px); opacity: 0; }
+  .pack .box__it { animation: drop 0.6s cubic-bezier(0.5, 0, 0.5, 1.3) forwards; animation-delay: calc(0.15s + var(--i) * 0.18s); }
+  @keyframes drop { 0% { transform: translateY(-120px); opacity: 0; } 30% { opacity: 1; } 100% { transform: translateY(40px); opacity: 1; } }
+
+  @media (min-width: 1000px) {
+    .kz { padding-top: 40px; }
+    .kz__grid { grid-template-columns: 1fr 400px; align-items: start; gap: 40px; }
+    .kz__side { position: sticky; top: calc(var(--hdr) + 20px); }
+  }
+</style>

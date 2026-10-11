@@ -1,0 +1,79 @@
+---
+import "@fontsource/montserrat-alternates/600.css";
+import "@fontsource/montserrat-alternates/700.css";
+import "@fontsource-variable/rubik";
+import "@fontsource/caveat/600.css";
+import "../styles/global.css";
+import { url, contacts, BASE, img, cats, products } from "../lib/site";
+const prices = Object.fromEntries(products.map((p) => [p.id, p.price]));
+
+interface Props { title?: string; description?: string; strip?: boolean }
+const {
+  title = "Калифорния мебель — журнальные столы и мебель с фабрики",
+  description = "Журнальные столы, тумбы под ТВ, консоли и стеллажи от фабрики «Калифорния мебель». Бесплатная доставка по России, оплата при получении, гарантия 24 месяца.",
+  strip = true,
+} = Astro.props;
+---
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#f4ede3" />
+    <link rel="icon" type="image/svg+xml" href={`${BASE}/favicon.svg`} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(img("og", 1200), Astro.site).href} />
+    <script is:inline>document.documentElement.classList.add("js");</script>
+  </head>
+  <body>
+    <header class="hdr">
+      <div class="wrap hdr__in">
+        <a href={url()} class="brand" aria-label="Калифорния мебель — на главную">
+          <!-- a sun setting over a coffee table -->
+          <svg viewBox="0 0 34 34" aria-hidden="true"><circle cx="17" cy="15" r="9" fill="#f2b544" /><rect x="3" y="17" width="28" height="3.5" rx="1.75" fill="#c65a35" /><path d="M8 20.5l-2 9M26 20.5l2 9" stroke="#1f2328" stroke-width="2" stroke-linecap="round" /></svg>
+          <span><b>Калифорния</b><small>мебель с фабрики</small></span>
+        </a>
+        <div class="hdr__r">
+          <a class="hbtn hbtn__ph" href={contacts.phoneHref}>{contacts.phone}</a>
+          <a class="hbtn" href={contacts.phoneHref} aria-label="Позвонить" data-mph><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a1 1 0 0 1-1 1A16 16 0 0 1 4 5a1 1 0 0 1 1-1z" /></svg></a>
+          <a class="hbtn hbtn--cart" href={url("korzina/")} data-cart-btn aria-label="Корзина">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 9h18l-2 11H5z" /><path d="M8 9V7a4 4 0 0 1 8 0v2" /></svg>
+            <b class="num" data-cart-sum>0 ₽</b><i class="num" data-cart-n>0</i>
+          </a>
+        </div>
+      </div>
+      <div class="tick" aria-hidden="true"><div class="tick__in">{[0, 1].map(() => <span>Бесплатная доставка по России <i>✺</i> Оплата при получении <i>✺</i> Гарантия 24 месяца <i>✺</i> −7% на первую покупку <i>✺</i> Фабрика в Йошкар-Оле <i>✺</i> </span>)}</div></div>
+      {strip && <nav class="strip" aria-label="Категории">{cats.slice(1).map(([id, t]) => <a href={url(`#c-${id}`)} data-cat-link={id}>{t}</a>)}</nav>}
+    </header>
+
+    <slot />
+
+    <footer class="ftr">
+      <div class="wrap">
+        <p class="ftr__big">Солнце в гостиной — <em>с фабрики</em> в Йошкар-Оле</p>
+        <div class="ftr__grid">
+          <div><b>Фабрика</b>{contacts.addr}<br />Больше 20 лет делаем мебель малых форм</div>
+          <div><b>Москва</b>{contacts.msk}</div>
+          <div><b>Позвонить</b><a href={contacts.phoneHref}>{contacts.phone}</a><br /><a href={contacts.mobileHref}>{contacts.mobile}</a><br />{contacts.hours}</div>
+          <div><b>Написать</b><a href={`mailto:${contacts.email}`}>{contacts.email}</a><br />Работаем без предоплаты</div>
+        </div>
+        <div class="ftr__base"><span>© {new Date().getFullYear()} {contacts.company}</span><span>ИНН {contacts.inn}</span></div>
+      </div>
+    </footer>
+
+    <div class="note" role="status" aria-live="polite" data-note>
+      <img alt="" data-note-img />
+      <div><p class="note__t" data-note-t></p><p class="note__s" data-note-s></p></div>
+      <a class="btn" href={url("korzina/")}>Корзина</a>
+    </div>
+
+    <script is:inline define:vars={{ prices }}>window.__prices = prices;</script>
+    <script>
+      import "../scripts/app.ts";
+    </script>
+  </body>
+</html>
