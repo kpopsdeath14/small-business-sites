@@ -1,0 +1,71 @@
+---
+import "@fontsource/oswald/500.css";
+import "@fontsource/oswald/600.css";
+import "@fontsource-variable/nunito-sans";
+import "../styles/global.css";
+import { url, contacts, BASE, img } from "../lib/site";
+
+interface Props { title?: string; description?: string }
+const {
+  title = "Меридиан — дома из клееного бруса от собственного леса",
+  description = "Дома из клееного бруса под ключ: 27 проектов от 43 до 374 м², свой лес и завод в Верхней Туре с 1992 года. Тёплый контур — 25 000 ₽ за м². Смета за 1 день.",
+} = Astro.props;
+const R = 12; // rings
+---
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#18291f" />
+    <link rel="icon" type="image/svg+xml" href={`${BASE}/favicon.svg`} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(img("og", 1200), Astro.site).href} />
+    <script is:inline>document.documentElement.classList.add("js");</script>
+  </head>
+  <body>
+    <header class="hdr" data-hdr>
+      <div class="wrap hdr__in">
+        <a href={url()} class="brand" aria-label="Меридиан — на главную">
+          <svg class="rings" viewBox="0 0 34 34" aria-hidden="true">
+            <circle cx="17" cy="17" r="15.5" class="rings__bark" />
+            {Array.from({ length: R }, (_, i) => <circle cx={17 + Math.sin(i) * 0.25} cy={17 + Math.cos(i * 1.3) * 0.25} r={14 - i * 1.1} data-ring={R - 1 - i} />)}
+            <circle cx="17" cy="17" r="1.4" class="rings__core" />
+          </svg>
+          <span><b>Меридиан</b><small>клееный брус · с {contacts.since}</small></span>
+        </a>
+        <nav class="nav" aria-label="Основное меню">
+          <a href={url("#cost")}>Цена дома</a><a href={url("#projects")}>Проекты</a><a href={url("#line")}>Путь бруса</a><a href={url("#map")}>Где строим</a>
+        </nav>
+        <div class="hdr__r">
+          <a class="hbtn" href={contacts.phoneHref} aria-label={`Позвонить: ${contacts.phone}`}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a1 1 0 0 1-1 1A16 16 0 0 1 4 5a1 1 0 0 1 1-1z" /></svg></a>
+          <a class="hbtn hbtn--cta" href={url("#smeta")}>Смета</a>
+        </div>
+      </div>
+    </header>
+
+    <slot />
+
+    <footer class="ftr forest">
+      <div class="wrap">
+        <p class="ftr__big">Свой лес. Свой завод. <em>Ваш дом.</em></p>
+        <div class="ftr__grid">
+          <div><b>Завод</b>{contacts.plant}<br />Лесозаготовка в Кушвинском и Нижнетуринском районах</div>
+          <div><b>Офис продаж</b>{contacts.office}</div>
+          <div><b>Позвонить</b><a href={contacts.phoneHref}>{contacts.phone}</a><br />{contacts.hours}</div>
+          <div><b>Написать</b><a href={`mailto:${contacts.email}`}>{contacts.email}</a></div>
+        </div>
+        <div class="ftr__base"><span>© {new Date().getFullYear()} {contacts.company}</span><span>ИНН {contacts.inn}</span></div>
+      </div>
+    </footer>
+
+    <div class="note" role="status" aria-live="polite" data-note><p class="note__t" data-note-t></p><p class="note__s" data-note-s></p></div>
+    <script>
+      import "../scripts/app.ts";
+    </script>
+  </body>
+</html>

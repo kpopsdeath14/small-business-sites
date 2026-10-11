@@ -1,0 +1,148 @@
+---
+/**
+ * 27 projects. Filters by size and storeys; each card flips between the render and the floor plan
+ * («фасад / план»). A card opens a sheet with photos, plans, the parameters and the warm-contour price.
+ */
+import { houses, img, plan, PER_M2, rub } from "../lib/site";
+const sizes = [["all", "Все"], ["s", "до 110 м²"], ["m", "110–160 м²"], ["l", "160–250 м²"], ["xl", "больше 250 м²"]];
+const sz = (a: number) => (a < 110 ? "s" : a < 160 ? "m" : a < 250 ? "l" : "xl");
+const fm = (n: number) => String(n).replace(".", ",");
+---
+<div class="pj" data-pj>
+  <div class="pj__bar">
+    <div class="pj__chips" role="radiogroup" aria-label="Площадь">{sizes.map(([id, t], i) => <button type="button" role="radio" aria-checked={i === 0 ? "true" : "false"} data-sz={id}>{t}</button>)}</div>
+    <div class="pj__chips" role="radiogroup" aria-label="Этажность">
+      <button type="button" role="radio" aria-checked="true" data-fl="0">Любые</button>
+      <button type="button" role="radio" aria-checked="false" data-fl="1">1 этаж</button>
+      <button type="button" role="radio" aria-checked="false" data-fl="2">2 этажа</button>
+    </div>
+  </div>
+  <p class="pj__count" data-count></p>
+  <ul class="pj__grid">
+    {houses.map((h) => (
+      <li class="pj__it" data-sz={sz(h.area)} data-fl={h.floors}>
+        <div class="pj__ph">
+          <img class="pj__a" src={img(`${h.id}-0`, 600)} alt={`Проект ${h.name}`} loading="lazy" width="600" height="414" />
+          <img class="pj__b" src={plan(`${h.id}-0`)} alt={`План проекта ${h.name}`} loading="lazy" width="600" height="420" />
+          <button type="button" class="pj__flip" data-flip aria-pressed="false">План</button>
+          <span class="pj__area num">{h.area} м²</span>
+        </div>
+        <button type="button" class="pj__body" data-open={h.id}>
+          <span class="pj__n">{h.name}</span>
+          <span class="pj__m">{fm(h.a)} × {fm(h.b)} м · {h.floors === 2 ? "2 этажа" : "1 этаж"} · {h.rooms} комн.</span>
+          <span class="pj__p num">от {rub(h.area * PER_M2)}</span>
+        </button>
+      </li>
+    ))}
+  </ul>
+
+  <div class="sh-s" data-sheet aria-hidden="true">
+    <div class="sh-s__veil" data-close></div>
+    <div class="sh-s__card" role="dialog" aria-modal="true" aria-labelledby="pj-n">
+      <button class="sh-s__x" type="button" aria-label="Закрыть" data-close><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6L6 18" /></svg></button>
+      <div class="sh-s__media" data-media></div>
+      <div class="sh-s__body">
+        <p class="kick">Проект</p>
+        <p class="h2" id="pj-n" data-name></p>
+        <dl class="sh-s__dl" data-dl></dl>
+        <div class="sh-s__price"><span>Тёплый контур</span><b class="num" data-price></b></div>
+        <a class="btn btn--block" data-go href="#smeta">Смета по этому проекту за 1 день</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script define:vars={{ data: houses.map((h) => ({ ...h, ph: Array.from({ length: h.nph }, (_, i) => img(`${h.id}-${i}`, 1200)), pl: Array.from({ length: h.npl }, (_, i) => plan(`${h.id}-${i}`)) })), PER_M2 }}>
+  window.__pj = { data, PER_M2 };
+</script>
+<script>
+  const { data, PER_M2 } = (window as any).__pj;
+  const el = document.querySelector<HTMLElement>("[data-pj]")!;
+  const fm = (n: number) => String(n).replace(".", ",");
+  const fmt = (n: number) => Math.round(n).toLocaleString("ru-RU") + " ₽";
+  let sz = "all", fl = "0";
+  const apply = () => {
+    let n = 0;
+    el.querySelectorAll<HTMLElement>(".pj__it").forEach((li) => { const ok = (sz === "all" || li.dataset.sz === sz) && (fl === "0" || li.dataset.fl === fl); li.hidden = !ok; if (ok) n++; });
+    el.querySelector("[data-count]")!.textContent = `${n} ${n % 10 === 1 && n !== 11 ? "проект" : n % 10 >= 2 && n % 10 <= 4 && (n < 12 || n > 14) ? "проекта" : "проектов"}`;
+  };
+  el.querySelectorAll<HTMLButtonElement>("[data-sz]").forEach((b) => { if (b.tagName !== "BUTTON") return; b.addEventListener("click", () => { el.querySelectorAll("button[data-sz]").forEach((x) => x.setAttribute("aria-checked", String(x === b))); sz = b.dataset.sz!; apply(); }); });
+  el.querySelectorAll<HTMLButtonElement>("button[data-fl]").forEach((b) => b.addEventListener("click", () => { el.querySelectorAll("button[data-fl]").forEach((x) => x.setAttribute("aria-checked", String(x === b))); fl = b.dataset.fl!; apply(); }));
+  apply();
+  // facade ↔ plan
+  el.querySelectorAll<HTMLButtonElement>("[data-flip]").forEach((b) => b.addEventListener("click", () => { const on = b.getAttribute("aria-pressed") !== "true"; b.setAttribute("aria-pressed", String(on)); b.textContent = on ? "Фасад" : "План"; b.closest(".pj__ph")!.classList.toggle("plan", on); }));
+
+  const sh = el.querySelector<HTMLElement>("[data-sheet]")!;
+  const $ = <E extends HTMLElement = HTMLElement>(s: string) => sh.querySelector<E>(s)!;
+  let last: HTMLElement | null = null;
+  function open(id: string, from: HTMLElement) {
+    const h = data.find((x: any) => x.id === id); last = from;
+    $("[data-media]").innerHTML = [...h.ph.map((s: string) => `<img src="${s}" alt="${h.name}" />`), ...h.pl.map((s: string, i: number) => `<img class="pl" src="${s}" alt="План ${i + 1} этажа" />`)].join("");
+    $("[data-name]").textContent = h.name;
+    $("[data-dl]").innerHTML = [["Площадь", `${h.area} м²`], ["Габариты", `${fm(h.a)} × ${fm(h.b)} м`], ["Этажей", h.floors], ["Комнат", h.rooms], ["Санузлов", h.baths], ["Терраса", h.terrace ? "есть" : "нет"], ["Балкон", h.balcony ? "есть" : "нет"], ["Котельная", h.boiler ? "есть" : "нет"]].map(([a, v]) => `<div><dt>${a}</dt><dd>${v}</dd></div>`).join("");
+    $("[data-price]").textContent = fmt(h.area * PER_M2);
+    $<HTMLAnchorElement>("[data-go]").onclick = () => { document.dispatchEvent(new CustomEvent("smeta:pick", { detail: { id } })); close(); };
+    sh.classList.add("on"); sh.setAttribute("aria-hidden", "false"); document.documentElement.classList.add("sheet-open");
+    $<HTMLButtonElement>(".sh-s__x").focus({ preventScroll: true });
+  }
+  const close = () => { sh.classList.remove("on"); sh.setAttribute("aria-hidden", "true"); document.documentElement.classList.remove("sheet-open"); last?.focus({ preventScroll: true }); };
+  el.querySelectorAll<HTMLButtonElement>("[data-open]").forEach((b) => b.addEventListener("click", () => open(b.dataset.open!, b)));
+  sh.querySelectorAll("[data-close]").forEach((b) => b.addEventListener("click", close));
+  addEventListener("keydown", (e) => { if (e.key === "Escape" && sh.classList.contains("on")) close(); });
+  document.addEventListener("house:open", (e: any) => open(e.detail.id, e.detail.from));
+</script>
+
+<style>
+  .pj__bar { display: grid; gap: 8px; }
+  .pj__chips { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin: 0 calc(var(--gut) * -1); padding: 0 var(--gut); }
+  .pj__chips::-webkit-scrollbar { display: none; }
+  .pj__chips button { flex: none; min-height: 42px; padding: 0 16px; border-radius: 4px; box-shadow: inset 0 0 0 1.5px var(--line); font-weight: 700; font-size: 14.5px; transition: background 0.25s, color 0.25s; }
+  .pj__chips [aria-checked="true"] { background: var(--spruce); color: var(--birch); box-shadow: none; }
+  .pj__count { margin: 16px 0 14px; font-family: var(--display); letter-spacing: 0.08em; text-transform: uppercase; font-size: 14px; color: var(--mute); }
+  .pj__grid { display: grid; gap: 16px; }
+  .pj__it { display: grid; background: #fff; border-radius: 6px; overflow: hidden; }
+  .pj__ph { position: relative; aspect-ratio: 1.45; background: #fff; }
+  .pj__ph img { position: absolute; inset: 0; width: 100%; height: 100%; transition: opacity 0.4s, transform 0.6s var(--ease); }
+  .pj__a { object-fit: cover; }
+  .pj__b { object-fit: contain; padding: 6px; opacity: 0; transform: scale(0.96); }
+  .pj__ph.plan .pj__a { opacity: 0; } .pj__ph.plan .pj__b { opacity: 1; transform: none; }
+  .pj__flip { position: absolute; right: 10px; top: 10px; padding: 7px 14px; border-radius: 4px; background: rgba(24, 41, 31, 0.85); color: var(--birch); font-family: var(--display); letter-spacing: 0.08em; text-transform: uppercase; font-size: 13px; }
+  .pj__area { position: absolute; left: 10px; bottom: 10px; padding: 3px 10px; border-radius: 4px; background: var(--resin); color: #fff; font-size: 18px; font-weight: 600; }
+  .pj__body { display: grid; gap: 2px; text-align: left; padding: 14px 16px 16px; }
+  .pj__n { font-family: var(--display); font-weight: 600; font-size: 24px; text-transform: uppercase; line-height: 1.1; }
+  .pj__m { font-size: 14px; color: var(--ink-2); }
+  .pj__p { font-size: 18px; color: var(--resin); margin-top: 4px; }
+  @media (hover: hover) { .pj__body:hover .pj__n { color: var(--resin); } }
+
+  .sh-s { position: fixed; inset: 0; z-index: 140; pointer-events: none; }
+  .sh-s.on { pointer-events: auto; }
+  .sh-s__veil { position: absolute; inset: 0; background: rgba(15, 26, 20, 0.6); opacity: 0; transition: opacity 0.4s; }
+  .sh-s.on .sh-s__veil { opacity: 1; }
+  .sh-s__card { position: absolute; left: 0; right: 0; bottom: 0; max-height: 92svh; overflow-y: auto; overscroll-behavior: contain; background: var(--birch); border-radius: 12px 12px 0 0; transform: translateY(105%); transition: transform 0.55s var(--ease); }
+  .sh-s.on .sh-s__card { transform: none; }
+  .sh-s__x { position: sticky; top: 10px; float: right; margin: 10px 10px -52px 0; z-index: 3; width: 42px; height: 42px; border-radius: 50%; background: #fff; display: grid; place-content: center; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); }
+  .sh-s__x svg { width: 20px; height: 20px; }
+  .sh-s__media { display: grid; grid-auto-flow: column; grid-auto-columns: 100%; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; background: #fff; }
+  .sh-s__media::-webkit-scrollbar { display: none; }
+  .sh-s__media :global(img) { width: 100%; aspect-ratio: 1.45; object-fit: cover; scroll-snap-align: start; }
+  .sh-s__media :global(img.pl) { object-fit: contain; }
+  .sh-s__body { display: grid; gap: 14px; padding: 20px var(--gut) calc(24px + env(safe-area-inset-bottom)); }
+  .sh-s__dl { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .sh-s__dl :global(dt) { font-size: 12px; color: var(--mute); font-weight: 700; }
+  .sh-s__dl :global(dd) { font-family: var(--display); font-size: 18px; }
+  .sh-s__price { display: flex; justify-content: space-between; align-items: baseline; padding: 14px 16px; border-radius: 6px; background: var(--spruce); color: var(--birch); }
+  .sh-s__price span { font-family: var(--display); letter-spacing: 0.08em; text-transform: uppercase; color: var(--pine); font-size: 14px; }
+  .sh-s__price b { font-size: 30px; font-weight: 600; }
+  :global(html.sheet-open) { overflow: hidden; }
+  @media (min-width: 700px) { .pj__grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1000px) {
+    .pj__bar { grid-template-columns: auto auto; justify-content: space-between; }
+    .pj__chips { margin: 0; padding: 0; }
+    .pj__grid { grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .sh-s__card { left: 50%; right: auto; top: 50%; bottom: auto; width: min(1100px, 94vw); max-height: 90vh; border-radius: 8px; display: grid; grid-template-columns: 1.3fr 1fr; transform: translate(-50%, -46%) scale(0.97); opacity: 0; transition: transform 0.5s var(--ease), opacity 0.35s; }
+    .sh-s.on .sh-s__card { transform: translate(-50%, -50%); opacity: 1; }
+    .sh-s__x { position: absolute; top: 14px; right: 14px; margin: 0; }
+    .sh-s__media { grid-auto-flow: row; grid-auto-columns: auto; overflow-y: auto; max-height: 90vh; }
+    .sh-s__body { padding: 40px 34px; align-content: start; }
+  }
+</style>

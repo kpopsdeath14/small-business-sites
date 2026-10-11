@@ -1,0 +1,99 @@
+---
+/**
+ * «Путь бруса»: one board travels their whole line as you scroll. A sticky cross-section changes
+ * from a raw board, dried, calibrated and sorted, to lamellas glued in the press, profiled, notched
+ * and treated, then wrapped and loaded onto a railway wagon at Verkhnyaya Tura.
+ */
+import { line } from "../lib/site";
+const notes: Record<string, string> = {
+  "Доска": "Сосна и ель из своих лесосек в Кушвинском и Нижнетуринском районах.",
+  "Сушка": "Камерная сушка — до первого реза доска должна стать сухой.",
+  "Калибровка": "Доску строгают в точный размер, чтобы ламели легли без щелей.",
+  "Разметка": "Отмечают сучки и пороки древесины.",
+  "Вырезка дефектов": "Всё отмеченное вырезают — в брус идёт только чистое дерево.",
+  "Сортировка": "Ламели разбирают по качеству.",
+  "Сращивание": "Короткие куски сращивают в длинные ламели.",
+  "Нанесение клея": "Полиуретановый клей Kiilto, стойкий к погоде.",
+  "Прессование": "Ламели сжимают в прессе. Прочность клеевого шва проверяют испытаниями.",
+  "Выдержка": "Брус отдыхает, пока клей набирает полную прочность.",
+  "Профилирование": "Фрезеруют профиль: гребни и пазы, чтобы венцы сели плотно.",
+  "Нарезка чашек": "Нарезают угловые соединения — «чашки» — под проект.",
+  "Антисептирование": "Обработка от гнили и насекомых.",
+  "Упаковка": "Комплект дома пакуют в паллеты.",
+  "Погрузка": "Своя железнодорожная ветка у завода: десять полувагонов за раз.",
+};
+// which drawing each stage shows
+const stage = (i: number) => (i < 1 ? 0 : i < 6 ? 1 : i < 10 ? 2 : i < 13 ? 3 : 4);
+---
+<div class="ln" data-ln data-s="0">
+  <div class="ln__stick">
+    <svg class="ln__svg" viewBox="0 0 320 220" aria-hidden="true">
+      <!-- 0: a raw board with bark edges -->
+      <g class="ln__g ln__g--0"><rect x="40" y="90" width="240" height="40" rx="3" class="ln__raw" /><path d="M40 90 q 60 -8 120 0 t 120 0" class="ln__bark" /><path d="M40 130 q 60 8 120 0 t 120 0" class="ln__bark" /><circle cx="120" cy="110" r="6" class="ln__knot" /><circle cx="220" cy="104" r="4" class="ln__knot" /></g>
+      <!-- 1: clean calibrated lamellas -->
+      <g class="ln__g ln__g--1">{[0, 1, 2, 3, 4].map((k) => <rect x="40" y={52 + k * 26} width="240" height="22" rx="2" class="ln__lam" style={`--k:${k}`} />)}</g>
+      <!-- 2: glued and pressed: lamellas together, press beams above and below -->
+      <g class="ln__g ln__g--2"><rect x="30" y="34" width="260" height="14" class="ln__press" /><rect x="30" y="172" width="260" height="14" class="ln__press" />{[0, 1, 2, 3, 4].map((k) => <rect x="40" y={50 + k * 24.4} width="240" height="24" class="ln__lam ln__lam--g" />)}<path d="M40 74h240M40 98h240M40 123h240M40 147h240" class="ln__glue" /></g>
+      <!-- 3: profiled beam end: crest and groove, with the notch -->
+      <g class="ln__g ln__g--3"><path d="M90 40 h140 v20 h-30 v10 h-80 v-10 h-30 z M90 60 v110 h30 v10 h80 v-10 h30 v-110" class="ln__beam" /><path d="M90 85h140M90 110h140M90 135h140M90 160h140" class="ln__glue" /><rect x="236" y="70" width="44" height="90" rx="22" class="ln__cup" /></g>
+      <!-- 4: a railway wagon loaded with wrapped packs -->
+      <g class="ln__g ln__g--4"><rect x="30" y="80" width="260" height="70" rx="4" class="ln__wagon" /><rect x="44" y="92" width="74" height="46" class="ln__pack" /><rect x="123" y="92" width="74" height="46" class="ln__pack" /><rect x="202" y="92" width="74" height="46" class="ln__pack" /><circle cx="80" cy="160" r="14" class="ln__wh" /><circle cx="240" cy="160" r="14" class="ln__wh" /><path d="M0 176 H320" class="ln__rail" /></g>
+    </svg>
+    <p class="ln__step num"><b data-n>01</b> / {line.length} · <span data-t>{line[0]}</span></p>
+  </div>
+  <ol class="ln__list">
+    {line.map((t, i) => (
+      <li class="ln__it" data-step={i} data-stage={stage(i)}>
+        <p class="ln__n num">{String(i + 1).padStart(2, "0")}</p>
+        <div><p class="h3">{t}</p><p class="read">{notes[t]}</p></div>
+      </li>
+    ))}
+  </ol>
+</div>
+
+<script>
+  const el = document.querySelector<HTMLElement>("[data-ln]")!;
+  const steps = [...el.querySelectorAll<HTMLElement>("[data-step]")];
+  const n = el.querySelector("[data-n]")!, t = el.querySelector("[data-t]")!;
+  let cur = -1, tk = false;
+  const pick = () => {
+    tk = false;
+    let i = 0; steps.forEach((s, k) => { if (s.getBoundingClientRect().top < innerHeight * 0.55) i = k; });
+    if (i === cur) return; cur = i;
+    el.dataset.s = steps[i].dataset.stage!;
+    steps.forEach((s, k) => s.classList.toggle("on", k === i));
+    n.textContent = String(i + 1).padStart(2, "0"); t.textContent = steps[i].querySelector(".h3")!.textContent;
+  };
+  addEventListener("scroll", () => { if (!tk) { tk = true; requestAnimationFrame(pick); } }, { passive: true });
+  pick();
+</script>
+
+<style>
+  .ln { display: grid; }
+  .ln__stick { position: sticky; top: calc(var(--hdr) + env(safe-area-inset-top) + 6px); z-index: 4; display: grid; justify-items: center; gap: 4px; padding: 8px 0 12px; margin-bottom: 14px; background: var(--spruce); border-bottom: 1px solid var(--dline); }
+  .ln__svg { width: min(70vw, 300px); }
+  .ln__step { font-size: 16px; letter-spacing: 0.06em; text-transform: uppercase; color: #c3cbbf; }
+  .ln__step b { color: var(--pine); font-weight: 600; }
+  .ln__g { opacity: 0; transform: translateY(10px); transition: opacity 0.5s, transform 0.6s var(--ease); }
+  [data-s="0"] .ln__g--0, [data-s="1"] .ln__g--1, [data-s="2"] .ln__g--2, [data-s="3"] .ln__g--3, [data-s="4"] .ln__g--4 { opacity: 1; transform: none; }
+  .ln__raw { fill: #d9b07a; } .ln__bark { fill: none; stroke: #6b4a2f; stroke-width: 6; } .ln__knot { fill: #8a5a33; }
+  .ln__lam { fill: #e8c48c; stroke: #c9924f; stroke-width: 1.5; transform: translateX(calc((var(--k) - 2) * 6px)); transition: transform 0.6s; }
+  .ln__lam--g { stroke: none; }
+  .ln__press { fill: #5c6b62; } .ln__glue { stroke: #b0814a; stroke-width: 2; }
+  .ln__beam { fill: #e2b778; stroke: #b0814a; stroke-width: 2; }
+  .ln__cup { fill: var(--spruce); stroke: #b0814a; stroke-width: 2; }
+  .ln__wagon { fill: #4a5a52; } .ln__pack { fill: #e8c48c; stroke: #f3f0e8; stroke-width: 3; } .ln__wh { fill: #222; stroke: #888; stroke-width: 3; } .ln__rail { stroke: #8a8f8a; stroke-width: 4; }
+  [data-s="4"] .ln__g--4 { animation: wagon 2.4s ease-in-out infinite alternate; }
+  @keyframes wagon { to { transform: translateX(14px); } }
+  .ln__list { display: grid; gap: 22px; }
+  .ln__it { display: grid; grid-template-columns: 54px 1fr; gap: 12px; align-items: baseline; }
+  .ln__n { font-size: 30px; font-weight: 600; color: var(--pine); }
+  @media (min-width: 1000px) {
+    .ln { grid-template-columns: 1fr 1fr; gap: 60px; }
+    .ln__stick { top: calc(var(--hdr) + 80px); align-self: start; margin: 0; padding: 0; background: none; border: 0; }
+    .ln__svg { width: 100%; max-width: 480px; }
+    .ln__list { padding: 6vh 0 30vh; gap: 12vh; }
+    .ln__it { opacity: 0.32; transition: opacity 0.4s; }
+    .ln__it.on { opacity: 1; }
+  }
+</style>

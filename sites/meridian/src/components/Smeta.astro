@@ -1,0 +1,102 @@
+---
+/**
+ * «Смета за 1 день» — their own promise. Pick a project (or attach your own), the city and how to
+ * reach you. Sending raises the house on the blueprint, puts a fir sprig on the ridge (the builders'
+ * topping-out custom) and stamps the request; the e-mail with everything opens.
+ */
+import { houses, contacts, PER_M2 } from "../lib/site";
+import { houseSVG } from "../scripts/house";
+const opts = houses.map((h) => ({ id: h.id, name: h.name, area: h.area, floors: h.floors, a: h.a }));
+---
+<div class="sm" data-sm>
+  <div class="sm__bp">
+    <div class="sm__svg" data-svg></div>
+    <p class="sm__stamp" data-stamp>Смета в работе</p>
+    <p class="sm__cap" data-cap>Выберите проект — он появится на чертеже</p>
+  </div>
+  <form class="sm__form" data-form novalidate>
+    <label class="field"><span>Проект</span>
+      <select class="input" name="h" data-h>
+        <option value="">Свой проект — пришлю план</option>
+        {opts.map((h) => <option value={h.id}>{h.name} · {h.area} м²</option>)}
+      </select>
+    </label>
+    <label class="field"><span>Где участок</span><input class="input" name="c" placeholder="Город или посёлок" autocomplete="address-level2" /></label>
+    <div class="sm__row">
+      <label class="field"><span>Имя</span><input class="input" name="n" autocomplete="name" /></label>
+      <label class="field"><span>Телефон</span><input class="input" name="p" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7" /></label>
+    </div>
+    <fieldset class="sm__what">
+      <legend class="field"><span>Что посчитать</span></legend>
+      {["Тёплый контур", "Под ключ", "С фундаментом"].map((t, i) => <label><input type="checkbox" name="w" value={t} checked={i === 0} /><span>{t}</span></label>)}
+    </fieldset>
+    <button class="btn btn--block" type="submit">Получить смету за 1 день</button>
+    <p class="sm__fine">Своё описание проекта или планы приложите к письму — несколько файлов можно отправить архивом. Или позвоните: <a href={contacts.phoneHref}>{contacts.phone}</a>, {contacts.hours}.</p>
+  </form>
+</div>
+
+<script define:vars={{ opts, email: contacts.email, PER_M2 }}>
+  window.__sm = { opts, email, PER_M2 };
+</script>
+<script>
+  import { houseSVG } from "../scripts/house";
+  import { noted } from "../scripts/app";
+  const { opts, email, PER_M2 } = (window as any).__sm;
+  const el = document.querySelector<HTMLElement>("[data-sm]")!;
+  const q = <E extends HTMLElement = HTMLElement>(s: string) => el.querySelector<E>(s)!;
+  const sel = q<HTMLSelectElement>("[data-h]");
+  const fmt = (n: number) => Math.round(n).toLocaleString("ru-RU") + " ₽";
+  const draw = (flag = false) => {
+    const h = opts.find((x: any) => x.id === sel.value);
+    q("[data-svg]").innerHTML = houseSVG({ w: h ? Math.min(14, h.a) : 9, floors: h ? (h.floors === 2 ? 2 : 1) : 2, flag });
+    (q("[data-svg]").firstElementChild as HTMLElement).style.setProperty("--step", flag ? "40ms" : "18ms");
+    q("[data-cap]").textContent = h ? `${h.name}: ${h.area} м², тёплый контур ≈ ${fmt(h.area * PER_M2)}` : "Свой проект: план приложите к письму";
+  };
+  sel.addEventListener("change", () => draw());
+  document.addEventListener("smeta:pick", (e: any) => { sel.value = e.detail.id; draw(); setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "start" }), 50); });
+  draw();
+  const form = q<HTMLFormElement>("[data-form]");
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const n = form.elements.namedItem("n") as HTMLInputElement, p = form.elements.namedItem("p") as HTMLInputElement;
+    let bad = false;
+    [n, p].forEach((i) => { const ok = i === p ? i.value.replace(/\D/g, "").length >= 10 : i.value.trim().length > 1; i.classList.toggle("err", !ok); if (!ok && !bad) { i.focus(); bad = true; } });
+    if (bad) { noted("Нужны имя и телефон", "Чтобы прислать смету"); return; }
+    const d = new FormData(form), h = opts.find((x: any) => x.id === sel.value);
+    const no = `М-${new Date().toISOString().slice(2, 10).replace(/-/g, "")}-${Math.floor(Math.random() * 900 + 100)}`;
+    const body = [`Здравствуйте! Прошу рассчитать смету. Заявка ${no}.`, "", h ? `Проект: ${h.name}, ${h.area} м²` : "Проект: свой (план во вложении)", `Посчитать: ${d.getAll("w").join(", ") || "тёплый контур"}`, d.get("c") ? `Участок: ${d.get("c")}` : "", "", `Имя: ${d.get("n")}`, `Телефон: ${d.get("p")}`].filter(Boolean).join("\n");
+    const href = `mailto:${email}?subject=${encodeURIComponent(`Смета ${no}`)}&body=${encodeURIComponent(body)}`;
+    draw(true);
+    el.classList.add("sent");
+    q("[data-stamp]").textContent = `Смета в работе · ${no}`;
+    setTimeout(() => { location.href = href; noted("Заявка готова", "Письмо открыто — отправьте его, смету пришлют за день"); }, 2200);
+  });
+</script>
+
+<style>
+  .sm { display: grid; gap: 26px; }
+  /* the blueprint: blue paper, a fine grid, the house in white lines */
+  .sm__bp { position: relative; border-radius: 6px; padding: 16px; background-color: var(--bp); background-image: linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.07) 1px, transparent 1px); background-size: 22px 22px; color: #dfe9f3; overflow: hidden; }
+  .sm__svg { height: 260px; }
+  .sm__svg :global(svg) { width: 100%; height: 100%; }
+  .sm__bp :global(.hs__c) { fill: rgba(255, 255, 255, 0.06); stroke: #dfe9f3; }
+  .sm__bp :global(.hs__roof) { fill: none; stroke: #dfe9f3; stroke-width: 4; }
+  .sm__bp :global(.hs__gable) { fill: rgba(255, 255, 255, 0.05); stroke: #dfe9f3; stroke-width: 2; }
+  .sm__bp :global(.hs__win), .sm__bp :global(.hs__door) { fill: var(--bp); stroke: #dfe9f3; }
+  .sm__bp :global(.hs__found), .sm__bp :global(.hs__ch rect) { fill: none; stroke: #dfe9f3; stroke-width: 3; }
+  .sm__bp :global(.hs__fir path:last-child) { fill: #6fbf73; }
+  .sm__cap { text-align: center; font-size: 14px; margin-top: 8px; }
+  .sm__stamp { position: absolute; right: 14px; top: 16px; padding: 6px 12px; border: 3px solid #e2574c; border-radius: 6px; color: #e2574c; font-family: var(--display); font-size: 16px; letter-spacing: 0.1em; text-transform: uppercase; transform: rotate(-8deg) scale(1.6); opacity: 0; transition: transform 0.4s cubic-bezier(0.3, 1.6, 0.5, 1) 1.4s, opacity 0.2s 1.4s; }
+  .sent .sm__stamp { opacity: 0.9; transform: rotate(-8deg); }
+  .sm__form { display: grid; gap: 14px; }
+  .sm__row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .sm__what { border: 0; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .sm__what legend { padding: 0; margin-bottom: 6px; }
+  .sm__what input { position: absolute; opacity: 0; }
+  .sm__what label span { display: inline-block; padding: 10px 14px; border-radius: 4px; background: rgba(255, 255, 255, 0.08); box-shadow: inset 0 0 0 1.5px var(--dline); cursor: pointer; font-weight: 700; font-size: 14.5px; }
+  .sm__what label input:checked + span { background: var(--pine); color: var(--spruce); box-shadow: none; }
+  .sm__what label input:focus-visible + span { outline: 2px solid var(--resin); outline-offset: 2px; }
+  .sm__fine { font-size: 13.5px; color: #a9b4a8; }
+  .sm__fine a { color: var(--birch); border-bottom: 1px solid var(--dline); }
+  @media (min-width: 1000px) { .sm { grid-template-columns: 1.15fr 1fr; gap: 56px; align-items: center; } .sm__svg { height: 380px; } }
+</style>

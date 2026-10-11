@@ -1,0 +1,61 @@
+---
+/**
+ * Once per visit: «Сруб». In the dark spruce forest a house rises course by course while a counter
+ * reads «венец 1…N», the roof lands, the chimney starts to smoke — and the forest parts.
+ */
+import { houseSVG, houseCSS } from "../scripts/house";
+const svg = houseSVG({ w: 9, floors: 2, id: "intro" });
+const n = Math.round((300 * 1.75) / 18);
+---
+<script is:inline>
+  try {
+    if (!sessionStorage.getItem("meridian-intro") && !matchMedia("(prefers-reduced-motion: reduce)").matches)
+      document.documentElement.classList.add("intro");
+  } catch (e) {}
+</script>
+<div class="sr" aria-hidden="true">
+  <div class="sr__trees"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="sr__house" set:html={svg} />
+  <p class="sr__n"><span>венец</span> <b data-sr-n>0</b> <span>/ {n}</span></p>
+  <p class="sr__skip">коснитесь, чтобы войти</p>
+</div>
+<style is:global set:html={houseCSS}></style>
+
+<script define:vars={{ n }}>
+  const html = document.documentElement;
+  if (html.classList.contains("intro")) {
+    const el = document.querySelector(".sr"), out = el.querySelector("[data-sr-n]");
+    const step = 55, t0 = performance.now();
+    el.style.setProperty("--step", step + "ms");
+    let done = false;
+    const run = (t) => { const k = Math.min(n, Math.floor((t - t0) / step)); out.textContent = k; if (k < n && !done) requestAnimationFrame(run); };
+    requestAnimationFrame(run);
+    const go = () => {
+      if (done) return; done = true;
+      try { sessionStorage.setItem("meridian-intro", "1"); } catch (e) {}
+      html.classList.add("intro-out");
+      setTimeout(() => html.classList.remove("intro", "intro-out"), 1100);
+    };
+    setTimeout(go, n * step + 1500);
+    el.addEventListener("click", go);
+    addEventListener("keydown", go, { once: true });
+  }
+</script>
+
+<style is:global>
+  .sr { display: none; }
+  html.intro { overflow: hidden; }
+  html.intro .sr { position: fixed; inset: 0; z-index: 300; display: grid; place-content: center; justify-items: center; gap: 14px; background: radial-gradient(60% 50% at 50% 60%, #22392b, #0f1a14); color: var(--birch); cursor: pointer; overflow: hidden; }
+  .sr__house { width: min(80vw, 420px); aspect-ratio: 1.15; position: relative; z-index: 2; }
+  .sr__n { font-family: var(--display); font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; color: #c3cbbf; z-index: 2; }
+  .sr__n b { font-weight: 600; font-size: 34px; color: var(--pine); display: inline-block; min-width: 1.6em; text-align: right; }
+  .sr__skip { position: fixed; bottom: calc(22px + env(safe-area-inset-bottom)); left: 0; right: 0; text-align: center; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: #7f8c80; }
+  /* the forest: two dark curtains of spruce that part when the house is done */
+  .sr__trees { position: absolute; inset: 0; z-index: 1; }
+  .sr__trees i { position: absolute; bottom: 0; width: 22vw; height: 70vh; background: #0b130e; clip-path: polygon(50% 0, 62% 14%, 56% 14%, 72% 32%, 64% 32%, 82% 52%, 72% 52%, 92% 76%, 80% 76%, 100% 100%, 0 100%, 20% 76%, 8% 76%, 28% 52%, 18% 52%, 36% 32%, 28% 32%, 44% 14%, 38% 14%); transition: transform 1.1s cubic-bezier(0.65, 0, 0.35, 1); }
+  .sr__trees i:nth-child(1) { left: -8vw; height: 82vh; } .sr__trees i:nth-child(2) { left: 6vw; height: 60vh; opacity: 0.8; } .sr__trees i:nth-child(3) { left: 18vw; height: 46vh; opacity: 0.6; }
+  .sr__trees i:nth-child(4) { right: 18vw; height: 50vh; opacity: 0.6; } .sr__trees i:nth-child(5) { right: 4vw; height: 64vh; opacity: 0.8; } .sr__trees i:nth-child(6) { right: -8vw; height: 86vh; }
+  html.intro-out .sr { opacity: 0; transition: opacity 0.9s 0.3s; }
+  html.intro-out .sr__trees i:nth-child(-n + 3) { transform: translateX(-60vw); }
+  html.intro-out .sr__trees i:nth-child(n + 4) { transform: translateX(60vw); }
+</style>
