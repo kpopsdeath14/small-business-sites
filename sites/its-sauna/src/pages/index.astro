@@ -1,0 +1,180 @@
+---
+import Base from "../layouts/Base.astro";
+import Intro from "../components/Intro.astro";
+import Climate from "../components/Climate.astro";
+import Catalog from "../components/Catalog.astro";
+import Make from "../components/Make.astro";
+import { img, url, contacts, models, rub } from "../lib/site";
+const cheapest = Math.min(...models.filter((m) => m.price).map((m) => m.price!));
+---
+<Base>
+  <Intro />
+  <main>
+    <!-- HERO: the ITS bronze-glass sauna door swings open onto the steam room -->
+    <section class="hero dark">
+      <div class="wrap hero__in">
+        <div class="hero__txt">
+          <p class="kick" data-in>С {contacts.since} года · Москва</p>
+          <h1 class="h1" data-in style="--d:.08s">Искусство творить <em>сауны</em></h1>
+          <p class="read" data-in style="--d:.16s">Готовые сауны из липы собственного производства — от {rub(cheapest)}. Финские сауны, русские бани и хамамы под ключ. Больше 10 000 построено.</p>
+          <div class="hero__cta" data-in style="--d:.24s">
+            <a class="btn btn--ember" href="#saunas">Выбрать сауну</a>
+            <a class="btn btn--line" href={url("sauna/")}>Собрать по размерам</a>
+          </div>
+        </div>
+        <div class="door" data-door>
+          <div class="door__room"><img src={img("hero", 1200)} srcset={`${img("hero", 600)} 600w, ${img("hero", 1200)} 1200w`} sizes="(min-width: 1000px) 40vw, 86vw" alt="Парная ИТС с подсветкой под полками" width="1200" height="874" fetchpriority="high" /></div>
+          <div class="door__leaf">
+            <i class="door__glass"></i>
+            <i class="door__handle"></i>
+          </div>
+          <i class="door__frame"></i>
+        </div>
+      </div>
+      <ul class="hero__facts wrap mono" data-in>
+        <li><b>10 000+</b>саун и бань построено</li>
+        <li><b>от 3 дней</b>изготовление готовой сауны</li>
+        <li><b>25</b>моделей в каталоге</li>
+      </ul>
+    </section>
+
+    <section class="sec lining" id="par">
+      <div class="wrap">
+        <div class="sh" data-in>
+          <p class="kick">Какой пар ваш</p>
+          <h2 class="h2">Жар, влажность <em>и ничего лишнего</em></h2>
+          <p class="read">Финская сауна, русская баня и хамам отличаются не стенами, а воздухом. Найдите свой пар на шкале — термогигрометр покажет, что строить.</p>
+        </div>
+        <Climate />
+      </div>
+    </section>
+
+    <section class="sec" id="saunas">
+      <div class="wrap">
+        <div class="sh" data-in>
+          <p class="kick">Готовые сауны ИТС</p>
+          <h2 class="h2">Двадцать пять <em>моделей</em></h2>
+          <p class="read">От «Мини» на одного — её ставят на балконе или вместо кладовой — до «Светлицы Люкс» со стеклянным фасадом. Любую модель делают и по вашим размерам.</p>
+        </div>
+        <Catalog />
+      </div>
+    </section>
+
+    <section class="sec lining" id="make">
+      <div class="wrap">
+        <div class="sh" data-in>
+          <p class="kick">Производство</p>
+          <h2 class="h2">Сауна <em>за три дня</em></h2>
+        </div>
+        <Make />
+      </div>
+    </section>
+
+    <!-- BUILD: the dark steam rooms they build to order -->
+    <section class="sec dark build" id="build">
+      <div class="wrap">
+        <div class="sh" data-in>
+          <p class="kick">Строительство под ключ</p>
+          <h2 class="h2">Русская баня, хамам, <em>СПА</em></h2>
+          <p class="read">Больше 150 саун и бань в год — в домах, фитнес-клубах, санаториях и детских садах. По типовым проектам, заказанным в институте ЦНИИПРОМЗДАНИЙ, в любом регионе России.</p>
+        </div>
+        <div class="build__grid">
+          {[
+            ["rus1", "Изразцовые печи", "Русская баня с изразцовой дровяной печью — от 35 рабочих дней."],
+            ["tur1", "Хамам", "Тёплый мрамор и мозаика, равномерный жар по всему помещению — от 20 рабочих дней."],
+            ["spa1", "СПА-комплексы", "Бассейн, парные и комната отдыха — проект, отделка и мебель из своей мастерской."],
+            ["rus3", "Каменка из валуна", "Печи из натурального камня с большой массой камней — мягкий густой пар."],
+          ].map(([p, t, d], i) => (
+            <figure class="build__it" data-in style={`--d:${i * 0.06}s`}>
+              <img src={img(p, 600)} srcset={`${img(p, 600)} 600w, ${img(p, 1200)} 1200w`} sizes="(min-width: 1000px) 24vw, 80vw" alt={t} loading="lazy" width="600" height="760" />
+              <figcaption><b>{t}</b><span>{d}</span></figcaption>
+            </figure>
+          ))}
+        </div>
+        <div class="build__cta" data-in>
+          <a class="btn btn--ember" href={`${contacts.wa}?text=${encodeURIComponent("Здравствуйте! Хочу построить парную. Прикладываю план помещения.")}`} target="_blank" rel="noopener">Прислать план помещения</a>
+          <a class="btn btn--line" href={contacts.buildHref}>Строительный отдел <span style="white-space:nowrap">{contacts.build}</span></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- STORES -->
+    <section class="sec lining" id="stores">
+      <div class="wrap stores">
+        <div class="sh" data-in>
+          <p class="kick">Магазины</p>
+          <h2 class="h2">Посмотреть <em>вживую</em></h2>
+          <p class="read">Готовые сауны, печи Helo и Harvia, парогенераторы, вагонка из липы, двери и банная мебель. Линия консультаций — ежедневно с 9 до 20.</p>
+        </div>
+        <ul class="stores__list">
+          {contacts.stores.map((s, i) => (
+            <li data-in style={`--d:${i * 0.06}s`}>
+              <p class="h3">{s.name}</p>
+              <p>{s.addr}</p>
+              <p class="mono stores__n">{s.note} · {s.hours}</p>
+            </li>
+          ))}
+          <li data-in style="--d:.12s">
+            <p class="h3">Позвонить</p>
+            <p><a href={contacts.phoneHref}>{contacts.phone}</a> — WhatsApp, Telegram</p>
+            <p class="mono stores__n"><a href={contacts.lineHref}>{contacts.line}</a> · линия консультаций</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+  </main>
+</Base>
+
+<script>
+  // the door swings open once the steam of the intro has cleared (or straight away)
+  const door = document.querySelector<HTMLElement>("[data-door]")!;
+  const open = () => setTimeout(() => door.classList.add("open"), 350);
+  if (document.documentElement.classList.contains("intro")) document.addEventListener("intro:done", open, { once: true });
+  else open();
+</script>
+
+<style>
+  .sec { padding: clamp(80px, 13vw, 150px) 0; }
+  .hero { padding: calc(var(--hdr) + env(safe-area-inset-top) + 26px) 0 36px; overflow: hidden; background: radial-gradient(80% 60% at 70% 40%, #3a2617, var(--coal) 70%); }
+  .hero__in { display: grid; gap: 26px; }
+  .hero__txt { display: grid; gap: 18px; }
+  .hero__cta { display: flex; flex-wrap: wrap; gap: 10px; }
+  .hero__cta .btn { flex: 1 1 200px; }
+
+  /* the door: a linden frame, a bronze-glass leaf on hinges at the left, the steam room behind */
+  .door { position: relative; order: -1; justify-self: center; width: min(54vw, 420px); aspect-ratio: 7 / 11; perspective: 1400px; }
+  .door__room { position: absolute; inset: 14px; overflow: hidden; background: #120c09; }
+  .door__room img { width: 100%; height: 100%; object-fit: cover; object-position: 60% 50%; transform: scale(1.08); transition: transform 2.6s var(--ease); }
+  .door.open .door__room img { transform: scale(1); }
+  .door__frame { position: absolute; inset: 0; border: 14px solid transparent; border-image: linear-gradient(180deg, #e2c48f, #c9955a 50%, #b7824a) 1; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.25), 0 30px 70px -20px rgba(0, 0, 0, 0.8); pointer-events: none; }
+  .door__leaf { position: absolute; inset: 14px; transform-origin: 0 50%; transform-style: preserve-3d; transition: transform 1.8s cubic-bezier(0.5, 0, 0.2, 1); }
+  .door.open .door__leaf { transform: rotateY(-72deg); }
+  /* tempered bronze glass: warm, smoky, with one long reflection */
+  .door__glass { position: absolute; inset: 0; background: linear-gradient(115deg, rgba(255, 230, 190, 0.18) 0 18%, transparent 18% 26%, rgba(255, 230, 190, 0.08) 26% 30%, transparent 30%), linear-gradient(180deg, rgba(92, 58, 30, 0.82), rgba(70, 42, 20, 0.88)); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); box-shadow: inset 0 0 0 1px rgba(255, 220, 170, 0.25); }
+  .door__handle { position: absolute; right: 8%; top: 38%; width: 14px; height: 24%; border-radius: 7px; background: linear-gradient(90deg, #b07a43, #e2c48f 45%, #a26d3a); box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4); }
+  .hero__facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 30px; padding-top: 16px; border-top: 1px solid var(--dline); font-size: 10px; line-height: 1.4; color: #c7b6a3; }
+  .hero__facts b { display: block; font-weight: 400; font-size: 17px; color: var(--lipa); margin-bottom: 4px; }
+
+  .build__grid { display: grid; grid-auto-flow: column; grid-auto-columns: 78%; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: var(--gut); scrollbar-width: none; margin: 0 calc(var(--gut) * -1); padding: 0 var(--gut); }
+  .build__grid::-webkit-scrollbar { display: none; }
+  .build__it { scroll-snap-align: start; display: grid; gap: 12px; }
+  .build__it img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 3px; }
+  .build__it figcaption { display: grid; gap: 4px; font-size: 14.5px; color: #c7b6a3; }
+  .build__it b { font-family: var(--display); font-weight: 400; font-size: 21px; color: var(--lipa); }
+  .build__cta { display: grid; gap: 10px; margin-top: 34px; }
+  .build__cta .btn { white-space: normal; text-align: center; padding: 12px 20px; }
+
+  .stores__list { display: grid; border-top: 1px solid var(--line); }
+  .stores__list li { display: grid; gap: 4px; padding: 22px 0; border-bottom: 1px solid var(--line); }
+  .stores__n { font-size: 11px; color: var(--mute); }
+  .stores__list a { border-bottom: 1px solid var(--line); }
+
+  @media (min-width: 1000px) {
+    .hero { min-height: 100svh; display: grid; align-content: center; padding-top: var(--hdr); }
+    .hero__in { grid-template-columns: 1.15fr 1fr; align-items: center; gap: 60px; }
+    .door { order: 0; width: min(100%, 440px); }
+    .build__grid { grid-auto-flow: row; grid-template-columns: repeat(4, 1fr); grid-auto-columns: auto; overflow: visible; margin: 0; padding: 0; gap: 20px; }
+    .build__cta { grid-template-columns: auto auto; justify-content: start; }
+    .stores { display: grid; grid-template-columns: 1fr 1.2fr; gap: 60px; }
+  }
+</style>

@@ -1,0 +1,146 @@
+/* ITS — "linden and embers".
+   Light pages are the dressing room: pale linden lining, honey wood, charcoal type.
+   The steam rooms (hero, Russian bath & hammam, footer) are dark and lit from under the benches.
+   Prata for headings, Mulish for text, Fira Mono for degrees, kilowatts and millimetres. */
+:root {
+  --lipa: #f5ecdc;
+  --lipa-2: #ecdfc8;
+  --honey: #d9a865;
+  --abash: #e8cf9f;
+  --cedar: #9b5a35;
+  --coal: #1b1410;
+  --coal-2: #2a1f18;
+  --ink: #241a14;
+  --ink-2: #5f4e42;
+  --mute: #8d7b6c;
+  --ember: #d9682c;
+  --ember-2: #f0904f;
+  --bronze: #6b4a2b;
+  --line: rgba(36, 26, 20, 0.14);
+  --dline: rgba(245, 236, 220, 0.14);
+
+  --display: "Prata", "Georgia", serif;
+  --sans: "Mulish Variable", "Mulish", system-ui, -apple-system, sans-serif;
+  --mono: "Fira Mono", ui-monospace, monospace;
+
+  --gut: clamp(18px, 5vw, 64px);
+  --max: 1280px;
+  --hdr: 62px;
+  --ease: cubic-bezier(0.22, 0.9, 0.3, 1);
+  --ease-io: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: calc(var(--hdr) + 16px); }
+body { margin: 0; min-height: 100svh; background: var(--lipa); color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-x: hidden; overflow-x: clip; }
+img { display: block; max-width: 100%; }
+[hidden] { display: none !important; }
+a { color: inherit; text-decoration: none; -webkit-tap-highlight-color: transparent; }
+h1, h2, h3, h4, p, ul, ol, dl, dd, figure { margin: 0; padding: 0; }
+ul, ol { list-style: none; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { background: none; border: 0; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+::selection { background: var(--honey); color: var(--coal); }
+:focus-visible { outline: 2px solid var(--ember); outline-offset: 3px; }
+.wrap { width: 100%; max-width: var(--max); margin: 0 auto; padding: 0 var(--gut); }
+
+/* linden lining: the faint horizontal boards of a sauna wall */
+.lining { background-image: repeating-linear-gradient(180deg, transparent 0 63px, rgba(120, 85, 50, 0.07) 63px 64px); }
+.dark { background: var(--coal); color: var(--lipa); --line: var(--dline); }
+.dark .read, .dark .kick { color: #c7b6a3; }
+
+/* ---------- type ---------- */
+.h1, .h2, .h3 { font-family: var(--display); font-weight: 400; line-height: 1.08; letter-spacing: -0.01em; }
+.h1 { font-size: clamp(40px, 11vw, 104px); }
+.h2 { font-size: clamp(32px, 8vw, 68px); }
+.h3 { font-size: clamp(22px, 5.4vw, 30px); line-height: 1.18; }
+.h1 em, .h2 em, .h3 em { font-style: normal; color: var(--ember); }
+.kick { display: inline-flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2); }
+.kick::before { content: ""; width: 22px; height: 1px; background: currentColor; opacity: 0.6; }
+.read { font-size: 16.5px; line-height: 1.7; color: var(--ink-2); max-width: 36em; }
+.mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.sh { display: grid; gap: 16px; margin-bottom: 34px; }
+
+/* ---------- buttons: a planed linden board with a burnt edge ---------- */
+.btn { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 12px; min-height: 54px; padding: 0 26px; border-radius: 3px; background: var(--ink); color: var(--lipa); font-family: var(--sans); font-weight: 700; font-size: 14px; letter-spacing: 0.06em; text-transform: uppercase; transition: background 0.3s, color 0.3s, transform 0.3s var(--ease); white-space: nowrap; }
+@media (hover: hover) { .btn:hover { background: var(--ember); color: #fff; } }
+.btn:active { transform: scale(0.985); }
+.btn--ember { background: var(--ember); color: #fff; }
+@media (hover: hover) { .btn--ember:hover { background: var(--ink); } }
+.btn--line { background: transparent; color: inherit; box-shadow: inset 0 0 0 1px currentColor; }
+@media (hover: hover) { .btn--line:hover { background: var(--ink); color: var(--lipa); box-shadow: none; } }
+.dark .btn--line:hover { background: var(--lipa); color: var(--coal); }
+.btn--block { width: 100%; }
+
+/* ---------- header ---------- */
+.hdr { position: fixed; inset: 0 0 auto; z-index: 100; height: calc(var(--hdr) + env(safe-area-inset-top)); padding-top: env(safe-area-inset-top); color: var(--ink); transition: background 0.4s, color 0.4s, box-shadow 0.4s; }
+.hdr.solid { background: color-mix(in oklab, var(--lipa) 90%, transparent); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 1px 0 var(--line); }
+.hdr.on-dark:not(.solid) { color: var(--lipa); }
+.hdr.on-dark.scrolled { background: rgba(27, 20, 16, 0.86); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 1px 0 var(--dline); }
+.hdr__in { height: var(--hdr); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.brand { display: inline-flex; align-items: center; gap: 10px; }
+.brand svg { width: 30px; height: 30px; flex: none; }
+.brand b { font-family: var(--display); font-weight: 400; font-size: 22px; letter-spacing: 0.06em; }
+.brand small { display: none; font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.7; }
+.hdr__r { display: flex; align-items: center; gap: 2px; }
+.hbtn { position: relative; width: 44px; height: 44px; display: grid; place-content: center; }
+.hbtn svg { width: 22px; height: 22px; }
+.hbtn .dot { position: absolute; top: 9px; right: 8px; width: 8px; height: 8px; border-radius: 50%; background: var(--ember); transform: scale(0); transition: transform 0.4s var(--ease); }
+.hbtn .dot.on { transform: scale(1); }
+.nav { display: none; }
+
+/* ---------- menu: a bench slides up, one board per section ---------- */
+.menu { position: fixed; inset: auto 0 0; z-index: 150; max-height: 88svh; overflow-y: auto; padding: 14px var(--gut) calc(22px + env(safe-area-inset-bottom)); background: var(--abash); color: var(--coal); border-radius: 10px 10px 0 0; box-shadow: 0 -20px 60px rgba(27, 20, 16, 0.35); transform: translateY(105%); transition: transform 0.6s var(--ease); }
+.menu-open .menu { transform: none; }
+.menu__veil { position: fixed; inset: 0; z-index: 140; background: rgba(27, 20, 16, 0.5); opacity: 0; pointer-events: none; transition: opacity 0.5s; }
+.menu-open .menu__veil { opacity: 1; pointer-events: auto; }
+.menu__grip { width: 44px; height: 4px; border-radius: 2px; background: rgba(27, 20, 16, 0.25); margin: 0 auto 14px; }
+.menu__nav { display: grid; gap: 6px; }
+/* each link is a bench board: rounded edges, a soft groove between */
+.menu__nav a { display: flex; justify-content: space-between; align-items: center; padding: 16px 18px; border-radius: 6px; background: linear-gradient(180deg, #f1dcb1, #e2c48f); box-shadow: inset 0 -2px 0 rgba(120, 80, 40, 0.18), 0 1px 0 rgba(255, 255, 255, 0.4); font-family: var(--display); font-size: 22px; opacity: 0; transform: translateY(14px); transition: opacity 0.4s, transform 0.5s var(--ease); }
+.menu-open .menu__nav a { opacity: 1; transform: none; transition-delay: calc(0.12s + var(--i) * 0.05s); }
+.menu__nav small { font-family: var(--mono); font-size: 11px; color: var(--bronze); }
+.menu__foot { display: grid; gap: 4px; margin-top: 18px; font-size: 14px; color: var(--ink-2); }
+.menu__foot a { font-family: var(--display); font-size: 22px; color: var(--coal); }
+.menu-open { overflow: hidden; }
+
+/* ---------- reveal: things come out of the steam ---------- */
+.js [data-in] { opacity: 0; transform: translateY(18px); filter: blur(6px); transition: opacity 0.9s var(--ease), transform 1s var(--ease), filter 1s var(--ease); transition-delay: var(--d, 0s); }
+.js [data-in].in { opacity: 1; transform: none; filter: none; }
+
+/* ---------- forms ---------- */
+.field { display: grid; gap: 6px; }
+.field > span { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2); }
+.input { width: 100%; min-height: 52px; padding: 12px 14px; border-radius: 3px; border: 1px solid var(--line); background: #fbf6ec; color: var(--ink); font-size: 16px; -webkit-appearance: none; appearance: none; }
+.input:focus { outline: none; border-color: var(--ember); }
+.input.err { border-color: #c0392b; }
+
+/* ---------- note ---------- */
+.note { position: fixed; left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); z-index: 120; display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; padding: 14px 14px 14px 18px; border-radius: 6px; background: var(--coal); color: var(--lipa); box-shadow: 0 18px 40px rgba(27, 20, 16, 0.4); transform: translateY(140%); transition: transform 0.6s var(--ease); }
+.note.on { transform: none; }
+.note__t { font-family: var(--display); font-size: 17px; }
+.note__s { font-family: var(--mono); font-size: 11px; color: #c7b6a3; }
+@media (min-width: 640px) { .note { left: auto; right: 24px; bottom: 24px; width: 420px; } }
+
+/* ---------- footer: the rest room after the steam ---------- */
+.ftr { padding: 90px 0 calc(30px + env(safe-area-inset-bottom)); }
+.ftr__big { font-family: var(--display); font-size: clamp(34px, 9vw, 80px); line-height: 1.05; }
+.ftr__grid { display: grid; gap: 28px; margin-top: 44px; }
+.ftr__col { display: grid; gap: 6px; align-content: start; color: #c7b6a3; font-size: 14.5px; }
+.ftr__col .kick { margin-bottom: 6px; }
+.ftr__col a { color: var(--lipa); }
+.ftr__base { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; margin-top: 44px; padding-top: 18px; border-top: 1px solid var(--dline); font-family: var(--mono); font-size: 10.5px; color: #8d7b6c; }
+
+@media (min-width: 1000px) {
+  :root { --hdr: 74px; }
+  .brand small { display: block; }
+  .nav { display: flex; gap: 30px; font-size: 14px; font-weight: 600; }
+  .nav a { opacity: 0.75; transition: opacity 0.3s; }
+  .nav a:hover, .nav a[aria-current] { opacity: 1; }
+  .menu-btn { display: none; }
+  .ftr__grid { grid-template-columns: 1.4fr 1fr 1fr 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  .js [data-in] { opacity: 1; transform: none; filter: none; }
+}

@@ -1,0 +1,195 @@
+---
+/**
+ * Twenty-five ready-made ITS saunas. Filter by how many people steam together and by your ceiling:
+ * a sauna that doesn't fit under it greys out. A card opens into a sheet with the photo and the
+ * factory floor plan (their own drawing with bench heights).
+ */
+import { models, rub, mimg, plan, url, woodName, contacts } from "../lib/site";
+const groups = [["all", "Все"], ["1", "1–2"], ["2", "2–3"], ["3", "3–4"], ["4", "4–5"], ["5", "5 и больше"]] as const;
+const grp = (c: [number, number]) => (c[1] >= 6 || c[0] >= 5 ? "5" : c[0] >= 4 ? "4" : c[0] >= 3 ? "3" : c[0] >= 2 ? "2" : "1");
+const mm = (n: number) => (n / 1000).toFixed(2).replace(".", ",");
+const extras = (m: (typeof models)[number]) => [m.steam && "режим русской бани", m.stars && "звёздное небо", m.salt && "гималайская соль", m.glassFront && "стеклянный фасад", m.windows ? `${m.windows} ${m.windows === 1 ? "окно" : m.windows < 5 ? "окна" : "окон"}` : ""].filter(Boolean) as string[];
+---
+<div class="ct" data-ct>
+  <div class="ct__bar">
+    <div class="ct__chips" role="radiogroup" aria-label="На сколько человек">
+      {groups.map(([id, label], i) => <button type="button" role="radio" aria-checked={i === 0 ? "true" : "false"} data-g={id}>{label}</button>)}
+    </div>
+    <label class="ct__ceil">
+      <span class="mono">Потолок у вас <b data-ceil-o>2,70</b> м</span>
+      <input type="range" min="2100" max="3000" step="50" value="2700" data-ceil aria-label="Высота потолка" />
+    </label>
+  </div>
+  <p class="ct__count mono" data-count></p>
+
+  <ul class="ct__grid">
+    {models.map((m, i) => (
+      <li class="ct__it" data-g={grp(m.cap)} data-h={m.h} data-in style={`--d:${(i % 4) * 0.05}s`}>
+        <button type="button" class="ct__btn" data-open={m.id} aria-label={`Сауна ${m.name}: подробнее`}>
+          <span class:list={["ct__ph", { "ct__ph--plan": !m.photo }]}>
+            {m.photo ? <img src={mimg(m.id, 480)} alt="" loading="lazy" width="480" height="600" /> : m.plan ? <img src={plan(m.id)} alt="" loading="lazy" width="480" height="480" /> : <span class="ct__ph-none mono">{mm(m.w)} × {mm(m.d)} м</span>}
+            {!m.photo && <small class="mono">чертёж</small>}
+            <i class="ct__fit mono">не встанет</i>
+          </span>
+          <span class="ct__name">{m.name}</span>
+          <span class="ct__meta mono">{mm(m.w)} × {mm(m.d)} × {mm(m.h)} м</span>
+          <span class="ct__meta mono">{m.cap[0] === m.cap[1] ? m.cap[0] : `${m.cap[0]}–${m.cap[1]}`} чел · {String(m.kw).replace(".", ",")} кВт</span>
+          <span class="ct__price mono">{m.price ? rub(m.price) : "по запросу"}</span>
+        </button>
+      </li>
+    ))}
+  </ul>
+
+  <div class="sh-sheet" data-sheet aria-hidden="true">
+    <div class="sh-sheet__veil" data-close></div>
+    <div class="sh-sheet__card" role="dialog" aria-modal="true" aria-labelledby="ct-n">
+      <button class="sh-sheet__x" type="button" aria-label="Закрыть" data-close><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5 5l14 14M19 5L5 19" /></svg></button>
+      <div class="sh-sheet__media">
+        <div class="sh-sheet__tabs" role="tablist">
+          <button type="button" role="tab" aria-selected="true" data-tab="photo">Фото</button>
+          <button type="button" role="tab" aria-selected="false" data-tab="plan">Планировка</button>
+        </div>
+        <img data-s-photo alt="" />
+        <img data-s-plan alt="" hidden />
+      </div>
+      <div class="sh-sheet__body">
+        <p class="kick">Готовая сауна ИТС</p>
+        <p class="h2" id="ct-n" data-s-name></p>
+        <p class="read" data-s-note></p>
+        <dl class="sh-sheet__dl mono" data-s-dl></dl>
+        <p class="sh-sheet__x2" data-s-x></p>
+        <p class="sh-sheet__price mono" data-s-price></p>
+        <div class="sh-sheet__cta">
+          <a class="btn btn--ember" data-s-go href="#">Собрать на её основе</a>
+          <a class="btn btn--line" data-s-wa href={contacts.wa} target="_blank" rel="noopener">Спросить в WhatsApp</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script define:vars={{ data: models.map((m) => ({ ...m, extras: extras(m), woodN: woodName[m.wood] })), base: url(""), wa: contacts.waNum }}>
+  const el = document.querySelector("[data-ct]");
+  const items = [...el.querySelectorAll(".ct__it")];
+  const chips = [...el.querySelectorAll("[data-g]")].filter((b) => b.tagName === "BUTTON");
+  const ceil = el.querySelector("[data-ceil]");
+  let g = "all";
+  const mm = (n) => (n / 1000).toFixed(2).replace(".", ",");
+  function filter() {
+    const c = +ceil.value;
+    el.querySelector("[data-ceil-o]").textContent = mm(c);
+    let shown = 0, fit = 0;
+    items.forEach((li) => {
+      const show = g === "all" || li.dataset.g === g;
+      // a cabin needs a few centimetres above it to be lifted into place and vented
+      const ok = +li.dataset.h + 50 <= c;
+      li.hidden = !show; li.classList.toggle("nofit", !ok);
+      if (show) { shown++; if (ok) fit++; }
+    });
+    el.querySelector("[data-count]").textContent = `${shown} ${shown % 10 === 1 && shown !== 11 ? "модель" : shown % 10 >= 2 && shown % 10 <= 4 && (shown < 12 || shown > 14) ? "модели" : "моделей"} · под ваш потолок встаёт ${fit}`;
+  }
+  chips.forEach((b) => b.addEventListener("click", () => { chips.forEach((x) => x.setAttribute("aria-checked", String(x === b))); g = b.dataset.g; filter(); }));
+  ceil.addEventListener("input", filter);
+  filter();
+
+  const sh = el.querySelector("[data-sheet]");
+  const $ = (s) => sh.querySelector(s);
+  const fmt = (n) => Math.round(n).toLocaleString("ru-RU") + " ₽";
+  let last = null;
+  const tab = (t) => {
+    sh.querySelectorAll("[data-tab]").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.tab === t)));
+    $("[data-s-photo]").hidden = t !== "photo"; $("[data-s-plan]").hidden = t !== "plan";
+  };
+  sh.querySelectorAll("[data-tab]").forEach((b) => b.addEventListener("click", () => tab(b.dataset.tab)));
+  function open(id, from) {
+    const m = data.find((x) => x.id === id); last = from;
+    const ph = $("[data-s-photo]"), pl = $("[data-s-plan]");
+    ph.src = m.photo ? `${base}m/${m.id}-960.webp` : ""; ph.alt = `Сауна ${m.name}`;
+    pl.src = m.plan ? `${base}plan/${m.id}-640.webp` : ""; pl.alt = `Планировка сауны ${m.name}`;
+    sh.querySelector('[data-tab="photo"]').hidden = !m.photo;
+    sh.querySelector('[data-tab="plan"]').hidden = !m.plan;
+    sh.querySelector(".sh-sheet__tabs").hidden = !(m.photo && m.plan);
+    sh.querySelector(".sh-sheet__media").hidden = !(m.photo || m.plan);
+    tab(m.photo ? "photo" : "plan");
+    $("[data-s-name]").textContent = m.name;
+    $("[data-s-note]").textContent = m.note;
+    $("[data-s-dl]").innerHTML = [["Размер", `${mm(m.w)} × ${mm(m.d)} м`], ["Высота", `${mm(m.h)} м`], ["Мест", m.cap[0] === m.cap[1] ? m.cap[0] : `${m.cap[0]}–${m.cap[1]}`], ["Печь", `${String(m.kw).replace(".", ",")} кВт`], ["Полки", m.woodN], ["Обшивка", "липа"]].map(([a, b]) => `<div><dt>${a}</dt><dd>${b}</dd></div>`).join("");
+    $("[data-s-x]").textContent = m.extras.length ? "Особенности: " + m.extras.join(", ") : "";
+    $("[data-s-price]").textContent = m.price ? fmt(m.price) : "Цена по запросу";
+    $("[data-s-go]").href = `${base}sauna/?m=${m.id}`;
+    $("[data-s-wa]").href = `https://wa.me/${wa}?text=${encodeURIComponent(`Здравствуйте! Интересует сборная сауна ${m.name}.`)}`;
+    sh.classList.add("on"); sh.setAttribute("aria-hidden", "false"); document.documentElement.classList.add("sheet-open");
+    sh.querySelector(".sh-sheet__x").focus({ preventScroll: true });
+  }
+  const close = () => { sh.classList.remove("on"); sh.setAttribute("aria-hidden", "true"); document.documentElement.classList.remove("sheet-open"); last?.focus({ preventScroll: true }); };
+  el.querySelectorAll("[data-open]").forEach((b) => b.addEventListener("click", () => open(b.dataset.open, b)));
+  sh.querySelectorAll("[data-close]").forEach((b) => b.addEventListener("click", close));
+  addEventListener("keydown", (e) => { if (e.key === "Escape" && sh.classList.contains("on")) close(); });
+</script>
+
+<style>
+  .ct__bar { display: grid; gap: 16px; }
+  .ct__chips { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin: 0 calc(var(--gut) * -1); padding: 0 var(--gut); }
+  .ct__chips::-webkit-scrollbar { display: none; }
+  .ct__chips button { flex: none; min-height: 42px; padding: 0 16px; border-radius: 3px; box-shadow: inset 0 0 0 1px var(--line); font-weight: 600; font-size: 14px; transition: background 0.3s, color 0.3s; }
+  .ct__chips [aria-checked="true"] { background: var(--ink); color: var(--lipa); box-shadow: none; }
+  .ct__ceil { display: grid; gap: 4px; max-width: 420px; }
+  .ct__ceil span { font-size: 11px; color: var(--ink-2); }
+  .ct__ceil b { font-weight: 400; color: var(--ink); font-size: 14px; }
+  .ct__ceil input { -webkit-appearance: none; appearance: none; width: 100%; height: 34px; background: transparent; }
+  .ct__ceil input::-webkit-slider-runnable-track { height: 3px; background: linear-gradient(90deg, var(--honey), var(--cedar)); border-radius: 2px; }
+  .ct__ceil input::-moz-range-track { height: 3px; background: linear-gradient(90deg, var(--honey), var(--cedar)); }
+  .ct__ceil input::-webkit-slider-thumb { -webkit-appearance: none; width: 24px; height: 24px; margin-top: -10.5px; border-radius: 50%; background: var(--lipa); box-shadow: 0 0 0 1.5px var(--ink), 0 3px 8px rgba(0, 0, 0, 0.2); }
+  .ct__ceil input::-moz-range-thumb { width: 24px; height: 24px; border: 0; border-radius: 50%; background: var(--lipa); box-shadow: 0 0 0 1.5px var(--ink); }
+  .ct__count { margin: 14px 0 18px; font-size: 11px; color: var(--mute); }
+  .ct__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px 12px; }
+  .ct__btn { width: 100%; display: grid; gap: 3px; text-align: left; }
+  .ct__ph { position: relative; display: grid; place-items: center; aspect-ratio: 4 / 5; overflow: hidden; border-radius: 3px; background: var(--lipa-2); margin-bottom: 8px; }
+  .ct__ph img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--ease); }
+  .ct__ph--plan { background: #fff; }
+  .ct__ph--plan img { object-fit: contain; padding: 8%; mix-blend-mode: multiply; }
+  .ct__ph small { position: absolute; left: 8px; top: 8px; font-size: 9.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2); }
+  .ct__ph-none { font-size: 12px; color: var(--ink-2); }
+  @media (hover: hover) { .ct__btn:hover .ct__ph img { transform: scale(1.04); } }
+  .ct__fit { position: absolute; inset: auto 8px 8px auto; padding: 4px 8px; border-radius: 2px; background: var(--ink); color: var(--lipa); font-size: 9.5px; font-style: normal; text-transform: uppercase; letter-spacing: 0.06em; opacity: 0; transition: opacity 0.3s; }
+  .nofit .ct__ph img { filter: grayscale(1) opacity(0.55); }
+  .nofit .ct__fit { opacity: 1; }
+  .nofit .ct__name, .nofit .ct__price { opacity: 0.55; }
+  .ct__name { font-family: var(--display); font-size: 20px; line-height: 1.2; }
+  .ct__meta { font-size: 10.5px; color: var(--ink-2); }
+  .ct__price { font-size: 14px; margin-top: 4px; }
+
+  .sh-sheet { position: fixed; inset: 0; z-index: 140; pointer-events: none; }
+  .sh-sheet.on { pointer-events: auto; }
+  .sh-sheet__veil { position: absolute; inset: 0; background: rgba(27, 20, 16, 0.55); opacity: 0; transition: opacity 0.5s; }
+  .sh-sheet.on .sh-sheet__veil { opacity: 1; }
+  .sh-sheet__card { position: absolute; left: 0; right: 0; bottom: 0; max-height: 92svh; overflow-y: auto; overscroll-behavior: contain; background: var(--lipa); color: var(--ink); border-radius: 12px 12px 0 0; transform: translateY(105%); transition: transform 0.6s var(--ease); }
+  .sh-sheet.on .sh-sheet__card { transform: none; }
+  .sh-sheet__x { position: absolute; top: 10px; right: 10px; z-index: 3; width: 42px; height: 42px; display: grid; place-content: center; border-radius: 50%; background: rgba(245, 236, 220, 0.9); }
+  .sh-sheet__x svg { width: 20px; height: 20px; }
+  .sh-sheet__media { position: relative; background: #fff; }
+  .sh-sheet__media img { width: 100%; max-height: 52svh; object-fit: contain; background: #fff; }
+  .sh-sheet__tabs { position: absolute; left: 12px; top: 12px; z-index: 2; display: flex; gap: 2px; padding: 3px; border-radius: 4px; background: rgba(245, 236, 220, 0.92); }
+  .sh-sheet__tabs button { padding: 6px 12px; border-radius: 3px; font-size: 13px; font-weight: 600; color: var(--ink-2); }
+  .sh-sheet__tabs [aria-selected="true"] { background: var(--ink); color: var(--lipa); }
+  .sh-sheet__body { display: grid; gap: 12px; padding: 22px var(--gut) calc(24px + env(safe-area-inset-bottom)); }
+  .sh-sheet__dl { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px 14px; font-size: 13px; }
+  .sh-sheet__dl :global(dt) { font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--mute); }
+  .sh-sheet__x2 { font-size: 14px; color: var(--ink-2); }
+  .sh-sheet__price { font-size: 26px; }
+  .sh-sheet__cta { display: grid; gap: 8px; }
+  :global(html.sheet-open) { overflow: hidden; }
+  @media (min-width: 700px) { .ct__grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 1000px) {
+    .ct__bar { grid-template-columns: 1fr auto; align-items: end; }
+    .ct__chips { margin: 0; padding: 0; }
+    .ct__ceil { width: 340px; }
+    .ct__grid { grid-template-columns: repeat(4, 1fr); gap: 34px 20px; }
+    .sh-sheet__card { left: 50%; right: auto; top: 50%; bottom: auto; width: min(980px, 92vw); max-height: 88vh; border-radius: 8px; display: grid; grid-template-columns: 1.1fr 1fr; transform: translate(-50%, -46%) scale(0.97); opacity: 0; transition: transform 0.6s var(--ease), opacity 0.4s; }
+    .sh-sheet.on .sh-sheet__card { transform: translate(-50%, -50%); opacity: 1; }
+    .sh-sheet__media { display: grid; place-items: center; min-height: 520px; }
+    .sh-sheet__media img { max-height: 80vh; }
+    .sh-sheet__body { padding: 40px 36px; align-content: center; }
+    .sh-sheet__cta { grid-template-columns: 1fr 1fr; }
+  }
+</style>

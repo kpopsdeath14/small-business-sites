@@ -1,0 +1,119 @@
+---
+import "@fontsource/prata/400.css";
+import "@fontsource-variable/mulish";
+import "@fontsource/fira-mono/400.css";
+import "../styles/global.css";
+import { url, contacts, BASE, img } from "../lib/site";
+
+interface Props { title?: string; description?: string; nav?: string; dark?: boolean }
+const {
+  title = "ИТС — сауны, русские бани и хамамы с 1992 года",
+  description = "Готовые сборные сауны собственного производства в Москве, строительство финских саун, русских бань и хамамов под ключ. Печи Helo и Harvia, вагонка из липы.",
+  nav = "",
+  dark = true,
+} = Astro.props;
+const links = [
+  ["steam", "Какой пар", url("#par")],
+  ["models", "Готовые сауны", url("#saunas")],
+  ["make", "Производство", url("#make")],
+  ["build", "Бани и хамамы", url("#build")],
+  ["kit", "Ваша сауна", url("sauna/")],
+];
+---
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#1b1410" />
+    <link rel="icon" type="image/svg+xml" href={`${BASE}/favicon.svg`} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(img("og", 1200), Astro.site).href} />
+    <script is:inline>document.documentElement.classList.add("js");</script>
+    <slot name="head" />
+  </head>
+  <body>
+    <header class:list={["hdr", { "on-dark": dark }]} data-hdr>
+      <div class="wrap hdr__in">
+        <a href={url()} class="brand" aria-label="ИТС — на главную">
+          <!-- a sauna hourglass: two bulbs of sand in a wooden frame -->
+          <svg viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M7 4h16M7 26h16" stroke-width="2" stroke-linecap="round" /><path d="M9 4c0 6 5 8 6 11-1 3-6 5-6 11M21 4c0 6-5 8-6 11 1 3 6 5 6 11" /><path d="M12.5 23.5h5l-2.5-3z" fill="currentColor" stroke="none" /></svg>
+          <span><b>ИТС</b><small>Искусство творить сауны</small></span>
+        </a>
+        <nav class="nav" aria-label="Основное меню">
+          {links.map(([id, label, href]) => <a href={href} aria-current={nav === id ? "page" : undefined}>{label}</a>)}
+        </nav>
+        <div class="hdr__r">
+          <a class="hbtn" href={contacts.phoneHref} aria-label={`Позвонить: ${contacts.phone}`}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a1 1 0 0 1-1 1A16 16 0 0 1 4 5a1 1 0 0 1 1-1z" /></svg>
+          </a>
+          <a class="hbtn" href={url("sauna/")} aria-label="Ваша сауна">
+            <!-- a wooden ladle -->
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M3 12h9a4 4 0 0 0 8 0" /><path d="M12 12a4 4 0 0 0 8 0" /><path d="M3 12l-1-2" stroke-linecap="round" /><path d="M20 12h2" /></svg>
+            <span class="dot" data-dot></span>
+          </a>
+          <button class="hbtn menu-btn" type="button" aria-label="Меню" aria-expanded="false" aria-controls="menu" data-menu>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M4 9h16M4 15h16" /></svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="menu__veil" data-menu-close></div>
+    <div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="Меню" aria-hidden="true">
+      <div class="menu__grip" aria-hidden="true"></div>
+      <nav class="menu__nav" aria-label="Меню">
+        {links.map(([, label, href], i) => <a href={href} style={`--i:${i}`}>{label}<small>{["°C · %", "25 моделей", "3 дня", "под ключ", "конфигуратор"][i]}</small></a>)}
+      </nav>
+      <div class="menu__foot">
+        <a href={contacts.phoneHref}>{contacts.phone}</a>
+        <span>WhatsApp, Telegram · {contacts.email}</span>
+      </div>
+    </div>
+
+    <slot />
+
+    <footer class="ftr dark">
+      <div class="wrap">
+        <p class="ftr__big">Попариться — <br />и выйти другим человеком</p>
+        <div class="ftr__grid">
+          <div class="ftr__col">
+            <p class="kick">С {contacts.since} года</p>
+            <span>Более 10 000 построенных саун и бань. Собственный цех готовых саун и столярная мастерская.</span>
+          </div>
+          <div class="ftr__col">
+            <p class="kick">Разделы</p>
+            <a href={url("#saunas")}>Готовые сауны</a>
+            <a href={url("#build")}>Бани и хамамы</a>
+            <a href={url("sauna/")}>Ваша сауна</a>
+          </div>
+          <div class="ftr__col">
+            <p class="kick">Связь</p>
+            <a href={contacts.phoneHref}>{contacts.phone}</a>
+            <a href={contacts.lineHref}>{contacts.line} · линия консультаций</a>
+            <a href={`mailto:${contacts.email}`}>{contacts.email}</a>
+            <a href={contacts.wa} target="_blank" rel="noopener">WhatsApp</a>
+          </div>
+          <div class="ftr__col">
+            <p class="kick">Магазины</p>
+            {contacts.stores.map((s) => <span>{s.addr}</span>)}
+          </div>
+        </div>
+        <div class="ftr__base"><span>© {new Date().getFullYear()} {contacts.company}</span><span>ИНН {contacts.inn}</span></div>
+      </div>
+    </footer>
+
+    <div class="note" role="status" aria-live="polite" data-note>
+      <div><p class="note__t" data-note-t></p><p class="note__s" data-note-s></p></div>
+      <a class="btn btn--ember" href={url("sauna/")} style="min-height:42px;padding:0 16px">Сауна</a>
+    </div>
+
+    <script>
+      import "../scripts/app.ts";
+    </script>
+  </body>
+</html>

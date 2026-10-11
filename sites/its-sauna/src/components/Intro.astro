@@ -1,0 +1,78 @@
+---
+/**
+ * Once per visit: «Поддаём пар». Hot stones glow in the dark, a ladle tips, a thin stream hits
+ * the stones — and steam rises, fills the screen and clears to show the page.
+ */
+const stones = [
+  [12, 70, 30], [30, 74, 34], [50, 70, 36], [70, 75, 32], [88, 71, 28],
+  [21, 50, 30], [41, 48, 34], [61, 50, 33], [80, 52, 28], [31, 28, 30], [52, 26, 32], [70, 30, 28], [50, 8, 26],
+];
+---
+<script is:inline>
+  try {
+    if (!sessionStorage.getItem("its-intro") && !matchMedia("(prefers-reduced-motion: reduce)").matches)
+      document.documentElement.classList.add("intro");
+  } catch (e) {}
+</script>
+<div class="ly" aria-hidden="true">
+  <div class="ly__stage">
+    <!-- the ladle: a cup on a long handle, drawn in two strokes -->
+    <svg class="ly__ladle" viewBox="0 0 160 60"><path d="M4 18 L104 26" /><path d="M100 22 q 6 28 30 28 q 26 0 28 -30 z" /></svg>
+    <i class="ly__stream"></i>
+    <div class="ly__stones">
+      {stones.map(([x, y, s], i) => <i style={`--x:${x}%;--y:${y}%;--s:${s}px;--i:${i}`}></i>)}
+    </div>
+  </div>
+  <div class="ly__steam">{Array.from({ length: 7 }, (_, i) => <i style={`--i:${i}`}></i>)}</div>
+  <p class="ly__t">С лёгким паром!</p>
+  <p class="ly__skip mono">Коснитесь, чтобы войти</p>
+</div>
+
+<script>
+  const html = document.documentElement;
+  if (html.classList.contains("intro")) {
+    const el = document.querySelector<HTMLElement>(".ly")!;
+    let done = false;
+    const go = () => {
+      if (done) return; done = true;
+      try { sessionStorage.setItem("its-intro", "1"); } catch {}
+      html.classList.add("intro-out");
+      document.dispatchEvent(new CustomEvent("intro:done"));
+      setTimeout(() => html.classList.remove("intro", "intro-out"), 1300);
+    };
+    // tip → pour → steam → clear
+    setTimeout(() => el.classList.add("pour"), 500);
+    setTimeout(() => el.classList.add("hiss"), 1250);
+    setTimeout(() => el.classList.add("text"), 1900);
+    setTimeout(go, 3300);
+    el.addEventListener("click", go);
+    addEventListener("keydown", go, { once: true });
+  }
+</script>
+
+<style is:global>
+  .ly { display: none; }
+  html.intro { overflow: hidden; }
+  html.intro .ly { position: fixed; inset: 0; z-index: 300; display: grid; place-items: center; background: radial-gradient(60% 50% at 50% 70%, #2a1d15, #120c09); cursor: pointer; transition: opacity 1.2s var(--ease-io); }
+  html.intro-out .ly { opacity: 0; pointer-events: none; }
+  .ly__stage { position: relative; width: min(70vw, 300px); aspect-ratio: 1; margin-top: 10vh; }
+  .ly__stones { position: absolute; left: 0; right: 0; bottom: 0; height: 60%; }
+  /* stones: dark basalt lit from below by the heater */
+  .ly__stones i { position: absolute; left: var(--x); top: var(--y); width: var(--s); height: calc(var(--s) * 0.78); margin-left: calc(var(--s) / -2); border-radius: 48% 52% 44% 56% / 55% 50% 50% 45%; background: radial-gradient(70% 60% at 40% 30%, #5d5650, #2b2724 70%); box-shadow: 0 10px 18px -6px rgba(217, 104, 44, 0.65), inset 0 -4px 8px rgba(217, 104, 44, 0.35); animation: glow 2.4s ease-in-out infinite alternate; animation-delay: calc(var(--i) * -0.3s); }
+  @keyframes glow { to { box-shadow: 0 12px 22px -6px rgba(240, 144, 79, 0.85), inset 0 -4px 10px rgba(240, 144, 79, 0.5); } }
+  .ly.hiss .ly__stones i { animation: none; box-shadow: 0 6px 12px -6px rgba(217, 104, 44, 0.3); transition: box-shadow 0.4s; }
+  .ly__ladle { position: absolute; left: 4%; top: -6%; width: 62%; fill: none; stroke: var(--abash); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; transform-origin: 0% 30%; transition: transform 0.7s var(--ease); }
+  .ly__ladle path:last-child { fill: rgba(232, 207, 159, 0.12); }
+  .ly.pour .ly__ladle { transform: rotate(28deg); }
+  .ly__stream { position: absolute; left: 51%; top: 18%; width: 2px; height: 0; background: linear-gradient(#cfe3ea, rgba(207, 227, 234, 0.4)); border-radius: 1px; transition: height 0.5s ease-in 0.25s; }
+  .ly.pour .ly__stream { height: 30%; }
+  .ly.hiss .ly__stream { height: 0; top: 48%; transition: height 0.3s, top 0.3s; }
+  /* steam: big soft clouds that rise from the stones and fill the room */
+  .ly__steam { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+  .ly__steam i { position: absolute; left: calc(50% + (var(--i) - 3) * 9%); bottom: 18%; width: 46vmax; height: 46vmax; margin-left: -23vmax; border-radius: 50%; background: radial-gradient(closest-side, rgba(245, 236, 220, 0.95), rgba(245, 236, 220, 0)); opacity: 0; transform: translateY(20%) scale(0.2); }
+  .ly.hiss .ly__steam i { animation: steam 2.2s cubic-bezier(0.2, 0.7, 0.3, 1) forwards; animation-delay: calc(var(--i) * 0.07s); }
+  @keyframes steam { 40% { opacity: 0.9; } to { opacity: 1; transform: translateY(calc(-30% - var(--i) * 4%)) scale(2.4); } }
+  .ly__t { position: absolute; left: 0; right: 0; top: 42%; text-align: center; font-family: var(--display); font-size: clamp(34px, 9vw, 64px); color: var(--coal); opacity: 0; transform: translateY(10px); transition: opacity 0.8s, transform 0.9s var(--ease); }
+  .ly.text .ly__t { opacity: 1; transform: none; }
+  .ly__skip { position: fixed; left: 0; right: 0; bottom: calc(24px + env(safe-area-inset-bottom)); text-align: center; font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: #8d7b6c; }
+</style>

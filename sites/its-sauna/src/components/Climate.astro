@@ -1,0 +1,158 @@
+---
+/**
+ * «Какой пар ваш»: drag a point over temperature × humidity. A wooden thermo-hygrometer, like the
+ * one on every sauna wall, follows with two needles, and the zone you land in names your bath —
+ * with ITS's own build terms and a photo of one they built.
+ */
+import { baths, img } from "../lib/site";
+const T0 = 30, T1 = 110; // °C on the vertical axis
+const W = 320, H = 260;
+const x = (rh: number) => (rh / 100) * W;
+const y = (t: number) => H - ((t - T0) / (T1 - T0)) * H;
+const tTicks = [40, 60, 80, 100];
+// dial geometry: outer arc for °C (0–120), inner for % (0–100), both from -225° to 45°
+const A0 = -225, A1 = 45;
+const da = (v: number, max: number) => A0 + ((A1 - A0) * v) / max;
+const pt = (a: number, r: number) => [Math.cos((a * Math.PI) / 180) * r, Math.sin((a * Math.PI) / 180) * r];
+const seg = (a: number, r0: number, r1: number) => { const p = pt(a, r0), q = pt(a, r1); return `M${p[0].toFixed(1)} ${p[1].toFixed(1)}L${q[0].toFixed(1)} ${q[1].toFixed(1)}`; };
+const tTk = Array.from({ length: 13 }, (_, i) => seg(da(i * 10, 120), 80, i % 2 ? 74 : 70));
+const rTk = Array.from({ length: 11 }, (_, i) => seg(da(i * 10, 100), 44, 39));
+const tNum = [0, 40, 80, 120].map((v) => ({ v, p: pt(da(v, 120), 60) }));
+---
+<div class="cl" data-cl>
+  <div class="cl__pad">
+    <svg viewBox={`-34 -10 ${W + 44} ${H + 40}`} class="cl__svg" data-svg>
+      {tTicks.map((t) => <g><path class="cl__grid" d={`M0 ${y(t)}H${W}`} /><text class="cl__ax" x="-8" y={y(t) + 4} text-anchor="end">{t}°</text></g>)}
+      {[0, 25, 50, 75, 100].map((r) => <text class="cl__ax" x={x(r)} y={H + 18} text-anchor="middle">{r}%</text>)}
+      {baths.map((b) => <rect class={`cl__zone cl__zone--${b.id}`} data-zone={b.id} x={x(b.rh[0])} y={y(b.t[1])} width={x(b.rh[1]) - x(b.rh[0])} height={y(b.t[0]) - y(b.t[1])} rx="10" />)}
+      {baths.map((b) => <text class="cl__zl" x={x((b.rh[0] + b.rh[1]) / 2)} y={y(b.t[1]) - 8} text-anchor="middle">{b.name}</text>)}
+      <path class="cl__frame" d={`M0 0V${H}H${W}`} />
+      <g class="cl__h" data-h><circle r="16" class="cl__hr" /><circle r="6" /></g>
+    </svg>
+    <p class="cl__hint mono">Потяните точку: температура по вертикали, влажность по горизонтали</p>
+  </div>
+
+  <div class="cl__out">
+    <!-- the thermo-hygrometer -->
+    <svg class="cl__dial" viewBox="-100 -100 200 200" aria-hidden="true">
+      <circle r="96" class="cl__rim" />
+      <circle r="84" class="cl__face" />
+      {tTk.map((d) => <path class="cl__tk" d={d} />)}
+      {tNum.map((n) => <text class="cl__dn" x={n.p[0].toFixed(1)} y={(n.p[1] + 3).toFixed(1)}>{n.v}</text>)}
+      {rTk.map((d) => <path class="cl__tk cl__tk--rh" d={d} />)}
+      <text class="cl__du" y="26">°C · %</text>
+      <path class="cl__nd" d="M0 8V-76" data-nt />
+      <path class="cl__nd cl__nd--rh" d="M0 6V-40" data-nr />
+      <circle r="5" class="cl__pin" />
+    </svg>
+    <p class="cl__read mono"><b data-t>90</b> °C · <b data-r>12</b> %</p>
+    {baths.map((b) => (
+      <article class="cl__card" data-card={b.id} hidden>
+        <img src={img(b.img, 600)} alt={b.name} loading="lazy" width="600" height="450" />
+        <div>
+          <p class="h3">{b.name}</p>
+          <p class="read">{b.note}</p>
+          <p class="cl__days mono">Строим {b.days}</p>
+        </div>
+      </article>
+    ))}
+    <p class="cl__none read" data-none hidden>Такого пара не бывает: слишком влажно для такого жара или слишком сухо для такой прохлады. Сдвиньте точку к одной из зон.</p>
+  </div>
+</div>
+
+<script define:vars={{ baths: baths.map((b) => ({ id: b.id, t: b.t, rh: b.rh })), T0, T1, W, H }}>
+  const el = document.querySelector("[data-cl]");
+  const svg = el.querySelector("[data-svg]");
+  const h = el.querySelector("[data-h]");
+  const nt = el.querySelector("[data-nt]"), nr = el.querySelector("[data-nr]");
+  const tOut = el.querySelector("[data-t]"), rOut = el.querySelector("[data-r]");
+  let t = 90, rh = 12, cur = "";
+  const ang = (v, max) => -225 + (270 * v) / max + 90;
+  function render() {
+    h.setAttribute("transform", `translate(${(rh / 100) * W} ${H - ((t - T0) / (T1 - T0)) * H})`);
+    nt.style.transform = `rotate(${ang(Math.min(120, t), 120)}deg)`;
+    nr.style.transform = `rotate(${ang(rh, 100)}deg)`;
+    tOut.textContent = Math.round(t); rOut.textContent = Math.round(rh);
+    const z = baths.find((b) => t >= b.t[0] - 4 && t <= b.t[1] + 4 && rh >= b.rh[0] - 4 && rh <= b.rh[1] + 4);
+    const id = z ? z.id : "none";
+    if (id !== cur) {
+      cur = id;
+      el.querySelectorAll("[data-card]").forEach((c) => (c.hidden = c.dataset.card !== id));
+      el.querySelector("[data-none]").hidden = id !== "none";
+      el.querySelectorAll("[data-zone]").forEach((r) => r.classList.toggle("on", r.dataset.zone === id));
+    }
+  }
+  function fromEvent(e) {
+    const p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY;
+    const q = p.matrixTransform(svg.getScreenCTM().inverse());
+    rh = Math.max(0, Math.min(100, (q.x / W) * 100));
+    t = Math.max(T0, Math.min(T1, T0 + ((H - q.y) / H) * (T1 - T0)));
+    render();
+  }
+  let drag = false;
+  svg.addEventListener("pointerdown", (e) => { drag = true; svg.setPointerCapture(e.pointerId); fromEvent(e); el.classList.add("touched"); });
+  svg.addEventListener("pointermove", (e) => { if (drag) fromEvent(e); });
+  svg.addEventListener("pointerup", () => (drag = false));
+  svg.addEventListener("pointercancel", () => (drag = false));
+  // a quiet demo once it's on screen: the point walks from sauna to hammam and back
+  const tour = [[90, 12], [68, 52], [45, 95], [90, 12]];
+  new IntersectionObserver(([e], o) => {
+    if (!e.isIntersecting) return; o.disconnect();
+    let i = 0;
+    const step = () => {
+      if (el.classList.contains("touched") || i >= tour.length - 1) return;
+      const [t0, r0] = tour[i], [t1, r1] = tour[i + 1], s = performance.now();
+      const run = (n) => { if (el.classList.contains("touched")) return; const k = Math.min(1, (n - s) / 1100), q = k * k * (3 - 2 * k); t = t0 + (t1 - t0) * q; rh = r0 + (r1 - r0) * q; render(); if (k < 1) requestAnimationFrame(run); else { i++; setTimeout(step, 1300); } };
+      requestAnimationFrame(run);
+    };
+    setTimeout(step, 600);
+  }, { threshold: 0.5 }).observe(el);
+  render();
+</script>
+
+<style>
+  .cl { display: grid; gap: 30px; }
+  .cl__svg { display: block; width: 100%; height: auto; touch-action: none; cursor: crosshair; user-select: none; -webkit-user-select: none; overflow: visible; }
+  .cl__grid { stroke: var(--line); }
+  .cl__frame { fill: none; stroke: var(--ink-2); }
+  .cl__ax { font-family: var(--mono); font-size: 10px; fill: var(--mute); }
+  .cl__zone { stroke-width: 1; transition: fill 0.4s, stroke 0.4s; }
+  .cl__zone--fin { fill: rgba(217, 104, 44, 0.12); stroke: rgba(217, 104, 44, 0.45); }
+  .cl__zone--rus { fill: rgba(155, 90, 53, 0.12); stroke: rgba(155, 90, 53, 0.45); }
+  .cl__zone--tur { fill: rgba(120, 140, 150, 0.14); stroke: rgba(90, 115, 125, 0.45); }
+  .cl__zone.on { fill-opacity: 1; stroke-width: 2; }
+  .cl__zone--fin.on { fill: rgba(217, 104, 44, 0.24); }
+  .cl__zone--rus.on { fill: rgba(155, 90, 53, 0.24); }
+  .cl__zone--tur.on { fill: rgba(120, 140, 150, 0.28); }
+  .cl__zl { font-family: var(--display); font-size: 12px; fill: var(--ink-2); }
+  .cl__h circle { fill: var(--ember); }
+  .cl__h .cl__hr { fill: rgba(217, 104, 44, 0.18); stroke: var(--ember); animation: hr 2s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+  @keyframes hr { 50% { transform: scale(1.25); } }
+  .touched .cl__hr { animation: none; }
+  .cl__hint { margin-top: 10px; font-size: 10.5px; color: var(--mute); }
+
+  .cl__out { display: grid; gap: 16px; justify-items: center; align-content: start; }
+  .cl__dial { width: min(64vw, 240px); }
+  /* the dial: a turned linden rim, a cream face */
+  .cl__rim { fill: #d7b47c; stroke: #a9824c; stroke-width: 2; }
+  .cl__face { fill: #fbf4e6; stroke: rgba(0, 0, 0, 0.12); }
+  .cl__tk { stroke: var(--ink); stroke-width: 1.4; }
+  .cl__tk--rh { stroke: var(--cedar); stroke-width: 1; }
+  .cl__dn { font-family: var(--mono); font-size: 10px; fill: var(--ink-2); text-anchor: middle; }
+  .cl__du { font-family: var(--mono); font-size: 8.5px; fill: var(--mute); text-anchor: middle; }
+  .cl__nd { stroke: var(--ink); stroke-width: 2.4; stroke-linecap: round; transition: transform 0.25s var(--ease); }
+  .cl__nd--rh { stroke: var(--ember); stroke-width: 2; }
+  .cl__pin { fill: var(--ink); }
+  .cl__read { font-size: 13px; color: var(--ink-2); }
+  .cl__read b { font-weight: 400; font-size: 22px; color: var(--ink); }
+  .cl__card { display: grid; gap: 14px; width: 100%; animation: card 0.6s var(--ease); }
+  @keyframes card { from { opacity: 0; transform: translateY(8px); } }
+  .cl__card img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 4px; }
+  .cl__card > div { display: grid; gap: 8px; }
+  .cl__days { font-size: 12px; color: var(--ember); }
+  .cl__none { text-align: center; }
+  @media (min-width: 1000px) {
+    .cl { grid-template-columns: 1.1fr 1fr; gap: 64px; align-items: start; }
+    .cl__card { grid-template-columns: 1fr 1fr; align-items: center; }
+  }
+</style>

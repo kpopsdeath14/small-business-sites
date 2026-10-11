@@ -1,0 +1,347 @@
+---
+/**
+ * «Ваша сауна» — a four-step master instead of a cart. Start from one of the 25 models or from your
+ * own room, choose the benches, light and steam; the floor plan is redrawn on every choice. The order
+ * ends with a bathhouse locker tag carrying your number.
+ */
+import Base from "../../layouts/Base.astro";
+import { models, rub, contacts, url, mimg } from "../../lib/site";
+import { planSVG, planCSS } from "../../scripts/plan";
+const first = planSVG({ w: 2150, d: 2150, layout: "straight", wood: "lipa", light: ["corner"], steam: false, kw: 9 });
+const stoves = [2.9, 3.6, 4.5, 6, 6.6, 8, 9, 10.5, 12, 15];
+---
+<Base title="Ваша сауна — ИТС" nav="kit" dark={false}>
+  <style is:global set:html={planCSS}></style>
+  <main class="sz" data-sz>
+    <section class="sz__stage">
+      <div class="sz__plan" data-plan set:html={first} />
+      <div class="sz__photo" data-photo hidden><img alt="" data-photo-img /></div>
+      <div class="sz__bar">
+        <div class="sz__tg" role="tablist" aria-label="Вид">
+          <button type="button" role="tab" aria-selected="true" data-v="plan">Чертёж</button>
+          <button type="button" role="tab" aria-selected="false" data-v="photo" data-v-photo>Фото</button>
+        </div>
+        <p class="sz__vol mono" data-vol></p>
+      </div>
+    </section>
+
+    <div class="sz__panel wrap">
+      <ol class="sz__steps mono" aria-label="Шаги">
+        {["Размер", "Полки", "Свет и пар", "Заказ"].map((s, i) => <li><button type="button" data-goto={i}><span>{i + 1}</span>{s}</button></li>)}
+      </ol>
+
+      <!-- 1. size -->
+      <section class="st" data-step="0">
+        <h1 class="h3">С чего начнём?</h1>
+        <div class="sz__base" role="radiogroup" aria-label="Основа">
+          <button type="button" role="radio" aria-checked="true" data-base="model">Готовая модель</button>
+          <button type="button" role="radio" aria-checked="false" data-base="custom">Свои размеры</button>
+        </div>
+        <div class="sz__models" data-models>
+          {models.map((m) => <button type="button" data-m={m.id}><b>{m.name}</b><small class="mono">{(m.w / 1000).toFixed(2).replace(".", ",")}×{(m.d / 1000).toFixed(2).replace(".", ",")} · {m.price ? rub(m.price) : "по запросу"}</small></button>)}
+        </div>
+        <div class="sz__dims">
+          {[["w", "Ширина", 1000, 3200], ["d", "Глубина", 1000, 3200], ["h", "Высота", 2000, 2600]].map(([k, l, a, b]) => (
+            <label class="rg"><span class="rg__l"><span class="mono">{l}</span><b class="mono" data-o={k}></b></span><input type="range" min={a} max={b} step="50" data-dim={k} aria-label={`${l}, мм`} /></label>
+          ))}
+          <p class="sz__fine" data-fine></p>
+        </div>
+      </section>
+
+      <!-- 2. benches -->
+      <section class="st" data-step="1" hidden>
+        <h2 class="h3">Полки</h2>
+        <div class="sz__cards" role="radiogroup" aria-label="Расположение полков">
+          {[["straight", "Два уровня", "Верхний лежачий 0,90 и нижний задвижной 0,45"], ["corner", "Угловые", "Верхний полок буквой Г — лечь можно вдвоём"], ["three", "Три уровня", "Как в «Купаве»: ровный прогрев и лёжа, и сидя"]].map(([id, t, d]) => <button type="button" role="radio" aria-checked="false" data-layout={id}><b>{t}</b><span>{d}</span></button>)}
+        </div>
+        <p class="field"><span>Дерево полков</span></p>
+        <div class="sz__chips" role="radiogroup" aria-label="Дерево полков">
+          {[["lipa", "Липа"], ["abash", "Абаши"], ["cedar", "Абаши и кедр"]].map(([id, t]) => <button type="button" role="radio" aria-checked="false" data-wood={id}>{t}</button>)}
+        </div>
+      </section>
+
+      <!-- 3. light & steam -->
+      <section class="st" data-step="2" hidden>
+        <h2 class="h3">Свет и пар</h2>
+        <ul class="sz__opts">
+          {[["corner", "Угловые светильники", "Мягкий свет сверху, в абажурах из липы"], ["under", "Подсветка под полоками", "Свет снизу — как в «Малюшке»: лучше всего расслабляет"], ["stars", "Звёздное небо", "Световые точки в потолке, как в «Сударушке»"], ["salt", "Панно из гималайской соли", "Тёплая подсвеченная соль, как в «Карине»"]].map(([id, t, d]) => (
+            <li><label class="op"><input type="checkbox" data-light={id} /><span class="op__box" aria-hidden="true"></span><span class="op__t">{t}<small>{d}</small></span></label></li>
+          ))}
+          <li><label class="op"><input type="checkbox" data-steam /><span class="op__box" aria-hidden="true"></span><span class="op__t">Печь с паром<small>Дополнительный режим русской бани — как в «Отраде» и «Утехе»</small></span></label></li>
+        </ul>
+        <p class="sz__kw"><b class="mono" data-kw></b><span data-kw-why></span></p>
+      </section>
+
+      <!-- 4. order -->
+      <section class="st" data-step="3" hidden>
+        <h2 class="h3">Ваша сауна</h2>
+        <ul class="sz__sum mono" data-sum></ul>
+        <p class="sz__total"><span data-total-l>Цена</span><b class="mono" data-total></b></p>
+        <form class="sz__form" data-form novalidate>
+          <label class="field"><span>Имя</span><input class="input" name="n" autocomplete="name" /></label>
+          <label class="field"><span>Телефон</span><input class="input" name="p" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7" /></label>
+          <fieldset class="sz__where">
+            <legend class="field"><span>Где будет стоять</span></legend>
+            {["В квартире", "В доме", "В бане", "Пока не знаю"].map((w, i) => <label><input type="radio" name="w" value={w} checked={i === 1} /><span>{w}</span></label>)}
+          </fieldset>
+          <fieldset class="sz__where">
+            <legend class="field"><span>Куда прислать смету</span></legend>
+            {[["wa", "WhatsApp"], ["tg", "Telegram"], ["mail", "Почта"]].map(([v, t], i) => <label><input type="radio" name="ch" value={v} checked={i === 0} /><span>{t}</span></label>)}
+          </fieldset>
+          <button class="btn btn--ember btn--block" type="submit">Заказать сауну</button>
+          <p class="sz__note">Мастер ИТС проверит размеры и подбор печи и пришлёт смету с монтажом и доставкой.</p>
+        </form>
+
+        <!-- the bathhouse locker tag: a wooden number on a rubber band -->
+        <div class="tag" data-tag hidden>
+          <div class="tag__band" aria-hidden="true"></div>
+          <div class="tag__wood">
+            <span class="tag__hole" aria-hidden="true"></span>
+            <b class="tag__no" data-no></b>
+            <span class="tag__its">ИТС</span>
+          </div>
+          <p class="tag__t">Ваш номерок. Заказ <span class="mono" data-order></span> отправлен — мастер свяжется с вами.</p>
+          <a class="btn btn--line" data-again href="#">Отправить ещё раз</a>
+        </div>
+      </section>
+    </div>
+
+    <div class="sz__nav">
+      <button class="btn btn--line" type="button" data-prev>Назад</button>
+      <div class="sz__mini"><small class="mono" data-mini-l>Цена</small><b class="mono" data-mini></b></div>
+      <button class="btn btn--ember" type="button" data-next>Далее</button>
+    </div>
+  </main>
+</Base>
+
+<script define:vars={{ models, stoves, wa: contacts.waNum, tg: contacts.tg, email: contacts.email, base: url("") }}>
+  window.__its = { models, stoves, wa, tg, email, base };
+</script>
+<script>
+  import { planSVG, type Layout } from "../../scripts/plan";
+  import { store, noted } from "../../scripts/app";
+  const P = (window as any).__its as { models: any[]; stoves: number[]; wa: string; tg: string; email: string; base: string };
+  const $ = <E extends HTMLElement = HTMLElement>(s: string) => document.querySelector<E>(s)!;
+  const $$ = <E extends HTMLElement = HTMLElement>(s: string) => [...document.querySelectorAll<E>(s)];
+  const fmt = (n: number) => Math.round(n).toLocaleString("ru-RU") + " ₽";
+  const m2 = (n: number) => (n / 1000).toFixed(2).replace(".", ",");
+
+  // state: from ?m=, else this browser's last sauna, else «Мистерия»
+  const saved = store.get();
+  const qm = new URLSearchParams(location.search).get("m");
+  const start = P.models.find((m) => m.id === qm) ?? P.models.find((m) => m.id === saved?.base) ?? P.models.find((m) => m.id === "misteriya");
+  const st = {
+    base: saved && !qm ? saved.base : start.id, // a model id or "custom"
+    w: saved && !qm ? saved.w : start.w, d: saved && !qm ? saved.d : start.d, h: saved && !qm ? saved.h : start.h,
+    layout: "straight" as Layout,
+    wood: (saved && !qm ? saved.wood : start.wood) as "lipa" | "abash" | "cedar",
+    light: new Set<string>(saved && !qm ? saved.light : ["corner", ...(start.stars ? ["stars"] : []), ...(start.salt ? ["salt"] : [])]),
+    steam: saved && !qm ? saved.steam : !!start.steam,
+  };
+  let step = 0, view: "plan" | "photo" = "plan", touched = false;
+  const model = () => P.models.find((m) => m.id === st.base);
+  const vol = () => (st.w * st.d * st.h) / 1e9;
+  // stove: the nearest standard size at or above ~0.7 kW per cubic metre — close to what ITS fits in its own models
+  const kw = () => P.stoves.find((s) => s >= vol() * 0.7) ?? P.stoves[P.stoves.length - 1];
+  // the price reference: the ITS model closest in volume, wood and extras
+  const cost = (m: any) => Math.abs((m.w * m.d * m.h) / 1e9 - vol()) + (m.wood !== st.wood ? 3 : 0) + (st.light.has("salt") && !m.salt ? 2.5 : 0) + (st.light.has("stars") && !m.stars ? 1.5 : 0) + (st.steam && !m.steam ? 1.5 : 0);
+  const nearest = () => P.models.filter((m) => m.price).reduce((a, m) => (cost(m) < cost(a) ? m : a));
+  const sameSize = () => { const m = model(); return !!m && m.w === st.w && m.d === st.d && m.h === st.h; };
+  const price = () => { const m = model(); if (m && sameSize()) return m.price ? { v: m.price, l: "Цена модели" } : { v: 0, l: "Цена по запросу" }; const n = nearest(); return { v: n.price, l: `Ориентир: похожа на «${n.name}»` }; };
+
+  function draw() {
+    $("[data-plan]").innerHTML = planSVG({ w: st.w, d: st.d, layout: st.layout, wood: st.wood, light: [...st.light], steam: st.steam, kw: kw() });
+    const m = model();
+    const can = !!m?.photo && sameSize();
+    $("[data-v-photo]").hidden = !can;
+    if (!can && view === "photo") setView("plan");
+    if (m?.photo) { const im = $<HTMLImageElement>("[data-photo-img]"); im.src = `${P.base}m/${m.id}-960.webp`; im.alt = `Сауна ${m.name}`; }
+  }
+  function sync(save = true) {
+    $$("[data-base]").forEach((b) => b.setAttribute("aria-checked", String((b.dataset.base === "custom") === (st.base === "custom"))));
+    $("[data-models]").hidden = st.base === "custom";
+    $$("[data-m]").forEach((b) => b.classList.toggle("on", b.dataset.m === st.base));
+    (["w", "d", "h"] as const).forEach((k) => { $<HTMLInputElement>(`[data-dim="${k}"]`).value = String(st[k]); $(`[data-o="${k}"]`).textContent = `${st[k]} мм`; });
+    const m = model();
+    $("[data-fine]").textContent = m ? (sameSize() ? `Размеры «${m.name}». Сдвиньте любой — ИТС сделает сауну по вашим размерам.` : `На основе «${m.name}», но по вашим размерам.`) : "Свои размеры: подберём модель-основу и печь под объём.";
+    $$("[data-layout]").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.layout === st.layout)));
+    $$("[data-wood]").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.wood === st.wood)));
+    $$<HTMLInputElement>("[data-light]").forEach((i) => (i.checked = st.light.has(i.dataset.light!)));
+    $<HTMLInputElement>("[data-steam]").checked = st.steam;
+    $("[data-vol]").textContent = `${vol().toFixed(1).replace(".", ",")} м³ · печь ${String(kw()).replace(".", ",")} кВт`;
+    $("[data-kw]").textContent = `${String(kw()).replace(".", ",")} кВт`;
+    $("[data-kw-why]").textContent = ` — печь под объём ${vol().toFixed(1).replace(".", ",")} м³. В моделях ИТС близкого размера стоят печи той же мощности.`;
+    const p = price();
+    ["[data-total]", "[data-mini]"].forEach((s) => ($(s).textContent = p.v ? fmt(p.v) : "—"));
+    ["[data-total-l]", "[data-mini-l]"].forEach((s) => ($(s).textContent = p.l));
+    const woodN = { lipa: "липа", abash: "абаши", cedar: "абаши и кедр" }[st.wood];
+    const layN = { straight: "два уровня", corner: "угловые", three: "три уровня" }[st.layout];
+    const lightN = { corner: "угловые светильники", under: "подсветка под полоками", stars: "звёздное небо", salt: "панно из гималайской соли" } as Record<string, string>;
+    const rows = [[m && sameSize() ? `Модель «${m.name}»` : m ? `По размерам, основа «${m.name}»` : "Своя сауна", `${m2(st.w)} × ${m2(st.d)} × ${m2(st.h)} м`], ["Полки", `${layN}, ${woodN}`], ["Печь", `${String(kw()).replace(".", ",")} кВт${st.steam ? ", с паром" : ""}`], ["Свет", [...st.light].map((l) => lightN[l]).join(", ") || "без дополнительного"]];
+    $("[data-sum]").innerHTML = rows.map(([a, b]) => `<li><span>${a}</span><span>${b}</span></li>`).join("");
+    draw();
+    if (save && touched) store.set({ base: st.base, w: st.w, d: st.d, h: st.h, wood: st.wood, light: [...st.light], steam: st.steam });
+  }
+  const touch = () => { touched = true; sync(); };
+  $$("[data-base]").forEach((b) => b.addEventListener("click", () => { if (b.dataset.base === "custom") st.base = "custom"; else if (st.base === "custom") { const n = nearest(); Object.assign(st, { base: n.id, w: n.w, d: n.d, h: n.h }); } touch(); }));
+  $$("[data-m]").forEach((b) => b.addEventListener("click", () => { const m = P.models.find((x) => x.id === b.dataset.m); Object.assign(st, { base: m.id, w: m.w, d: m.d, h: m.h, wood: m.wood, steam: !!m.steam }); st.light = new Set(["corner", ...(m.stars ? ["stars"] : []), ...(m.salt ? ["salt"] : [])]); touch(); history.replaceState(null, "", `?m=${m.id}`); }));
+  (["w", "d", "h"] as const).forEach((k) => $<HTMLInputElement>(`[data-dim="${k}"]`).addEventListener("input", (e) => { st[k] = +(e.target as HTMLInputElement).value; touch(); }));
+  $$("[data-layout]").forEach((b) => b.addEventListener("click", () => { st.layout = b.dataset.layout as Layout; touch(); }));
+  $$("[data-wood]").forEach((b) => b.addEventListener("click", () => { st.wood = b.dataset.wood as any; touch(); }));
+  $$<HTMLInputElement>("[data-light]").forEach((i) => i.addEventListener("change", () => { i.checked ? st.light.add(i.dataset.light!) : st.light.delete(i.dataset.light!); touch(); }));
+  $<HTMLInputElement>("[data-steam]").addEventListener("change", (e) => { st.steam = (e.target as HTMLInputElement).checked; touch(); });
+
+  function setView(v: "plan" | "photo") {
+    view = v;
+    $$("[data-v]").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.v === v)));
+    $("[data-plan]").hidden = v !== "plan"; $("[data-photo]").hidden = v !== "photo";
+  }
+  $$("[data-v]").forEach((b) => b.addEventListener("click", () => setView(b.dataset.v as any)));
+
+  // the master: one step at a time
+  function go(i: number) {
+    step = Math.max(0, Math.min(3, i));
+    $$("[data-step]").forEach((s) => (s.hidden = +s.dataset.step! !== step));
+    $$("[data-goto]").forEach((b) => { b.classList.toggle("on", +b.dataset.goto! === step); b.classList.toggle("done", +b.dataset.goto! < step); });
+    $<HTMLButtonElement>("[data-prev]").style.visibility = step === 0 ? "hidden" : "visible";
+    $("[data-next]").hidden = step === 3;
+    const panel = $(".sz__panel"); if (panel.getBoundingClientRect().top < 0) panel.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  $("[data-next]").addEventListener("click", () => go(step + 1));
+  $("[data-prev]").addEventListener("click", () => go(step - 1));
+  $$("[data-goto]").forEach((b) => b.addEventListener("click", () => go(+b.dataset.goto!)));
+
+  // ORDER: the locker tag swings in on its rubber band
+  const form = $<HTMLFormElement>("[data-form]");
+  let link = "";
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const n = form.elements.namedItem("n") as HTMLInputElement, p = form.elements.namedItem("p") as HTMLInputElement;
+    let bad = false;
+    [n, p].forEach((i) => { const ok = i === p ? i.value.replace(/\D/g, "").length >= 10 : i.value.trim().length > 1; i.classList.toggle("err", !ok); if (!ok && !bad) { i.focus(); bad = true; } });
+    if (bad) { noted("Нужны имя и телефон", "Чтобы мастер прислал смету"); return; }
+    const d = new FormData(form);
+    const no = 1 + Math.floor(Math.random() * 99);
+    const order = `ИТС-${new Date().toISOString().slice(2, 10).replace(/-/g, "")}-${String(no).padStart(2, "0")}`;
+    const spec = [...document.querySelectorAll("[data-sum] li")].map((li) => li.textContent!.replace(/\s+/g, " ").trim()).map((s) => s);
+    const rows = [...document.querySelectorAll("[data-sum] li")].map((li) => `${li.children[0].textContent}: ${li.children[1].textContent}`);
+    void spec;
+    const pr = price();
+    const msg = `Здравствуйте! Хочу заказать сауну.\nЗаказ ${order}\n${rows.join("\n")}\n${pr.l}: ${pr.v ? fmt(pr.v) : "—"}\nГде будет стоять: ${d.get("w")}\nИмя: ${d.get("n")}\nТелефон: ${d.get("p")}`;
+    const ch = d.get("ch");
+    link = ch === "wa" ? `https://wa.me/${P.wa}?text=${encodeURIComponent(msg)}` : ch === "tg" ? P.tg : `mailto:${P.email}?subject=${encodeURIComponent(`Заказ сауны ${order}`)}&body=${encodeURIComponent(msg)}`;
+    if (ch === "tg") navigator.clipboard?.writeText(msg).catch(() => {});
+    form.hidden = true;
+    const tag = $("[data-tag]"); tag.hidden = false;
+    $("[data-no]").textContent = String(no);
+    $("[data-order]").textContent = order;
+    $<HTMLAnchorElement>("[data-again]").href = link;
+    tag.scrollIntoView({ behavior: "smooth", block: "center" });
+    setTimeout(() => { window.open(link, "_blank", "noopener"); noted(`Номерок № ${no}`, ch === "tg" ? "Текст заказа скопирован — вставьте его в чат" : `Заказ открыт в ${ch === "wa" ? "WhatsApp" : "почте"}`); }, 1400);
+  });
+
+  sync(false);
+  go(0);
+</script>
+
+<style>
+  .sz { padding-top: calc(var(--hdr) + env(safe-area-inset-top)); padding-bottom: 120px; }
+  .sz__stage { position: sticky; top: calc(var(--hdr) + env(safe-area-inset-top)); z-index: 20; background: #fbf6ec; border-bottom: 1px solid var(--line); background-image: linear-gradient(rgba(107, 74, 43, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(107, 74, 43, 0.05) 1px, transparent 1px); background-size: 24px 24px; }
+  .sz__plan { position: relative; height: 34svh; min-height: 230px; overflow: hidden; }
+  .sz__plan :global(svg) { position: absolute; inset: 10px 16px 0; width: calc(100% - 32px); height: calc(100% - 10px); }
+  .sz__photo { height: 34svh; min-height: 230px; display: grid; place-items: center; padding: 10px; }
+  .sz__photo img { max-height: 100%; max-width: 100%; object-fit: contain; border-radius: 3px; }
+  .sz__bar { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 8px var(--gut) 10px; }
+  .sz__tg { display: flex; gap: 2px; padding: 3px; border-radius: 4px; background: rgba(36, 26, 20, 0.07); }
+  .sz__tg button { padding: 6px 12px; border-radius: 3px; font-size: 13px; font-weight: 600; color: var(--ink-2); }
+  .sz__tg [aria-selected="true"] { background: var(--ink); color: var(--lipa); }
+  .sz__vol { font-size: 11px; color: var(--ember); text-align: right; }
+
+  .sz__panel { padding-top: 18px; display: grid; gap: 22px; }
+  .sz__steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .sz__steps button { width: 100%; display: grid; justify-items: start; gap: 4px; padding-top: 8px; border-top: 2px solid var(--line); color: var(--mute); text-align: left; transition: color 0.3s, border-color 0.3s; }
+  .sz__steps span { font-size: 15px; }
+  .sz__steps .done { border-color: var(--honey); color: var(--ink-2); }
+  .sz__steps .on { border-color: var(--ember); color: var(--ink); }
+  .st { display: grid; gap: 16px; animation: stin 0.5s var(--ease); }
+  @keyframes stin { from { opacity: 0; transform: translateX(14px); } }
+  .sz__base { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .sz__base button, .sz__chips button { min-height: 46px; border-radius: 3px; box-shadow: inset 0 0 0 1px var(--line); font-weight: 700; font-size: 14px; transition: background 0.3s, color 0.3s; }
+  .sz__base [aria-checked="true"], .sz__chips [aria-checked="true"] { background: var(--ink); color: var(--lipa); box-shadow: none; }
+  .sz__models { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin: 0 calc(var(--gut) * -1); padding: 2px var(--gut); }
+  .sz__models::-webkit-scrollbar { display: none; }
+  .sz__models button { flex: none; display: grid; gap: 2px; text-align: left; padding: 10px 14px; border-radius: 3px; box-shadow: inset 0 0 0 1px var(--line); transition: background 0.3s, color 0.3s; }
+  .sz__models b { font-family: var(--display); font-weight: 400; font-size: 17px; }
+  .sz__models small { font-size: 10px; opacity: 0.75; }
+  .sz__models .on { background: var(--ink); color: var(--lipa); box-shadow: none; }
+  .sz__dims { display: grid; gap: 6px; }
+  .rg { display: grid; gap: 2px; }
+  .rg__l { display: flex; justify-content: space-between; align-items: baseline; font-size: 11px; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.06em; }
+  .rg__l b { font-weight: 400; font-size: 14px; color: var(--ink); text-transform: none; letter-spacing: 0; }
+  .rg input { -webkit-appearance: none; appearance: none; width: 100%; height: 36px; background: transparent; }
+  .rg input::-webkit-slider-runnable-track { height: 3px; background: var(--honey); border-radius: 2px; }
+  .rg input::-moz-range-track { height: 3px; background: var(--honey); }
+  .rg input::-webkit-slider-thumb { -webkit-appearance: none; width: 26px; height: 26px; margin-top: -11.5px; border-radius: 3px; background: var(--lipa); box-shadow: 0 0 0 1.5px var(--ink), 0 3px 8px rgba(0, 0, 0, 0.2); }
+  .rg input::-moz-range-thumb { width: 26px; height: 26px; border: 0; border-radius: 3px; background: var(--lipa); box-shadow: 0 0 0 1.5px var(--ink); }
+  .sz__fine { font-size: 13.5px; color: var(--ink-2); }
+  .sz__cards { display: grid; gap: 8px; }
+  .sz__cards button { display: grid; gap: 2px; text-align: left; padding: 14px 16px; border-radius: 4px; box-shadow: inset 0 0 0 1px var(--line); transition: box-shadow 0.3s, background 0.3s; }
+  .sz__cards b { font-family: var(--display); font-weight: 400; font-size: 19px; }
+  .sz__cards span { font-size: 13.5px; color: var(--ink-2); }
+  .sz__cards [aria-checked="true"] { background: #fbf1df; box-shadow: inset 0 0 0 2px var(--ember); }
+  .sz__chips { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .sz__opts { display: grid; border-top: 1px solid var(--line); }
+  .sz__opts li { border-bottom: 1px solid var(--line); }
+  .op { display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: center; padding: 14px 0; cursor: pointer; }
+  .op input { position: absolute; opacity: 0; }
+  .op__box { position: relative; width: 22px; height: 22px; border-radius: 3px; box-shadow: inset 0 0 0 1.5px var(--ink-2); transition: background 0.25s, box-shadow 0.25s; }
+  .op__box::after { content: ""; position: absolute; left: 7px; top: 3px; width: 6px; height: 11px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg) scale(0); transition: transform 0.3s var(--ease); }
+  .op input:checked + .op__box { background: var(--ember); box-shadow: none; }
+  .op input:checked + .op__box::after { transform: rotate(45deg) scale(1); }
+  .op input:focus-visible + .op__box { outline: 2px solid var(--ember); outline-offset: 3px; }
+  .op__t { display: grid; font-size: 15.5px; }
+  .op__t small { font-size: 13px; color: var(--ink-2); }
+  .sz__kw { font-size: 14px; color: var(--ink-2); }
+  .sz__kw b { font-weight: 400; color: var(--ember); font-size: 18px; }
+  .sz__sum { display: grid; gap: 8px; font-size: 12px; }
+  .sz__sum :global(li) { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 12px; color: var(--ink-2); }
+  .sz__sum :global(li span:last-child) { color: var(--ink); }
+  .sz__total { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 13px; color: var(--ink-2); }
+  .sz__total b { font-weight: 400; font-size: 26px; color: var(--ink); }
+  .sz__form { display: grid; gap: 14px; }
+  .sz__where { border: 0; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .sz__where legend { padding: 0; margin-bottom: 8px; }
+  .sz__where label { cursor: pointer; }
+  .sz__where input { position: absolute; opacity: 0; }
+  .sz__where label span { display: inline-block; padding: 10px 14px; border-radius: 3px; box-shadow: inset 0 0 0 1px var(--line); font-size: 14px; transition: background 0.3s, color 0.3s; }
+  .sz__where label input:checked + span { background: var(--ink); color: var(--lipa); box-shadow: none; }
+  .sz__where label input:focus-visible + span { outline: 2px solid var(--ember); outline-offset: 2px; }
+  .sz__note { font-size: 12.5px; color: var(--ink-2); }
+
+  /* the locker tag: an oval of oak with a burnt number, hanging on a red rubber band */
+  .tag { display: grid; justify-items: center; gap: 16px; padding: 10px 0 20px; }
+  .tag__band { width: 120px; height: 70px; border: 7px solid #b3312a; border-bottom: 0; border-radius: 60px 60px 0 0; margin-bottom: -14px; }
+  .tag__wood { position: relative; display: grid; place-items: center; width: 150px; height: 190px; border-radius: 50% / 42%; background: radial-gradient(120% 80% at 40% 30%, #e8c487, #c58f52 60%, #a8723e); box-shadow: inset 0 0 0 3px rgba(107, 74, 43, 0.4), 0 18px 30px -12px rgba(27, 20, 16, 0.5); transform-origin: 50% -20px; animation: swing 2.4s cubic-bezier(0.3, 1.4, 0.5, 1) both; }
+  @keyframes swing { 0% { transform: rotate(-38deg); opacity: 0; } 25% { opacity: 1; transform: rotate(18deg); } 50% { transform: rotate(-8deg); } 75% { transform: rotate(3deg); } 100% { transform: none; } }
+  .tag__hole { position: absolute; top: 14px; width: 18px; height: 18px; border-radius: 50%; background: var(--lipa); box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.35); }
+  .tag__no { font-family: var(--display); font-weight: 400; font-size: 76px; line-height: 1; color: #3a2414; text-shadow: 0 1px 0 rgba(255, 220, 170, 0.6); }
+  .tag__its { position: absolute; bottom: 22px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; color: #5a3a1f; }
+  .tag__t { max-width: 26em; text-align: center; color: var(--ink-2); }
+
+  .sz__nav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 90; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; padding: 10px var(--gut) calc(10px + env(safe-area-inset-bottom)); background: color-mix(in oklab, var(--lipa) 92%, transparent); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid var(--line); }
+  .sz__nav .btn { min-height: 48px; padding: 0 18px; }
+  .sz__mini { display: grid; justify-items: center; min-width: 0; }
+  .sz__mini small { font-size: 9.5px; color: var(--mute); text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+  .sz__mini b { font-weight: 400; font-size: 17px; }
+
+  @media (min-width: 1000px) {
+    .sz { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); align-items: start; }
+    .sz__stage { position: sticky; top: var(--hdr); height: calc(100svh - var(--hdr)); display: grid; grid-template-rows: 1fr auto; border-bottom: 0; border-right: 1px solid var(--line); }
+    .sz__plan, .sz__photo { height: auto; min-height: 0; }
+    .sz__plan :global(svg) { inset: 36px 40px 10px; width: calc(100% - 80px); height: calc(100% - 46px); }
+    .sz__photo { padding: 40px; }
+    .sz__panel { padding: 34px 44px 0; }
+    .sz__models { flex-wrap: wrap; overflow: visible; margin: 0; padding: 0; }
+    .sz__nav { left: auto; width: calc(100vw / 2.2); }
+  }
+</style>
