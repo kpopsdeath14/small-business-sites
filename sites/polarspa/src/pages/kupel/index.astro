@@ -1,0 +1,382 @@
+---
+/**
+ * The "cart" of a tub shop is one tub. Pick the model, cladding, bowl colour and options and watch
+ * it change from above; ordering fills it with water and hands the spec to a manager.
+ */
+import Base from "../../layouts/Base.astro";
+import { tubs, finishes, bowls, options, included, rub, pimg, contacts, url } from "../../lib/site";
+import { tubSVG, tubCSS } from "../../scripts/tub";
+const lines = [...new Set(tubs.map((t) => t.line))];
+const render: Record<string, string> = { elite: "elite-pine", quattro: "quattro", comfort: "comfort", corner: "corner", standart: "light", spa: "spa155" };
+const first = tubSVG({ shape: "round", w: 200, l: 200, seats: 6, heat: "stove", id: "k" }, { pad: 30 });
+---
+<Base title="Собрать купель — POLARSPA" nav="kit">
+  <style is:global set:html={tubCSS}></style>
+  <main class="kp">
+    <!-- the stage: our drawing from above, live -->
+    <section class="st" data-stage>
+      <div class="st__view" data-view set:html={first} />
+      <div class="st__photo" data-photo hidden><img data-photo-img alt="" /><p class="mono" data-photo-cap></p></div>
+      <div class="st__bar">
+        <div class="st__tg" role="tablist" aria-label="Вид">
+          <button type="button" role="tab" aria-selected="true" data-v="top">Сверху</button>
+          <button type="button" role="tab" aria-selected="false" data-v="photo">Фото</button>
+        </div>
+        <p class="st__deg mono" data-deg></p>
+      </div>
+    </section>
+
+    <div class="cf wrap">
+      <header class="cf__head">
+        <p class="kick">Ваша купель</p>
+        <h1 class="h2" data-title>ELITE 200</h1>
+        <p class="cf__dims mono" data-dims></p>
+      </header>
+
+      <section class="cf__step">
+        <h2 class="cf__h"><span class="mono">01</span> Модель</h2>
+        {lines.map((ln) => (
+          <div class="cf__line">
+            <p class="cf__ln mono">{ln}</p>
+            <div class="cf__models" role="radiogroup" aria-label={ln}>
+              {tubs.filter((t) => t.line === ln).map((t) => (
+                <button type="button" role="radio" aria-checked="false" data-m={t.id}>
+                  <span>{t.name.replace(ln + " ", "").replace("COMFORT FAMILY HOT", "FAMILY HOT") || t.name}</span>
+                  <small class="mono">{rub(t.price)}</small>
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
+      </section>
+
+      <section class="cf__step" data-wood-step>
+        <h2 class="cf__h"><span class="mono">02</span> Обшивка <small class="mono" data-fname></small></h2>
+        <div class="cf__sw" role="radiogroup" aria-label="Обшивка">
+          {finishes.map((f) => (
+            <button type="button" role="radio" aria-checked="false" data-f={f.id} aria-label={f.name} style={`--c:${f.sw}`} class={`cf__wood cf__wood--${f.wood}`}>
+              <i></i><small class="mono">{f.add ? `+${(f.add / 1000).toFixed(0)} т.` : ""}</small>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section class="cf__step" data-bowl-step>
+        <h2 class="cf__h"><span class="mono">03</span> Цвет чаши <small class="mono" data-bname></small></h2>
+        <div class="cf__sw" role="radiogroup" aria-label="Цвет чаши">
+          {bowls.map((b) => (
+            <button type="button" role="radio" aria-checked="false" data-b={b.id} aria-label={`Чаша ${b.id}`} style={`--c:${b.c}`} class="cf__bowl">
+              <i></i><small class="mono">{b.id}</small>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section class="cf__step" data-opt-step>
+        <h2 class="cf__h"><span class="mono">04</span> Опции</h2>
+        <ul class="cf__opts">
+          {options.map((o) => (
+            <li>
+              <label class="op">
+                <input type="checkbox" data-o={o.id} />
+                <span class="op__box" aria-hidden="true"></span>
+                <span class="op__t">{o.name}<small>{o.note}</small></span>
+                <span class="op__p mono" data-op-price={o.id}>+{rub(o.price)}</span>
+              </label>
+            </li>
+          ))}
+        </ul>
+        <p class="cf__inc"><b>Уже в комплекте:</b> {included.join(" · ").toLowerCase().replace(/^./, (c) => c.toUpperCase())}</p>
+      </section>
+
+      <!-- ORDER -->
+      <section class="cf__step od" id="order">
+        <h2 class="cf__h"><span class="mono">05</span> Заказ</h2>
+        <ul class="od__sum mono" data-sum></ul>
+        <p class="od__total"><span>Итого</span><b class="mono" data-total></b></p>
+        <form class="od__f" data-form novalidate>
+          <label class="field"><span>Имя</span><input class="input" name="n" autocomplete="name" required /></label>
+          <label class="field"><span>Телефон</span><input class="input" name="p" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7" required /></label>
+          <label class="field"><span>Город доставки</span><input class="input" name="c" autocomplete="address-level2" /></label>
+          <fieldset class="od__ch">
+            <legend class="field"><span>Куда отправить заказ</span></legend>
+            <label><input type="radio" name="ch" value="wa" checked /><span>WhatsApp</span></label>
+            <label><input type="radio" name="ch" value="tg" /><span>Telegram</span></label>
+            <label><input type="radio" name="ch" value="mail" /><span>Почта</span></label>
+          </fieldset>
+          <button class="btn btn--water btn--block od__go" type="submit"><span>Заказать купель</span><b class="mono" data-total2></b></button>
+          <p class="od__fine">Нажимая, вы отправляете состав купели менеджеру POLARSPA. Он подтвердит цену, сроки изготовления и доставку. Цены опций — по прайсу ELITE 200; для других моделей менеджер уточнит.</p>
+        </form>
+
+        <!-- after ordering: a tag hung on the tub, like a workshop label -->
+        <div class="tag" data-tag hidden>
+          <p class="kick">Заказ сформирован</p>
+          <p class="tag__no mono" data-no></p>
+          <p class="h3" data-tag-m></p>
+          <p class="tag__s" data-tag-s></p>
+          <p class="tag__t mono" data-tag-t></p>
+          <a class="btn btn--line btn--block" data-again href="#">Отправить ещё раз</a>
+        </div>
+      </section>
+    </div>
+
+    <!-- the total rides along at the bottom -->
+    <div class="tb" data-tb>
+      <div><small class="mono">Итого</small><b class="mono" data-total3></b></div>
+      <a class="btn btn--water" href="#order">Оформить</a>
+    </div>
+  </main>
+</Base>
+
+<script define:vars={{ tubs, finishes, bowls, options, render, pimgBase: pimg("x", 960).replace(/x-960\.webp$/, ""), wa: contacts.waNum, tg: contacts.tg, email: contacts.email }}>
+  window.__ps = { tubs, finishes, bowls, options, render, pimgBase, wa, tg, email };
+</script>
+<script>
+  import { tubSVG } from "../../scripts/tub";
+  import { store, noted } from "../../scripts/app";
+  type T = { id: string; line: string; name: string; price: number; old?: number; shape: any; w: number; l: number; h: number; seats: [number, number]; litres: number; est?: boolean; heat: string; img?: string };
+  const P = (window as any).__ps as { tubs: T[]; finishes: any[]; bowls: any[]; options: any[]; render: Record<string, string>; pimgBase: string; wa: string; tg: string; email: string };
+  const $ = <E extends HTMLElement = HTMLElement>(s: string) => document.querySelector<E>(s)!;
+  const $$ = <E extends HTMLElement = HTMLElement>(s: string) => [...document.querySelectorAll<E>(s)];
+  const fmt = (n: number) => Math.round(n).toLocaleString("ru-RU") + " ₽";
+
+  // state: from the link (?m=), else what this browser chose before, else ELITE 200
+  const saved = store.get();
+  const qm = new URLSearchParams(location.search).get("m");
+  const st = {
+    m: qm && P.tubs.some((t) => t.id === qm) ? qm : saved?.model ?? "elite-200",
+    f: (saved?.wood as string) || "pine-light",
+    b: "S1",
+    o: new Set<string>(saved?.options ?? []),
+  };
+  if (saved?.options) { const b = saved.options.find((x) => x.startsWith("bowl:")); if (b) st.b = b.slice(5); st.o.delete(b!); }
+  let view: "top" | "photo" = "top";
+
+  const tub = () => P.tubs.find((t) => t.id === st.m)!;
+  const fin = () => P.finishes.find((f) => f.id === st.f)!;
+  const bowl = () => P.bowls.find((b) => b.id === st.b)!;
+  const isSpa = () => tub().heat === "spa";
+  const optPrice = (o: any) => (o.birch && fin().wood === "birch" ? o.birch : o.price);
+  const total = () => tub().price + (isSpa() ? 0 : fin().add + bowl().add) + [...st.o].reduce((s, id) => { const o = P.options.find((x) => x.id === id); return o && (!isSpa() || id === "cover") ? s + optPrice(o) : s; }, 0);
+
+  // drawing: rebuilt on model change, options toggle classes so the lid and tent can slide
+  let drawnFor = "";
+  function draw() {
+    const t = tub(), f = fin();
+    const key = `${t.id}|${f.tone}|${st.b}|${st.o.has("aero")}|${st.o.has("warm")}|${st.o.has("shelf")}`;
+    const box = $("[data-view]");
+    if (key !== drawnFor) {
+      box.innerHTML = tubSVG({ shape: t.shape, w: t.w, l: t.l, seats: t.seats[1], heat: t.heat as any, wood: f.tone, bowl: isSpa() ? undefined : bowl().c, aero: st.o.has("aero") || isSpa(), warm: st.o.has("warm"), shelf: st.o.has("shelf"), ladder: t.heat !== "spa", steam: t.heat === "stove", id: "k" }, { pad: 30 });
+      if (drawnFor.split("|")[0] !== t.id) box.animate([{ opacity: 0, transform: "scale(.94)" }, { opacity: 1, transform: "none" }], { duration: 500, easing: "cubic-bezier(.22,.9,.3,1)" });
+      drawnFor = key;
+    }
+    const svg = box.querySelector("svg")!;
+    svg.classList.toggle("tv--led", st.o.has("led") || isSpa());
+    svg.classList.toggle("tv--tent", st.o.has("tent"));
+    // force a frame so the lid slides in rather than appearing
+    requestAnimationFrame(() => svg.classList.toggle("tv--cover", st.o.has("cover")));
+    // the photo: their render of this line (ELITE has light and dark)
+    const name = t.img === "elite" ? (f.tone === "light" ? "elite-pine" : "elite-ash") : P.render[t.img ?? "elite"];
+    const im = $<HTMLImageElement>("[data-photo-img]");
+    if (!im.src.endsWith(`${name}-960.webp`)) im.src = `${P.pimgBase}${name}-960.webp`;
+    im.alt = t.name;
+    $("[data-photo-cap]").textContent = t.img === "elite" && f.tone !== "graphite" ? `Фото: ${t.line}, ${f.tone === "light" ? "светлая" : "тёмная"} обшивка` : `Фото: линейка ${t.line} — цвет обшивки покажем на схеме`;
+  }
+
+  function sync(save = true) {
+    const t = tub(), f = fin();
+    $$("[data-m]").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.m === st.m)));
+    $$("[data-f]").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.f === st.f)));
+    $$("[data-b]").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.b === st.b)));
+    $$<HTMLInputElement>("[data-o]").forEach((i) => { i.checked = st.o.has(i.dataset.o!); const li = i.closest("li")!; li.hidden = isSpa() && i.dataset.o !== "cover"; });
+    $$("[data-op-price]").forEach((s) => { const o = P.options.find((x) => x.id === s.dataset.opPrice); s.textContent = `+${fmt(optPrice(o))}`; });
+    $("[data-wood-step]").hidden = isSpa();
+    $("[data-bowl-step]").hidden = isSpa();
+    $("[data-title]").textContent = t.name;
+    $("[data-dims]").textContent = `${t.shape === "round" ? `Ø ${t.w}` : `${t.w} × ${t.l}`} см · ${t.seats[0] === t.seats[1] ? t.seats[0] : `${t.seats[0]}–${t.seats[1]}`} чел · ${t.est ? "≈ " : ""}${t.litres} л`;
+    $("[data-fname]").textContent = f.name.toLowerCase();
+    $("[data-bname]").textContent = st.b;
+    $("[data-deg]").textContent = t.heat === "stove" ? "печь · 38 °C" : t.heat === "spa" ? "электроподогрев" : "без подогрева · 4–10 °C";
+    // summary
+    const rows: [string, number][] = [[t.name, t.price]];
+    if (!isSpa()) { rows.push([f.name, f.add]); rows.push([`Чаша ${st.b}`, bowl().add]); }
+    P.options.forEach((o) => { if (st.o.has(o.id) && (!isSpa() || o.id === "cover")) rows.push([o.name, optPrice(o)]); });
+    $("[data-sum]").innerHTML = rows.map(([a, b]) => `<li><span>${a}</span><span>${b ? fmt(b) : "0 ₽"}</span></li>`).join("");
+    ["[data-total]", "[data-total2]", "[data-total3]"].forEach((s) => tick($(s), total()));
+    draw();
+    if (save) store.set({ model: st.m, wood: st.f, options: [...st.o, `bowl:${st.b}`] });
+  }
+  // numbers roll to the new price
+  const shown = new WeakMap<HTMLElement, number>();
+  function tick(el: HTMLElement, to: number) {
+    const from = shown.get(el) ?? to, t0 = performance.now(); shown.set(el, to);
+    const run = (t: number) => { const k = Math.min(1, (t - t0) / 500), e = 1 - Math.pow(1 - k, 3); el.textContent = fmt(from + (to - from) * e); if (k < 1) requestAnimationFrame(run); };
+    requestAnimationFrame(run);
+  }
+
+  $$("[data-m]").forEach((b) => b.addEventListener("click", () => { st.m = b.dataset.m!; sync(); history.replaceState(null, "", `?m=${st.m}`); }));
+  $$("[data-f]").forEach((b) => b.addEventListener("click", () => { st.f = b.dataset.f!; sync(); }));
+  $$("[data-b]").forEach((b) => b.addEventListener("click", () => { st.b = b.dataset.b!; sync(); }));
+  $$<HTMLInputElement>("[data-o]").forEach((i) => i.addEventListener("change", () => { i.checked ? st.o.add(i.dataset.o!) : st.o.delete(i.dataset.o!); sync(); if (view === "photo") setView("top"); }));
+
+  function setView(v: "top" | "photo") {
+    view = v;
+    $$("[data-v]").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.v === v)));
+    $("[data-view]").hidden = v !== "top";
+    $("[data-photo]").hidden = v !== "photo";
+  }
+  $$("[data-v]").forEach((b) => b.addEventListener("click", () => setView(b.dataset.v as any)));
+
+  // the total bar hides once the order form is on screen
+  const tb = $("[data-tb]");
+  const order = $("#order");
+  const tbSync = () => tb.classList.toggle("off", order.getBoundingClientRect().top < innerHeight * 0.85);
+  addEventListener("scroll", tbSync, { passive: true }); tbSync();
+
+  // ORDER: the tub fills with water, then the spec goes to the chosen channel
+  const form = $<HTMLFormElement>("[data-form]");
+  let msg = "", link = "";
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const n = form.elements.namedItem("n") as HTMLInputElement, p = form.elements.namedItem("p") as HTMLInputElement;
+    let bad = false;
+    [n, p].forEach((i) => { const ok = i === p ? i.value.replace(/\D/g, "").length >= 10 : i.value.trim().length > 1; i.classList.toggle("err", !ok); if (!ok && !bad) { i.focus(); bad = true; } });
+    if (bad) { noted("Заполните имя и телефон", "Чтобы менеджер мог подтвердить заказ"); return; }
+    const d = new FormData(form), t = tub(), f = fin();
+    const no = `PS-${new Date().toISOString().slice(2, 10).replace(/-/g, "")}-${String(Math.floor(Math.random() * 9000) + 1000)}`;
+    const opts = P.options.filter((o) => st.o.has(o.id) && (!isSpa() || o.id === "cover")).map((o) => o.name);
+    const spec = [t.name, ...(isSpa() ? [] : [f.name, `чаша ${st.b}`]), ...opts].join(", ");
+    msg = `Здравствуйте! Хочу заказать купель.\nЗаказ ${no}\n${spec}\nИтого по сайту: ${fmt(total())}\nИмя: ${d.get("n")}\nТелефон: ${d.get("p")}${d.get("c") ? `\nГород: ${d.get("c")}` : ""}`;
+    const ch = d.get("ch");
+    link = ch === "wa" ? `https://wa.me/${P.wa}?text=${encodeURIComponent(msg)}` : ch === "tg" ? P.tg : `mailto:${P.email}?subject=${encodeURIComponent(`Заказ ${no}`)}&body=${encodeURIComponent(msg)}`;
+    if (ch === "tg") navigator.clipboard?.writeText(msg).catch(() => {});
+
+    // fill: scroll to the drawing, water rises, the temperature climbs
+    setView("top");
+    const stage = $("[data-stage]"), svg = stage.querySelector("svg")!;
+    // the lid comes off, the water rises, the lid goes back on
+    svg.classList.remove("tv--cover", "tv--tent");
+    stage.classList.remove("fill"); void stage.offsetWidth;
+    stage.classList.add("fill");
+    setTimeout(() => { svg.classList.toggle("tv--cover", st.o.has("cover")); svg.classList.toggle("tv--tent", st.o.has("tent")); }, 2900);
+    const deg = $("[data-deg]"), t0 = performance.now();
+    const run = (now: number) => { const k = Math.min(1, (now - t0) / 1800); deg.textContent = `наполняем · ${Math.round(k * t.litres)} л`; if (k < 1) requestAnimationFrame(run); else deg.textContent = `заказ ${no}`; };
+    requestAnimationFrame(run);
+
+    setTimeout(() => {
+      form.hidden = true;
+      const tag = $("[data-tag]"); tag.hidden = false;
+      $("[data-no]").textContent = no;
+      $("[data-tag-m]").textContent = t.name;
+      $("[data-tag-s]").textContent = spec.split(", ").slice(1).join(" · ") || "Базовая комплектация";
+      $("[data-tag-t]").textContent = fmt(total());
+      $<HTMLAnchorElement>("[data-again]").href = link;
+      window.open(link, "_blank", "noopener");
+      tag.scrollIntoView({ behavior: "smooth", block: "center" });
+      noted("Купель наполнена", ch === "tg" ? "Текст заказа скопирован — вставьте его в чат" : "Заказ открыт в " + (ch === "wa" ? "WhatsApp" : "почте"));
+    }, 2500);
+  });
+
+  sync(false);
+  setView("top");
+</script>
+
+<style>
+  .kp { padding-top: calc(var(--hdr) + env(safe-area-inset-top)); padding-bottom: 110px; }
+  /* stage: sticks under the header on a phone so every choice is seen at once */
+  .st { position: sticky; top: calc(var(--hdr) + env(safe-area-inset-top)); z-index: 10; height: 40svh; min-height: 250px; display: grid; grid-template-rows: 1fr auto; background: radial-gradient(80% 70% at 50% 45%, #fbfcfc, var(--frost)); color: var(--ink); border-bottom: 1px solid var(--line); }
+  .st__view { display: grid; place-items: center; padding: 10px 16px 0; min-height: 0; }
+  .st__view :global(svg) { width: 100%; height: 100%; max-height: 100%; }
+  .st__photo { display: grid; grid-template-rows: 1fr auto; place-items: center; min-height: 0; padding: 10px 16px 0; }
+  .st__photo img { max-height: 100%; max-width: 100%; object-fit: contain; min-height: 0; }
+  .st__photo p { font-size: 10px; color: var(--ink-2); }
+  .st__bar { display: flex; justify-content: space-between; align-items: center; padding: 8px var(--gut) 10px; }
+  .st__tg { display: flex; gap: 2px; padding: 3px; border-radius: 6px; background: rgba(20, 32, 41, 0.06); }
+  .st__tg button { padding: 6px 12px; border-radius: 4px; font-family: var(--display); font-size: 11.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-2); }
+  .st__tg [aria-selected="true"] { background: #fff; color: var(--ink); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12); }
+  .st__deg { font-size: 11px; color: var(--water); }
+  /* filling the tub on order */
+  .st.fill :global(.tv__water) { animation: fill 1.8s cubic-bezier(.3, .6, .3, 1) both; transform-box: fill-box; transform-origin: center; }
+  .st.fill :global(.tv__caus) { animation: fade 1.8s both; }
+  @keyframes fill { from { transform: scale(0.15); opacity: 0.2; } 60% { opacity: 1; } to { transform: none; } }
+  @keyframes fade { from { opacity: 0; } }
+
+  .cf { display: grid; grid-template-columns: minmax(0, 1fr); gap: 40px; padding-top: 26px; min-width: 0; }
+  .cf__head { display: grid; gap: 6px; }
+  .cf__dims { font-size: 12px; color: var(--fg-2); }
+  .cf__h { display: flex; align-items: baseline; gap: 12px; margin-bottom: 16px; font-family: var(--display); font-weight: 400; font-size: 20px; text-transform: uppercase; letter-spacing: 0.06em; }
+  .cf__h .mono { font-size: 11px; color: var(--water); }
+  .cf__h small { margin-left: auto; font-size: 11px; color: var(--fg-2); text-transform: none; letter-spacing: 0; }
+  .cf__line + .cf__line { margin-top: 14px; }
+  .cf__ln { font-size: 10px; letter-spacing: 0.1em; color: var(--fg-2); margin-bottom: 6px; }
+  .cf__models { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin: 0 calc(var(--gut) * -1); padding: 0 var(--gut); }
+  .cf__models::-webkit-scrollbar { display: none; }
+  .cf__models button { flex: none; display: grid; gap: 2px; text-align: left; padding: 10px 14px; border-radius: 4px; box-shadow: inset 0 0 0 1px var(--ln); font-family: var(--display); font-size: 13px; letter-spacing: 0.06em; transition: background 0.3s, color 0.3s, box-shadow 0.3s; }
+  .cf__models small { font-size: 10px; opacity: 0.7; letter-spacing: 0; }
+  .cf__models [aria-checked="true"] { background: var(--fg); color: var(--bg); box-shadow: none; }
+
+  .cf__sw { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+  .cf__sw button { display: grid; gap: 6px; justify-items: center; }
+  .cf__sw i { display: block; width: 100%; aspect-ratio: 1; border-radius: 6px; background: var(--c); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1); transition: transform 0.3s var(--ease), box-shadow 0.3s; }
+  /* wood swatches get a grain: pine has wide rings, birch a fine straight one */
+  .cf__wood--pine i { background: repeating-linear-gradient(92deg, rgba(0, 0, 0, 0.1) 0 2px, transparent 2px 9px), repeating-linear-gradient(88deg, rgba(255, 255, 255, 0.06) 0 1px, transparent 1px 5px), var(--c); }
+  .cf__wood--birch i { background: repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.08) 0 1px, transparent 1px 4px), var(--c); }
+  .cf__bowl i { border-radius: 50%; background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.6), transparent 45%), var(--c); }
+  .cf__sw small { font-size: 9.5px; color: var(--fg-2); min-height: 1.2em; }
+  .cf__sw [aria-checked="true"] i { box-shadow: 0 0 0 2px var(--bg), 0 0 0 3.5px var(--fg); transform: scale(0.92); }
+
+  .cf__opts { display: grid; border-top: 1px solid var(--ln); }
+  .cf__opts li { border-bottom: 1px solid var(--ln); }
+  .op { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; padding: 14px 0; cursor: pointer; }
+  .op input { position: absolute; opacity: 0; }
+  .op__box { width: 22px; height: 22px; border-radius: 4px; box-shadow: inset 0 0 0 1.5px var(--fg-2); transition: background 0.25s, box-shadow 0.25s; position: relative; }
+  .op__box::after { content: ""; position: absolute; left: 7px; top: 3px; width: 6px; height: 11px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg) scale(0); transition: transform 0.3s var(--ease); }
+  .op input:checked + .op__box { background: var(--water); box-shadow: none; }
+  .op input:checked + .op__box::after { transform: rotate(45deg) scale(1); }
+  .op input:focus-visible + .op__box { outline: 2px solid var(--water-2); outline-offset: 3px; }
+  .op__t { display: grid; font-size: 15.5px; }
+  .op__t small { font-size: 12.5px; color: var(--fg-2); }
+  .op__p { font-size: 12px; }
+  .cf__inc { margin-top: 14px; font-size: 13.5px; color: var(--fg-2); }
+  .cf__inc b { color: var(--fg); font-weight: 500; }
+
+  .od__sum { display: grid; gap: 6px; font-size: 12px; }
+  .od__sum :global(li) { display: flex; justify-content: space-between; gap: 12px; color: var(--fg-2); }
+  .od__total { display: flex; justify-content: space-between; align-items: baseline; margin: 14px 0 24px; padding-top: 14px; border-top: 1px solid var(--ln); font-family: var(--display); text-transform: uppercase; letter-spacing: 0.08em; }
+  .od__total b { font-size: 26px; font-weight: 400; letter-spacing: 0; }
+  .od__f { display: grid; gap: 14px; }
+  .od__ch { border: 0; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .od__ch legend { margin-bottom: 8px; padding: 0; }
+  .od__ch label { cursor: pointer; }
+  .od__ch input { position: absolute; opacity: 0; }
+  .od__ch label span { display: inline-block; padding: 10px 16px; border-radius: 4px; box-shadow: inset 0 0 0 1px var(--ln); font-size: 14px; transition: background 0.3s, color 0.3s; }
+  .od__ch label input:checked + span { background: var(--fg); color: var(--bg); box-shadow: none; }
+  .od__ch label input:focus-visible + span { outline: 2px solid var(--water-2); outline-offset: 2px; }
+  .od__go { justify-content: space-between; min-height: 62px; }
+  .od__go b { font-weight: 400; font-size: 14px; letter-spacing: 0; }
+  .od__fine { font-size: 12px; color: var(--fg-2); line-height: 1.5; }
+  .tag { position: relative; display: grid; gap: 10px; padding: 26px 22px 22px; border-radius: 6px; background: #f6f1e7; color: var(--ink); box-shadow: 0 20px 40px -18px rgba(0, 0, 0, 0.35); animation: tag 0.9s var(--ease) both; transform-origin: 50% 0; }
+  .tag::before { content: ""; position: absolute; top: 10px; left: 50%; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; box-shadow: inset 0 0 0 2px rgba(20, 32, 41, 0.35); }
+  @keyframes tag { from { opacity: 0; transform: rotate(-4deg) translateY(-14px); } 60% { transform: rotate(1.5deg); } }
+  .tag .kick { color: var(--water); justify-self: center; margin-top: 6px; }
+  .tag__no { justify-self: center; font-size: 12px; color: var(--ink-2); }
+  .tag .h3 { text-align: center; }
+  .tag__s { text-align: center; font-size: 14px; color: var(--ink-2); }
+  .tag__t { text-align: center; font-size: 22px; }
+  .tag .btn--line { color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+
+  .tb { position: fixed; left: 0; right: 0; bottom: 0; z-index: 90; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px var(--gut) calc(10px + env(safe-area-inset-bottom)); background: color-mix(in oklab, var(--bg) 88%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-top: 1px solid var(--ln); transition: transform 0.5s var(--ease); }
+  .tb.off { transform: translateY(110%); }
+  .tb small { display: block; font-size: 10px; color: var(--fg-2); text-transform: uppercase; letter-spacing: 0.1em; }
+  .tb b { font-weight: 400; font-size: 20px; }
+  .tb .btn { min-height: 48px; }
+
+  @media (min-width: 1000px) {
+    .kp { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); align-items: start; padding-bottom: 60px; }
+    .st { height: calc(100svh - var(--hdr)); top: var(--hdr); border-bottom: 0; border-right: 1px solid var(--line); }
+    .st__view { padding: 40px; }
+    .cf { padding: 44px 48px 0; }
+    .cf__models { flex-wrap: wrap; overflow: visible; margin: 0; padding: 0; }
+    .tb { display: none; }
+  }
+</style>

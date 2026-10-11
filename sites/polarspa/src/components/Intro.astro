@@ -1,0 +1,68 @@
+---
+/**
+ * Once per visit: «Растопка». A tub seen from above with ice on the water; the stove takes it
+ * from 4 °C to 39 °C, the ice melts, steam rises — and the page opens like a ripple from the centre.
+ */
+import { tubSVG, tubCSS } from "../scripts/tub";
+const svg = tubSVG({ shape: "round", w: 200, l: 200, seats: 0, heat: "stove", ice: true, steam: true, id: "intro" }, { pad: 10 });
+---
+<script is:inline>
+  try {
+    if (!sessionStorage.getItem("polarspa-intro") && !matchMedia("(prefers-reduced-motion: reduce)").matches)
+      document.documentElement.classList.add("intro");
+  } catch (e) {}
+</script>
+<div class="rst" aria-hidden="true">
+  <div class="rst__tub" set:html={svg} />
+  <p class="rst__t mono"><span data-rt>4,0</span> °C</p>
+  <p class="rst__s" data-rs>Растапливаем печь…</p>
+  <p class="rst__skip mono">Коснитесь, чтобы окунуться</p>
+</div>
+<style is:global set:html={tubCSS}></style>
+
+<script>
+  const html = document.documentElement;
+  if (html.classList.contains("intro")) {
+    const el = document.querySelector<HTMLElement>(".rst")!;
+    const t = el.querySelector("[data-rt]")!, s = el.querySelector("[data-rs]")!;
+    const t0 = performance.now() + 300, DUR = 2200;
+    let done = false, raf = 0;
+    const tick = (now: number) => {
+      const k = Math.max(0, Math.min(1, (now - t0) / DUR)), e = k * k * (3 - 2 * k);
+      const v = 4 + 35 * e;
+      t.textContent = v.toFixed(1).replace(".", ",");
+      el.style.setProperty("--melt", e.toFixed(3));
+      if (v > 14 && s.textContent!.startsWith("Раст")) s.textContent = "Лёд тает…";
+      if (v > 30 && s.textContent!.startsWith("Лёд")) { s.textContent = "Пар над водой"; el.classList.add("steam"); }
+      if (k < 1) raf = requestAnimationFrame(tick);
+      else { s.textContent = "Вода готова"; el.classList.add("ready"); setTimeout(dive, 600); }
+    };
+    raf = requestAnimationFrame(tick);
+    function dive() {
+      if (done) return; done = true; cancelAnimationFrame(raf);
+      try { sessionStorage.setItem("polarspa-intro", "1"); } catch {}
+      html.classList.add("intro-out");
+      document.dispatchEvent(new CustomEvent("intro:done"));
+      setTimeout(() => html.classList.remove("intro", "intro-out"), 1300);
+    }
+    el.addEventListener("click", dive);
+    addEventListener("keydown", dive, { once: true });
+  }
+</script>
+
+<style is:global>
+  .rst { display: none; }
+  html.intro { overflow: hidden; }
+  html.intro .rst { position: fixed; inset: 0; z-index: 300; display: grid; place-content: center; justify-items: center; gap: 12px; background: radial-gradient(70% 60% at 50% 45%, #f6f9fa, #dfe8ec); color: var(--ink); cursor: pointer; clip-path: circle(150% at 50% 42%); transition: clip-path 1.2s var(--ease-io); }
+  /* the page opens like a ripple spreading from the tub */
+  html.intro-out .rst { clip-path: circle(0% at 50% 42%); }
+  .rst__tub { width: min(64vw, 300px); aspect-ratio: 1.3; }
+  .rst .tv__i { opacity: calc(1 - var(--melt, 0) * 1.4); transform: scale(calc(1 - var(--melt, 0) * 0.6)); transform-box: fill-box; transform-origin: center; }
+  .rst .tv__s { animation-play-state: paused; opacity: 0; }
+  .rst.steam .tv__s { animation-play-state: running; }
+  .rst .tv__stove rect { fill: color-mix(in oklab, #2a2f33, #e0874a calc(var(--melt, 0) * 70%)); }
+  .rst__t { font-size: 44px; letter-spacing: -0.02em; color: color-mix(in oklab, #4a7d93, #e0874a calc(var(--melt, 0) * 100%)); }
+  .rst__s { font-family: var(--display); text-transform: uppercase; letter-spacing: 0.16em; font-size: 13px; color: var(--ink-2); }
+  .rst.ready .rst__s { color: var(--water); }
+  .rst__skip { position: fixed; left: 0; right: 0; bottom: calc(24px + env(safe-area-inset-bottom)); text-align: center; font-size: 10.5px; color: var(--mute); letter-spacing: 0.08em; text-transform: uppercase; }
+</style>

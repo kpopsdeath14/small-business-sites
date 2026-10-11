@@ -1,0 +1,162 @@
+---
+/**
+ * «Во сколько затопить»: pick a tub, the frost outside and the time you want to get in —
+ * we answer when to light the stove, how much firewood it takes and draw the water warming up.
+ * Physics, not marketing: heat = litres × 1.163 Wh/(л·°C) × ΔT, a 35 kW stove gives the water
+ * about 19 kW, the open surface loses heat to the frost. Calibrated on their own figure:
+ * ELITE 200, 1000 л — about two hours.
+ */
+import { tubs } from "../lib/site";
+const hot = tubs.filter((t) => t.heat === "stove").map((t) => ({ id: t.id, name: t.name, l: t.litres }));
+---
+<div class="ht" data-ht>
+  <div class="ht__in">
+    <div class="ht__row">
+      <p class="field"><span>Купель</span></p>
+      <div class="ht__chips" role="radiogroup" aria-label="Купель">
+        {hot.map((t) => <button type="button" role="radio" aria-checked={t.id === "elite-200" ? "true" : "false"} data-l={t.l} data-id={t.id}>{t.name.replace("COMFORT FAMILY HOT", "COMFORT 220").replace(" HOT", "")}<small class="mono">{t.l} л</small></button>)}
+      </div>
+    </div>
+
+    <label class="ht__row">
+      <span class="ht__lbl"><span class="field"><span>На улице</span></span><b class="mono" data-o-out></b></span>
+      <input type="range" min="-30" max="25" step="1" value="-12" data-out class="ht__range ht__range--air" aria-label="Температура воздуха" />
+    </label>
+    <label class="ht__row">
+      <span class="ht__lbl"><span class="field"><span>Вода из скважины</span></span><b class="mono" data-o-w0></b></span>
+      <input type="range" min="2" max="20" step="1" value="6" data-w0 class="ht__range" aria-label="Температура воды на входе" />
+    </label>
+    <label class="ht__row">
+      <span class="ht__lbl"><span class="field"><span>Хотим окунуться в</span></span><b class="mono" data-o-at></b></span>
+      <input type="range" min="960" max="1410" step="10" value="1170" data-at class="ht__range" aria-label="Время" />
+    </label>
+    <label class="ht__sw">
+      <input type="checkbox" data-cover checked />
+      <span class="ht__swi" aria-hidden="true"></span>
+      <span>Греем под термокрышкой</span>
+    </label>
+  </div>
+
+  <div class="ht__out" aria-live="polite">
+    <p class="kick">Затопите печь в</p>
+    <p class="ht__time mono" data-start>17:30</p>
+    <p class="ht__sub">Вода дойдёт до <b>38 °C</b> за <b data-dur></b></p>
+
+    <!-- the warming curve: from well water to 38 °C, across the evening -->
+    <svg class="ht__chart" viewBox="0 0 320 150" aria-hidden="true" preserveAspectRatio="none">
+      <defs><linearGradient id="htg" x1="0" x2="1"><stop offset="0" stop-color="#7fb2c9" /><stop offset=".6" stop-color="#5fb7c3" /><stop offset="1" stop-color="#e0874a" /></linearGradient></defs>
+      <path class="ht__grid" d="M0 30H320M0 75H320M0 120H320" />
+      <path class="ht__fill" data-fill />
+      <path class="ht__line" data-line />
+      <circle class="ht__dot" r="4.5" data-dot />
+    </svg>
+    <div class="ht__ax mono"><span data-ax0></span><span data-ax1></span></div>
+
+    <div class="ht__wood">
+      <div class="ht__logs" data-logs aria-hidden="true"></div>
+      <p class="mono"><span data-kg></span> кг дров · ≈ <span data-logs-n></span> поленьев</p>
+    </div>
+    <p class="ht__fine">Расчёт ориентировочный: тепловой баланс воды и потерь с открытой поверхности, откалиброван по данным POLARSPA — ELITE 200 греется около двух часов.</p>
+  </div>
+</div>
+
+<script>
+  const el = document.querySelector<HTMLElement>("[data-ht]")!;
+  const q = <T extends HTMLElement = HTMLInputElement>(s: string) => el.querySelector<T>(s)!;
+  const chips = [...el.querySelectorAll<HTMLButtonElement>("[role=radio]")];
+  let litres = 1000;
+  chips.forEach((c) => c.addEventListener("click", () => { chips.forEach((x) => x.setAttribute("aria-checked", String(x === c))); litres = +c.dataset.l!; calc(); }));
+  const out = q("[data-out]"), w0 = q("[data-w0]"), at = q("[data-at]"), cover = q("[data-cover]");
+  const hm = (m: number) => { m = ((Math.round(m) % 1440) + 1440) % 1440; return `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`; };
+  const dur = (m: number) => { const h = Math.floor(m / 60), r = Math.round(m % 60 / 5) * 5; return (h ? `${h} ч ` : "") + (r ? `${r} мин` : ""); };
+  const T1 = 38, P = 19.3; // kW that reach the water from a 35 kW stove
+
+  function simulate() {
+    // step the water temperature minute by minute: gain from the stove, loss to the air
+    const U = cover.checked ? 0.035 : 0.1, C = litres * 1.163 / 1000; // kW/°C, kWh/°C
+    let T = +w0.value, t = 0; const pts: [number, number][] = [[0, T]];
+    while (T < T1 && t < 600) { T += (P - U * (T - +out.value)) / C / 60; t++; if (t % 4 === 0) pts.push([t, T]); }
+    pts.push([t, Math.min(T, T1)]);
+    return { t, pts };
+  }
+  let shown = 0, raf = 0;
+  function calc() {
+    q<HTMLElement>("[data-o-out]").textContent = `${+out.value > 0 ? "+" : ""}${out.value} °C`;
+    q<HTMLElement>("[data-o-w0]").textContent = `+${w0.value} °C`;
+    q<HTMLElement>("[data-o-at]").textContent = hm(+at.value);
+    el.style.setProperty("--chill", String(Math.max(0, -+out.value / 30)));
+    const { t, pts } = simulate();
+    const start = +at.value - t;
+    q<HTMLElement>("[data-start]").textContent = hm(start);
+    q<HTMLElement>("[data-dur]").textContent = dur(t);
+    q<HTMLElement>("[data-ax0]").textContent = hm(start);
+    q<HTMLElement>("[data-ax1]").textContent = hm(+at.value);
+    const x = (m: number) => (m / t) * 316 + 2, y = (T: number) => 140 - ((T - 0) / 40) * 125;
+    const d = pts.map(([m, T], i) => `${i ? "L" : "M"}${x(m).toFixed(1)} ${y(T).toFixed(1)}`).join("");
+    q<SVGPathElement & HTMLElement>("[data-line]").setAttribute("d", d);
+    q<SVGPathElement & HTMLElement>("[data-fill]").setAttribute("d", `${d}L318 150L2 150Z`);
+    const dot = q<SVGCircleElement & HTMLElement>("[data-dot]");
+    dot.setAttribute("cx", String(x(t))); dot.setAttribute("cy", String(y(T1)));
+    // firewood: stove output over the burn at ~55 % efficiency, dry birch 4.2 kWh/kg, a log ≈ 1.6 kg
+    const kg = Math.round((P * t / 60) / 0.55 / 4.2);
+    const n = Math.round(kg / 1.6);
+    q<HTMLElement>("[data-kg]").textContent = String(kg);
+    q<HTMLElement>("[data-logs-n]").textContent = String(n);
+    if (n !== shown) {
+      cancelAnimationFrame(raf);
+      const logs = q<HTMLElement>("[data-logs]");
+      logs.innerHTML = Array.from({ length: n }, (_, i) => `<i style="--i:${i};--r:${((i * 37) % 9) - 4}deg"></i>`).join("");
+      shown = n;
+    }
+  }
+  [out, w0, at, cover].forEach((i) => i.addEventListener("input", calc));
+  calc();
+</script>
+
+<style>
+  .ht { display: grid; gap: 34px; }
+  .ht__in { display: grid; gap: 22px; }
+  .ht__row { display: grid; gap: 10px; }
+  .ht__lbl { display: flex; justify-content: space-between; align-items: baseline; }
+  .ht__lbl b { font-weight: 400; font-size: 14px; }
+  .ht__chips { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin: 0 calc(var(--gut) * -1); padding: 0 var(--gut); }
+  .ht__chips::-webkit-scrollbar { display: none; }
+  .ht__chips button { flex: none; display: grid; gap: 1px; text-align: left; padding: 9px 13px; border-radius: 4px; box-shadow: inset 0 0 0 1px var(--ln); font-family: var(--display); font-size: 12.5px; letter-spacing: 0.06em; transition: background 0.3s, color 0.3s; }
+  .ht__chips small { font-size: 9.5px; letter-spacing: 0; opacity: 0.7; }
+  .ht__chips [aria-checked="true"] { background: var(--fg); color: var(--bg); box-shadow: none; }
+
+  /* range: a thermometer tube, frosty on the left and warm on the right */
+  .ht__range { -webkit-appearance: none; appearance: none; width: 100%; height: 34px; background: transparent; }
+  .ht__range::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: linear-gradient(90deg, #7fb2c9, var(--water-2), #f0a066); }
+  .ht__range::-moz-range-track { height: 4px; border-radius: 2px; background: linear-gradient(90deg, #7fb2c9, var(--water-2), #f0a066); }
+  .ht__range::-webkit-slider-thumb { -webkit-appearance: none; width: 26px; height: 26px; margin-top: -11px; border-radius: 50%; background: var(--bg); box-shadow: 0 0 0 1.5px var(--fg), 0 4px 10px rgba(0, 0, 0, 0.18); }
+  .ht__range::-moz-range-thumb { width: 26px; height: 26px; border: 0; border-radius: 50%; background: var(--bg); box-shadow: 0 0 0 1.5px var(--fg), 0 4px 10px rgba(0, 0, 0, 0.18); }
+  .ht__sw { display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 15px; }
+  .ht__sw input { position: absolute; opacity: 0; }
+  .ht__swi { position: relative; width: 46px; height: 26px; border-radius: 13px; box-shadow: inset 0 0 0 1px var(--ln); background: color-mix(in oklab, var(--bg) 80%, var(--fg)); transition: background 0.3s; }
+  .ht__swi::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: var(--bg); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3); transition: transform 0.35s var(--ease); }
+  .ht__sw input:checked + .ht__swi { background: var(--water); }
+  .ht__sw input:checked + .ht__swi::after { transform: translateX(20px); }
+  .ht__sw input:focus-visible + .ht__swi { outline: 2px solid var(--water-2); outline-offset: 3px; }
+
+  .ht__out { position: relative; padding: 24px 20px 20px; border-radius: 8px; background: var(--night); color: #e9f0f2; overflow: hidden; isolation: isolate; }
+  /* frost creeps in from the corners as the slider goes below zero */
+  .ht__out::before { content: ""; position: absolute; inset: 0; z-index: -1; opacity: var(--chill, 0); transition: opacity 0.6s; background: radial-gradient(40% 40% at 0 0, rgba(200, 225, 235, 0.35), transparent 70%), radial-gradient(35% 40% at 100% 100%, rgba(200, 225, 235, 0.25), transparent 70%); }
+  .ht__out .kick { color: #9fb3bc; }
+  .ht__time { font-size: clamp(64px, 19vw, 112px); line-height: 1; letter-spacing: -0.04em; color: var(--ember); margin: 6px 0 8px; }
+  .ht__sub { color: #c9d6dc; }
+  .ht__sub b { font-weight: 500; color: #fff; }
+  .ht__chart { display: block; width: 100%; height: 130px; margin-top: 20px; overflow: visible; }
+  .ht__grid { stroke: rgba(255, 255, 255, 0.08); }
+  .ht__line { fill: none; stroke: url(#htg); stroke-width: 2.5; vector-effect: non-scaling-stroke; }
+  .ht__fill { fill: rgba(95, 183, 195, 0.12); }
+  .ht__dot { fill: var(--ember); }
+  .ht__ax { display: flex; justify-content: space-between; font-size: 10.5px; color: #7f96a0; margin-top: 6px; }
+  .ht__wood { margin-top: 20px; display: grid; gap: 10px; font-size: 12px; color: #c9d6dc; }
+  /* firewood stacked like a woodpile, log by log */
+  .ht__logs { display: flex; flex-wrap: wrap; gap: 4px 3px; max-width: 320px; }
+  .ht__logs :global(i) { width: 26px; height: 9px; border-radius: 5px; background: radial-gradient(circle at 92% 50%, #e8c79a 0 2px, #b9875a 2.5px 3px, transparent 3.5px), linear-gradient(180deg, #8a5a36, #6d4327); transform: rotate(var(--r)); animation: log 0.5s var(--ease) both; animation-delay: calc(var(--i) * 0.03s); }
+  @keyframes log { from { opacity: 0; transform: translateY(-14px) rotate(var(--r)); } }
+  .ht__fine { margin-top: 16px; font-size: 11.5px; line-height: 1.5; color: #7f96a0; }
+  @media (min-width: 1000px) { .ht { grid-template-columns: 1fr 1.05fr; gap: 64px; align-items: start; } .ht__chips { flex-wrap: wrap; overflow: visible; margin: 0; padding: 0; } .ht__out { padding: 34px; } }
+</style>

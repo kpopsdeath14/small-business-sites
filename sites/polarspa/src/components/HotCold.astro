@@ -1,0 +1,112 @@
+---
+/**
+ * «Горячая или холодная»: a big tub from above. A sauna-panel rocker switches it between 39 °C with
+ * steam and 4 °C with ice; touch the water and rings spread from your finger.
+ */
+import { tubSVG } from "../scripts/tub";
+import { tubs, rub, url } from "../lib/site";
+const hot = tubSVG({ shape: "round", w: 200, l: 200, seats: 0, heat: "stove", steam: true, id: "hc-h" }, { pad: 8 });
+const cold = tubSVG({ shape: "round", w: 200, l: 200, seats: 0, heat: "cold", ice: true, id: "hc-c" }, { pad: 8 });
+const pickHot = tubs.filter((t) => t.heat === "stove").slice(0, 3);
+const pickCold = tubs.filter((t) => t.heat === "cold" || t.heat === "bath").slice(0, 3);
+---
+<div class="hc" data-hc data-mode="hot">
+  <div class="hc__pool" data-pool>
+    <div class="hc__view hc__view--hot" set:html={hot} />
+    <div class="hc__view hc__view--cold" set:html={cold} />
+    <svg class="hc__rings" data-rings aria-hidden="true"></svg>
+    <p class="hc__hint mono">Коснитесь воды</p>
+  </div>
+
+  <div class="hc__side">
+    <!-- the rocker switch of a sauna control panel -->
+    <button class="rk" type="button" role="switch" aria-checked="true" aria-label="Горячая или холодная" data-rk>
+      <span class="rk__lbl rk__lbl--h">Горячая</span>
+      <span class="rk__body"><span class="rk__key"></span></span>
+      <span class="rk__lbl rk__lbl--c">Холодная</span>
+    </button>
+    <p class="hc__deg mono"><span data-deg>39</span><small>°C</small></p>
+    <div class="hc__txt hc__txt--hot">
+      <p class="h3">Горячая — <em>с печью</em></p>
+      <p class="read">Печь стоит прямо у чаши: дрова, полтора-два часа — и 38–40 °C при любом морозе. Снег падает на плечи и тает, не долетев до воды.</p>
+      <ul class="hc__list">{pickHot.map((t) => <li><a href={url(`kupel/?m=${t.id}`)}><span>{t.name}</span><span class="mono">{rub(t.price)}</span></a></li>)}</ul>
+    </div>
+    <div class="hc__txt hc__txt--cold">
+      <p class="h3">Холодная — <em>после парной</em></p>
+      <p class="read">4–10 °C: короткое погружение сразу из бани. Контраст разгоняет кровь — после него снова хочется в жар.</p>
+      <ul class="hc__list">{pickCold.map((t) => <li><a href={url(`kupel/?m=${t.id}`)}><span>{t.name}</span><span class="mono">{rub(t.price)}</span></a></li>)}</ul>
+    </div>
+  </div>
+</div>
+
+<script>
+  const el = document.querySelector<HTMLElement>("[data-hc]")!;
+  const rk = el.querySelector<HTMLButtonElement>("[data-rk]")!;
+  const deg = el.querySelector("[data-deg]")!;
+  let cur = 39, raf = 0;
+  const set = (hot: boolean) => {
+    el.dataset.mode = hot ? "hot" : "cold";
+    rk.setAttribute("aria-checked", String(hot));
+    const to = hot ? 39 : 4, from = cur, t0 = performance.now();
+    cancelAnimationFrame(raf);
+    const run = (t: number) => { const k = Math.min(1, (t - t0) / 1100), e = 1 - Math.pow(1 - k, 3); cur = from + (to - from) * e; deg.textContent = String(Math.round(cur)); if (k < 1) raf = requestAnimationFrame(run); };
+    raf = requestAnimationFrame(run);
+    if (typeof navigator.vibrate === "function") try { navigator.vibrate(15); } catch {}
+  };
+  rk.addEventListener("click", () => set(el.dataset.mode !== "hot"));
+
+  // touch the water: rings spread from the finger and fade
+  const pool = el.querySelector<HTMLElement>("[data-pool]")!;
+  const rings = el.querySelector<SVGSVGElement>("[data-rings]")!;
+  let last = 0;
+  const ring = (e: PointerEvent) => {
+    const now = performance.now(); if (now - last < 90) return; last = now;
+    const r = pool.getBoundingClientRect();
+    const x = e.clientX - r.left, y = e.clientY - r.top;
+    for (let i = 0; i < 3; i++) {
+      const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      c.setAttribute("cx", String(x)); c.setAttribute("cy", String(y)); c.setAttribute("r", "4");
+      rings.appendChild(c);
+      c.animate([{ r: 4, opacity: 0.9, strokeWidth: 2.4 }, { r: 70 + i * 26, opacity: 0, strokeWidth: 0.6 }] as Keyframe[], { duration: 1500 + i * 300, delay: i * 140, easing: "cubic-bezier(.2,.8,.3,1)", fill: "forwards" }).onfinish = () => c.remove();
+    }
+    pool.classList.add("touched");
+  };
+  pool.addEventListener("pointerdown", ring);
+  pool.addEventListener("pointermove", (e) => { if (e.buttons || e.pointerType === "mouse") ring(e); });
+</script>
+
+<style>
+  .hc { display: grid; gap: 26px; }
+  .hc__pool { position: relative; aspect-ratio: 1.05; touch-action: pan-y; cursor: crosshair; }
+  .hc__view { position: absolute; inset: 0; transition: opacity 0.9s var(--ease); }
+  .hc__view--cold { opacity: 0; }
+  [data-mode="cold"] .hc__view--cold { opacity: 1; }
+  [data-mode="cold"] .hc__view--hot { opacity: 0; }
+  .hc__view :global(.tv__water) { fill: url(#wtrhc-h); }
+  .hc__view--cold :global(.tv__water) { filter: saturate(0.7) brightness(1.08) hue-rotate(10deg); }
+  .hc__rings { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+  .hc__rings :global(circle) { fill: none; stroke: rgba(255, 255, 255, 0.9); }
+  .hc__hint { position: absolute; left: 50%; bottom: 4%; transform: translateX(-50%); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--fg-2); transition: opacity 0.6s; }
+  .touched .hc__hint { opacity: 0; }
+  .hc__side { display: grid; gap: 18px; align-content: start; }
+  /* rocker switch */
+  .rk { display: inline-flex; align-items: center; gap: 14px; justify-self: start; font-family: var(--display); font-size: 12.5px; letter-spacing: 0.14em; text-transform: uppercase; }
+  .rk__body { position: relative; width: 74px; height: 40px; border-radius: 6px; background: #1d252b; box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255, 255, 255, 0.2); }
+  .rk__key { position: absolute; top: 4px; bottom: 4px; left: 4px; width: 33px; border-radius: 4px; background: linear-gradient(180deg, #f39a5a, #c96a2c); box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.4); transition: transform 0.35s var(--ease), background 0.35s; }
+  [data-mode="cold"] .rk__key { transform: translateX(33px); background: linear-gradient(180deg, #9fd3e4, #4f97ae); }
+  .rk__lbl { opacity: 0.45; transition: opacity 0.3s; }
+  [data-mode="hot"] .rk__lbl--h, [data-mode="cold"] .rk__lbl--c { opacity: 1; }
+  .hc__deg { font-size: clamp(72px, 20vw, 140px); line-height: 0.9; letter-spacing: -0.04em; color: #e0874a; transition: color 0.9s; }
+  .hc__deg small { font-size: 0.32em; vertical-align: top; margin-left: 6px; letter-spacing: 0; }
+  [data-mode="cold"] .hc__deg { color: #4f97ae; }
+  .hc__txt { display: grid; gap: 12px; }
+  .hc__txt--cold { display: none; }
+  [data-mode="cold"] .hc__txt--cold { display: grid; animation: txt 0.6s var(--ease); }
+  [data-mode="cold"] .hc__txt--hot { display: none; }
+  [data-mode="hot"] .hc__txt--hot { animation: txt 0.6s var(--ease); }
+  @keyframes txt { from { opacity: 0; transform: translateY(8px); } }
+  .hc__list { display: grid; border-top: 1px solid var(--ln); }
+  .hc__list a { display: flex; justify-content: space-between; gap: 10px; padding: 11px 0; border-bottom: 1px solid var(--ln); font-size: 15px; }
+  .hc__list .mono { font-size: 12.5px; color: var(--fg-2); }
+  @media (min-width: 1000px) { .hc { grid-template-columns: 1fr 1fr; gap: 72px; align-items: center; } }
+</style>

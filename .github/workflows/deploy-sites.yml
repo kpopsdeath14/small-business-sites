@@ -66,6 +66,11 @@ env:
     bacchus:/bacchus
     komandor:/komandor
     cips:/cips
+    polarspa:/polarspa
+    its-sauna:/its-sauna
+    yasen:/yasen
+    kaliforniya:/kaliforniya
+    meridian:/meridian
 
 jobs:
   build:

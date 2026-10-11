@@ -1,0 +1,124 @@
+---
+import "@fontsource/tenor-sans/400.css";
+import "@fontsource-variable/commissioner";
+import "@fontsource/martian-mono/300.css";
+import "@fontsource/martian-mono/400.css";
+import "../styles/global.css";
+import { url, contacts, BASE, img } from "../lib/site";
+
+interface Props { title?: string; description?: string; nav?: string }
+const {
+  title = "POLARSPA — купели, спа-бассейны и модульные бани",
+  description = "Композитные купели POLARSPA с печью и без, гидромассажные спа-бассейны и модульные бани от производителя. Гарантия на чашу 10 лет, бесплатная доставка по России.",
+  nav = "",
+} = Astro.props;
+const links = [
+  ["kupeli", "Купели", url("#kupeli")],
+  ["calc", "Нагрев", url("#nagrev")],
+  ["bani", "Бани", url("#bani")],
+  ["kit", "Собрать купель", url("kupel/")],
+  ["contact", "Тест-драйв", url("#test")],
+];
+---
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#f3f5f6" />
+    <link rel="icon" type="image/svg+xml" href={`${BASE}/favicon.svg`} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(img("og", 1200), Astro.site).href} />
+    <script is:inline>document.documentElement.classList.add("js");</script>
+    <slot name="head" />
+  </head>
+  <body>
+    <header class="hdr">
+      <div class="wrap hdr__in">
+        <a href={url()} class="brand" aria-label="POLARSPA — на главную">
+          <!-- a tub seen from above, with a north star reflected in the water -->
+          <svg viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="12" fill="none" stroke="currentColor" stroke-width="1.6" /><circle cx="13" cy="13" r="8.6" fill="#2f8c9c" /><path d="M13 7.5l1 4.5 4.5 1-4.5 1-1 4.5-1-4.5-4.5-1 4.5-1z" fill="#f3f5f6" /></svg>
+          <b>POLARSPA</b>
+        </a>
+        <div class="temp" aria-label="Температура воды">
+          <span class="temp__tube" aria-hidden="true"><i data-temp-bar></i></span>
+          <b data-temp>4,0 °C</b>
+        </div>
+        <nav class="nav" aria-label="Основное меню">
+          {links.map(([id, label, href]) => <a href={href} aria-current={nav === id ? "page" : undefined}>{label}</a>)}
+        </nav>
+        <div class="hdr__r">
+          <a class="hbtn" href={url("kupel/")} aria-label="Ваша купель">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><ellipse cx="12" cy="9" rx="9" ry="3.4" /><path d="M3 9v6c0 1.9 4 3.4 9 3.4s9-1.5 9-3.4V9" /><path d="M7 4.5c0-1 1-1 1-2M12 4.5c0-1 1-1 1-2M17 4.5c0-1 1-1 1-2" /></svg>
+            <span class="cnt" data-cnt></span>
+          </a>
+          <button class="hbtn menu-btn" type="button" aria-label="Меню" aria-expanded="false" data-menu>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M4 8h16M4 16h16" /></svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="menu" id="menu" aria-hidden="true">
+      <div class="menu__top">
+        <span class="brand"><b>POLARSPA</b></span>
+        <button class="hbtn" type="button" aria-label="Закрыть" data-menu-close><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" /></svg></button>
+      </div>
+      <nav class="menu__nav" aria-label="Меню">
+        {links.map(([, label, href], i) => <a href={href} style={`--i:${i}`}>{label}<small>{[8, 16, 24, 32, 39][i]} °C</small></a>)}
+      </nav>
+      <div class="menu__foot">
+        <a href={contacts.phoneHref}>{contacts.phone}</a>
+        <span>{contacts.hours} · бесплатно по России</span>
+      </div>
+    </div>
+
+    <slot />
+
+    <footer class="ftr">
+      <div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div class="stars" aria-hidden="true"></div>
+      <div class="wrap">
+        <p class="ftr__big">Купель под<br />северным сиянием</p>
+        <div class="ftr__grid">
+          <div class="ftr__col">
+            <p class="kick">Производитель</p>
+            <span>Своё производство в Столбцах, Беларусь. Гелькоут BUFA (Германия), гарантия на чашу 10 лет.</span>
+          </div>
+          <div class="ftr__col">
+            <p class="kick">Каталог</p>
+            <a href={url("#kupeli")}>Купели</a>
+            <a href={url("#bani")}>Модульные бани</a>
+            <a href={url("kupel/")}>Собрать купель</a>
+          </div>
+          <div class="ftr__col">
+            <p class="kick">Связь</p>
+            <a href={contacts.phoneHref}>{contacts.phone}</a>
+            <a href={`mailto:${contacts.email}`}>{contacts.email}</a>
+            <a href={contacts.tg} target="_blank" rel="noopener">Telegram</a>
+            <a href={contacts.wa} target="_blank" rel="noopener">WhatsApp</a>
+          </div>
+          <div class="ftr__col">
+            <p class="kick">Часы</p>
+            <span>{contacts.hours}</span>
+            <span>Доставка по всей России</span>
+          </div>
+        </div>
+        <div class="ftr__base"><span>© {new Date().getFullYear()} {contacts.company}</span><span>ИНН {contacts.inn}</span></div>
+      </div>
+    </footer>
+
+    <div class="note" role="status" aria-live="polite" data-note>
+      <div><p class="note__t" data-note-t></p><p class="note__s" data-note-s></p></div>
+      <a class="btn btn--water" href={url("kupel/")} style="min-height:42px;padding:0 16px">Купель</a>
+    </div>
+
+    <script>
+      import "../scripts/app.ts";
+    </script>
+  </body>
+</html>

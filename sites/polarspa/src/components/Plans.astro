@@ -1,0 +1,148 @@
+---
+/**
+ * The catalogue as a sheet of plans: every tub drawn from above on one common scale,
+ * with its people sitting in it — so a 160 and a 220 really look different.
+ * Tap a plan and it lifts into a card with the real render and the price.
+ */
+import { tubSVG } from "../scripts/tub";
+import { tubs, rub, url, pimg, plural } from "../lib/site";
+const S = 360; // cm of drawing width that equals 100% of a card
+const groups = [
+  ["all", "Все"],
+  ["stove", "С печью"],
+  ["cold", "Холодные"],
+  ["bath", "Для бани"],
+  ["spa", "Спа-бассейны"],
+] as const;
+const render: Record<string, string> = { elite: "elite-pine", quattro: "quattro", comfort: "comfort", corner: "corner", standart: "light", spa: "spa155" };
+const items = tubs.map((t) => {
+  const svg = tubSVG({ shape: t.shape, w: t.w, l: t.l, seats: t.seats[1], heat: t.heat, people: true, led: t.heat === "spa", aero: t.heat === "spa", id: `pl-${t.id}` }, { pad: 30, label: true });
+  const vw = t.w + 60 + (t.heat === "stove" ? 70 : 0);
+  return { t, svg, k: Math.min(1, vw / S) };
+});
+---
+<div class="pl" data-pl>
+  <div class="pl__bar" role="tablist" aria-label="Тип купели">
+    {groups.map(([id, label], i) => <button type="button" role="tab" aria-selected={i === 0 ? "true" : "false"} data-g={id}>{label}</button>)}
+  </div>
+  <p class="pl__scale mono"><i></i> 1 м · все купели в одном масштабе</p>
+
+  <ul class="pl__grid">
+    {items.map(({ t, svg, k }, i) => (
+      <li class="pl__it" data-h={t.heat} data-in style={`--d:${(i % 4) * 0.05}s`}>
+        <button type="button" class="pl__btn" data-open={t.id} aria-label={`${t.name}: подробнее`}>
+          <span class="pl__plan" style={`--k:${k}`} set:html={svg} />
+          <span class="pl__name">{t.name}</span>
+          <span class="pl__meta mono">{t.seats[0] === t.seats[1] ? t.seats[0] : `${t.seats[0]}–${t.seats[1]}`} чел · {t.est ? "≈" : ""}{t.litres} л</span>
+          <span class="pl__price mono">{t.old && <s>{rub(t.old)}</s>}{rub(t.price)}</span>
+        </button>
+      </li>
+    ))}
+  </ul>
+
+  <!-- the lifted card -->
+  <div class="pc" data-pc aria-hidden="true">
+    <div class="pc__veil" data-close></div>
+    <div class="pc__card" role="dialog" aria-modal="true" aria-labelledby="pc-n">
+      <button class="pc__x" type="button" aria-label="Закрыть" data-close><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5 5l14 14M19 5L5 19" /></svg></button>
+      <div class="pc__img"><img data-pc-img alt="" width="480" height="480" /></div>
+      <div class="pc__body">
+        <p class="kick" data-pc-line></p>
+        <p class="h3" id="pc-n" data-pc-name></p>
+        <p class="read" data-pc-note></p>
+        <dl class="pc__dl mono" data-pc-dl></dl>
+        <p class="pc__price mono" data-pc-price></p>
+        <a class="btn btn--water btn--block" data-pc-go href="#">Собрать эту купель</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script define:vars={{ data: tubs.map((t) => ({ ...t, src: t.img ? render[t.img] : "elite-pine" })), base: url(""), pimgBase: pimg("x", 960).replace(/x-960\.webp$/, "") }}>
+  const el = document.querySelector("[data-pl]");
+  const tabs = [...el.querySelectorAll("[data-g]")];
+  tabs.forEach((b) => b.addEventListener("click", () => {
+    tabs.forEach((x) => x.setAttribute("aria-selected", String(x === b)));
+    const g = b.dataset.g;
+    el.querySelectorAll(".pl__it").forEach((li) => {
+      const h = li.dataset.h, show = g === "all" || h === g;
+      li.classList.toggle("off", !show);
+    });
+  }));
+
+  const pc = el.querySelector("[data-pc]");
+  const $ = (s) => pc.querySelector(s);
+  const fmt = (n) => Math.round(n).toLocaleString("ru-RU") + " ₽";
+  const heat = { stove: "Дровяная печь", cold: "Без подогрева", spa: "Электроподогрев", bath: "Для бани" };
+  let last = null;
+  const open = (id, from) => {
+    const t = data.find((x) => x.id === id);
+    last = from;
+    $("[data-pc-img]").src = `${pimgBase}${t.src}-960.webp`;
+    $("[data-pc-img]").alt = t.name;
+    $("[data-pc-line]").textContent = t.line;
+    $("[data-pc-name]").textContent = t.name;
+    $("[data-pc-note]").textContent = t.note;
+    const d = t.shape === "round" ? `Ø ${t.w} см` : `${t.w} × ${t.l} см`;
+    $("[data-pc-dl]").innerHTML = [["Размер", d], ["Высота", `${t.h} см`], ["Мест", t.seats[0] === t.seats[1] ? t.seats[0] : `${t.seats[0]}–${t.seats[1]}`], ["Объём", `${t.est ? "≈ " : ""}${t.litres} л`], ["Нагрев", heat[t.heat]]].map(([a, b]) => `<div><dt>${a}</dt><dd>${b}</dd></div>`).join("");
+    $("[data-pc-price]").innerHTML = (t.old ? `<s>${fmt(t.old)}</s> ` : "") + fmt(t.price);
+    $("[data-pc-go]").href = `${base}kupel/?m=${t.id}`;
+    pc.classList.add("on"); pc.setAttribute("aria-hidden", "false");
+    document.documentElement.classList.add("pc-open");
+    $(".pc__x").focus({ preventScroll: true });
+  };
+  const close = () => { pc.classList.remove("on"); pc.setAttribute("aria-hidden", "true"); document.documentElement.classList.remove("pc-open"); last?.focus({ preventScroll: true }); };
+  el.querySelectorAll("[data-open]").forEach((b) => b.addEventListener("click", () => open(b.dataset.open, b)));
+  pc.querySelectorAll("[data-close]").forEach((b) => b.addEventListener("click", close));
+  addEventListener("keydown", (e) => { if (e.key === "Escape" && pc.classList.contains("on")) close(); });
+</script>
+
+<style>
+  .pl__bar { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin: 0 calc(var(--gut) * -1); padding: 0 var(--gut); }
+  .pl__bar::-webkit-scrollbar { display: none; }
+  .pl__bar button { flex: none; min-height: 40px; padding: 0 16px; border-radius: 4px; box-shadow: inset 0 0 0 1px var(--ln); font-family: var(--display); font-size: 12.5px; letter-spacing: 0.1em; text-transform: uppercase; transition: background 0.3s, color 0.3s, box-shadow 0.3s; }
+  .pl__bar [aria-selected="true"] { background: var(--fg); color: var(--bg); box-shadow: none; }
+  .pl__scale { display: flex; align-items: center; gap: 10px; margin: 18px 0 8px; font-size: 10.5px; color: var(--fg-2); }
+  /* 100 cm of drawing at the card's scale: a card is 360 cm wide */
+  .pl__scale i { display: block; width: calc((100vw - var(--gut) * 2 - 12px) / 2 * 100 / 360); max-width: 60px; height: 6px; border: 1px solid currentColor; border-top: 0; }
+  .pl__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .pl__it { transition: opacity 0.4s, transform 0.5s var(--ease); }
+  .pl__it.off { display: none; }
+  .pl__btn { width: 100%; display: grid; gap: 3px; text-align: left; padding: 10px 10px 14px; border-radius: 6px; background: color-mix(in oklab, var(--bg) 88%, #fff); box-shadow: inset 0 0 0 1px var(--ln); transition: transform 0.4s var(--ease), box-shadow 0.4s; }
+  @media (hover: hover) { .pl__btn:hover { transform: translateY(-3px); box-shadow: inset 0 0 0 1px var(--water), 0 14px 30px rgba(11, 22, 32, 0.12); } }
+  .pl__plan { display: grid; place-items: center; aspect-ratio: 1; margin-bottom: 6px; color: var(--fg-2); }
+  .pl__plan :global(svg) { width: calc(var(--k) * 100%); height: auto; }
+  .pl__name { font-family: var(--display); font-size: 14px; letter-spacing: 0.06em; text-transform: uppercase; line-height: 1.25; }
+  .pl__meta { font-size: 10.5px; color: var(--fg-2); }
+  .pl__price { font-size: 13px; margin-top: 4px; }
+  .pl__price s, .pc__price s { color: var(--fg-2); margin-right: 8px; font-size: 0.85em; }
+
+  .pc { position: fixed; inset: 0; z-index: 140; pointer-events: none; }
+  .pc.on { pointer-events: auto; }
+  .pc__veil { position: absolute; inset: 0; background: rgba(7, 16, 25, 0.5); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); opacity: 0; transition: opacity 0.5s; }
+  .pc.on .pc__veil { opacity: 1; }
+  .pc__card { position: absolute; left: 0; right: 0; bottom: 0; max-height: 92svh; overflow-y: auto; overscroll-behavior: contain; background: var(--snow); color: var(--ink); border-radius: 14px 14px 0 0; padding: 18px var(--gut) calc(22px + env(safe-area-inset-bottom)); transform: translateY(105%); transition: transform 0.6s var(--ease); --fg-2: var(--ink-2); --ln: var(--line); }
+  .pc.on .pc__card { transform: none; }
+  .pc__x { position: absolute; top: 10px; right: 10px; width: 42px; height: 42px; display: grid; place-content: center; z-index: 2; }
+  .pc__x svg { width: 20px; height: 20px; }
+  .pc__img { display: grid; place-items: center; height: 34svh; max-height: 300px; background: radial-gradient(60% 55% at 50% 60%, #fff, var(--frost)); border-radius: 8px; }
+  .pc__img img { max-height: 92%; width: auto; object-fit: contain; }
+  .pc__body { display: grid; gap: 12px; margin-top: 18px; }
+  .pc__dl { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; font-size: 12px; }
+  .pc__dl :global(dt) { color: var(--ink-2); font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; }
+  .pc__price { font-size: 22px; }
+  :global(html.pc-open) { overflow: hidden; }
+
+  @media (min-width: 700px) {
+    .pl__grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .pl__scale i { width: calc((min(100vw, var(--max)) - var(--gut) * 2 - 32px) / 3 * 100 / 360); max-width: 90px; }
+  }
+  @media (min-width: 1000px) {
+    .pl__grid { grid-template-columns: repeat(4, 1fr); }
+    .pl__scale i { width: calc((min(100vw, var(--max)) - var(--gut) * 2 - 48px) / 4 * 100 / 360); }
+    .pc__card { left: 50%; right: auto; top: 50%; bottom: auto; width: min(880px, 92vw); border-radius: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 28px; padding: 28px; transform: translate(-50%, -46%) scale(0.96); opacity: 0; transition: transform 0.6s var(--ease), opacity 0.4s; }
+    .pc.on .pc__card { transform: translate(-50%, -50%); opacity: 1; }
+    .pc__img { height: auto; max-height: none; min-height: 380px; }
+    .pc__body { margin-top: 0; align-content: center; }
+  }
+</style>

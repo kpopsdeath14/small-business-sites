@@ -1,0 +1,228 @@
+---
+import Base from "../layouts/Base.astro";
+import Intro from "../components/Intro.astro";
+import HotCold from "../components/HotCold.astro";
+import Plans from "../components/Plans.astro";
+import Heat from "../components/Heat.astro";
+import Baths from "../components/Baths.astro";
+import Evening from "../components/Evening.astro";
+import { img, url, contacts, pimg } from "../lib/site";
+// the dial around the hero photo: 0–40 °C, a tick per degree
+const ticks = Array.from({ length: 41 }, (_, i) => i);
+const A0 = -220, A1 = 40; // degrees of arc for 0 and 40 °C
+const ang = (t: number) => A0 + ((A1 - A0) * t) / 40;
+const lx = (t: number) => (Math.cos((ang(t) * Math.PI) / 180) * 84).toFixed(1);
+const ly = (t: number) => (Math.sin((ang(t) * Math.PI) / 180) * 84 + 2).toFixed(1);
+---
+<Base>
+  <Intro />
+  <main>
+    <!-- HERO: a round photo of a tub, read like a thermometer dial -->
+    <section class="hero wrap" data-sky="day">
+      <div class="hero__dial" data-dial>
+        <div class="hero__ph">
+          <img src={img("couple", 600)} srcset={`${img("couple", 600)} 600w, ${img("couple", 1200)} 900w`} sizes="(min-width: 1000px) 520px, 84vw" alt="Пара в круглой купели POLARSPA на террасе" width="600" height="600" fetchpriority="high" />
+        </div>
+        <svg class="hero__ring" viewBox="-110 -110 220 220" aria-hidden="true">
+          {ticks.map((t) => <path d={`M0 -102V${t % 10 === 0 ? -93 : t % 5 === 0 ? -96 : -98.5}`} transform={`rotate(${ang(t) + 90})`} class:list={{ big: t % 10 === 0 }} />)}
+          {[0, 10, 20, 30, 40].map((t) => <text x={lx(t)} y={ly(t)}>{t}</text>)}
+          <g class="hero__ndl" data-ndl><path d="M0 -106V-90" /><circle cy="-107" r="3" /></g>
+        </svg>
+        <p class="hero__deg mono"><span data-hdeg>4</span><small>°C</small></p>
+      </div>
+
+      <div class="hero__head">
+        <p class="kick" data-in><b>POLARSPA</b> · купели с печью</p>
+        <h1 class="h1" data-in style="--d:.08s">Горячая вода посреди <em>зимы</em></h1>
+      </div>
+      <div class="hero__txt">
+        <p class="read" data-in style="--d:.16s">Композитная чаша, обшивка из термодерева и печь из нержавейки на 35 кВт. Пара часов — и 38 °C при любом морозе.</p>
+        <div class="hero__cta" data-in style="--d:.24s">
+          <a class="btn btn--water" href={url("kupel/")}>Собрать купель</a>
+          <a class="btn btn--line" href="#nagrev">Во сколько затопить</a>
+        </div>
+        <ul class="hero__facts mono" data-in style="--d:.32s">
+          <li><b>10 лет</b>гарантия на чашу</li>
+          <li><b>0 ₽</b>доставка до терминала ТК</li>
+          <li><b>3</b>шоурума с купелями</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- HOT / COLD -->
+    <section class="sec wrap" id="kupeli">
+      <div class="sh" data-in>
+        <p class="sh__deg">08 °C</p>
+        <h2 class="h2">Горячая или <em>ледяная</em></h2>
+      </div>
+      <HotCold />
+    </section>
+
+    <!-- PLANS -->
+    <section class="sec wrap">
+      <div class="sh" data-in>
+        <p class="sh__deg">14 °C</p>
+        <h2 class="h2">Вид <em>сверху</em></h2>
+        <p class="read">Девятнадцать моделей — от одноместной купели для парной до спа-бассейна на шестерых. Нарисовали каждую в одном масштабе и усадили в неё людей: так проще понять, сколько места нужно на участке.</p>
+      </div>
+      <Plans />
+    </section>
+
+    <!-- HEAT -->
+    <section class="sec wrap" id="nagrev">
+      <div class="sh" data-in>
+        <p class="sh__deg">21 °C</p>
+        <h2 class="h2">Во сколько <em>затопить</em></h2>
+        <p class="read">Скажите, когда хотите окунуться, — посчитаем, когда разжечь печь и сколько дров положить рядом.</p>
+      </div>
+      <Heat />
+    </section>
+
+    <!-- CONFIGURATOR TEASER: the real render, three claddings -->
+    <section class="sec wrap kt">
+      <div class="kt__img" data-in>
+        <img src={pimg("elite-pine", 960)} alt="Купель ELITE в светлой термососне" width="719" height="795" loading="lazy" />
+        <img src={pimg("elite-ash", 960)} alt="Купель ELITE в тёмной обшивке" width="821" height="781" loading="lazy" class="kt__b" />
+      </div>
+      <div class="kt__txt">
+        <div class="sh" data-in>
+          <p class="sh__deg">27 °C</p>
+          <h2 class="h2">Соберите <em>свою</em></h2>
+          <p class="read">Шесть обшивок из термососны и термоберёзы, шесть цветов чаши, подсветка, аэромассаж, термокрышка. Купель на экране меняется вместе с вами — и сверху, и на фото.</p>
+        </div>
+        <a class="btn btn--water" href={url("kupel/")} data-in>Открыть конфигуратор</a>
+      </div>
+    </section>
+
+    <!-- BATHS -->
+    <section class="sec wrap" id="bani" data-sky="dusk">
+      <div class="sh" data-in>
+        <p class="sh__deg">31 °C</p>
+        <h2 class="h2">Баня-<em>модуль</em></h2>
+        <p class="read">Привозят готовой: парная, терраса, место под купель. Шесть длин — от полутора до восьми метров.</p>
+      </div>
+      <Baths />
+    </section>
+
+    <!-- EVENING -->
+    <section class="sec wrap" data-sky="night">
+      <div class="sh" data-in>
+        <p class="sh__deg">36 °C</p>
+        <h2 class="h2">Один <em>вечер</em></h2>
+      </div>
+      <Evening />
+    </section>
+
+    <!-- TEST-DRIVE -->
+    <section class="sec wrap td" id="test">
+      <div class="sh" data-in>
+        <p class="sh__deg">38 °C</p>
+        <h2 class="h2">Тест-<em>драйв</em></h2>
+        <p class="read">Купели стоят в шоурумах — можно сесть, потрогать чашу и посмотреть обшивку вживую. Купальник берите с собой: так честнее.</p>
+      </div>
+      <ul class="td__list">
+        {contacts.showrooms.map((s, i) => (
+          <li data-in style={`--d:${i * 0.06}s`}>
+            <p class="mono td__c">{s.city}</p>
+            <p class="h3">{s.place}</p>
+            <p class="td__a">{s.addr}</p>
+          </li>
+        ))}
+      </ul>
+      <form class="td__f" data-td data-in>
+        <label class="field"><span>Имя</span><input class="input" name="n" autocomplete="name" required /></label>
+        <label class="field"><span>Телефон</span><input class="input" name="p" type="tel" autocomplete="tel" inputmode="tel" placeholder="+7" required /></label>
+        <label class="field"><span>Шоурум</span>
+          <select class="input" name="s">{contacts.showrooms.map((s) => <option>{s.city}, {s.place}</option>)}</select>
+        </label>
+        <button class="btn btn--water btn--block" type="submit">Записаться в WhatsApp</button>
+        <p class="td__or">или позвоните: <a href={contacts.phoneHref}>{contacts.phone}</a>, {contacts.hours}</p>
+      </form>
+    </section>
+  </main>
+</Base>
+
+<script>
+  import { contacts } from "../lib/site";
+  // the dial: after the intro (or straight away) the needle swings from 4 to 39 °C
+  const ndl = document.querySelector<SVGGElement>("[data-ndl]")!;
+  const deg = document.querySelector<HTMLElement>("[data-hdeg]")!;
+  const ang = (t: number) => -220 + (260 * t) / 40 + 90;
+  ndl.style.transform = `rotate(${ang(4)}deg)`;
+  const swing = () => {
+    const t0 = performance.now() + 200;
+    const run = (now: number) => {
+      const k = Math.max(0, Math.min(1, (now - t0) / 2000)), e = 1 - Math.pow(1 - k, 4);
+      const v = 4 + 35 * e;
+      ndl.style.transform = `rotate(${ang(v)}deg)`;
+      deg.textContent = String(Math.round(v));
+      if (k < 1) requestAnimationFrame(run);
+    };
+    requestAnimationFrame(run);
+  };
+  if (document.documentElement.classList.contains("intro")) document.addEventListener("intro:done", swing, { once: true });
+  else swing();
+
+  // test-drive: a ready message in WhatsApp
+  const f = document.querySelector<HTMLFormElement>("[data-td]")!;
+  f.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const d = new FormData(f);
+    const text = `Здравствуйте! Хочу записаться на тест-драйв купели.\nШоурум: ${d.get("s")}\nИмя: ${d.get("n")}\nТелефон: ${d.get("p")}`;
+    window.open(`https://wa.me/${contacts.waNum}?text=${encodeURIComponent(text)}`, "_blank", "noopener");
+  });
+</script>
+
+<style>
+  .sec { padding-top: clamp(90px, 16vw, 170px); }
+  main { padding-bottom: clamp(90px, 14vw, 160px); }
+
+  .hero { padding-top: calc(var(--hdr) + env(safe-area-inset-top) + 28px); display: grid; gap: 24px; }
+  .hero__head { display: grid; gap: 14px; order: -1; }
+  .hero__dial { position: relative; width: min(86%, 420px); aspect-ratio: 1; justify-self: center; }
+  .hero__ph { position: absolute; inset: 15%; border-radius: 50%; overflow: hidden; box-shadow: 0 30px 60px -20px rgba(20, 50, 64, 0.45); }
+  .hero__ph img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.06); animation: breathe 14s ease-in-out infinite alternate; }
+  @keyframes breathe { to { transform: scale(1.12) translateY(-1.5%); } }
+  .hero__ring { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .hero__ring path { stroke: var(--fg-2); stroke-width: 0.7; }
+  .hero__ring path.big { stroke: var(--fg); stroke-width: 1.1; }
+  .hero__ring text { font-family: var(--mono); font-size: 6px; fill: var(--fg-2); text-anchor: middle; }
+  .hero__ndl path { stroke: var(--ember); stroke-width: 2.2; stroke-linecap: round; }
+  .hero__ndl circle { fill: var(--ember); }
+  .hero__ndl { transform-origin: 0 0; }
+  .hero__deg { position: absolute; right: 2%; bottom: 3%; font-size: 30px; line-height: 1; color: var(--ember); }
+  .hero__deg small { font-size: 12px; margin-left: 3px; vertical-align: top; }
+  .hero__txt { display: grid; gap: 18px; }
+  .hero__cta { display: flex; flex-wrap: wrap; gap: 10px; }
+  .hero__cta .btn { flex: 1 1 200px; }
+  .hero__facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; padding-top: 16px; border-top: 1px solid var(--ln); font-size: 10px; line-height: 1.4; color: var(--fg-2); }
+  .hero__facts b { display: block; font-weight: 400; font-size: 18px; color: var(--fg); margin-bottom: 4px; }
+
+  .kt { display: grid; gap: 30px; }
+  .kt__img { position: relative; aspect-ratio: 1; max-width: 560px; }
+  .kt__img img { position: absolute; bottom: 0; width: 54%; height: auto; filter: drop-shadow(0 24px 24px rgba(11, 22, 32, 0.25)); }
+  .kt__img img:first-child { left: 0; z-index: 2; }
+  .kt__img .kt__b { right: 0; width: 52%; bottom: 10%; }
+  .kt__txt { display: grid; gap: 4px; align-content: center; }
+  .kt__txt .btn { justify-self: start; }
+
+  .td__list { display: grid; gap: 0; border-top: 1px solid var(--ln); margin-bottom: 34px; }
+  .td__list li { display: grid; gap: 4px; padding: 20px 0; border-bottom: 1px solid var(--ln); }
+  .td__c { font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--water-2); }
+  .td__a { color: var(--fg-2); }
+  .td__f { display: grid; gap: 14px; max-width: 520px; }
+  .td__or { font-size: 14px; color: var(--fg-2); }
+  .td__or a { color: var(--fg); border-bottom: 1px solid var(--ln); }
+  .td select.input { background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%); background-position: calc(100% - 20px) 50%, calc(100% - 15px) 50%; background-size: 5px 5px; background-repeat: no-repeat; }
+
+  @media (min-width: 1000px) {
+    .hero { grid-template-columns: 1.05fr 1fr; grid-template-rows: 1fr auto auto 1fr; column-gap: 40px; row-gap: 22px; min-height: 100svh; padding-top: var(--hdr); }
+    .hero__head { grid-column: 1; grid-row: 2; }
+    .hero__txt { grid-column: 1; grid-row: 3; }
+    .hero__dial { grid-column: 2; grid-row: 1 / -1; align-self: center; width: min(100%, 600px); }
+    .kt { grid-template-columns: 1.1fr 1fr; gap: 64px; align-items: center; }
+    .td { display: grid; grid-template-columns: 1fr 1fr; column-gap: 64px; }
+    .td .sh { grid-column: 1 / -1; }
+    .td__list { margin: 0; }
+  }
+</style>

@@ -1,0 +1,102 @@
+---
+/**
+ * «Один вечер»: a clock on a sticky photo while the evening passes beside it.
+ * Each hour swaps the photo and turns the clock hand; the page itself darkens meanwhile.
+ */
+import { img } from "../lib/site";
+const hours = [
+  { t: "17:00", h: 17, ph: "deck", title: "Растопка", text: "Снимаем крышку, закладываем дрова. Печь из нержавейки стоит прямо в воде — греет её напрямую, без труб и насосов." },
+  { t: "19:00", h: 19, ph: "dusk", title: "Вода готова", text: "Термометр показывает 38. Над водой пар, вокруг минус двенадцать. Первые пять минут молчат все." },
+  { t: "20:00", h: 20, ph: "friends", title: "Компания", text: "В ELITE 200 свободно сидят шестеро. Полка для бокалов крепится к борту — ставить ничего на снег не нужно." },
+  { t: "22:00", h: 22, ph: "couple", title: "Под звёздами", text: "Подсветка гасится, остаются звёзды. Композит держит тепло — можно сидеть часами и не подкладывать дров." },
+  { t: "23:30", h: 23.5, ph: "dome", title: "Под крышку", text: "Термокрышка закрывает воду и сохраняет тепло — завтра вода нагреется быстрее." },
+];
+---
+<div class="ev" data-ev>
+  <div class="ev__stick">
+    <div class="ev__frame">
+      {hours.map((h, i) => <img class:list={["ev__ph", { on: i === 0 }]} data-ph={i} src={img(h.ph, 600)} srcset={`${img(h.ph, 600)} 600w, ${img(h.ph, 1200)} 1200w`} sizes="(min-width: 1000px) 46vw, 100vw" alt={h.title} loading="lazy" width="600" height="600" />)}
+      <!-- a plain clock in the corner: the hour hand turns with the evening -->
+      <svg class="ev__clock" viewBox="0 0 60 60" aria-hidden="true">
+        <circle cx="30" cy="30" r="28" />
+        {Array.from({ length: 12 }, (_, i) => <path d="M30 5v4" transform={`rotate(${i * 30} 30 30)`} />)}
+        <path class="ev__hh" d="M30 30V15" data-hh />
+        <path class="ev__mh" d="M30 30V8" data-mh />
+      </svg>
+      <p class="ev__now mono" data-now>17:00</p>
+    </div>
+  </div>
+  <ol class="ev__list">
+    {hours.map((h, i) => (
+      <li class="ev__it" data-step={i} data-h={h.h}>
+        <p class="ev__t mono">{h.t}</p>
+        <p class="h3">{h.title}</p>
+        <p class="read">{h.text}</p>
+        <img class="ev__mob" src={img(h.ph, 600)} alt="" loading="lazy" width="600" height="600" aria-hidden="true" />
+      </li>
+    ))}
+  </ol>
+</div>
+
+<script>
+  const el = document.querySelector<HTMLElement>("[data-ev]")!;
+  const steps = [...el.querySelectorAll<HTMLElement>("[data-step]")];
+  const phs = [...el.querySelectorAll<HTMLElement>("[data-ph]")];
+  const hh = el.querySelector<SVGPathElement>("[data-hh]")!, mh = el.querySelector<SVGPathElement>("[data-mh]")!;
+  const now = el.querySelector<HTMLElement>("[data-now]")!;
+  let cur = -1, h = 17, raf = 0;
+  const hand = (v: number) => {
+    hh.style.transform = `rotate(${(v % 12) * 30}deg)`;
+    mh.style.transform = `rotate(${(v % 1) * 360 + Math.floor(v - 17) * 360}deg)`;
+    now.textContent = `${Math.floor(v)}:${String(Math.round((v % 1) * 60) % 60).padStart(2, "0")}`;
+  };
+  const go = (i: number) => {
+    if (i === cur) return; cur = i;
+    phs.forEach((p, k) => p.classList.toggle("on", k === i));
+    steps.forEach((s, k) => s.classList.toggle("on", k === i));
+    const to = +steps[i].dataset.h!, from = h, t0 = performance.now();
+    cancelAnimationFrame(raf);
+    const run = (t: number) => { const k = Math.min(1, (t - t0) / 900), e = k * k * (3 - 2 * k); h = from + (to - from) * e; hand(h); if (k < 1) raf = requestAnimationFrame(run); };
+    raf = requestAnimationFrame(run);
+  };
+  // the hour is the last step whose top has passed the middle of the screen
+  let tk = false;
+  const pick = () => { tk = false; let i = 0; steps.forEach((s, k) => { if (s.getBoundingClientRect().top < innerHeight * 0.55) i = k; }); go(i); };
+  addEventListener("scroll", () => { if (!tk) { tk = true; requestAnimationFrame(pick); } }, { passive: true });
+  pick();
+  hand(17);
+</script>
+
+<style>
+  .ev { display: grid; }
+  /* on a phone the clock rides along as a small pill under the header */
+  .ev__stick { position: sticky; top: calc(var(--hdr) + env(safe-area-inset-top) + 10px); z-index: 5; justify-self: start; margin-bottom: 26px; }
+  .ev__stick .ev__frame { aspect-ratio: auto; display: flex; align-items: center; gap: 10px; padding: 6px 16px 6px 6px; border-radius: 40px; background: rgba(7, 16, 25, 0.78); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+  .ev__stick .ev__ph { display: none; }
+  .ev__stick .ev__clock { position: static; width: 40px; height: 40px; }
+  .ev__stick .ev__now { position: static; }
+  .ev__list { display: grid; gap: 54px; }
+  .ev__it { display: grid; gap: 10px; }
+  .ev__t { font-size: 13px; color: var(--water-2); }
+  .ev__mob { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 6px; margin-top: 8px; }
+  .ev__frame { position: relative; aspect-ratio: 4 / 5; border-radius: 8px; overflow: hidden; background: var(--night-2); }
+  .ev__ph { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transform: scale(1.04); transition: opacity 1.1s var(--ease), transform 2.4s var(--ease); }
+  .ev__ph.on { opacity: 1; transform: none; }
+  .ev__clock { position: absolute; left: 18px; bottom: 18px; width: 64px; height: 64px; fill: none; stroke: #fff; stroke-width: 1.4; stroke-linecap: round; }
+  .ev__clock circle { fill: rgba(7, 16, 25, 0.42); stroke: rgba(255, 255, 255, 0.7); }
+  .ev__hh, .ev__mh { transform-origin: 30px 30px; transform-box: view-box; }
+  .ev__hh { stroke-width: 2.4; }
+  .ev__now { position: absolute; left: 94px; bottom: 34px; color: #fff; font-size: 13px; }
+  @media (min-width: 1000px) {
+    .ev { grid-template-columns: 1fr 1fr; gap: 72px; }
+    .ev__stick { position: sticky; top: calc(var(--hdr) + 32px); align-self: start; margin: 0; justify-self: stretch; }
+    .ev__stick .ev__frame { aspect-ratio: 4 / 5; display: block; padding: 0; border-radius: 8px; background: var(--night-2); backdrop-filter: none; }
+    .ev__stick .ev__ph { display: block; }
+    .ev__stick .ev__clock { position: absolute; width: 64px; height: 64px; }
+    .ev__stick .ev__now { position: absolute; }
+    .ev__list { padding: 18vh 0 24vh; gap: 34vh; }
+    .ev__mob { display: none; }
+    .ev__it { opacity: 0.32; transition: opacity 0.6s; }
+    .ev__it.on { opacity: 1; }
+  }
+</style>
